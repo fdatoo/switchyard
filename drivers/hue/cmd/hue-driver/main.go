@@ -6,7 +6,8 @@ package main
 import (
 	"context"
 	"errors"
-	"log"
+	"fmt"
+	"log/slog"
 	"os"
 	"os/signal"
 	"strconv"
@@ -28,20 +29,31 @@ var capabilities = []string{"turn_on", "turn_off", "set_brightness", "set_color_
 func main() {
 	cfg, err := loadConfig()
 	if err != nil {
-		log.Fatalf("hue-driver: config: %v", err)
+		fmt.Fprintf(os.Stderr, "hue-driver: config: %v\n", err)
+		os.Exit(1)
 	}
 
 	client, err := bridge.New(cfg.Address, cfg.APIKey, cfg.TLSSkipVerify)
 	if err != nil {
-		log.Fatalf("hue-driver: bridge: %v", err)
+		fmt.Fprintf(os.Stderr, "hue-driver: bridge: %v\n", err)
+		os.Exit(1)
 	}
+
+	logger := slog.New(slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{
+		Level: parseLogLevel(os.Getenv("HUE_LOG_LEVEL")),
+	})).With(
+		"instance_id", os.Getenv("GOHOME_CARPORT_INSTANCE_ID"),
+		"bridge_address", cfg.Address,
+	)
+	slog.SetDefault(logger)
 
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT)
 
 	d, cache, err := buildDriver(ctx, client)
 	if err != nil {
 		cancel()
-		log.Fatalf("hue-driver: build: %v", err)
+		slog.Error("build driver failed", "error", err)
+		os.Exit(1)
 	}
 
 	go runEventLoop(ctx, client, d, cache)
@@ -49,7 +61,21 @@ func main() {
 	runErr := d.Run(ctx)
 	cancel()
 	if runErr != nil && !errors.Is(runErr, context.Canceled) {
-		log.Fatalf("hue-driver: run: %v", runErr)
+		slog.Error("driver run exited", "error", runErr)
+		os.Exit(1)
+	}
+}
+
+func parseLogLevel(s string) slog.Level {
+	switch s {
+	case "debug":
+		return slog.LevelDebug
+	case "warn":
+		return slog.LevelWarn
+	case "error":
+		return slog.LevelError
+	default:
+		return slog.LevelInfo
 	}
 }
 
@@ -168,7 +194,7 @@ func runEventLoop(ctx context.Context, client *bridge.Client, d *driver.Driver, 
 	for {
 		start := time.Now()
 		if err := streamOnce(ctx, client, d, cache); err != nil {
-			log.Printf("hue-driver: events: %v", err)
+			slog.Warn("sse stream error", "error", err)
 		}
 		if ctx.Err() != nil {
 			return
@@ -191,7 +217,7 @@ func runEventLoop(ctx context.Context, client *bridge.Client, d *driver.Driver, 
 		}
 		// Resync state before reopening the stream.
 		if err := resync(ctx, client, d, cache); err != nil {
-			log.Printf("hue-driver: resync: %v", err)
+			slog.Warn("resync failed", "error", err)
 		}
 	}
 }
@@ -217,7 +243,7 @@ func streamOnce(ctx context.Context, client *bridge.Client, d *driver.Driver, ca
 		cache.mu.Unlock()
 
 		if err := d.EmitState(entityID, merged); err != nil && !errors.Is(err, driver.ErrNotConnected) {
-			log.Printf("hue-driver: emit %s: %v", entityID, err)
+			slog.Warn("emit state failed", "entity_id", entityID, "error", err)
 		}
 	}
 	return nil
@@ -239,7 +265,7 @@ func resync(ctx context.Context, client *bridge.Client, d *driver.Driver, cache 
 		cache.byEntID[entityID] = attrs.GetLight()
 		cache.mu.Unlock()
 		if err := d.EmitState(entityID, attrs); err != nil && !errors.Is(err, driver.ErrNotConnected) {
-			log.Printf("hue-driver: emit resync %s: %v", entityID, err)
+			slog.Warn("emit resync state failed", "entity_id", entityID, "error", err)
 		}
 	}
 	return nil

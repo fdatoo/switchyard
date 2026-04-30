@@ -32,6 +32,23 @@ func TestCapabilities(t *testing.T) {
 			},
 			want: []string{"set_brightness", "set_color_temp", "turn_off", "turn_on"},
 		},
+		{
+			name: "color-capable",
+			in: bridge.Light{
+				Dimming:          &bridge.Dimming{},
+				ColorTemperature: &bridge.ColorTemperature{},
+				Color:            &bridge.Color{},
+			},
+			want: []string{"set_brightness", "set_color", "set_color_temp", "turn_off", "turn_on"},
+		},
+		{
+			name: "color-only no temp",
+			in: bridge.Light{
+				Dimming: &bridge.Dimming{},
+				Color:   &bridge.Color{},
+			},
+			want: []string{"set_brightness", "set_color", "turn_off", "turn_on"},
+		},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {

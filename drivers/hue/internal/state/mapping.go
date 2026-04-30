@@ -7,8 +7,8 @@ import (
 	"math"
 	"strconv"
 
-	entityv1 "github.com/fdatoo/gohome/gen/gohome/entity/v1"
 	"github.com/fdatoo/gohome/drivers/hue/internal/bridge"
+	entityv1 "github.com/fdatoo/gohome/gen/gohome/entity/v1"
 )
 
 // EntityID returns the gohome entity ID for a Hue light. The first 8 chars

@@ -4,8 +4,8 @@ import (
 	"math"
 	"testing"
 
-	entityv1 "github.com/fdatoo/gohome/gen/gohome/entity/v1"
 	"github.com/fdatoo/gohome/drivers/hue/internal/bridge"
+	entityv1 "github.com/fdatoo/gohome/gen/gohome/entity/v1"
 )
 
 func TestEntityID(t *testing.T) {
@@ -213,6 +213,6 @@ func TestMergeEvent(t *testing.T) {
 	}
 }
 
-func ptr[T any](v T) *T   { return &v }
+func ptr[T any](v T) *T       { return &v }
 func ptrF(v float64) *float64 { return &v }
 func ptrU(v uint32) *uint32   { return &v }

@@ -104,7 +104,10 @@ func (d *Driver) UnregisterEntity(entityID string) error {
 	}
 	return emit.Send(&carportv1alpha1.DriverToHost{
 		Kind: &carportv1alpha1.DriverToHost_EntityUnregistered{
-			EntityUnregistered: &eventv1.EntityUnregistered{Reason: "removed_by_driver"},
+			EntityUnregistered: &eventv1.EntityUnregistered{
+				EntityId: entityID,
+				Reason:   "removed_by_driver",
+			},
 		},
 	})
 }

@@ -744,8 +744,11 @@ func (x *EntityRegistered) GetCapabilities() *v1.Attributes {
 }
 
 type EntityUnregistered struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Reason        string                 `protobuf:"bytes,1,opt,name=reason,proto3" json:"reason,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// 1-9: identity
+	EntityId string `protobuf:"bytes,1,opt,name=entity_id,json=entityId,proto3" json:"entity_id,omitempty"`
+	// 10-19: payload
+	Reason        string `protobuf:"bytes,10,opt,name=reason,proto3" json:"reason,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -778,6 +781,13 @@ func (x *EntityUnregistered) ProtoReflect() protoreflect.Message {
 // Deprecated: Use EntityUnregistered.ProtoReflect.Descriptor instead.
 func (*EntityUnregistered) Descriptor() ([]byte, []int) {
 	return file_gohome_event_v1_event_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *EntityUnregistered) GetEntityId() string {
+	if x != nil {
+		return x.EntityId
+	}
+	return ""
 }
 
 func (x *EntityUnregistered) GetReason() string {
@@ -1770,9 +1780,11 @@ const file_gohome_event_v1_event_proto_rawDesc = "" +
 	"\ventity_type\x18\x03 \x01(\tR\n" +
 	"entityType\x12#\n" +
 	"\rfriendly_name\x18\x04 \x01(\tR\ffriendlyName\x12@\n" +
-	"\fcapabilities\x18\x05 \x01(\v2\x1c.gohome.entity.v1.AttributesR\fcapabilities\",\n" +
-	"\x12EntityUnregistered\x12\x16\n" +
-	"\x06reason\x18\x01 \x01(\tR\x06reason\"g\n" +
+	"\fcapabilities\x18\x05 \x01(\v2\x1c.gohome.entity.v1.AttributesR\fcapabilities\"I\n" +
+	"\x12EntityUnregistered\x12\x1b\n" +
+	"\tentity_id\x18\x01 \x01(\tR\bentityId\x12\x16\n" +
+	"\x06reason\x18\n" +
+	" \x01(\tR\x06reason\"g\n" +
 	"\vDriverEvent\x12,\n" +
 	"\x12driver_instance_id\x18\x01 \x01(\tR\x10driverInstanceId\x12\x12\n" +
 	"\x04kind\x18\x02 \x01(\tR\x04kind\x12\x16\n" +

@@ -117,3 +117,19 @@ func TestIngestMessage_PongIsNoOp(t *testing.T) {
 		t.Fatalf("pong should not append; got %d events", len(events))
 	}
 }
+
+func TestIngestMessage_EntityUnregisteredBindsEntityID(t *testing.T) {
+	f := newStoreFixtureForTest(t)
+	msg := &carportpb.DriverToHost{
+		Kind: &carportpb.DriverToHost_EntityUnregistered{
+			EntityUnregistered: &eventpb.EntityUnregistered{EntityId: "light.kitchen", Reason: "removed_by_driver"},
+		},
+	}
+	if err := carport.IngestMessage(context.Background(), f.store, "hue", msg); err != nil {
+		t.Fatal(err)
+	}
+	evs, _ := f.store.Query(context.Background(), eventstore.QueryOptions{})
+	if len(evs) != 1 || evs[0].Entity != "light.kitchen" {
+		t.Fatalf("got %+v, want Entity=light.kitchen", evs)
+	}
+}

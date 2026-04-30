@@ -79,7 +79,10 @@ message EntityRegistered {
 }
 
 message EntityUnregistered {
-  string reason = 1;
+  // 1-9: identity
+  string entity_id = 1;
+  // 10-19: payload
+  string reason    = 10;
 }
 
 message DriverEvent {

@@ -54,6 +54,7 @@ func IngestMessage(ctx context.Context, store *eventstore.Store, instanceID stri
 		_, err := store.Append(ctx, eventstore.Event{
 			Timestamp: now,
 			Kind:      "entity_unregistered",
+			Entity:    k.EntityUnregistered.GetEntityId(),
 			Source:    source,
 			Payload: &eventpb.Payload{Kind: &eventpb.Payload_EntityUnregistered{
 				EntityUnregistered: k.EntityUnregistered,

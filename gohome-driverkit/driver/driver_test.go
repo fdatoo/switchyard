@@ -141,6 +141,50 @@ func TestDriver_InitialEntities(t *testing.T) {
 	}
 }
 
+// TestDriver_OnRunStartEmitsInitialState guards the driverkit's contract that
+// every entity with tracked attrs gets a StateChanged at the start of each Run
+// stream. Without this, a daemon replaying old EntityRegistered events would
+// keep a stale (or empty) state cache forever — the daemon treats registration
+// as schema-level (idempotent) and trusts StateChanged for current truth.
+func TestDriver_OnRunStartEmitsInitialState(t *testing.T) {
+	d := driver.New("test", "0.0.1")
+	want := lightAttrs(true, 200)
+	if err := d.AddEntity("light.a", driver.EntitySpec{
+		EntityType: "light", FriendlyName: "A",
+		Capabilities: []string{"turn_on"},
+		InitialState: want,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if err := d.AddEntity("light.b", driver.EntitySpec{
+		EntityType: "light", FriendlyName: "B",
+		Capabilities: []string{"turn_on"},
+		// Note: no InitialState — should not produce a StateChanged.
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	h := drivertest.New(t, d)
+	defer h.Close()
+
+	deadline := time.After(time.Second)
+	seen := map[string]bool{}
+	for len(seen) < 1 {
+		select {
+		case sc := <-h.StateChanges():
+			seen[sc.GetEntityId()] = true
+			if sc.GetEntityId() == "light.b" {
+				t.Errorf("got StateChanged for light.b which had no InitialState")
+			}
+		case <-deadline:
+			t.Fatalf("timed out waiting for OnRunStart-driven StateChanges; saw %v", seen)
+		}
+	}
+	if !seen["light.a"] {
+		t.Errorf("expected StateChanged for light.a; saw %v", seen)
+	}
+}
+
 // TestDriver_StateChangedCarriesEntityID guards against regressing the
 // entity-id-propagation bug: every StateChanged emitted by the driver must
 // carry its EntityId so the carport host can route it.

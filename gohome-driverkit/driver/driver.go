@@ -200,11 +200,38 @@ func (d *Driver) OnHandshake(_ []byte) (*carportv1alpha1.DriverManifest, []*even
 	return manifest, entities, nil
 }
 
-// OnRunStart implements protocol.Handler. Stores the emitter for EmitState calls.
+// OnRunStart implements protocol.Handler. Stores the emitter and asserts
+// current state for every entity with tracked attributes by emitting a
+// StateChanged. The daemon's state cache treats EntityRegistered as
+// register-once (capabilities), so re-registrations against an existing
+// event log are no-ops in state. StateChanged is the durable truth channel
+// — emitting on every Run start means a fresh daemon and a daemon
+// replaying old events both converge to the driver's current view.
 func (d *Driver) OnRunStart(_ context.Context, emit protocol.Emitter) {
 	d.emitMu.Lock()
 	d.emitter = emit
 	d.emitMu.Unlock()
+
+	d.mu.RLock()
+	type pending struct {
+		id    string
+		attrs *entityv1.Attributes
+	}
+	out := make([]pending, 0, len(d.entities))
+	for id, e := range d.entities {
+		if e.attrs != nil {
+			out = append(out, pending{id: id, attrs: e.attrs})
+		}
+	}
+	d.mu.RUnlock()
+
+	for _, p := range out {
+		_ = emit.Send(&carportv1alpha1.DriverToHost{
+			Kind: &carportv1alpha1.DriverToHost_StateChanged{
+				StateChanged: &eventv1.StateChanged{EntityId: p.id, Attributes: p.attrs},
+			},
+		})
+	}
 }
 
 // OnCommand implements protocol.Handler. Routes to the registered CapabilityHandler.

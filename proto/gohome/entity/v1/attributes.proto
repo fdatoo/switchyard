@@ -24,7 +24,8 @@ message Attributes {
 message Light {
   bool   on         = 1;
   uint32 brightness = 2;   // 0-255
-  uint32 color_temp = 3;   // mireds; 0 if unsupported
+  uint32 color_temp = 3;   // mireds; 0 if unsupported / not active
+  uint32 color_rgb  = 4;   // 0xRRGGBB; 0 if unsupported / not active
   // RGB/XY/capabilities flesh out later; C1 only needs the message existing.
 }
 

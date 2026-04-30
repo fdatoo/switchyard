@@ -141,7 +141,8 @@ type Light struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	On            bool                   `protobuf:"varint,1,opt,name=on,proto3" json:"on,omitempty"`
 	Brightness    uint32                 `protobuf:"varint,2,opt,name=brightness,proto3" json:"brightness,omitempty"`                // 0-255
-	ColorTemp     uint32                 `protobuf:"varint,3,opt,name=color_temp,json=colorTemp,proto3" json:"color_temp,omitempty"` // mireds; 0 if unsupported
+	ColorTemp     uint32                 `protobuf:"varint,3,opt,name=color_temp,json=colorTemp,proto3" json:"color_temp,omitempty"` // mireds; 0 if unsupported / not active
+	ColorRgb      uint32                 `protobuf:"varint,4,opt,name=color_rgb,json=colorRgb,proto3" json:"color_rgb,omitempty"`    // 0xRRGGBB; 0 if unsupported / not active
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -193,6 +194,13 @@ func (x *Light) GetBrightness() uint32 {
 func (x *Light) GetColorTemp() uint32 {
 	if x != nil {
 		return x.ColorTemp
+	}
+	return 0
+}
+
+func (x *Light) GetColorRgb() uint32 {
+	if x != nil {
+		return x.ColorRgb
 	}
 	return 0
 }
@@ -305,14 +313,15 @@ const file_gohome_entity_v1_attributes_proto_rawDesc = "" +
 	"\rswitch_device\x18\v \x01(\v2\x18.gohome.entity.v1.SwitchH\x00R\fswitchDevice\x122\n" +
 	"\x06sensor\x18\f \x01(\v2\x18.gohome.entity.v1.SensorH\x00R\x06sensor\x12\x1c\n" +
 	"\tavailable\x18Z \x01(\bR\tavailableB\x06\n" +
-	"\x04kind\"V\n" +
+	"\x04kind\"s\n" +
 	"\x05Light\x12\x0e\n" +
 	"\x02on\x18\x01 \x01(\bR\x02on\x12\x1e\n" +
 	"\n" +
 	"brightness\x18\x02 \x01(\rR\n" +
 	"brightness\x12\x1d\n" +
 	"\n" +
-	"color_temp\x18\x03 \x01(\rR\tcolorTemp\"\x18\n" +
+	"color_temp\x18\x03 \x01(\rR\tcolorTemp\x12\x1b\n" +
+	"\tcolor_rgb\x18\x04 \x01(\rR\bcolorRgb\"\x18\n" +
 	"\x06Switch\x12\x0e\n" +
 	"\x02on\x18\x01 \x01(\bR\x02on\"2\n" +
 	"\x06Sensor\x12\x12\n" +

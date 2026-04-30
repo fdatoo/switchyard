@@ -665,13 +665,17 @@ func (x *CommandAck) GetErrorMessage() string {
 type EntityRegistered struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// 1-9: identity & capability binding
-	DriverInstanceId string         `protobuf:"bytes,1,opt,name=driver_instance_id,json=driverInstanceId,proto3" json:"driver_instance_id,omitempty"`
-	DeviceId         string         `protobuf:"bytes,2,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
-	EntityType       string         `protobuf:"bytes,3,opt,name=entity_type,json=entityType,proto3" json:"entity_type,omitempty"`
-	FriendlyName     string         `protobuf:"bytes,4,opt,name=friendly_name,json=friendlyName,proto3" json:"friendly_name,omitempty"`
-	Capabilities     *v1.Attributes `protobuf:"bytes,5,opt,name=capabilities,proto3" json:"capabilities,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	DriverInstanceId string `protobuf:"bytes,1,opt,name=driver_instance_id,json=driverInstanceId,proto3" json:"driver_instance_id,omitempty"`
+	DeviceId         string `protobuf:"bytes,2,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
+	EntityType       string `protobuf:"bytes,3,opt,name=entity_type,json=entityType,proto3" json:"entity_type,omitempty"`
+	FriendlyName     string `protobuf:"bytes,4,opt,name=friendly_name,json=friendlyName,proto3" json:"friendly_name,omitempty"`
+	// Deprecated: typed as Attributes (state-shaped) but conceptually meant for
+	// capability metadata. The daemon ignores this field — state flows over
+	// StateChanged, which the driverkit re-emits at every Run start. Reserved
+	// here to keep wire compatibility; do not populate.
+	Capabilities  *v1.Attributes `protobuf:"bytes,5,opt,name=capabilities,proto3" json:"capabilities,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *EntityRegistered) Reset() {

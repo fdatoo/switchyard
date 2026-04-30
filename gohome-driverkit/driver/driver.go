@@ -177,19 +177,14 @@ func (d *Driver) OnHandshake(_ []byte) (*carportv1alpha1.DriverManifest, []*even
 
 	var entities []*eventv1.EntityRegistered
 	for entityID, e := range d.entities {
-		// Capabilities carries the entity's *attributes* (the daemon's state
-		// cache seeds itself from this on EntityRegistered). Use the tracked
-		// attrs if present, else an empty Attributes so the daemon sees a
-		// well-typed entity.
-		caps := e.attrs
-		if caps == nil {
-			caps = &entityv1.Attributes{}
-		}
+		// Capabilities is left empty here. The proto field is vestigial:
+		// state flows over StateChanged, which the driverkit emits in
+		// OnRunStart for every entity with tracked attrs.
 		entities = append(entities, &eventv1.EntityRegistered{
 			DeviceId:     entityID,
 			EntityType:   e.spec.EntityType,
 			FriendlyName: e.spec.FriendlyName,
-			Capabilities: caps,
+			Capabilities: &entityv1.Attributes{},
 		})
 	}
 

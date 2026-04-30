@@ -71,6 +71,10 @@ message EntityRegistered {
   string                      device_id          = 2;
   string                      entity_type        = 3;
   string                      friendly_name      = 4;
+  // Deprecated: typed as Attributes (state-shaped) but conceptually meant for
+  // capability metadata. The daemon ignores this field — state flows over
+  // StateChanged, which the driverkit re-emits at every Run start. Reserved
+  // here to keep wire compatibility; do not populate.
   gohome.entity.v1.Attributes capabilities       = 5;
 }
 

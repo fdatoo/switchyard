@@ -102,7 +102,7 @@ func TestInstance_Health_OK(t *testing.T) {
 func TestIngestMessage_RejectsResultKind(t *testing.T) {
 	f := newStoreFixtureForTest(t)
 	msg := &carportpb.DriverToHost{Kind: &carportpb.DriverToHost_Result{Result: &carportpb.CommandResult{}}}
-	err := carport.IngestMessage(context.Background(), f.store, "drv", "", msg)
+	err := carport.IngestMessage(context.Background(), f.store, "drv", msg)
 	if err == nil {
 		t.Fatal("expected error for Result kind")
 	}
@@ -114,7 +114,7 @@ func TestIngestMessage_RejectsResultKind(t *testing.T) {
 func TestIngestMessage_PongIsNoop(t *testing.T) {
 	f := newStoreFixtureForTest(t)
 	msg := &carportpb.DriverToHost{Kind: &carportpb.DriverToHost_Pong{Pong: &carportpb.Heartbeat{TsUnixMs: 1}}}
-	if err := carport.IngestMessage(context.Background(), f.store, "drv", "", msg); err != nil {
+	if err := carport.IngestMessage(context.Background(), f.store, "drv", msg); err != nil {
 		t.Errorf("Pong should be no-op, got %v", err)
 	}
 	evs, _ := f.store.Query(context.Background(), anyQueryOptions())
@@ -126,7 +126,7 @@ func TestIngestMessage_PongIsNoop(t *testing.T) {
 func TestIngestMessage_UnknownKind(t *testing.T) {
 	f := newStoreFixtureForTest(t)
 	// Empty DriverToHost has nil Kind oneof — falls through default case.
-	err := carport.IngestMessage(context.Background(), f.store, "drv", "", &carportpb.DriverToHost{})
+	err := carport.IngestMessage(context.Background(), f.store, "drv", &carportpb.DriverToHost{})
 	if err == nil {
 		t.Fatal("expected error for unknown kind")
 	}
@@ -135,12 +135,12 @@ func TestIngestMessage_UnknownKind(t *testing.T) {
 	}
 }
 
-func TestIngestMessage_StateChangedAppendsWithEntityHint(t *testing.T) {
+func TestIngestMessage_StateChangedBindsEntityFromPayload(t *testing.T) {
 	f := newStoreFixtureForTest(t)
 	msg := &carportpb.DriverToHost{Kind: &carportpb.DriverToHost_StateChanged{
-		StateChanged: &eventpb.StateChanged{},
+		StateChanged: &eventpb.StateChanged{EntityId: "light.kitchen"},
 	}}
-	if err := carport.IngestMessage(context.Background(), f.store, "drv", "light.kitchen", msg); err != nil {
+	if err := carport.IngestMessage(context.Background(), f.store, "drv", msg); err != nil {
 		t.Fatalf("IngestMessage: %v", err)
 	}
 	evs, _ := f.store.Query(context.Background(), eventstore.QueryOptions{
@@ -151,12 +151,12 @@ func TestIngestMessage_StateChangedAppendsWithEntityHint(t *testing.T) {
 	}
 }
 
-func TestIngestMessage_EntityRegisteredFillsInstanceID(t *testing.T) {
+func TestIngestMessage_EntityRegisteredBindsEntityFromDeviceID(t *testing.T) {
 	f := newStoreFixtureForTest(t)
 	msg := &carportpb.DriverToHost{Kind: &carportpb.DriverToHost_EntityRegistered{
-		EntityRegistered: &eventpb.EntityRegistered{EntityType: "sensor", FriendlyName: "Z"},
+		EntityRegistered: &eventpb.EntityRegistered{DeviceId: "sensor.z", EntityType: "sensor", FriendlyName: "Z"},
 	}}
-	if err := carport.IngestMessage(context.Background(), f.store, "drv", "sensor.z", msg); err != nil {
+	if err := carport.IngestMessage(context.Background(), f.store, "drv", msg); err != nil {
 		t.Fatalf("IngestMessage: %v", err)
 	}
 	evs, _ := f.store.Query(context.Background(), eventstore.QueryOptions{
@@ -164,6 +164,9 @@ func TestIngestMessage_EntityRegisteredFillsInstanceID(t *testing.T) {
 	})
 	if len(evs) != 1 {
 		t.Fatalf("got %d events, want 1", len(evs))
+	}
+	if evs[0].Entity != "sensor.z" {
+		t.Errorf("Entity = %q, want sensor.z", evs[0].Entity)
 	}
 	if er := evs[0].Payload.GetEntityRegistered(); er == nil || er.DriverInstanceId != "drv" {
 		t.Errorf("DriverInstanceId not back-filled: %+v", er)
@@ -175,7 +178,7 @@ func TestIngestMessage_DriverEventFillsInstanceID(t *testing.T) {
 	msg := &carportpb.DriverToHost{Kind: &carportpb.DriverToHost_DriverEvent{
 		DriverEvent: &eventpb.DriverEvent{Kind: "k", Detail: "d"},
 	}}
-	if err := carport.IngestMessage(context.Background(), f.store, "drv", "", msg); err != nil {
+	if err := carport.IngestMessage(context.Background(), f.store, "drv", msg); err != nil {
 		t.Fatalf("IngestMessage: %v", err)
 	}
 	evs, _ := f.store.Query(context.Background(), eventstore.QueryOptions{

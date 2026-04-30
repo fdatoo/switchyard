@@ -16,13 +16,14 @@ func TestIngestMessage_StateChanged(t *testing.T) {
 	msg := &carportpb.DriverToHost{
 		Kind: &carportpb.DriverToHost_StateChanged{
 			StateChanged: &eventpb.StateChanged{
+				EntityId: "light.kitchen",
 				Attributes: &entitypb.Attributes{
 					Kind: &entitypb.Attributes_Light{Light: &entitypb.Light{On: true, Brightness: 100}},
 				},
 			},
 		},
 	}
-	if err := carport.IngestMessage(context.Background(), f.store, "hue_main", "light.kitchen", msg); err != nil {
+	if err := carport.IngestMessage(context.Background(), f.store, "hue_main", msg); err != nil {
 		t.Fatalf("IngestMessage: %v", err)
 	}
 	events, err := f.store.Query(context.Background(), eventstore.QueryOptions{})
@@ -54,7 +55,7 @@ func TestIngestMessage_DriverEvent(t *testing.T) {
 			},
 		},
 	}
-	if err := carport.IngestMessage(context.Background(), f.store, "hue_main", "", msg); err != nil {
+	if err := carport.IngestMessage(context.Background(), f.store, "hue_main", msg); err != nil {
 		t.Fatal(err)
 	}
 	events, _ := f.store.Query(context.Background(), eventstore.QueryOptions{})
@@ -69,17 +70,21 @@ func TestIngestMessage_EntityRegistered(t *testing.T) {
 		Kind: &carportpb.DriverToHost_EntityRegistered{
 			EntityRegistered: &eventpb.EntityRegistered{
 				DriverInstanceId: "hue_main",
+				DeviceId:         "light.kitchen",
 				EntityType:       "light",
 				FriendlyName:     "Kitchen",
 			},
 		},
 	}
-	if err := carport.IngestMessage(context.Background(), f.store, "hue_main", "light.kitchen", msg); err != nil {
+	if err := carport.IngestMessage(context.Background(), f.store, "hue_main", msg); err != nil {
 		t.Fatal(err)
 	}
 	events, _ := f.store.Query(context.Background(), eventstore.QueryOptions{})
 	if len(events) != 1 || events[0].Kind != "entity_registered" {
 		t.Fatalf("want entity_registered, got %+v", events)
+	}
+	if events[0].Entity != "light.kitchen" {
+		t.Errorf("Entity = %q, want light.kitchen (derived from EntityRegistered.DeviceId)", events[0].Entity)
 	}
 }
 
@@ -90,7 +95,7 @@ func TestIngestMessage_EntityUnregistered(t *testing.T) {
 			EntityUnregistered: &eventpb.EntityUnregistered{Reason: "user_removed"},
 		},
 	}
-	if err := carport.IngestMessage(context.Background(), f.store, "hue_main", "light.kitchen", msg); err != nil {
+	if err := carport.IngestMessage(context.Background(), f.store, "hue_main", msg); err != nil {
 		t.Fatal(err)
 	}
 	events, _ := f.store.Query(context.Background(), eventstore.QueryOptions{})
@@ -104,7 +109,7 @@ func TestIngestMessage_PongIsNoOp(t *testing.T) {
 	msg := &carportpb.DriverToHost{
 		Kind: &carportpb.DriverToHost_Pong{Pong: &carportpb.Heartbeat{}},
 	}
-	if err := carport.IngestMessage(context.Background(), f.store, "hue_main", "", msg); err != nil {
+	if err := carport.IngestMessage(context.Background(), f.store, "hue_main", msg); err != nil {
 		t.Fatal(err)
 	}
 	events, _ := f.store.Query(context.Background(), eventstore.QueryOptions{})

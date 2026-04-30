@@ -18,18 +18,28 @@ type Client struct {
 	httpClient *http.Client
 }
 
+// Option is a functional option for New.
+type Option func(*Client)
+
+// WithHTTPClient replaces the default *http.Client. Useful in tests to inject
+// an httptest.Server's pre-trusted client so TLS verification succeeds against
+// a self-signed certificate.
+func WithHTTPClient(h *http.Client) Option {
+	return func(c *Client) { c.httpClient = h }
+}
+
 // New constructs a Client. address is "<host>" or "<host>:<port>" — the
 // CLIP v2 API is always HTTPS, so no scheme. apiKey is the bridge
 // application key. tlsSkipVerify defaults to true in production because the
 // bridge ships a self-signed cert.
-func New(address, apiKey string, tlsSkipVerify bool) (*Client, error) {
+func New(address, apiKey string, tlsSkipVerify bool, opts ...Option) (*Client, error) {
 	if address == "" {
 		return nil, fmt.Errorf("bridge address is required")
 	}
 	if apiKey == "" {
 		return nil, fmt.Errorf("api key is required")
 	}
-	return &Client{
+	c := &Client{
 		baseURL: "https://" + address,
 		apiKey:  apiKey,
 		httpClient: &http.Client{
@@ -37,14 +47,11 @@ func New(address, apiKey string, tlsSkipVerify bool) (*Client, error) {
 				TLSClientConfig: &tls.Config{InsecureSkipVerify: tlsSkipVerify}, //nolint:gosec // bridge ships self-signed cert
 			},
 		},
-	}, nil
-}
-
-// SetHTTPClientForTest swaps the underlying *http.Client. Tests use this
-// to inject httptest.NewTLSServer's pre-trusted client so calls to the
-// fake bridge don't fail TLS verification regardless of skip-verify.
-func (c *Client) SetHTTPClientForTest(h *http.Client) {
-	c.httpClient = h
+	}
+	for _, opt := range opts {
+		opt(c)
+	}
+	return c, nil
 }
 
 // ListLights returns every light resource on the bridge.

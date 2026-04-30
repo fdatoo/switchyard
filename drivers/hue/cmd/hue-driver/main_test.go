@@ -27,6 +27,21 @@ const fakeBridgeListLightsBody = `{
   ]
 }`
 
+// newTestBridgeClient creates a bridge.Client wired to the given httptest.Server.
+func newTestBridgeClient(t *testing.T, srv *httptest.Server) *bridge.Client {
+	t.Helper()
+	c, err := bridge.New(
+		strings.TrimPrefix(srv.URL, "https://"),
+		"test-key",
+		true,
+		bridge.WithHTTPClient(srv.Client()),
+	)
+	if err != nil {
+		t.Fatalf("bridge.New: %v", err)
+	}
+	return c
+}
+
 func TestDriver_AllCapabilities(t *testing.T) {
 	var mu sync.Mutex
 	var seenPUTs []string
@@ -53,11 +68,7 @@ func TestDriver_AllCapabilities(t *testing.T) {
 	}))
 	t.Cleanup(srv.Close)
 
-	client, err := bridge.New(strings.TrimPrefix(srv.URL, "https://"), "test-key", true)
-	if err != nil {
-		t.Fatalf("bridge.New: %v", err)
-	}
-	client.SetHTTPClientForTest(srv.Client())
+	client := newTestBridgeClient(t, srv)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -117,11 +128,7 @@ func TestDriver_BridgeError(t *testing.T) {
 	}))
 	t.Cleanup(srv.Close)
 
-	client, err := bridge.New(strings.TrimPrefix(srv.URL, "https://"), "test-key", true)
-	if err != nil {
-		t.Fatalf("bridge.New: %v", err)
-	}
-	client.SetHTTPClientForTest(srv.Client())
+	client := newTestBridgeClient(t, srv)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

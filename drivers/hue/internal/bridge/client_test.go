@@ -14,11 +14,10 @@ func newTestClient(t *testing.T, h http.Handler) *Client {
 	t.Helper()
 	srv := httptest.NewTLSServer(h)
 	t.Cleanup(srv.Close)
-	c, err := New(strings.TrimPrefix(srv.URL, "https://"), "test-key", true)
+	c, err := New(strings.TrimPrefix(srv.URL, "https://"), "test-key", true, WithHTTPClient(srv.Client()))
 	if err != nil {
 		t.Fatalf("New: %v", err)
 	}
-	c.httpClient = srv.Client()
 	return c
 }
 

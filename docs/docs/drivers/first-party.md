@@ -251,7 +251,7 @@ Integrates Google Nest thermostats and cameras via the Google Nest Device Access
 
 !!! status-alpha "Alpha — shipped, interface evolving"
 
-Integrates with a Philips Hue bridge using the local API — no cloud, no Philips account required. Discovers all lights, groups, scenes, and sensors on the bridge and registers them as gohome entities. Supports full color, color temperature, and brightness control.
+Mirrors all lights on a Philips Hue bridge into gohome as `light.*` entities using the local CLIP v2 API — no cloud, no Philips account required. Supports `turn_on`, `turn_off`, `set_brightness`, and `set_color_temp` for white and tunable-white control. Color (RGB/XY), groups, scenes, and sensors are out of scope for v0.1.
 
 **Config fields**
 
@@ -265,7 +265,6 @@ Integrates with a Philips Hue bridge using the local API — no cloud, no Philip
 
 - CLIP v2 only — bridges on firmware older than 1.48 (pre-2021) are not supported.
 - Server-sent events deliver state changes from wall switches and the Hue app to gohome with sub-second latency.
-- Hue bridge supports a maximum of 63 grouped lights and 50 scenes — groups exceeding these limits must be split across multiple instances.
 - The Hue bridge API key is per-application; store it in a secret and reference via `api_key_env`.
 
 [Source repo](https://github.com/fynn-labs/driver-hue)

@@ -47,6 +47,13 @@ func newStateGetCmd(gf *globalFlags) *cobra.Command {
 			if entity.GetType() != "" {
 				fmt.Printf("  Type: %s\n", Dim.Render(entity.GetType()))
 			}
+			if state := entity.GetState(); state != nil {
+				avail := "no"
+				if state.GetAvailable() {
+					avail = "yes"
+				}
+				fmt.Printf("  Available: %s\n", avail)
+			}
 			if entity.GetState() != nil {
 				raw, err := protojson.MarshalOptions{Multiline: true, Indent: "  ", EmitUnpopulated: true}.Marshal(entity.GetState())
 				if err != nil {
@@ -90,8 +97,9 @@ func newStateDumpCmd(gf *globalFlags) *cobra.Command {
 						"type":          entity.GetType(),
 						"friendly_name": entity.GetFriendlyName(),
 					}
-					if entity.GetState() != nil {
-						raw, _ := protojson.MarshalOptions{EmitUnpopulated: true}.Marshal(entity.GetState())
+					if state := entity.GetState(); state != nil {
+						entry["available"] = state.GetAvailable()
+						raw, _ := protojson.MarshalOptions{EmitUnpopulated: true}.Marshal(state)
 						var payload any
 						_ = json.Unmarshal(raw, &payload)
 						entry["state"] = payload

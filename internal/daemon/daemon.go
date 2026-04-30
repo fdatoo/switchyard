@@ -491,9 +491,10 @@ func (d *Daemon) Run(ctx context.Context) error {
 	// shutCtx is derived from Background intentionally — the parent context is already cancelled at this point.
 	shutCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	if _, err := store.SnapshotNow(shutCtx, "state_cache"); err != nil { //nolint:contextcheck
-		d.logger.Warn("final snapshot failed", "err", err)
-	}
+
+	// Stop event-producing subsystems before snapshotting so the final
+	// snapshot doesn't race their writes. SQLite returns BUSY (517) if a
+	// writer holds the lock when SnapshotNow tries to start a write tx.
 	if d.automationEngine != nil {
 		d.automationEngine.Stop(shutCtx) //nolint:contextcheck
 	}
@@ -502,6 +503,10 @@ func (d *Daemon) Run(ctx context.Context) error {
 	}
 	if d.carport != nil {
 		d.carport.Stop(shutCtx) //nolint:contextcheck
+	}
+
+	if _, err := store.SnapshotNow(shutCtx, "state_cache"); err != nil { //nolint:contextcheck
+		d.logger.Warn("final snapshot failed", "err", err)
 	}
 	_ = store.Close(ctx)
 	return nil

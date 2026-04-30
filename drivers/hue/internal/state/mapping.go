@@ -3,7 +3,9 @@
 package state
 
 import (
+	"fmt"
 	"math"
+	"strconv"
 
 	entityv1 "github.com/fdatoo/gohome/gen/gohome/entity/v1"
 	"github.com/fdatoo/gohome/drivers/hue/internal/bridge"
@@ -42,4 +44,42 @@ func brightnessHueToGohome(h float64) uint32 {
 		h = 100
 	}
 	return uint32(math.Round(h * 255 / 100))
+}
+
+// CommandToUpdate translates a Carport (capability, args) pair into a
+// bridge.LightUpdate. Validates argument ranges; returns an error for
+// unknown capabilities or malformed arguments.
+func CommandToUpdate(capability string, args map[string]string) (bridge.LightUpdate, error) {
+	switch capability {
+	case "turn_on":
+		on := bridge.OnState{On: true}
+		return bridge.LightUpdate{On: &on}, nil
+	case "turn_off":
+		on := bridge.OnState{On: false}
+		return bridge.LightUpdate{On: &on}, nil
+	case "set_brightness":
+		raw, ok := args["brightness"]
+		if !ok {
+			return bridge.LightUpdate{}, fmt.Errorf("set_brightness: missing brightness arg")
+		}
+		v, err := strconv.Atoi(raw)
+		if err != nil || v < 0 || v > 255 {
+			return bridge.LightUpdate{}, fmt.Errorf("set_brightness: brightness must be integer 0-255, got %q", raw)
+		}
+		hue := float64(v) * 100 / 255
+		return bridge.LightUpdate{Dimming: &bridge.Dimming{Brightness: hue}}, nil
+	case "set_color_temp":
+		raw, ok := args["color_temp"]
+		if !ok {
+			return bridge.LightUpdate{}, fmt.Errorf("set_color_temp: missing color_temp arg")
+		}
+		v, err := strconv.Atoi(raw)
+		if err != nil || v < 153 || v > 500 {
+			return bridge.LightUpdate{}, fmt.Errorf("set_color_temp: color_temp must be integer 153-500 mireds, got %q", raw)
+		}
+		mirek := uint32(v)
+		return bridge.LightUpdate{ColorTemperature: &bridge.ColorTemperature{Mirek: &mirek}}, nil
+	default:
+		return bridge.LightUpdate{}, fmt.Errorf("unknown capability %q", capability)
+	}
 }

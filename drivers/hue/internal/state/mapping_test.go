@@ -1,6 +1,7 @@
 package state
 
 import (
+	"math"
 	"testing"
 
 	entityv1 "github.com/fdatoo/gohome/gen/gohome/entity/v1"
@@ -84,3 +85,92 @@ func TestLightToAttrs(t *testing.T) {
 		})
 	}
 }
+
+func TestCommandToUpdate(t *testing.T) {
+	cases := []struct {
+		name      string
+		cap       string
+		args      map[string]string
+		wantOn    *bool
+		wantBri   *float64
+		wantMirek *uint32
+		wantErr   bool
+	}{
+		{name: "turn_on", cap: "turn_on", wantOn: ptr(true)},
+		{name: "turn_off", cap: "turn_off", wantOn: ptr(false)},
+		{
+			name:    "set_brightness 128 → 50.196",
+			cap:     "set_brightness",
+			args:    map[string]string{"brightness": "128"},
+			wantBri: ptrF((128.0 * 100) / 255),
+		},
+		{
+			name:    "set_brightness missing arg",
+			cap:     "set_brightness",
+			args:    map[string]string{},
+			wantErr: true,
+		},
+		{
+			name:    "set_brightness out of range",
+			cap:     "set_brightness",
+			args:    map[string]string{"brightness": "999"},
+			wantErr: true,
+		},
+		{
+			name:    "set_brightness non-integer",
+			cap:     "set_brightness",
+			args:    map[string]string{"brightness": "bright"},
+			wantErr: true,
+		},
+		{
+			name:      "set_color_temp 366",
+			cap:       "set_color_temp",
+			args:      map[string]string{"color_temp": "366"},
+			wantMirek: ptrU(366),
+		},
+		{
+			name:    "set_color_temp missing arg",
+			cap:     "set_color_temp",
+			args:    map[string]string{},
+			wantErr: true,
+		},
+		{
+			name:    "unknown capability",
+			cap:     "do_a_barrel_roll",
+			wantErr: true,
+		},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			got, err := CommandToUpdate(tc.cap, tc.args)
+			if tc.wantErr {
+				if err == nil {
+					t.Fatalf("expected error, got %+v", got)
+				}
+				return
+			}
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			if tc.wantOn != nil {
+				if got.On == nil || got.On.On != *tc.wantOn {
+					t.Fatalf("On = %+v, want On.On=%v", got.On, *tc.wantOn)
+				}
+			}
+			if tc.wantBri != nil {
+				if got.Dimming == nil || math.Abs(got.Dimming.Brightness-*tc.wantBri) > 0.01 {
+					t.Fatalf("Dimming.Brightness = %+v, want %v", got.Dimming, *tc.wantBri)
+				}
+			}
+			if tc.wantMirek != nil {
+				if got.ColorTemperature == nil || got.ColorTemperature.Mirek == nil || *got.ColorTemperature.Mirek != *tc.wantMirek {
+					t.Fatalf("ColorTemperature = %+v, want mirek=%v", got.ColorTemperature, *tc.wantMirek)
+				}
+			}
+		})
+	}
+}
+
+func ptr[T any](v T) *T   { return &v }
+func ptrF(v float64) *float64 { return &v }
+func ptrU(v uint32) *uint32   { return &v }

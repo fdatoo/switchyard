@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"strings"
 	"sync"
 	"syscall"
 	"time"
@@ -46,6 +47,19 @@ func main() {
 	slog.SetDefault(logger)
 
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT)
+
+	// Auth fast-fail: a single 401 on the first call means the API key is
+	// wrong. The 3-strike threshold elsewhere is for steady-state.
+	if _, err := client.ListLights(ctx); err != nil {
+		if isAuthError(err) {
+			fmt.Fprintf(os.Stderr, "hue-driver: api key rejected on startup: %v\n", err)
+			cancel()
+			os.Exit(2)
+		}
+		// Non-auth errors at startup get logged but proceed — buildDriver
+		// will retry and the supervisor will quarantine if it keeps failing.
+		slog.Warn("initial bridge probe failed; proceeding to buildDriver", "error", err)
+	}
 
 	d, cache, err := buildDriver(ctx, client)
 	if err != nil {
@@ -105,6 +119,34 @@ func loadConfig() (config, error) {
 	return config{Address: addr, APIKey: key, TLSSkipVerify: skip}, nil
 }
 
+// reachabilityTracker debounces bridge_unreachable / bridge_recovered
+// DriverEvents. It emits bridge_unreachable once after 3 consecutive
+// failures, then bridge_recovered once on the first success. Subsequent
+// failures restart the count.
+type reachabilityTracker struct {
+	mu          sync.Mutex
+	consecFails int
+	announced   bool // true once bridge_unreachable has been emitted
+}
+
+func (t *reachabilityTracker) record(d *driver.Driver, err error) {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+	if err == nil {
+		if t.announced {
+			_ = d.EmitDriverEvent("bridge_recovered", "")
+			t.announced = false
+		}
+		t.consecFails = 0
+		return
+	}
+	t.consecFails++
+	if t.consecFails >= 3 && !t.announced {
+		_ = d.EmitDriverEvent("bridge_unreachable", err.Error())
+		t.announced = true
+	}
+}
+
 // stateCache is the in-memory map of last-known full state per entity ID.
 // Guarded by a single mutex; both command handlers and the SSE goroutine
 // read+write it.
@@ -114,6 +156,7 @@ type stateCache struct {
 	available  map[string]bool            // last known reachability per gohome entity ID
 	hueToID    map[string]string          // Hue light resource UUID → gohome entity ID
 	deviceToID map[string]string          // Hue device UUID → gohome entity ID (for connectivity events)
+	reach      reachabilityTracker
 }
 
 func newStateCache() *stateCache {
@@ -226,8 +269,14 @@ func runEventLoop(ctx context.Context, client *bridge.Client, d *driver.Driver, 
 	backoff := time.Second
 	for {
 		start := time.Now()
-		if err := streamOnce(ctx, client, d, cache); err != nil {
+		err := streamOnce(ctx, client, d, cache)
+		if err != nil {
 			slog.Warn("sse stream error", "error", err)
+			if errors.Is(err, bridge.ErrAuthRevoked) {
+				slog.Error("api key rejected — re-pair via button press")
+				_ = d.EmitDriverEvent("auth_failed", "")
+				os.Exit(2)
+			}
 		}
 		if ctx.Err() != nil {
 			return
@@ -239,6 +288,7 @@ func runEventLoop(ctx context.Context, client *bridge.Client, d *driver.Driver, 
 		if time.Since(start) > 5*time.Second {
 			backoff = time.Second
 		}
+		downtime := time.Since(start)
 		select {
 		case <-ctx.Done():
 			return
@@ -248,9 +298,13 @@ func runEventLoop(ctx context.Context, client *bridge.Client, d *driver.Driver, 
 		if backoff > 30*time.Second {
 			backoff = 30 * time.Second
 		}
+		_ = d.EmitDriverEvent("sse_reconnected", fmt.Sprintf("%dms", downtime.Milliseconds()))
 		// Resync state before reopening the stream.
 		if err := resync(ctx, client, d, cache); err != nil {
 			slog.Warn("resync failed", "error", err)
+			cache.reach.record(d, err)
+		} else {
+			cache.reach.record(d, nil)
 		}
 	}
 }
@@ -261,26 +315,67 @@ func streamOnce(ctx context.Context, client *bridge.Client, d *driver.Driver, ca
 		return err
 	}
 	for ev := range ch {
-		cache.mu.Lock()
-		entityID, ok := cache.hueToID[ev.ID]
-		if !ok {
-			cache.mu.Unlock()
-			continue // unknown bulb (paired after startup) — out of scope for v0.1
-		}
-		prev := cache.byEntID[entityID]
-		if prev == nil {
-			prev = &entityv1.Light{}
-		}
-		available := cache.available[entityID]
-		merged := state.MergeEvent(prev, ev, available)
-		cache.byEntID[entityID] = merged.GetLight()
-		cache.mu.Unlock()
-
-		if err := d.EmitState(entityID, merged); err != nil && !errors.Is(err, driver.ErrNotConnected) {
-			slog.Warn("emit state failed", "entity_id", entityID, "error", err)
+		switch ev.Type {
+		case "light":
+			applyLightEvent(d, cache, ev)
+		case "zigbee_connectivity":
+			applyConnectivityEvent(d, cache, ev)
 		}
 	}
 	return nil
+}
+
+// applyLightEvent merges a partial light state event into the cache and
+// emits a StateChanged through the driver.
+func applyLightEvent(d *driver.Driver, cache *stateCache, ev bridge.Event) {
+	cache.mu.Lock()
+	entityID, ok := cache.hueToID[ev.ID]
+	if !ok {
+		cache.mu.Unlock()
+		return // unknown bulb (paired after startup, before next periodic resync)
+	}
+	prev := cache.byEntID[entityID]
+	if prev == nil {
+		prev = &entityv1.Light{}
+	}
+	available := cache.available[entityID]
+	merged := state.MergeEvent(prev, ev, available)
+	cache.byEntID[entityID] = merged.GetLight()
+	cache.mu.Unlock()
+
+	if err := d.EmitState(entityID, merged); err != nil && !errors.Is(err, driver.ErrNotConnected) {
+		slog.Warn("emit state failed", "entity_id", entityID, "error", err)
+	}
+}
+
+// applyConnectivityEvent updates per-entity availability when a
+// zigbee_connectivity event arrives. Owner.RID identifies the device,
+// which we map to an entityID via cache.deviceToID.
+func applyConnectivityEvent(d *driver.Driver, cache *stateCache, ev bridge.Event) {
+	if ev.Owner == nil {
+		return
+	}
+	cache.mu.Lock()
+	entityID, ok := cache.deviceToID[ev.Owner.RID]
+	if !ok {
+		cache.mu.Unlock()
+		return
+	}
+	available := ev.Status == "connected"
+	cache.available[entityID] = available
+	prev := cache.byEntID[entityID]
+	if prev == nil {
+		prev = &entityv1.Light{}
+	}
+	// MergeEvent with an empty Event preserves prev's light fields and
+	// applies the new availability.
+	attrs := state.MergeEvent(prev, bridge.Event{}, available)
+	cache.byEntID[entityID] = attrs.GetLight()
+	cache.mu.Unlock()
+
+	if err := d.EmitState(entityID, attrs); err != nil && !errors.Is(err, driver.ErrNotConnected) {
+		slog.Warn("emit availability failed", "entity_id", entityID, "error", err)
+	}
 }
 
 // resync reconciles the driver's view of the bridge with the bridge's
@@ -314,6 +409,7 @@ func resync(ctx context.Context, client *bridge.Client, d *driver.Driver, cache 
 				continue
 			}
 			slog.Info("registered hot-added bulb", "entity_id", state.EntityID(l), "hue_id", l.ID)
+			_ = d.EmitDriverEvent("bulb_added", state.EntityID(l))
 			continue
 		}
 
@@ -364,6 +460,7 @@ func resync(ctx context.Context, client *bridge.Client, d *driver.Driver, cache 
 			slog.Warn("unregister failed", "entity_id", r.entityID, "error", err)
 		}
 		slog.Info("unregistered removed bulb", "entity_id", r.entityID, "hue_id", r.hueID)
+		_ = d.EmitDriverEvent("bulb_removed", r.entityID)
 	}
 
 	return nil
@@ -383,7 +480,19 @@ func periodicResync(ctx context.Context, client *bridge.Client, d *driver.Driver
 		case <-t.C:
 			if err := resync(ctx, client, d, cache); err != nil {
 				slog.Warn("periodic resync failed", "error", err)
+				cache.reach.record(d, err)
+			} else {
+				cache.reach.record(d, nil)
 			}
 		}
 	}
+}
+
+// isAuthError reports whether err looks like a 401 from the bridge — either
+// the 3-strike sentinel or a single 401 wrapped in a fmt.Errorf.
+func isAuthError(err error) bool {
+	if errors.Is(err, bridge.ErrAuthRevoked) {
+		return true
+	}
+	return strings.Contains(err.Error(), "status 401")
 }

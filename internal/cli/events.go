@@ -98,14 +98,24 @@ func newEventsTailCmd(gf *globalFlags) *cobra.Command {
 			}
 			defer func() { _ = stream.Close() }()
 			format := parseFormat(gf.Format, isTerminal(os.Stdout))
+			headerPrinted := false
 			for stream.Receive() {
 				msg := stream.Msg()
-				if ev := msg.GetEvent(); ev != nil {
+				ev := msg.GetEvent()
+				if ev == nil {
+					continue // heartbeats
+				}
+				if format == outFormatJSON {
 					if err := renderProtoEvents(os.Stdout, []*v1.Event{ev}, format); err != nil {
 						return err
 					}
+					continue
 				}
-				// heartbeats: ignore
+				if !headerPrinted {
+					fmt.Fprintln(os.Stdout, Header.Render(fmt.Sprintf("%-12s  %-22s  %-30s  %-20s  %s", "TIME", "KIND", "ENTITY", "SOURCE", "CORR")))
+					headerPrinted = true
+				}
+				renderProtoEventLine(os.Stdout, ev)
 			}
 			if err := stream.Err(); err != nil {
 				return renderConnectErr(err)
@@ -233,6 +243,36 @@ func renderProtoEventsTable(w io.Writer, events []*v1.Event) error {
 	}
 	_, err := fmt.Fprintln(w, t)
 	return err
+}
+
+// renderProtoEventLine writes a single event as a fixed-width line. Used by
+// the streaming `events tail` so consecutive events share alignment instead
+// of each rendering as a one-row table.
+func renderProtoEventLine(w io.Writer, e *v1.Event) {
+	ts := ""
+	if e.GetAt() != nil {
+		ts = e.GetAt().AsTime().Format("15:04:05.000")
+	}
+	corr := e.GetCorrelationId()
+	if len(corr) > 8 {
+		corr = corr[:8]
+	}
+	// Pad raw values to width, then apply styling (so ANSI escapes don't
+	// throw off column alignment).
+	fmt.Fprintf(w, "%-12s  %s  %s  %s  %s\n",
+		ts,
+		Kind.Render(padOrTrunc(e.GetKind(), 22)),
+		EntityID.Render(padOrTrunc(e.GetEntity(), 30)),
+		Dim.Render(padOrTrunc(e.GetSource(), 20)),
+		Correlation.Render(corr),
+	)
+}
+
+func padOrTrunc(s string, width int) string {
+	if len(s) > width {
+		return s[:width]
+	}
+	return s + strings.Repeat(" ", width-len(s))
 }
 
 // protoEventToMap converts a proto Event to a JSON-serialisable map.

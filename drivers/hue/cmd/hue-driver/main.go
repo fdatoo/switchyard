@@ -221,6 +221,9 @@ func registerBulb(d *driver.Driver, cache *stateCache, client *bridge.Client, l 
 	cache.byEntID[entityID] = attrs.GetLight()
 	cache.available[entityID] = available
 	cache.hueToID[l.ID] = entityID
+	if l.Color != nil {
+		cache.gamuts[entityID] = l.Color.Gamut
+	}
 	if l.Owner.RID != "" {
 		cache.deviceToID[l.Owner.RID] = entityID
 	}
@@ -423,6 +426,9 @@ func resync(ctx context.Context, client *bridge.Client, d *driver.Driver, cache 
 		cache.mu.Lock()
 		cache.byEntID[entityID] = attrs.GetLight()
 		cache.available[entityID] = available
+		if l.Color != nil {
+			cache.gamuts[entityID] = l.Color.Gamut
+		}
 		cache.mu.Unlock()
 		if err := d.EmitState(entityID, attrs); err != nil && !errors.Is(err, driver.ErrNotConnected) {
 			slog.Warn("emit resync state failed", "entity_id", entityID, "error", err)
@@ -454,6 +460,7 @@ func resync(ctx context.Context, client *bridge.Client, d *driver.Driver, cache 
 		delete(cache.hueToID, r.hueID)
 		delete(cache.byEntID, r.entityID)
 		delete(cache.available, r.entityID)
+		delete(cache.gamuts, r.entityID)
 		if r.deviceID != "" {
 			delete(cache.deviceToID, r.deviceID)
 		}

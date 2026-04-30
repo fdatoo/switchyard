@@ -1,0 +1,61 @@
+// See docs/proto-hygiene.md for grouping conventions.
+
+syntax = "proto3";
+
+package gohome.v1alpha1;
+
+import "gohome/v1alpha1/common.proto";
+import "google/protobuf/timestamp.proto";
+
+service AutomationService {
+  rpc List    (ListAutomationsRequest)    returns (ListAutomationsResponse);
+  rpc Get     (GetAutomationRequest)      returns (GetAutomationResponse);
+  rpc Enable  (EnableAutomationRequest)   returns (EnableAutomationResponse);
+  rpc Disable (DisableAutomationRequest)  returns (DisableAutomationResponse);
+  rpc Trigger (TriggerAutomationRequest)  returns (TriggerAutomationResponse);
+  rpc Trace   (TraceAutomationRequest)    returns (stream TraceAutomationResponse);
+}
+
+message Automation {
+  string id           = 1;
+  string display_name = 2;
+  string mode         = 3;
+  bool   enabled      = 4;
+  uint32 in_flight    = 5;
+}
+
+message ListAutomationsRequest  { PageRequest page = 1; }
+message ListAutomationsResponse { repeated Automation automations = 1; PageResponse page = 2; }
+
+message GetAutomationRequest  { string id = 1; }
+message GetAutomationResponse { Automation automation = 1; }
+
+message EnableAutomationRequest  { string id = 1; }
+message EnableAutomationResponse { Automation automation = 1; }
+
+message DisableAutomationRequest  { string id = 1; }
+message DisableAutomationResponse { Automation automation = 1; }
+
+message TriggerAutomationRequest  { string id = 1; }
+message TriggerAutomationResponse { string run_id = 1; }
+
+message TraceAutomationRequest {
+  string id          = 1;
+  string run_id      = 2;
+  uint64 from_cursor = 3;
+}
+message TraceEvent {
+  uint64                    cursor        = 1;
+  google.protobuf.Timestamp at            = 2;
+  string                    automation_id = 3;
+  string                    run_id        = 4;
+  string                    kind          = 5;
+  string                    detail        = 6;
+  map<string, string>       metadata      = 7;
+}
+message TraceAutomationResponse {
+  oneof kind {
+    TraceEvent event     = 1;
+    Heartbeat  heartbeat = 2;
+  }
+}

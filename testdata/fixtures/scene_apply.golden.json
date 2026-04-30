@@ -1,0 +1,121 @@
+{
+  "registry": {
+    "devices": [
+      {
+        "disabled": false,
+        "driver": "d1",
+        "id": "dev-1"
+      },
+      {
+        "disabled": false,
+        "driver": "d1",
+        "id": "dev-2"
+      },
+      {
+        "disabled": false,
+        "driver": "d1",
+        "id": "dev-3"
+      },
+      {
+        "disabled": false,
+        "driver": "d1",
+        "id": "dev-4"
+      },
+      {
+        "disabled": false,
+        "driver": "d1",
+        "id": "dev-5"
+      }
+    ],
+    "driver_instances": [
+      {
+        "id": "d1",
+        "status": "running"
+      }
+    ],
+    "entities": [
+      {
+        "disabled": false,
+        "driver": "d1",
+        "id": "light.1",
+        "type": "light"
+      },
+      {
+        "disabled": false,
+        "driver": "d1",
+        "id": "light.2",
+        "type": "light"
+      },
+      {
+        "disabled": false,
+        "driver": "d1",
+        "id": "light.3",
+        "type": "light"
+      },
+      {
+        "disabled": false,
+        "driver": "d1",
+        "id": "light.4",
+        "type": "light"
+      },
+      {
+        "disabled": false,
+        "driver": "d1",
+        "id": "light.5",
+        "type": "light"
+      }
+    ]
+  },
+  "state_cache": {
+    "light.1": {
+      "attributes": {
+        "light": {
+          "brightness": 220,
+          "colorTemp": 180,
+          "on": true
+        }
+      },
+      "updated_by": "driver:d1"
+    },
+    "light.2": {
+      "attributes": {
+        "light": {
+          "brightness": 200,
+          "colorTemp": 220,
+          "on": true
+        }
+      },
+      "updated_by": "driver:d1"
+    },
+    "light.3": {
+      "attributes": {
+        "light": {
+          "brightness": 140,
+          "colorTemp": 300,
+          "on": true
+        }
+      },
+      "updated_by": "driver:d1"
+    },
+    "light.4": {
+      "attributes": {
+        "light": {
+          "brightness": 100,
+          "colorTemp": 350,
+          "on": true
+        }
+      },
+      "updated_by": "driver:d1"
+    },
+    "light.5": {
+      "attributes": {
+        "light": {
+          "brightness": 60,
+          "colorTemp": 400,
+          "on": true
+        }
+      },
+      "updated_by": "driver:d1"
+    }
+  }
+}

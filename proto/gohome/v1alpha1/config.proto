@@ -1,0 +1,66 @@
+// See docs/proto-hygiene.md for grouping conventions.
+
+syntax = "proto3";
+
+package gohome.v1alpha1;
+
+import "gohome/config/v1/snapshot.proto";
+import "google/protobuf/struct.proto";
+
+service ConfigService {
+  rpc Validate   (ValidateConfigRequest)    returns (ValidateConfigResponse);
+  rpc Apply      (ApplyConfigRequest)       returns (ApplyConfigResponse);
+  rpc Reload     (ReloadConfigRequest)      returns (ReloadConfigResponse);
+  rpc GetArtifact(GetConfigArtifactRequest) returns (GetConfigArtifactResponse);
+  rpc EvalCompute(EvalComputeRequest) returns (EvalComputeResponse);
+}
+
+message ValidateConfigRequest  { bytes pkl_bundle = 1; }
+message ValidateConfigResponse {
+  bool            valid       = 1;
+  repeated string errors      = 2;
+  ConfigDiff      diff        = 3;
+  string          bundle_hash = 4;
+}
+
+message ApplyConfigRequest {
+  bytes  pkl_bundle           = 1;
+  string message              = 2;
+  bool   dry_run              = 10;
+  bool   strict               = 11;
+  string expected_bundle_hash = 12;
+}
+message ApplyConfigResponse {
+  bool       applied        = 1;
+  ConfigDiff diff           = 2;
+  string     correlation_id = 3;
+  string     bundle_hash    = 4;
+}
+
+message ReloadConfigRequest  {}
+message ReloadConfigResponse { ConfigDiff diff = 1; string correlation_id = 2; }
+
+message GetConfigArtifactRequest  {}
+message GetConfigArtifactResponse { gohome.config.v1.ConfigSnapshot snapshot = 1; }
+
+message EvalComputeRequest {
+  string                 dashboard_slug = 1;
+  string                 widget_id      = 2;
+  string                 expr_id        = 3;
+  google.protobuf.Struct state_snapshot = 4;
+}
+
+message EvalComputeResponse {
+  google.protobuf.Value result = 1;
+  string                error  = 2;
+}
+
+message ConfigDiff {
+  int32           driver_instances_added   = 1;
+  int32           driver_instances_removed = 2;
+  int32           driver_instances_changed = 3;
+  int32           entities_added           = 4;
+  int32           entities_removed         = 5;
+  int32           automations_changed      = 6;
+  repeated string lines                    = 10;
+}

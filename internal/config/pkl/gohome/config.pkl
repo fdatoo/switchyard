@@ -1,0 +1,58 @@
+module gohome.config
+
+import "gohome:entities" as ent
+import "gohome:carport" as cp
+import "gohome:automations" as auto
+import "gohome:scripts" as scr
+import "gohome:dashboards" as dash
+import "gohome:auth" as authmod
+import "gohome:policy" as policymod
+import "gohome:mcp" as mcpmod
+
+driverInstances: Listing<cp.DriverInstance> = new {}
+entities: Listing<ent.Entity> = new {}
+automations: Listing<auto.Automation> = new {}
+scripts: Listing<scr.Script> = new {}
+dashboards: Listing<dash.Dashboard> = new {}
+users: Listing<authmod.User> = new {}
+roles: Listing<authmod.Role> = new {}
+policies: Listing<policymod.Policy> = new {}
+auth_settings: authmod.AuthSettings? = null
+mcp: mcpmod.MCPConfig = new mcpmod.MCPConfig {}
+
+class Listener {
+  uds:                     UDSListener   = new UDSListener {}
+  tcp:                     TCPListener   = new TCPListener {}
+  webhooks:                WebhookConfig = new WebhookConfig {}
+  streamHeartbeatInterval: Duration      = 30.s
+}
+
+class UDSListener {
+  path: String = "@data/gohomed.sock"
+  mode: UInt   = 0o600
+}
+
+class TCPListener {
+  bind: String     = "127.0.0.1:8080"
+  tls:  TLSConfig? = null
+}
+
+class TLSConfig {
+  certFile: String
+  keyFile:  String
+}
+
+class WebhookConfig {
+  maxBodyBytes:   UInt         = 1048576
+  trustedProxies: List<String> = List()
+}
+
+listener: Listener = new Listener {}
+
+output {
+  renderer = new JsonRenderer {
+    converters {
+      [Duration] = (it) -> "\(it.value).\(it.unit)"
+    }
+  }
+}

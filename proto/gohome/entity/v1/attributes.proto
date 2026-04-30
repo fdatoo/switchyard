@@ -1,0 +1,33 @@
+// See docs/proto-hygiene.md for grouping conventions.
+
+syntax = "proto3";
+
+package gohome.entity.v1;
+
+// Attributes carries both capabilities (static) and live state (dynamic)
+// for an entity. Specific payloads land in later milestones — C1 only
+// needs the envelope compiling. Future oneof variants get added here.
+message Attributes {
+  oneof kind {
+    // 10-19: actuator/sensor domains
+    Light  light         = 10;
+    Switch switch_device = 11;
+    Sensor sensor        = 12;
+  }
+}
+
+message Light {
+  bool   on         = 1;
+  uint32 brightness = 2;   // 0-255
+  uint32 color_temp = 3;   // mireds; 0 if unsupported
+  // RGB/XY/capabilities flesh out later; C1 only needs the message existing.
+}
+
+message Switch {
+  bool on = 1;
+}
+
+message Sensor {
+  string unit  = 1;
+  double value = 2;
+}

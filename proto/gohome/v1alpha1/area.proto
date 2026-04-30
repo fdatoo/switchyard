@@ -1,0 +1,27 @@
+// See docs/proto-hygiene.md for grouping conventions.
+
+syntax = "proto3";
+
+package gohome.v1alpha1;
+
+import "gohome/v1alpha1/common.proto";
+
+service AreaService {
+  rpc List(ListAreasRequest) returns (ListAreasResponse);
+  rpc Get (GetAreaRequest)   returns (GetAreaResponse);
+}
+
+message Area {
+  string id           = 1;
+  string display_name = 2;
+  string parent_id    = 3;
+}
+
+message ListAreasRequest  { PageRequest page = 1; }
+message ListAreasResponse {
+  repeated Area areas = 1;
+  PageResponse  page  = 2;
+}
+
+message GetAreaRequest  { string id = 1; }
+message GetAreaResponse { Area area = 1; }

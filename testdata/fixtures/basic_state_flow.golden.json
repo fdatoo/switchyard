@@ -1,0 +1,33 @@
+{
+  "registry": {
+    "devices": [
+      {
+        "disabled": false,
+        "driver": "hue-1",
+        "id": "dev-1"
+      }
+    ],
+    "driver_instances": [
+      {
+        "id": "hue-1",
+        "status": "running"
+      }
+    ],
+    "entities": [
+      {
+        "disabled": false,
+        "driver": "hue-1",
+        "id": "light.lr",
+        "type": "light"
+      }
+    ]
+  },
+  "state_cache": {
+    "light.lr": {
+      "attributes": {
+        "light": {}
+      },
+      "updated_by": "driver:hue-1"
+    }
+  }
+}

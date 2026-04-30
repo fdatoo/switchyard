@@ -1,0 +1,25 @@
+module gohome.entities
+
+abstract class Entity {
+  id: String(matches(Regex("[a-z_]+\\.[a-z_]+")))
+  friendlyName: String
+  area: String?
+}
+
+class Light extends Entity {
+  supportsBrightness: Boolean = false
+  supportsColorTemp: Boolean  = false
+}
+
+class Thermostat extends Entity {
+  minTemp: Float = 10.0
+  maxTemp: Float = 35.0
+}
+
+class Switch extends Entity {}
+
+class Sensor extends Entity {
+  unit: String?
+}
+
+class BinarySensor extends Entity {}

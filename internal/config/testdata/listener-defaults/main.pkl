@@ -1,0 +1,3 @@
+amends "gohome:config"
+
+// Use defaults for everything — listener block is inherited from the module.

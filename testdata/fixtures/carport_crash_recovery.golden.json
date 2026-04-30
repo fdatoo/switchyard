@@ -1,0 +1,29 @@
+{
+  "registry": {
+    "devices": [],
+    "driver_instances": [
+      {
+        "id": "hue_main",
+        "status": "running"
+      }
+    ],
+    "entities": [
+      {
+        "disabled": false,
+        "driver": "hue_main",
+        "id": "light.kitchen",
+        "type": "light"
+      }
+    ]
+  },
+  "state_cache": {
+    "light.kitchen": {
+      "attributes": {
+        "light": {
+          "on": true
+        }
+      },
+      "updated_by": "driver:hue_main"
+    }
+  }
+}

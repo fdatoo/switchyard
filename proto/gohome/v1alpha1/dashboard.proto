@@ -1,0 +1,84 @@
+// See docs/proto-hygiene.md for grouping conventions.
+
+syntax = "proto3";
+
+package gohome.v1alpha1;
+
+import "gohome/v1alpha1/common.proto";
+import "google/protobuf/struct.proto";
+
+service DashboardService {
+  rpc List              (ListDashboardsRequest)         returns (ListDashboardsResponse);
+  rpc Get               (GetDashboardRequest)           returns (GetDashboardResponse);
+  rpc GetWidgetCatalog  (GetWidgetCatalogRequest)       returns (GetWidgetCatalogResponse);
+  rpc Create            (CreateDashboardRequest)        returns (CreateDashboardResponse);
+  rpc Delete            (DeleteDashboardRequest)        returns (DeleteDashboardResponse);
+  rpc SaveLayout        (SaveDashboardLayoutRequest)    returns (SaveDashboardLayoutResponse);
+}
+
+message Dashboard {
+  string                slug              = 1;
+  string                title             = 2;
+  Grid                  grid              = 3;
+  repeated WidgetInstance widgets          = 4;
+  string                source_pkl        = 5;
+  string                layout_pkl        = 6;
+  bool                  wysiwyg_writable  = 7;
+}
+
+message Position { int32 x = 1; int32 y = 2; int32 w = 3; int32 h = 4; }
+message Grid     { int32 columns = 1; int32 row_height = 2; }
+
+message WidgetInstance {
+  string                 id            = 1;
+  string                 class_id      = 2;
+  Position               pos           = 3;
+  google.protobuf.Struct props         = 4;
+  bool                   is_container  = 5;
+  Grid                   child_grid    = 6;
+  repeated WidgetInstance children      = 7;
+}
+
+enum SignatureStatus {
+  SIGNATURE_UNKNOWN  = 0;
+  SIGNATURE_VERIFIED = 1;
+  SIGNATURE_UNSIGNED = 2;
+  SIGNATURE_INVALID  = 3;
+  SIGNATURE_EXPIRED  = 4;
+}
+
+message PropSchema {
+  google.protobuf.Struct schema = 1;
+}
+
+message WidgetClass {
+  string          class_id      = 1;
+  bool            is_container  = 2;
+  bool            is_builtin    = 3;
+  string          pack_name     = 4;
+  string          pack_version  = 5;
+  string          bundle_url    = 6;
+  string          bundle_hash   = 7;
+  PropSchema      prop_schema   = 8;
+  SignatureStatus signature     = 9;
+}
+
+message WidgetCatalog { repeated WidgetClass classes = 1; }
+
+message ListDashboardsRequest      { PageRequest page = 1; }
+message ListDashboardsResponse     { repeated Dashboard dashboards = 1; PageResponse page = 2; }
+
+message GetDashboardRequest        { string slug = 1; }
+message GetDashboardResponse       { Dashboard dashboard = 1; }
+
+message GetWidgetCatalogRequest    {}
+message GetWidgetCatalogResponse   { WidgetCatalog catalog = 1; }
+
+message CreateDashboardRequest     { string slug = 1; string title = 2; }
+message CreateDashboardResponse    { Dashboard dashboard = 1; }
+
+message DeleteDashboardRequest     { string slug = 1; bool delete_source_too = 2; }
+message DeleteDashboardResponse    {}
+
+message SaveDashboardLayoutRequest { Dashboard dashboard = 1; }
+message SaveDashboardLayoutResponse{ Dashboard dashboard = 1; string correlation_id = 2; }

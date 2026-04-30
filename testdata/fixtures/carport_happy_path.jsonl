@@ -1,0 +1,7 @@
+{"kind":"driver_event","source":"carport:host","payload":{"driverEvent":{"driverInstanceId":"hue_main","kind":"started","detail":"0.0.0"}}}
+{"kind":"entity_registered","entity":"light.kitchen","source":"driver:hue_main","payload":{"entityRegistered":{"driverInstanceId":"hue_main","entityType":"light","friendlyName":"Kitchen","capabilities":{"light":{"on":false}}}}}
+{"kind":"state_changed","entity":"light.kitchen","source":"driver:hue_main","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":128}}}}}
+{"kind":"command_issued","entity":"light.kitchen","source":"carport:host","payload":{"commandIssued":{"command":"turn_on","parameters":{"brightness":"128"}}}}
+{"kind":"command_ack","entity":"light.kitchen","source":"carport:host","payload":{"commandAck":{"success":true}}}
+{"kind":"driver_event","source":"carport:host","payload":{"driverEvent":{"driverInstanceId":"hue_main","kind":"stopping","detail":"running"}}}
+{"kind":"driver_event","source":"carport:host","payload":{"driverEvent":{"driverInstanceId":"hue_main","kind":"stopped","detail":"daemon shutdown"}}}

@@ -1,0 +1,5 @@
+{"kind":"driver_event","source":"gohomed","entity":"","payload":{"driverEvent":{"driverInstanceId":"hue-1","kind":"started","detail":""}}}
+{"kind":"entity_registered","entity":"light.lr","source":"driver:hue-1","payload":{"entityRegistered":{"driverInstanceId":"hue-1","deviceId":"dev-1","entityType":"light","friendlyName":"Living Room","capabilities":{"light":{"on":false,"brightness":0,"colorTemp":0}}}}}
+{"kind":"state_changed","entity":"light.lr","source":"driver:hue-1","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":200,"colorTemp":250}}}}}
+{"kind":"state_changed","entity":"light.lr","source":"driver:hue-1","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":100,"colorTemp":250}}}}}
+{"kind":"state_changed","entity":"light.lr","source":"driver:hue-1","payload":{"stateChanged":{"attributes":{"light":{"on":false,"brightness":0,"colorTemp":0}}}}}

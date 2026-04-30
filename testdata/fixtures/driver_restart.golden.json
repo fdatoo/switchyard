@@ -1,0 +1,33 @@
+{
+  "registry": {
+    "devices": [
+      {
+        "disabled": false,
+        "driver": "d1",
+        "id": "dev-x"
+      }
+    ],
+    "driver_instances": [
+      {
+        "id": "d1",
+        "status": "running"
+      }
+    ],
+    "entities": [
+      {
+        "disabled": false,
+        "driver": "d1",
+        "id": "switch.x",
+        "type": "switch"
+      }
+    ]
+  },
+  "state_cache": {
+    "switch.x": {
+      "attributes": {
+        "switchDevice": {}
+      },
+      "updated_by": "driver:d1"
+    }
+  }
+}

@@ -1,0 +1,51 @@
+module gohome.auth
+
+class User {
+  slug:         String(matches(Regex(#"^[a-z][a-z0-9_-]{1,31}$"#)))
+  display_name: String(length > 0)
+  roles:        List<Role>
+  active:       Boolean = true
+
+  password_allowed: Boolean = true
+  passkey_allowed:  Boolean = true
+  oidc_subject:     String? = null         // RESERVED for v1.x OIDC; ignored in v1.0
+
+  bootstrap_password_hash: String? = null
+}
+
+class Role {
+  slug:         String(matches(Regex(#"^[a-z][a-z0-9_-]{1,31}$"#)))
+  display_name: String(length > 0)
+  inherits:     List<Role> = List()
+}
+
+class AuthSettings {
+  password_login_enabled: Boolean = true
+  passkey_login_enabled:  Boolean = true
+
+  rp_id:                       String
+  rp_display_name:             String = "gohome"
+  rp_origins:                  List<String>
+  webauthn_user_verification:  "required" | "preferred" | "discouraged" = "preferred"
+
+  argon2id_time:        UInt = 3
+  argon2id_memory_kib:  UInt = 65536       // 64 MiB
+  argon2id_parallelism: UInt = 4
+
+  access_cookie_ttl:  Duration = 15.min
+  refresh_cookie_ttl: Duration = 30.d
+  refresh_idle_ttl:   Duration = 14.d
+
+  failed_attempts_window:    Duration = 10.min
+  failed_attempts_threshold: UInt     = 10
+  failed_attempts_block:     Duration = 15.min
+
+  token_default_ttl:    Duration = 90.d
+  token_max_ttl:        Duration = 365.d
+  token_label_required: Boolean  = true
+
+  access_cookie_name:  String = "gohome_access"
+  refresh_cookie_name: String = "gohome_refresh"
+
+  reveal_denied_in_explain: Boolean = true
+}

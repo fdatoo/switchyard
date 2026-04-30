@@ -1,0 +1,24 @@
+{"kind":"driver_event","source":"gohomed","entity":"","payload":{"driverEvent":{"driverInstanceId":"d1","kind":"started","detail":""}}}
+{"kind":"entity_registered","entity":"light.a","source":"driver:d1","payload":{"entityRegistered":{"driverInstanceId":"d1","deviceId":"dev-a","entityType":"light","friendlyName":"Light A","capabilities":{"light":{"on":false,"brightness":0,"colorTemp":0}}}}}
+{"kind":"entity_registered","entity":"light.b","source":"driver:d1","payload":{"entityRegistered":{"driverInstanceId":"d1","deviceId":"dev-b","entityType":"light","friendlyName":"Light B","capabilities":{"light":{"on":false,"brightness":0,"colorTemp":0}}}}}
+{"kind":"entity_registered","entity":"light.c","source":"driver:d1","payload":{"entityRegistered":{"driverInstanceId":"d1","deviceId":"dev-c","entityType":"light","friendlyName":"Light C","capabilities":{"light":{"on":false,"brightness":0,"colorTemp":0}}}}}
+{"kind":"state_changed","entity":"light.a","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":100,"colorTemp":200}}}}}
+{"kind":"state_changed","entity":"light.b","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":150,"colorTemp":250}}}}}
+{"kind":"state_changed","entity":"light.c","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":200,"colorTemp":300}}}}}
+{"kind":"state_changed","entity":"light.a","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":false,"brightness":0,"colorTemp":0}}}}}
+{"kind":"state_changed","entity":"light.b","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":false,"brightness":0,"colorTemp":0}}}}}
+{"kind":"state_changed","entity":"light.c","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":false,"brightness":0,"colorTemp":0}}}}}
+{"kind":"state_changed","entity":"light.a","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":50,"colorTemp":150}}}}}
+{"kind":"state_changed","entity":"light.b","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":80,"colorTemp":200}}}}}
+{"kind":"state_changed","entity":"light.c","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":120,"colorTemp":250}}}}}
+{"kind":"state_changed","entity":"light.a","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":200,"colorTemp":300}}}}}
+{"kind":"state_changed","entity":"light.b","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":220,"colorTemp":350}}}}}
+{"kind":"state_changed","entity":"light.c","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":240,"colorTemp":400}}}}}
+{"kind":"state_changed","entity":"light.a","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":false,"brightness":0,"colorTemp":0}}}}}
+{"kind":"state_changed","entity":"light.b","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":false,"brightness":0,"colorTemp":0}}}}}
+{"kind":"state_changed","entity":"light.c","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":false,"brightness":0,"colorTemp":0}}}}}
+{"kind":"state_changed","entity":"light.a","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":255,"colorTemp":200}}}}}
+{"kind":"state_changed","entity":"light.b","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":180,"colorTemp":280}}}}}
+{"kind":"state_changed","entity":"light.c","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":160,"colorTemp":320}}}}}
+{"kind":"state_changed","entity":"light.a","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":90,"colorTemp":230}}}}}
+{"kind":"state_changed","entity":"light.b","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":70,"colorTemp":260}}}}}

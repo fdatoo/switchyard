@@ -1,0 +1,10 @@
+amends "gohome:config"
+
+import "gohome:entities" as ent
+
+entities {
+  new ent.Light {
+    id = "invalid_no_dot"     // entity ID has no dot — should fail Compile
+    friendlyName = "Bad Entity"
+  }
+}

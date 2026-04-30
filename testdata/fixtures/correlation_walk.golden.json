@@ -1,0 +1,59 @@
+{
+  "registry": {
+    "devices": [],
+    "driver_instances": [],
+    "entities": []
+  },
+  "state_cache": {
+    "light.child1": {
+      "attributes": {
+        "light": {
+          "brightness": 200,
+          "colorTemp": 200,
+          "on": true
+        }
+      },
+      "updated_by": "automation"
+    },
+    "light.child2": {
+      "attributes": {
+        "light": {
+          "brightness": 150,
+          "colorTemp": 200,
+          "on": true
+        }
+      },
+      "updated_by": "automation"
+    },
+    "light.child3": {
+      "attributes": {
+        "light": {
+          "brightness": 100,
+          "colorTemp": 200,
+          "on": true
+        }
+      },
+      "updated_by": "automation"
+    },
+    "light.leaf": {
+      "attributes": {
+        "light": {
+          "brightness": 50,
+          "colorTemp": 200,
+          "on": true
+        }
+      },
+      "updated_by": "automation"
+    },
+    "light.root": {
+      "attributes": {
+        "light": {
+          "brightness": 255,
+          "colorTemp": 200,
+          "on": true
+        }
+      },
+      "updated_by": "automation"
+    }
+  }
+}

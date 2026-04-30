@@ -1,0 +1,72 @@
+// See docs/proto-hygiene.md for grouping conventions.
+
+syntax = "proto3";
+
+package gohome.v1alpha1;
+
+import "gohome/v1alpha1/common.proto";
+import "gohome/entity/v1/attributes.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+
+service EntityService {
+  rpc List          (ListEntitiesRequest)      returns (ListEntitiesResponse);
+  rpc Get           (GetEntityRequest)         returns (GetEntityResponse);
+  rpc CallCapability(CallCapabilityRequest)    returns (CallCapabilityResponse);
+  rpc Subscribe     (SubscribeEntitiesRequest) returns (stream SubscribeEntitiesResponse);
+}
+
+message Entity {
+  // 1-9: identity
+  string id            = 1;
+  string type          = 2;
+  string device_id     = 3;
+  string area_id       = 4;
+  string zone_id       = 5;
+  string friendly_name = 6;
+
+  // 10-19: payload
+  gohome.entity.v1.Attributes state        = 10;
+  gohome.entity.v1.Attributes capabilities = 11;
+}
+
+message ListEntitiesRequest {
+  PageRequest    page     = 1;
+  EntitySelector selector = 2;
+}
+message ListEntitiesResponse {
+  repeated Entity entities = 1;
+  PageResponse    page     = 2;
+}
+
+message GetEntityRequest  { string id = 1; }
+message GetEntityResponse { Entity entity = 1; }
+
+message CallCapabilityRequest {
+  string                 entity_id  = 1;
+  string                 capability = 2;
+  google.protobuf.Struct parameters = 3;
+}
+message CallCapabilityResponse {
+  string correlation_id = 1;  // command id
+}
+
+message SubscribeEntitiesRequest {
+  EntitySelector selector    = 1;
+  uint64         from_cursor = 2;  // 0 = live from now
+  PolicyMode     policy_mode = 50;  // 50-59: subscription-only fields
+}
+message SubscribeEntitiesResponse {
+  oneof kind {
+    EntityChange change    = 1;
+    Heartbeat    heartbeat = 2;
+  }
+}
+
+message EntityChange {
+  string                    entity_id = 1;
+  uint64                    cursor    = 2;
+  google.protobuf.Timestamp at        = 3;
+  // Either state changed or registry mutated; both convey current state.
+  Entity                    entity    = 10;
+}

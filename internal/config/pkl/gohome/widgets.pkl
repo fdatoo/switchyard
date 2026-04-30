@@ -1,0 +1,21 @@
+module gohome.widgets
+
+const gauge:        String = "Gauge"
+const lineChart:    String = "LineChart"
+const entityToggle: String = "EntityToggle"
+const markdown:     String = "Markdown"
+const scriptButton: String = "ScriptButton"
+const cameraStream: String = "CameraStream"
+const entityList:   String = "EntityList"
+const groupCard:    String = "GroupCard"
+
+class PackManifest {
+  name:    String
+  version: String
+  classes: Listing<String>
+}
+
+class PackPolicy {
+  allowedSigners: Listing<String> = new {}
+  allowUnsigned:  Boolean = false
+}

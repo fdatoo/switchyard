@@ -1,0 +1,41 @@
+# Go build artifacts
+dist/
+bin/
+/gohomed
+/gohome
+*.exe
+*.test
+*.out
+coverage/
+
+# Runtime data
+/data/
+var/
+*.db
+*.db-shm
+*.db-wal
+/gohomed.lock
+/gohomed.sock
+
+# Web
+web/node_modules/
+web/.vite/
+web/coverage/
+web/playwright-report/
+web/test-results/
+web/*.tsbuildinfo
+web/vite.config.js
+web/vite.config.d.ts
+internal/web/dist/
+
+# Docs build output
+docs/site/
+
+# Editor
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Superpowers scratch
+.superpowers/

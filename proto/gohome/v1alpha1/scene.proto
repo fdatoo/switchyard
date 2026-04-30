@@ -1,0 +1,25 @@
+// See docs/proto-hygiene.md for grouping conventions.
+
+syntax = "proto3";
+
+package gohome.v1alpha1;
+
+import "gohome/v1alpha1/common.proto";
+
+service SceneService {
+  rpc List   (ListScenesRequest)   returns (ListScenesResponse);
+  rpc Apply  (ApplySceneRequest)   returns (ApplySceneResponse);
+  rpc Preview(PreviewSceneRequest) returns (PreviewSceneResponse);
+}
+
+message Scene {
+  string id           = 1;
+  string display_name = 2;
+}
+
+message ListScenesRequest  { PageRequest page = 1; }
+message ListScenesResponse { repeated Scene scenes = 1; PageResponse page = 2; }
+message ApplySceneRequest  { string id = 1; }
+message ApplySceneResponse { string correlation_id = 1; }
+message PreviewSceneRequest  { string id = 1; }
+message PreviewSceneResponse { repeated string lines = 1; }

@@ -1,0 +1,27 @@
+// See docs/proto-hygiene.md for grouping conventions.
+
+syntax = "proto3";
+
+package gohome.v1alpha1;
+
+import "gohome/v1alpha1/common.proto";
+
+service ZoneService {
+  rpc List(ListZonesRequest) returns (ListZonesResponse);
+  rpc Get (GetZoneRequest)   returns (GetZoneResponse);
+}
+
+message Zone {
+  string id           = 1;
+  string display_name = 2;
+  repeated string area_ids = 3;
+}
+
+message ListZonesRequest  { PageRequest page = 1; }
+message ListZonesResponse {
+  repeated Zone zones = 1;
+  PageResponse  page  = 2;
+}
+
+message GetZoneRequest  { string id = 1; }
+message GetZoneResponse { Zone zone = 1; }

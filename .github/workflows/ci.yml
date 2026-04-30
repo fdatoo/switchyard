@@ -1,0 +1,237 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '0 3 * * *'
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      gohome: ${{ steps.filter.outputs.gohome }}
+      driverkit: ${{ steps.filter.outputs.driverkit }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            gohome:
+              - 'cmd/**'
+              - 'gen/**'
+              - 'internal/**'
+              - 'proto/**'
+              - 'scripts/**'
+              - 'web/**'
+              - 'testdata/**'
+              - 'examples/**'
+              - 'go.mod'
+              - 'go.sum'
+              - 'go.work'
+              - 'go.work.sum'
+              - 'buf.yaml'
+              - 'buf.gen.yaml'
+              - 'Taskfile.yml'
+            driverkit:
+              - 'gohome-driverkit/**'
+              - 'go.work'
+              - 'go.work.sum'
+
+  # ── gohome ──────────────────────────────────────────────────────────────────
+
+  gohome-build-and-test:
+    needs: changes
+    if: github.event_name != 'pull_request' || needs.changes.outputs.gohome == 'true'
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+          cache: true
+          cache-dependency-path: go.sum
+
+      - name: Install Task
+        uses: arduino/setup-task@v2
+        with:
+          version: 3.x
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install buf
+        uses: bufbuild/buf-setup-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install protoc-gen-go-grpc
+        run: go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.6.1
+
+      - name: Install Pkl
+        run: |
+          case "${{ matrix.os }}" in
+            ubuntu-latest) asset=pkl-linux-amd64 ;;
+            macos-latest)  asset=pkl-macos-aarch64 ;;
+            *) echo "unsupported os ${{ matrix.os }}" >&2; exit 1 ;;
+          esac
+          sudo curl -fsSL -o /usr/local/bin/pkl "https://github.com/apple/pkl/releases/download/0.31.1/$asset"
+          sudo chmod +x /usr/local/bin/pkl
+          pkl --version
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: web/package-lock.json
+
+      - name: Regenerate proto (verify committed in sync)
+        run: |
+          PATH="$PATH:$(go env GOPATH)/bin" buf generate
+          git diff --exit-code gen/
+
+      - name: Tidy
+        run: go mod tidy && git diff --exit-code go.mod go.sum
+
+      - name: Build
+        run: task build
+
+      - name: Test
+        run: task test
+
+      - name: Race
+        run: task test:race
+
+      - name: Integration
+        run: task test:integration
+
+  gohome-lint:
+    needs: changes
+    if: github.event_name != 'pull_request' || needs.changes.outputs.gohome == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: web/package-lock.json
+      - name: Build web frontend (required for embed.go)
+        run: npm ci --prefix web && npm run build --prefix web
+      - uses: golangci/golangci-lint-action@v7
+        with:
+          version: v2.11.4
+
+  gohome-coverage:
+    needs: changes
+    if: github.event_name != 'pull_request' || needs.changes.outputs.gohome == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+          cache: true
+          cache-dependency-path: go.sum
+      - name: Run carport coverage (unit + integration, main pkg only)
+        run: go test -tags=integration -coverprofile=cover.out ./internal/carport
+      - name: Enforce ≥70% coverage
+        run: |
+          pct=$(go tool cover -func=cover.out | awk '/^total:/ {print $3}' | tr -d %)
+          awk -v p="$pct" 'BEGIN{exit !(p+0>=70)}' || {
+            echo "carport coverage ${pct}% below 70% gate"
+            go tool cover -func=cover.out
+            exit 1
+          }
+          echo "carport coverage ${pct}% — passes ≥70% gate"
+
+  gohome-proto:
+    needs: changes
+    if: github.event_name != 'pull_request' || needs.changes.outputs.gohome == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+      - uses: bufbuild/buf-setup-action@v1
+      - name: Determine diff base
+        id: base
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "ref=origin/${{ github.event.pull_request.base.ref }}" >> $GITHUB_OUTPUT
+          else
+            echo "ref=HEAD^" >> $GITHUB_OUTPUT
+          fi
+      - name: Proto hygiene check
+        run: ./scripts/check-proto-hygiene.sh ${{ steps.base.outputs.ref }}
+      - name: Buf lint
+        run: buf lint
+
+  gohome-fuzz-scheduled:
+    needs: changes
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+      - run: go test -fuzz=FuzzEventDecode -fuzztime=5m ./internal/eventstore
+      - run: go test -fuzz=FuzzFilterMatch -fuzztime=5m ./internal/eventstore
+      - run: go test -fuzz=FuzzEnvelopeDecode -fuzztime=5m ./internal/carport
+
+  # ── gohome-driverkit ────────────────────────────────────────────────────────
+
+  driverkit-build-and-test:
+    needs: changes
+    if: github.event_name != 'pull_request' || needs.changes.outputs.driverkit == 'true'
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: gohome-driverkit
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+          cache: true
+          cache-dependency-path: gohome-driverkit/go.sum
+
+      - name: Tidy
+        run: go mod tidy && git diff --exit-code go.mod go.sum
+
+      - name: Build
+        run: go build ./...
+
+      - name: Test
+        run: go test ./...
+
+      - name: Race
+        run: go test -race ./...
+
+  driverkit-lint:
+    needs: changes
+    if: github.event_name != 'pull_request' || needs.changes.outputs.driverkit == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+      - uses: golangci/golangci-lint-action@v7
+        with:
+          version: v2.11.4
+          working-directory: gohome-driverkit

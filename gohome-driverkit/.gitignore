@@ -1,0 +1,7 @@
+# Compiled binaries and test artifacts
+/fakedevice
+examples/fakedevice/fakedevice
+
+# Go test binary artifacts
+*.test
+*.out

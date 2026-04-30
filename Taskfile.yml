@@ -1,0 +1,93 @@
+version: '3'
+
+vars:
+  BIN_DIR: '{{.ROOT_DIR}}/dist'
+
+tasks:
+  default:
+    deps: [build]
+
+  proto:
+    desc: Regenerate protobuf code via buf
+    cmds:
+      - buf generate
+
+  web:install:
+    desc: Install web npm dependencies (idempotent)
+    dir: web
+    cmds:
+      - npm install --no-audit --no-fund
+
+  web:build:
+    desc: Build the web bundle into internal/web/dist
+    dir: web
+    deps: [web:install]
+    cmds:
+      - npm run build
+
+  web:lint:
+    desc: Lint web sources
+    dir: web
+    deps: [web:install]
+    cmds:
+      - npm run lint
+
+  web:test:
+    desc: Run web unit tests
+    dir: web
+    deps: [web:install]
+    cmds:
+      - npm test
+
+  ui:dev:
+    desc: Start Vite dev server (proxies to gohomed)
+    dir: web
+    deps: [web:install]
+    cmds:
+      - npm run dev
+
+  build:
+    desc: Build both binaries
+    deps: [web:build]
+    cmds:
+      - go build -o {{.BIN_DIR}}/gohomed ./cmd/gohomed
+      - go build -o {{.BIN_DIR}}/gohome ./cmd/gohome
+
+  test:
+    desc: Run unit tests
+    cmds:
+      - go test ./...
+
+  test:race:
+    desc: Run tests with race detector
+    cmds:
+      - go test -race ./...
+
+  test:integration:
+    desc: Run integration tests (crash-safety, real disk)
+    cmds:
+      - go test -tags=integration ./...
+
+  test:fuzz:
+    desc: Run fuzz targets briefly
+    cmds:
+      - go test -run='^$' -fuzz=FuzzEventDecode -fuzztime=30s ./internal/eventstore
+      - go test -run='^$' -fuzz=FuzzFilterMatch -fuzztime=30s ./internal/eventstore
+      - go test -run='^$' -fuzz=FuzzFixtureParse -fuzztime=30s ./internal/eventstore
+      - go test -run='^$' -fuzz=Fuzz -fuzztime=30s ./internal/registry
+      - go test -run='^$' -fuzz=FuzzEnvelopeDecode -fuzztime=30s ./internal/carport
+
+  test:update-golden:
+    desc: Rewrite golden fixtures from current behavior
+    cmds:
+      - go test ./... -update
+
+  lint:
+    desc: Run golangci-lint
+    cmds:
+      - golangci-lint run ./...
+
+  tidy:
+    desc: go mod tidy
+    cmds:
+      - go mod tidy

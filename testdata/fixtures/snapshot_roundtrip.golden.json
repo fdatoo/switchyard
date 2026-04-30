@@ -1,0 +1,79 @@
+{
+  "registry": {
+    "devices": [
+      {
+        "disabled": false,
+        "driver": "d1",
+        "id": "dev-a"
+      },
+      {
+        "disabled": false,
+        "driver": "d1",
+        "id": "dev-b"
+      },
+      {
+        "disabled": false,
+        "driver": "d1",
+        "id": "dev-c"
+      }
+    ],
+    "driver_instances": [
+      {
+        "id": "d1",
+        "status": "running"
+      }
+    ],
+    "entities": [
+      {
+        "disabled": false,
+        "driver": "d1",
+        "id": "light.a",
+        "type": "light"
+      },
+      {
+        "disabled": false,
+        "driver": "d1",
+        "id": "light.b",
+        "type": "light"
+      },
+      {
+        "disabled": false,
+        "driver": "d1",
+        "id": "light.c",
+        "type": "light"
+      }
+    ]
+  },
+  "state_cache": {
+    "light.a": {
+      "attributes": {
+        "light": {
+          "brightness": 90,
+          "colorTemp": 230,
+          "on": true
+        }
+      },
+      "updated_by": "driver:d1"
+    },
+    "light.b": {
+      "attributes": {
+        "light": {
+          "brightness": 70,
+          "colorTemp": 260,
+          "on": true
+        }
+      },
+      "updated_by": "driver:d1"
+    },
+    "light.c": {
+      "attributes": {
+        "light": {
+          "brightness": 160,
+          "colorTemp": 320,
+          "on": true
+        }
+      },
+      "updated_by": "driver:d1"
+    }
+  }
+}

@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Pre-push hook: full test suite including race detector.
+# Install via: scripts/install-hooks.sh
+set -euo pipefail
+
+cd "$(git rev-parse --show-toplevel)"
+
+fail() { echo "pre-push: $*" >&2; exit 1; }
+
+echo "pre-push: unit tests..."
+go test ./... || fail "unit tests failed"
+
+echo "pre-push: race detector..."
+go test -race ./... || fail "race tests failed"
+
+echo "pre-push: integration tests..."
+if command -v pkl >/dev/null 2>&1; then
+  go test -tags=integration ./... || fail "integration tests failed"
+else
+  echo "pre-push: pkl not found — skipping integration tests (CI will run them)"
+  go test -tags=integration $(go list -tags=integration ./... | grep -v 'internal/config') || fail "integration tests failed"
+fi
+
+echo "pre-push: ok"

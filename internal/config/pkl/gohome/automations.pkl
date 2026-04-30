@@ -1,0 +1,132 @@
+module gohome.automations
+
+import "gohome:starlark" as starlark
+
+// ── Triggers ────────────────────────────────────────────────
+abstract class Trigger {
+  _type: String
+}
+
+class StateChangeTrigger extends Trigger {
+  _type    = "gohome.automations#StateChangeTrigger"
+  entities: Listing<String(!isEmpty)>
+  from:     String?
+  to:       String?
+  forDur:   Duration?
+}
+
+class EventTrigger extends Trigger {
+  _type = "gohome.automations#EventTrigger"
+  kind: String(!isEmpty)
+  data: Mapping<String, String>?
+}
+
+class TimeTrigger extends Trigger {
+  _type  = "gohome.automations#TimeTrigger"
+  at:    String?
+  cron:  String?
+  every: Duration?
+}
+
+class WebhookTrigger extends Trigger {
+  _type   = "gohome.automations#WebhookTrigger"
+  path:    String(matches(Regex(#"^/[a-zA-Z0-9/_-]+$"#)))
+  methods: Listing<String> = new { "POST" }
+}
+
+// ── Conditions ──────────────────────────────────────────────
+abstract class Condition {
+  _type: String
+}
+
+class StateCondition extends Condition {
+  _type  = "gohome.automations#StateCondition"
+  entity: String(!isEmpty)
+  equals: String?
+  oneOf:  Listing<String>?
+  not:    String?
+}
+
+class NumericCondition extends Condition {
+  _type      = "gohome.automations#NumericCondition"
+  entity:    String(!isEmpty)
+  attribute: String = "value"
+  op:        String(this == "lt" || this == "lte" || this == "eq" || this == "gte" || this == "gt")
+  value:     Number
+}
+
+class TimeCondition extends Condition {
+  _type     = "gohome.automations#TimeCondition"
+  after:    String?
+  before:   String?
+  weekdays: Listing<String>?
+}
+
+class StarlarkCondition extends Condition {
+  _type = "gohome.automations#StarlarkCondition"
+  expr: starlark.StarlarkCondition
+}
+
+class AndCondition extends Condition {
+  _type = "gohome.automations#AndCondition"
+  all: Listing<Condition>
+}
+class OrCondition extends Condition {
+  _type = "gohome.automations#OrCondition"
+  any: Listing<Condition>
+}
+class NotCondition extends Condition {
+  _type = "gohome.automations#NotCondition"
+  not: Condition
+}
+
+// ── Actions ─────────────────────────────────────────────────
+abstract class Action {
+  _type:           String
+  continueOnError: Boolean = false
+}
+
+class CallServiceAction extends Action {
+  _type      = "gohome.automations#CallServiceAction"
+  entity:     String(!isEmpty)
+  capability: String(!isEmpty)
+  args:       Mapping<String, String>?
+}
+
+class SceneAction extends Action {
+  _type = "gohome.automations#SceneAction"
+  slug: String(!isEmpty)
+}
+class ScriptAction extends Action {
+  _type = "gohome.automations#ScriptAction"
+  name: String(!isEmpty)
+  args: Mapping<String, String>?
+}
+class StarlarkAction extends Action {
+  _type = "gohome.automations#StarlarkAction"
+  body: starlark.StarlarkScript
+}
+class WaitAction extends Action {
+  _type    = "gohome.automations#WaitAction"
+  duration: Duration
+}
+
+class SequenceBlock extends Action {
+  _type   = "gohome.automations#SequenceBlock"
+  actions: Listing<Action>
+}
+class ParallelBlock extends Action {
+  _type   = "gohome.automations#ParallelBlock"
+  actions: Listing<Action>
+}
+
+// ── Automation ──────────────────────────────────────────────
+class Automation {
+  id:         String(!isEmpty)
+  triggers:   Listing<Trigger>
+  conditions: Listing<Condition> = new {}
+  actions:    Listing<Action>
+  mode:       String(this == "single" || this == "queued" || this == "restart" || this == "parallel") = "single"
+  maxQueued:  Int = 10
+  enabled:    Boolean = true
+}

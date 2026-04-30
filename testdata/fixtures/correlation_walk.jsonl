@@ -1,0 +1,5 @@
+{"kind":"state_changed","entity":"light.root","source":"automation","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":255,"colorTemp":200}}}}}
+{"kind":"state_changed","entity":"light.child1","source":"automation","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":200,"colorTemp":200}}}}}
+{"kind":"state_changed","entity":"light.child2","source":"automation","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":150,"colorTemp":200}}}}}
+{"kind":"state_changed","entity":"light.child3","source":"automation","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":100,"colorTemp":200}}}}}
+{"kind":"state_changed","entity":"light.leaf","source":"automation","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":50,"colorTemp":200}}}}}

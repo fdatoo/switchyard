@@ -1,0 +1,19 @@
+amends "gohome:config"
+
+import "gohome:automations" as auto
+
+automations {
+  new auto.Automation {
+    id = "bad"
+    triggers = new {
+      new auto.StateChangeTrigger {
+        entities = new { "light.x" }
+      }
+    }
+    actions = new {
+      new auto.StarlarkAction {
+        body = "def foo(:"   // syntax error — must be rejected by validator
+      }
+    }
+  }
+}

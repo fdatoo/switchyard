@@ -1,0 +1,13 @@
+{
+  "registry": {
+    "devices": [],
+    "driver_instances": [
+      {
+        "id": "hue_main",
+        "status": "failed"
+      }
+    ],
+    "entities": []
+  },
+  "state_cache": {}
+}

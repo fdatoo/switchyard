@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package gohome.carport.v1alpha1;
+
+// See docs/proto-hygiene.md.
+
+import "gohome/carport/v1alpha1/errors.proto";
+import "gohome/event/v1/event.proto";
+
+// HostToDriver: messages flowing from gohomed → driver subprocess over Run stream.
+message HostToDriver {
+  oneof kind {
+    // 1-9: command plane
+    Command command = 1;
+
+    // 90-99: transport/health
+    Heartbeat ping = 90;
+  }
+}
+
+// DriverToHost: messages flowing from driver subprocess → gohomed over Run stream.
+// Reuses the canonical payload types from gohome.event.v1 where they match semantically.
+message DriverToHost {
+  oneof kind {
+    // 1-9: command response plane
+    CommandResult result = 1;
+
+    // 10-19: state-plane events (reuse event.v1 payload types)
+    gohome.event.v1.StateChanged       state_changed       = 10;
+    gohome.event.v1.EntityRegistered   entity_registered   = 11;
+    gohome.event.v1.EntityUnregistered entity_unregistered = 12;
+
+    // 20-29: driver-typed passthrough
+    gohome.event.v1.DriverEvent driver_event = 20;
+
+    // 90-99: transport/health
+    Heartbeat pong = 90;
+  }
+}
+
+message Heartbeat {
+  // 1-9: identity
+  int64 ts_unix_ms = 1;
+}
+
+message Command {
+  // 1-9: identity
+  string command_id       = 1;
+  int64  deadline_unix_ms = 2;
+
+  // 10-19: target & payload
+  string              entity_id  = 10;
+  string              capability = 11;
+  map<string, string> args       = 12;
+}
+
+message CommandResult {
+  // 1-9: correlation
+  string command_id = 1;
+
+  // 10-19: outcome
+  bool             ok            = 10;
+  CarportErrorCode code          = 11;
+  string           error_message = 12;
+}

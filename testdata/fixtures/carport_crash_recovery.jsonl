@@ -1,0 +1,8 @@
+{"kind":"driver_event","source":"carport:host","payload":{"driverEvent":{"driverInstanceId":"hue_main","kind":"started","detail":"0.0.0"}}}
+{"kind":"entity_registered","entity":"light.kitchen","source":"driver:hue_main","payload":{"entityRegistered":{"driverInstanceId":"hue_main","entityType":"light","friendlyName":"Kitchen","capabilities":{"light":{"on":false}}}}}
+{"kind":"state_changed","entity":"light.kitchen","source":"driver:hue_main","payload":{"stateChanged":{"attributes":{"light":{"on":true}}}}}
+{"kind":"driver_event","source":"carport:host","payload":{"driverEvent":{"driverInstanceId":"hue_main","kind":"failed","detail":"stream closed"}}}
+{"kind":"driver_event","source":"carport:host","payload":{"driverEvent":{"driverInstanceId":"hue_main","kind":"backoff_scheduled","detail":"1s"}}}
+{"kind":"driver_event","source":"carport:host","payload":{"driverEvent":{"driverInstanceId":"hue_main","kind":"started","detail":"0.0.0"}}}
+{"kind":"entity_registered","entity":"light.kitchen","source":"driver:hue_main","payload":{"entityRegistered":{"driverInstanceId":"hue_main","entityType":"light","friendlyName":"Kitchen","capabilities":{"light":{"on":true}}}}}
+{"kind":"state_changed","entity":"light.kitchen","source":"driver:hue_main","payload":{"stateChanged":{"attributes":{"light":{"on":true}}}}}

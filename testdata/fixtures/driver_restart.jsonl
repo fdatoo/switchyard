@@ -1,0 +1,6 @@
+{"kind":"driver_event","source":"gohomed","entity":"","payload":{"driverEvent":{"driverInstanceId":"d1","kind":"started","detail":""}}}
+{"kind":"entity_registered","entity":"switch.x","source":"driver:d1","payload":{"entityRegistered":{"driverInstanceId":"d1","deviceId":"dev-x","entityType":"switch","friendlyName":"Switch X","capabilities":{"switchDevice":{"on":false}}}}}
+{"kind":"state_changed","entity":"switch.x","source":"driver:d1","payload":{"stateChanged":{"attributes":{"switchDevice":{"on":true}}}}}
+{"kind":"driver_event","source":"gohomed","entity":"","payload":{"driverEvent":{"driverInstanceId":"d1","kind":"failed","detail":"connection refused"}}}
+{"kind":"driver_event","source":"gohomed","entity":"","payload":{"driverEvent":{"driverInstanceId":"d1","kind":"started","detail":""}}}
+{"kind":"state_changed","entity":"switch.x","source":"driver:d1","payload":{"stateChanged":{"attributes":{"switchDevice":{"on":false}}}}}

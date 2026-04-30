@@ -1,0 +1,43 @@
+module gohome.starlark
+
+// Starlark snippet validation.
+//
+// The Pkl evaluator in gohomed registers a `gohome-validator:` resource reader
+// (see internal/config/evaluator.go). When Pkl evaluates a typealias constraint,
+// it calls `read()` which routes to the Go-side reader. The reader parses the
+// source with `go.starlark.net/syntax` and returns "true" or "false".
+//
+// The URI shape is `gohome-validator:<fn>?<url-encoded-source>`. The `<fn>`
+// segment selects between expression, script, and condition (an expression).
+local const function validate(fn: String, src: String): Boolean =
+    read("gohome-validator:" + fn + "?" + encodeSource(src)).text == "true"
+
+// Pkl lacks a URL-encoder in stdlib, but the values we pass to the reader are
+// arbitrary Starlark source. We round-trip the raw bytes via the query string;
+// the Go side decodes using a raw-query convention (see starlarkValidatorReader).
+// Encode every character that Java's java.net.URI rejects in an opaque URI part.
+// % must be encoded first to avoid double-encoding.
+local const function encodeSource(src: String): String =
+    src
+        .replaceAll("%",  "%25")
+        .replaceAll("\"", "%22")
+        .replaceAll("#",  "%23")
+        .replaceAll("&",  "%26")
+        .replaceAll("+",  "%2B")
+        .replaceAll("<",  "%3C")
+        .replaceAll(">",  "%3E")
+        .replaceAll("[",  "%5B")
+        .replaceAll("\\", "%5C")
+        .replaceAll("]",  "%5D")
+        .replaceAll("^",  "%5E")
+        .replaceAll("`",  "%60")
+        .replaceAll("{",  "%7B")
+        .replaceAll("|",  "%7C")
+        .replaceAll("}",  "%7D")
+        .replaceAll("\n", "%0A")
+        .replaceAll("\r", "%0D")
+        .replaceAll(" ",  "%20")
+
+typealias StarlarkExpr      = String(validate("expr", this))
+typealias StarlarkScript    = String(validate("script", this))
+typealias StarlarkCondition = String(validate("condition", this))

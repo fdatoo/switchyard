@@ -1,0 +1,26 @@
+{"kind":"driver_event","source":"gohomed","entity":"","payload":{"driverEvent":{"driverInstanceId":"d1","kind":"started","detail":""}}}
+{"kind":"entity_registered","entity":"light.1","source":"driver:d1","payload":{"entityRegistered":{"driverInstanceId":"d1","deviceId":"dev-1","entityType":"light","friendlyName":"Light 1","capabilities":{"light":{"on":false,"brightness":0,"colorTemp":0}}}}}
+{"kind":"entity_registered","entity":"light.2","source":"driver:d1","payload":{"entityRegistered":{"driverInstanceId":"d1","deviceId":"dev-2","entityType":"light","friendlyName":"Light 2","capabilities":{"light":{"on":false,"brightness":0,"colorTemp":0}}}}}
+{"kind":"entity_registered","entity":"light.3","source":"driver:d1","payload":{"entityRegistered":{"driverInstanceId":"d1","deviceId":"dev-3","entityType":"light","friendlyName":"Light 3","capabilities":{"light":{"on":false,"brightness":0,"colorTemp":0}}}}}
+{"kind":"entity_registered","entity":"light.4","source":"driver:d1","payload":{"entityRegistered":{"driverInstanceId":"d1","deviceId":"dev-4","entityType":"light","friendlyName":"Light 4","capabilities":{"light":{"on":false,"brightness":0,"colorTemp":0}}}}}
+{"kind":"entity_registered","entity":"light.5","source":"driver:d1","payload":{"entityRegistered":{"driverInstanceId":"d1","deviceId":"dev-5","entityType":"light","friendlyName":"Light 5","capabilities":{"light":{"on":false,"brightness":0,"colorTemp":0}}}}}
+{"kind":"state_changed","entity":"light.1","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":100,"colorTemp":200}}}}}
+{"kind":"state_changed","entity":"light.2","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":150,"colorTemp":200}}}}}
+{"kind":"state_changed","entity":"light.3","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":80,"colorTemp":300}}}}}
+{"kind":"state_changed","entity":"light.4","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":200,"colorTemp":300}}}}}
+{"kind":"state_changed","entity":"light.5","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":255,"colorTemp":400}}}}}
+{"kind":"state_changed","entity":"light.1","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":50,"colorTemp":200}}}}}
+{"kind":"state_changed","entity":"light.2","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":75,"colorTemp":200}}}}}
+{"kind":"state_changed","entity":"light.3","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":false,"brightness":0,"colorTemp":0}}}}}
+{"kind":"state_changed","entity":"light.4","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":false,"brightness":0,"colorTemp":0}}}}}
+{"kind":"state_changed","entity":"light.5","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":120,"colorTemp":250}}}}}
+{"kind":"state_changed","entity":"light.1","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":false,"brightness":0,"colorTemp":0}}}}}
+{"kind":"state_changed","entity":"light.2","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":false,"brightness":0,"colorTemp":0}}}}}
+{"kind":"state_changed","entity":"light.3","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":90,"colorTemp":350}}}}}
+{"kind":"state_changed","entity":"light.4","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":160,"colorTemp":280}}}}}
+{"kind":"state_changed","entity":"light.5","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":false,"brightness":0,"colorTemp":0}}}}}
+{"kind":"state_changed","entity":"light.1","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":220,"colorTemp":180}}}}}
+{"kind":"state_changed","entity":"light.2","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":200,"colorTemp":220}}}}}
+{"kind":"state_changed","entity":"light.3","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":140,"colorTemp":300}}}}}
+{"kind":"state_changed","entity":"light.4","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":100,"colorTemp":350}}}}}
+{"kind":"state_changed","entity":"light.5","source":"driver:d1","payload":{"stateChanged":{"attributes":{"light":{"on":true,"brightness":60,"colorTemp":400}}}}}

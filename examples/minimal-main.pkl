@@ -1,0 +1,95 @@
+// minimal-main.pkl: Bare minimum gohome configuration
+// 
+// This is the smallest functional configuration you can run gohome with.
+// Copy this file and customize it for your setup.
+// 
+// See full-main.pkl for examples of all available features.
+
+module gohome.config
+
+import "gohome:entities" as ent
+import "gohome:carport" as cp
+import "gohome:automations" as auto
+import "gohome:scripts" as scr
+import "gohome:dashboards" as dash
+import "gohome:auth" as authmod
+import "gohome:mcp" as mcpmod
+
+// ENTITIES: Define your devices (lights, sensors, switches, etc.)
+// Format: id must be "type.name" (e.g., "light.living_room")
+// Copy and customize this entity for each device you have.
+entities: Listing<ent.Entity> = new {
+  new {
+    // Entity ID: must be unique, format is "type.name"
+    id = "light.living_room"
+    // Add more entities here following the same pattern
+  }
+}
+
+// DRIVER INSTANCES: These connect to your physical hardware (Zigbee, MQTT, etc.)
+// Leave empty for now; add drivers as you integrate hardware.
+driverInstances: Listing<cp.DriverInstance> = new {}
+
+// AUTOMATIONS: Rules that trigger actions based on conditions
+// Leave empty initially; add automations once you have entities.
+automations: Listing<auto.Automation> = new {}
+
+// SCRIPTS: Named sequences of actions you can run manually or from automations
+// Leave empty initially; add scripts as you build out automations.
+scripts: Listing<scr.Script> = new {}
+
+// DASHBOARDS: UI views of your entities and recent activity
+// Leave empty initially; you can create dashboards later.
+dashboards: Listing<dash.Dashboard> = new {}
+
+// AUTHENTICATION: Users, roles, and access policies
+// Leave empty initially; add users when you need access control.
+users: Listing<authmod.User> = new {}
+roles: Listing<authmod.Role> = new {}
+policies: Listing<authmod.Policy> = new {}
+
+// MCP: Model Context Protocol configuration (for AI integrations)
+// Leave at defaults for now; configure later if needed.
+mcp: mcpmod.MCPConfig = new mcpmod.MCPConfig {}
+
+// LISTENERS: How gohome listens for connections (gRPC over Unix socket and TCP)
+class Listener {
+  uds:                     UDSListener   = new UDSListener {}
+  tcp:                     TCPListener   = new TCPListener {}
+  webhooks:                WebhookConfig = new WebhookConfig {}
+  streamHeartbeatInterval: Duration      = 30.s
+}
+
+class UDSListener {
+  // Unix Domain Socket for local connections (most secure, local only)
+  path: String = "@data/gohomed.sock"
+  mode: UInt   = 0o600
+}
+
+class TCPListener {
+  // TCP socket for HTTP/gRPC connections
+  // 127.0.0.1:8080 means localhost only (secure for testing)
+  // Change to 0.0.0.0:8080 if you need remote access, but use TLS then
+  bind: String     = "127.0.0.1:8080"
+  tls:  TLSConfig? = null
+}
+
+class TLSConfig {
+  certFile: String
+  keyFile:  String
+}
+
+class WebhookConfig {
+  maxBodyBytes:   UInt         = 1048576
+  trustedProxies: List<String> = List()
+}
+
+listener: Listener = new Listener {}
+
+output {
+  renderer = new JsonRenderer {
+    converters {
+      [Duration] = (it) -> "\(it.value).\(it.unit)"
+    }
+  }
+}

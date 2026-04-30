@@ -1,0 +1,9 @@
+{"kind":"driver_event","source":"carport:host","payload":{"driverEvent":{"driverInstanceId":"hue_main","kind":"started","detail":"0.0.0"}}}
+{"kind":"driver_event","source":"carport:host","payload":{"driverEvent":{"driverInstanceId":"hue_main","kind":"failed","detail":"crash"}}}
+{"kind":"driver_event","source":"carport:host","payload":{"driverEvent":{"driverInstanceId":"hue_main","kind":"backoff_scheduled","detail":"1s"}}}
+{"kind":"driver_event","source":"carport:host","payload":{"driverEvent":{"driverInstanceId":"hue_main","kind":"started","detail":"0.0.0"}}}
+{"kind":"driver_event","source":"carport:host","payload":{"driverEvent":{"driverInstanceId":"hue_main","kind":"failed","detail":"crash"}}}
+{"kind":"driver_event","source":"carport:host","payload":{"driverEvent":{"driverInstanceId":"hue_main","kind":"backoff_scheduled","detail":"2s"}}}
+{"kind":"driver_event","source":"carport:host","payload":{"driverEvent":{"driverInstanceId":"hue_main","kind":"started","detail":"0.0.0"}}}
+{"kind":"driver_event","source":"carport:host","payload":{"driverEvent":{"driverInstanceId":"hue_main","kind":"failed","detail":"crash"}}}
+{"kind":"driver_event","source":"carport:host","payload":{"driverEvent":{"driverInstanceId":"hue_main","kind":"quarantined","detail":"restart budget exhausted"}}}

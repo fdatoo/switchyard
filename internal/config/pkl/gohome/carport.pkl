@@ -1,0 +1,9 @@
+module gohome.carport
+
+// DriverInstance is the base class for all driver instance configs.
+// Driver authors extend this with their own typed fields.
+// The pkl_module field in DriverManifest is reserved for C5+ (DR-7).
+abstract class DriverInstance {
+  id: String(!isEmpty)
+  driverName: String(!isEmpty)
+}

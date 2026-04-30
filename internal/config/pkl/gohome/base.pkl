@@ -1,0 +1,19 @@
+module gohome.base
+
+// Secrets are tagged strings. Go's ResolveSecrets walks the evaluated JSON
+// and replaces these with resolved values before applying side-effects.
+// Secrets are NEVER written to the event log.
+typealias EnvSecret     = String(matches(Regex("env:[A-Z_][A-Z0-9_]*")))
+typealias FileSecret    = String(matches(Regex("file:/.+")))
+typealias KeyringSecret = String(matches(Regex("keyring:[^/]+/.+")))
+typealias Secret        = String(matches(Regex("(env:[A-Z_]|file:/|keyring:).+")))
+
+class Metadata {
+  name: String
+  labels: Mapping<String, String> = new {}
+}
+
+class RetentionPolicy {
+  maxAgeDays: Int?
+  maxBytes: Int?
+}

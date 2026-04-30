@@ -1,0 +1,63 @@
+/* ============================================================================
+   Custom admonition types for gohome-docs status badges
+   ============================================================================ */
+
+:root {
+  --md-admonition-icon--status-planned: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTEyIDJDNi41IDIgMiA2LjUgMiAxMnM0LjUgMTAgMTAgMTAgMTAtNC41IDEwLTEwUzE3LjUgMiAxMiAyem0wIDE4Yy00LjQgMC04LTMuNi04LThzMy42LTggOC04IDggMy42IDggOC0zLjYgOC04IDh6bS41LTEzSDExdjZsNS4yIDMuMi44LTEuMy00LjUtMi43Vjd6Ii8+PC9zdmc+');
+  --md-admonition-icon--status-wip: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTEzIDIuMDV2Mi4wMmMzLjk1LjQ5IDcgMy44NSA3IDcuOTMgMCAzLjIxLTEuODEgNi00LjcyIDcuMjhMMTMgMTd2NWg1bC0xLjIyLTEuMjJDMTkuOTEgMTkuMDcgMjIgMTUuNzYgMjIgMTJjMC01LjE4LTMuOTUtOS40NS05LTkuOTV6TTExIDIuMDVDNS45NSAyLjU1IDIgNi44MiAyIDEyYzAgMy43NiAyLjA5IDcuMDcgNS4yMiA4Ljc4TDYgMjJoNXYtNWwtMi4yOCAyLjI4QzcuODEgMTggNiAxNS4yMSA2IDEyYzAtNC4wOCAzLjA1LTcuNDQgNy03LjkzVjIuMDV6Ii8+PC9zdmc+');
+  --md-admonition-icon--status-alpha: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTEyIDJMMSAyMWgyMkwxMiAyem0wIDMuNUwyMC41IDE5aC0xN0wxMiA1LjV6TTExIDEwdjRoMnYtNGgtMnptMCA2djJoMnYtMmgtMnoiLz48L3N2Zz4=');
+}
+
+/* --------------------------------------------------------------------------
+   status-planned — designed, not yet started (blue/grey)
+   -------------------------------------------------------------------------- */
+.md-typeset .admonition.status-planned,
+.md-typeset details.status-planned {
+  border-color: rgb(100, 120, 180);
+}
+.md-typeset .status-planned > .admonition-title,
+.md-typeset .status-planned > summary {
+  background-color: rgba(100, 120, 180, 0.1);
+}
+.md-typeset .status-planned > .admonition-title::before,
+.md-typeset .status-planned > summary::before {
+  background-color: rgb(100, 120, 180);
+  -webkit-mask-image: var(--md-admonition-icon--status-planned);
+          mask-image: var(--md-admonition-icon--status-planned);
+}
+
+/* --------------------------------------------------------------------------
+   status-wip — in active development (orange)
+   -------------------------------------------------------------------------- */
+.md-typeset .admonition.status-wip,
+.md-typeset details.status-wip {
+  border-color: rgb(220, 120, 30);
+}
+.md-typeset .status-wip > .admonition-title,
+.md-typeset .status-wip > summary {
+  background-color: rgba(220, 120, 30, 0.1);
+}
+.md-typeset .status-wip > .admonition-title::before,
+.md-typeset .status-wip > summary::before {
+  background-color: rgb(220, 120, 30);
+  -webkit-mask-image: var(--md-admonition-icon--status-wip);
+          mask-image: var(--md-admonition-icon--status-wip);
+}
+
+/* --------------------------------------------------------------------------
+   status-alpha — shipped but unstable (yellow/amber)
+   -------------------------------------------------------------------------- */
+.md-typeset .admonition.status-alpha,
+.md-typeset details.status-alpha {
+  border-color: rgb(200, 160, 0);
+}
+.md-typeset .status-alpha > .admonition-title,
+.md-typeset .status-alpha > summary {
+  background-color: rgba(200, 160, 0, 0.1);
+}
+.md-typeset .status-alpha > .admonition-title::before,
+.md-typeset .status-alpha > summary::before {
+  background-color: rgb(200, 160, 0);
+  -webkit-mask-image: var(--md-admonition-icon--status-alpha);
+          mask-image: var(--md-admonition-icon--status-alpha);
+}

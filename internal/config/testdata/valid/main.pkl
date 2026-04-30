@@ -1,0 +1,21 @@
+amends "gohome:config"
+
+import "gohome:entities" as ent
+import "gohome:carport" as carport
+
+local class FakeDriverInstance extends carport.DriverInstance {}
+
+driverInstances {
+  new FakeDriverInstance {
+    id = "fake-main"
+    driverName = "fake"
+  }
+}
+
+entities {
+  new ent.Light {
+    id = "light.living_room"
+    friendlyName = "Living Room"
+    supportsBrightness = true
+  }
+}

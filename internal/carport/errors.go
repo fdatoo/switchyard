@@ -1,6 +1,7 @@
-// Package carport hosts the driver-supervisor subsystem: drivers.toml
-// configuration, per-instance subprocess lifecycle, command dispatch, and
-// event ingest from drivers over the Carport gRPC protocol (v1alpha1).
+// Package carport hosts the driver-supervisor subsystem: per-instance subprocess
+// lifecycle, command dispatch, and event ingest from drivers over the Carport
+// gRPC protocol (v1alpha1). Driver instances are registered dynamically via
+// RegisterInstance.
 //
 // See docs/superpowers/specs/2026-04-21-c2-carport-protocol-design.md.
 package carport

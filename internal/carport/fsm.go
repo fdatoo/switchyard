@@ -6,7 +6,7 @@ import "fmt"
 type State int
 
 const (
-	StateDeclared State = iota // row exists in drivers.toml; nothing running yet
+	StateDeclared State = iota // instance registered via RegisterInstance; nothing running yet
 	StateSpawning
 	StateAwaitingHandshake
 	StateRunning

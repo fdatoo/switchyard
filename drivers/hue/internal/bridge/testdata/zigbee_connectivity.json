@@ -1,0 +1,7 @@
+{
+  "errors": [],
+  "data": [
+    {"id": "zc-aaa", "owner": {"rid": "device-aaa", "rtype": "device"}, "status": "connected"},
+    {"id": "zc-bbb", "owner": {"rid": "device-bbb", "rtype": "device"}, "status": "unreachable"}
+  ]
+}

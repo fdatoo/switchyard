@@ -1,0 +1,9 @@
+id: 1:0
+data: [{"creationtime":"2026-04-30T01:00:00Z","data":[{"id":"12345678-90ab-cdef-1234-567890abcdef","type":"light","on":{"on":false}}],"id":"evt1","type":"update"}]
+
+id: 1:1
+data: [{"creationtime":"2026-04-30T01:00:01Z","data":[{"id":"12345678-90ab-cdef-1234-567890abcdef","type":"light","dimming":{"brightness":75.0}}],"id":"evt2","type":"update"}]
+
+id: 1:2
+data: [{"creationtime":"2026-04-30T01:00:02Z","data":[{"id":"zc-aaa","type":"zigbee_connectivity","owner":{"rid":"device-aaa","rtype":"device"},"status":"unreachable"}],"id":"evt3","type":"update"}]
+

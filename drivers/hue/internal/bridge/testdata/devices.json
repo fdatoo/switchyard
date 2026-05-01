@@ -1,0 +1,21 @@
+{
+  "errors": [],
+  "data": [
+    {
+      "id": "device-aaa",
+      "type": "device",
+      "services": [
+        {"rid": "light-aaa", "rtype": "light"},
+        {"rid": "zc-aaa", "rtype": "zigbee_connectivity"}
+      ]
+    },
+    {
+      "id": "device-bbb",
+      "type": "device",
+      "services": [
+        {"rid": "light-bbb", "rtype": "light"},
+        {"rid": "zc-bbb", "rtype": "zigbee_connectivity"}
+      ]
+    }
+  ]
+}

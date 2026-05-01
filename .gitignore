@@ -39,3 +39,7 @@ docs/site/
 
 # Superpowers scratch
 .superpowers/
+
+# Driver binaries
+# go build ./drivers/hue/... drops the binary at the repo root
+/hue-driver

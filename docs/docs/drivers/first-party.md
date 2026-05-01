@@ -251,22 +251,20 @@ Integrates Google Nest thermostats and cameras via the Google Nest Device Access
 
 !!! status-alpha "Alpha — shipped, interface evolving"
 
-Integrates with a Philips Hue bridge using the local API — no cloud, no Philips account required. Discovers all lights, groups, scenes, and sensors on the bridge and registers them as gohome entities. Supports full color, color temperature, and brightness control.
+Mirrors all lights on a Philips Hue bridge into gohome as `light.*` entities using the local CLIP v2 API — no cloud, no Philips account required. Supports `turn_on`, `turn_off`, `set_brightness`, and `set_color_temp` for white and tunable-white control. Color (RGB/XY), groups, scenes, and sensors are out of scope for v0.1.
 
 **Config fields**
 
 | Field | Type | Required | Description |
 |---|---|---|---|
 | `bridge_address` | `string` | yes | IP address or hostname of the Hue bridge |
-| `api_key_env` | `string` | yes | Env var containing the Hue API key (obtained via bridge button press + `gohome driver pairing hue`) |
-| `poll_interval_s` | `int` | no | State poll interval in seconds. Defaults to `10` |
-| `use_clip_v2` | `bool` | no | Use CLIP v2 API (Hue bridge firmware 1.48+). Defaults to `true` |
+| `api_key_env` | `string` | yes | Env var containing the Hue API key (obtained via the curl recipe in the driver README) |
 | `tls_skip_verify` | `bool` | no | Skip TLS verification for the CLIP v2 HTTPS endpoint. Defaults to `true` (bridge uses self-signed cert) |
 
 **Known caveats**
 
-- CLIP v2 (default) supports server-sent events for instant state updates; CLIP v1 falls back to polling.
-- Hue bridge supports a maximum of 63 grouped lights and 50 scenes — groups exceeding these limits must be split across multiple instances.
+- CLIP v2 only — bridges on firmware older than 1.48 (pre-2021) are not supported.
+- Server-sent events deliver state changes from wall switches and the Hue app to gohome with sub-second latency.
 - The Hue bridge API key is per-application; store it in a secret and reference via `api_key_env`.
 
 [Source repo](https://github.com/fynn-labs/driver-hue)

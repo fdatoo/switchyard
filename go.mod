@@ -1,6 +1,6 @@
 module github.com/fdatoo/gohome
 
-go 1.25.0
+go 1.25.9
 
 require (
 	connectrpc.com/connect v1.19.2
@@ -9,6 +9,7 @@ require (
 	github.com/benbjohnson/immutable v0.4.3
 	github.com/charmbracelet/lipgloss v1.1.0
 	github.com/charmbracelet/log v1.0.0
+	github.com/fdatoo/gohome-driverkit v0.0.0-00010101000000-000000000000
 	github.com/fxamacker/cbor/v2 v2.9.1
 	github.com/go-webauthn/webauthn v0.17.0
 	github.com/google/uuid v1.6.0
@@ -27,6 +28,7 @@ require (
 	golang.org/x/crypto v0.50.0
 	golang.org/x/net v0.53.0
 	golang.org/x/sync v0.20.0
+	golang.org/x/time v0.15.0
 	google.golang.org/grpc v1.79.1
 	google.golang.org/protobuf v1.36.11
 	modernc.org/sqlite v1.49.1
@@ -91,3 +93,5 @@ require (
 )
 
 tool google.golang.org/grpc/cmd/protoc-gen-go-grpc
+
+replace github.com/fdatoo/gohome-driverkit => ./gohome-driverkit

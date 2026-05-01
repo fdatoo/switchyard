@@ -506,8 +506,10 @@ func (x *SystemEvent) GetData() map[string]string {
 }
 
 type StateChanged struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Attributes    *v1.Attributes         `protobuf:"bytes,1,opt,name=attributes,proto3" json:"attributes,omitempty"`
+	state      protoimpl.MessageState `protogen:"open.v1"`
+	Attributes *v1.Attributes         `protobuf:"bytes,1,opt,name=attributes,proto3" json:"attributes,omitempty"`
+	// 2-9: identity (added v1alpha1.2 — drivers must populate)
+	EntityId      string `protobuf:"bytes,2,opt,name=entity_id,json=entityId,proto3" json:"entity_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -547,6 +549,13 @@ func (x *StateChanged) GetAttributes() *v1.Attributes {
 		return x.Attributes
 	}
 	return nil
+}
+
+func (x *StateChanged) GetEntityId() string {
+	if x != nil {
+		return x.EntityId
+	}
+	return ""
 }
 
 type CommandIssued struct {
@@ -656,13 +665,17 @@ func (x *CommandAck) GetErrorMessage() string {
 type EntityRegistered struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// 1-9: identity & capability binding
-	DriverInstanceId string         `protobuf:"bytes,1,opt,name=driver_instance_id,json=driverInstanceId,proto3" json:"driver_instance_id,omitempty"`
-	DeviceId         string         `protobuf:"bytes,2,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
-	EntityType       string         `protobuf:"bytes,3,opt,name=entity_type,json=entityType,proto3" json:"entity_type,omitempty"`
-	FriendlyName     string         `protobuf:"bytes,4,opt,name=friendly_name,json=friendlyName,proto3" json:"friendly_name,omitempty"`
-	Capabilities     *v1.Attributes `protobuf:"bytes,5,opt,name=capabilities,proto3" json:"capabilities,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	DriverInstanceId string `protobuf:"bytes,1,opt,name=driver_instance_id,json=driverInstanceId,proto3" json:"driver_instance_id,omitempty"`
+	DeviceId         string `protobuf:"bytes,2,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
+	EntityType       string `protobuf:"bytes,3,opt,name=entity_type,json=entityType,proto3" json:"entity_type,omitempty"`
+	FriendlyName     string `protobuf:"bytes,4,opt,name=friendly_name,json=friendlyName,proto3" json:"friendly_name,omitempty"`
+	// Deprecated: typed as Attributes (state-shaped) but conceptually meant for
+	// capability metadata. The daemon ignores this field — state flows over
+	// StateChanged, which the driverkit re-emits at every Run start. Reserved
+	// here to keep wire compatibility; do not populate.
+	Capabilities  *v1.Attributes `protobuf:"bytes,5,opt,name=capabilities,proto3" json:"capabilities,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *EntityRegistered) Reset() {
@@ -731,8 +744,10 @@ func (x *EntityRegistered) GetCapabilities() *v1.Attributes {
 }
 
 type EntityUnregistered struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Reason        string                 `protobuf:"bytes,1,opt,name=reason,proto3" json:"reason,omitempty"`
+	state  protoimpl.MessageState `protogen:"open.v1"`
+	Reason string                 `protobuf:"bytes,1,opt,name=reason,proto3" json:"reason,omitempty"`
+	// 2-9: identity (added v1alpha1.2 — drivers must populate)
+	EntityId      string `protobuf:"bytes,2,opt,name=entity_id,json=entityId,proto3" json:"entity_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -770,6 +785,13 @@ func (*EntityUnregistered) Descriptor() ([]byte, []int) {
 func (x *EntityUnregistered) GetReason() string {
 	if x != nil {
 		return x.Reason
+	}
+	return ""
+}
+
+func (x *EntityUnregistered) GetEntityId() string {
+	if x != nil {
+		return x.EntityId
 	}
 	return ""
 }
@@ -1733,11 +1755,12 @@ const file_gohome_event_v1_event_proto_rawDesc = "" +
 	"\x04data\x18\x02 \x03(\v2&.gohome.event.v1.SystemEvent.DataEntryR\x04data\x1a7\n" +
 	"\tDataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"L\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"i\n" +
 	"\fStateChanged\x12<\n" +
 	"\n" +
 	"attributes\x18\x01 \x01(\v2\x1c.gohome.entity.v1.AttributesR\n" +
-	"attributes\"\xb8\x01\n" +
+	"attributes\x12\x1b\n" +
+	"\tentity_id\x18\x02 \x01(\tR\bentityId\"\xb8\x01\n" +
 	"\rCommandIssued\x12\x18\n" +
 	"\acommand\x18\x01 \x01(\tR\acommand\x12N\n" +
 	"\n" +
@@ -1756,9 +1779,10 @@ const file_gohome_event_v1_event_proto_rawDesc = "" +
 	"\ventity_type\x18\x03 \x01(\tR\n" +
 	"entityType\x12#\n" +
 	"\rfriendly_name\x18\x04 \x01(\tR\ffriendlyName\x12@\n" +
-	"\fcapabilities\x18\x05 \x01(\v2\x1c.gohome.entity.v1.AttributesR\fcapabilities\",\n" +
+	"\fcapabilities\x18\x05 \x01(\v2\x1c.gohome.entity.v1.AttributesR\fcapabilities\"I\n" +
 	"\x12EntityUnregistered\x12\x16\n" +
-	"\x06reason\x18\x01 \x01(\tR\x06reason\"g\n" +
+	"\x06reason\x18\x01 \x01(\tR\x06reason\x12\x1b\n" +
+	"\tentity_id\x18\x02 \x01(\tR\bentityId\"g\n" +
 	"\vDriverEvent\x12,\n" +
 	"\x12driver_instance_id\x18\x01 \x01(\tR\x10driverInstanceId\x12\x12\n" +
 	"\x04kind\x18\x02 \x01(\tR\x04kind\x12\x16\n" +

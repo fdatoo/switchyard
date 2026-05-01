@@ -99,7 +99,10 @@ func TestCache_PromoteNilPendingIsNoop(t *testing.T) {
 	}
 }
 
-func TestCache_ApplyEntityRegisteredSeeds(t *testing.T) {
+func TestCache_ApplyEntityRegisteredSeedsPlaceholder(t *testing.T) {
+	// EntityRegistered is schema only — it must create a state entry so
+	// `state list` shows the entity, but Attributes stays nil until the
+	// driver emits a StateChanged. Capabilities on the wire is ignored.
 	c := state.New()
 	evt := eventstore.Event{
 		Position:  1,
@@ -109,6 +112,8 @@ func TestCache_ApplyEntityRegisteredSeeds(t *testing.T) {
 		Source:    "driver:x",
 		Payload: &eventv1.Payload{Kind: &eventv1.Payload_EntityRegistered{
 			EntityRegistered: &eventv1.EntityRegistered{
+				// Even if a driver populates this (it shouldn't — field is
+				// deprecated), the cache must not pick it up as state.
 				Capabilities: &entityv1.Attributes{
 					Kind: &entityv1.Attributes_Light{Light: &entityv1.Light{Brightness: 42}},
 				},
@@ -123,8 +128,11 @@ func TestCache_ApplyEntityRegisteredSeeds(t *testing.T) {
 	if !ok {
 		t.Fatal("entity not seeded by EntityRegistered")
 	}
-	if s.Attributes.GetLight().Brightness != 42 {
-		t.Fatalf("brightness = %d, want 42", s.Attributes.GetLight().Brightness)
+	if s.Attributes != nil {
+		t.Fatalf("Attributes = %+v, want nil (state must come via StateChanged)", s.Attributes)
+	}
+	if s.EntityID != "light.new" {
+		t.Errorf("EntityID = %q", s.EntityID)
 	}
 }
 

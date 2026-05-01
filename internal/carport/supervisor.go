@@ -93,6 +93,7 @@ func (h *Host) runLifecycle(ctx context.Context, m *managedInstance) {
 			_, _ = h.store.Append(ctx, eventstore.Event{
 				Timestamp: time.Now(),
 				Kind:      "entity_registered",
+				Entity:    er.GetDeviceId(),
 				Source:    "driver:" + m.cfg.ID,
 				Payload: &eventpb.Payload{Kind: &eventpb.Payload_EntityRegistered{
 					EntityRegistered: er,
@@ -104,7 +105,7 @@ func (h *Host) runLifecycle(ctx context.Context, m *managedInstance) {
 		ic.setIngestHook(func(msg *carportpb.DriverToHost) {
 			kind := messageKindLabel(msg)
 			h.metrics.CarportStreamMessagesTotal.WithLabelValues(m.cfg.ID, kind).Inc()
-			if ingestErr := IngestMessage(ctx, h.store, m.cfg.ID, "", msg); ingestErr != nil {
+			if ingestErr := IngestMessage(ctx, h.store, m.cfg.ID, msg); ingestErr != nil {
 				h.logger.Error("ingest failed", "instance_id", m.cfg.ID, "err", ingestErr)
 				_ = ic.Close()
 				return

@@ -14,9 +14,10 @@ import (
 // Event and appends it. Returns the append error verbatim; caller is
 // responsible for tearing down the Run stream on error (enforces INV-2).
 //
-// entityID is a caller-provided hint for messages whose payload does not
-// itself carry an entity identifier. Pass "" when none applies.
-func IngestMessage(ctx context.Context, store *eventstore.Store, instanceID, entityID string, msg *carportpb.DriverToHost) error {
+// The entity ID is derived from the message payload itself: StateChanged
+// carries it explicitly, EntityRegistered/EntityUnregistered use DeviceId,
+// DriverEvent has no entity binding.
+func IngestMessage(ctx context.Context, store *eventstore.Store, instanceID string, msg *carportpb.DriverToHost) error {
 	now := time.Now()
 	source := "driver:" + instanceID
 
@@ -25,7 +26,7 @@ func IngestMessage(ctx context.Context, store *eventstore.Store, instanceID, ent
 		_, err := store.Append(ctx, eventstore.Event{
 			Timestamp: now,
 			Kind:      "state_changed",
-			Entity:    entityID,
+			Entity:    k.StateChanged.GetEntityId(),
 			Source:    source,
 			Payload: &eventpb.Payload{Kind: &eventpb.Payload_StateChanged{
 				StateChanged: k.StateChanged,
@@ -41,7 +42,7 @@ func IngestMessage(ctx context.Context, store *eventstore.Store, instanceID, ent
 		_, err := store.Append(ctx, eventstore.Event{
 			Timestamp: now,
 			Kind:      "entity_registered",
-			Entity:    entityID,
+			Entity:    er.GetDeviceId(),
 			Source:    source,
 			Payload: &eventpb.Payload{Kind: &eventpb.Payload_EntityRegistered{
 				EntityRegistered: er,
@@ -53,7 +54,7 @@ func IngestMessage(ctx context.Context, store *eventstore.Store, instanceID, ent
 		_, err := store.Append(ctx, eventstore.Event{
 			Timestamp: now,
 			Kind:      "entity_unregistered",
-			Entity:    entityID,
+			Entity:    k.EntityUnregistered.GetEntityId(),
 			Source:    source,
 			Payload: &eventpb.Payload{Kind: &eventpb.Payload_EntityUnregistered{
 				EntityUnregistered: k.EntityUnregistered,
@@ -69,7 +70,6 @@ func IngestMessage(ctx context.Context, store *eventstore.Store, instanceID, ent
 		_, err := store.Append(ctx, eventstore.Event{
 			Timestamp: now,
 			Kind:      "driver_event",
-			Entity:    entityID,
 			Source:    source,
 			Payload: &eventpb.Payload{Kind: &eventpb.Payload_DriverEvent{
 				DriverEvent: de,

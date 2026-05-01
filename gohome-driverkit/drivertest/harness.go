@@ -10,15 +10,16 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/uuid"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/protobuf/proto"
+
 	"github.com/fdatoo/gohome-driverkit/driver"
 	"github.com/fdatoo/gohome-driverkit/protocol"
 	carportv1alpha1 "github.com/fdatoo/gohome/gen/gohome/carport/v1alpha1"
 	entityv1 "github.com/fdatoo/gohome/gen/gohome/entity/v1"
 	eventv1 "github.com/fdatoo/gohome/gen/gohome/event/v1"
-	"github.com/google/uuid"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
-	"google.golang.org/protobuf/proto"
 )
 
 // Harness simulates a Carport host (gRPC client) for in-process driver testing.

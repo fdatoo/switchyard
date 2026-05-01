@@ -29,11 +29,18 @@ type instanceConn struct {
 	// sendMu serializes stream.Send calls — gRPC allows one Send at a time.
 	sendMu sync.Mutex
 
-	// hookMu guards ingestHook and onStreamError against data races between the
-	// reader goroutine and the supervisor goroutine that sets these fields.
+	// hookMu guards ingestHook, onStreamError, and preHookQueue against data
+	// races between the reader goroutine and the supervisor goroutine that
+	// sets these fields.
 	hookMu sync.RWMutex
 	// ingestHook fires on every non-result DriverToHost. Set by supervisor.
 	ingestHook func(*carportpb.DriverToHost)
+	// preHookQueue buffers messages that arrive between stream open and
+	// setIngestHook. The driver's OnRunStart can emit StateChanged
+	// immediately after the Handshake RPC unblocks, while the supervisor
+	// is still applying initial entities and hasn't wired the hook yet.
+	// Without this buffer those messages drop on the floor.
+	preHookQueue []*carportpb.DriverToHost
 	// onStreamError fires exactly once when the reader goroutine exits.
 	onStreamError func(error)
 	streamErrOnce sync.Once
@@ -94,12 +101,15 @@ func (ic *instanceConn) reader() {
 		case *carportpb.DriverToHost_Result:
 			ic.deliver(k.Result)
 		default:
-			ic.hookMu.RLock()
+			ic.hookMu.Lock()
 			fn := ic.ingestHook
-			ic.hookMu.RUnlock()
-			if fn != nil {
-				fn(msg)
+			if fn == nil {
+				ic.preHookQueue = append(ic.preHookQueue, msg)
+				ic.hookMu.Unlock()
+				continue
 			}
+			ic.hookMu.Unlock()
+			fn(msg)
 		}
 	}
 }
@@ -199,11 +209,17 @@ func (ic *instanceConn) Close() error {
 	return ic.conn.Close()
 }
 
-// setIngestHook registers the supervisor's ingest callback.
+// setIngestHook registers the supervisor's ingest callback and drains any
+// messages the reader buffered before the hook was wired.
 func (ic *instanceConn) setIngestHook(f func(*carportpb.DriverToHost)) {
 	ic.hookMu.Lock()
 	ic.ingestHook = f
+	queued := ic.preHookQueue
+	ic.preHookQueue = nil
 	ic.hookMu.Unlock()
+	for _, msg := range queued {
+		f(msg)
+	}
 }
 
 // setStreamErrorHook registers the supervisor's stream-error callback.

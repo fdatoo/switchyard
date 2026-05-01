@@ -65,6 +65,7 @@ func (d *Driver) AddEntity(entityID string, spec EntitySpec) error {
 	}
 	d.entities[entityID] = &entityEntry{
 		spec:     spec,
+		attrs:    spec.InitialState,
 		handlers: make(map[string]CapabilityHandler),
 	}
 	return nil
@@ -80,6 +81,35 @@ func (d *Driver) OnCapability(entityID, capability string, h CapabilityHandler) 
 		panic(fmt.Sprintf("driver.OnCapability: entity %q not registered via AddEntity", entityID))
 	}
 	e.handlers[capability] = h
+}
+
+// UnregisterEntity removes the entity from the driver and emits an
+// EntityUnregistered message on the current Run stream. Returns
+// ErrEntityUnknown if the entity wasn't registered, or ErrNotConnected
+// if no stream is active.
+func (d *Driver) UnregisterEntity(entityID string) error {
+	d.mu.Lock()
+	if _, ok := d.entities[entityID]; !ok {
+		d.mu.Unlock()
+		return fmt.Errorf("%w: %s", ErrEntityUnknown, entityID)
+	}
+	delete(d.entities, entityID)
+	d.mu.Unlock()
+
+	d.emitMu.RLock()
+	emit := d.emitter
+	d.emitMu.RUnlock()
+	if emit == nil {
+		return ErrNotConnected
+	}
+	return emit.Send(&carportv1alpha1.DriverToHost{
+		Kind: &carportv1alpha1.DriverToHost_EntityUnregistered{
+			EntityUnregistered: &eventv1.EntityUnregistered{
+				EntityId: entityID,
+				Reason:   "removed_by_driver",
+			},
+		},
+	})
 }
 
 // EmitState updates tracked state for entityID and sends a StateChanged event
@@ -103,7 +133,25 @@ func (d *Driver) EmitState(entityID string, attrs *entityv1.Attributes) error {
 	}
 	return emit.Send(&carportv1alpha1.DriverToHost{
 		Kind: &carportv1alpha1.DriverToHost_StateChanged{
-			StateChanged: &eventv1.StateChanged{Attributes: attrs},
+			StateChanged: &eventv1.StateChanged{EntityId: entityID, Attributes: attrs},
+		},
+	})
+}
+
+// EmitDriverEvent sends a typed driver event on the current Run stream.
+// Returns ErrNotConnected if no stream is active. The kind/detail
+// strings are free-form; conventionally kind is snake_case (e.g.
+// "bridge_unreachable") and detail is human-readable text.
+func (d *Driver) EmitDriverEvent(kind, detail string) error {
+	d.emitMu.RLock()
+	emit := d.emitter
+	d.emitMu.RUnlock()
+	if emit == nil {
+		return ErrNotConnected
+	}
+	return emit.Send(&carportv1alpha1.DriverToHost{
+		Kind: &carportv1alpha1.DriverToHost_DriverEvent{
+			DriverEvent: &eventv1.DriverEvent{Kind: kind, Detail: detail},
 		},
 	})
 }
@@ -174,30 +222,58 @@ func (d *Driver) OnHandshake(_ []byte) (*carportv1alpha1.DriverManifest, []*even
 		SupportedCapabilities: caps,
 	}
 
-	var entities []*eventv1.EntityRegistered
-	for _, e := range d.entities {
+	entities := make([]*eventv1.EntityRegistered, 0, len(d.entities))
+	for entityID, e := range d.entities {
+		// Capabilities is left empty here. The proto field is vestigial:
+		// state flows over StateChanged, which the driverkit emits in
+		// OnRunStart for every entity with tracked attrs.
 		entities = append(entities, &eventv1.EntityRegistered{
+			DeviceId:     entityID,
 			EntityType:   e.spec.EntityType,
 			FriendlyName: e.spec.FriendlyName,
-			Capabilities: &entityv1.Attributes{}, // typed capabilities are a C4 concern
+			Capabilities: &entityv1.Attributes{},
 		})
 	}
 
 	sort.SliceStable(entities, func(i, j int) bool {
-		if entities[i].EntityType != entities[j].EntityType {
-			return entities[i].EntityType < entities[j].EntityType
-		}
-		return entities[i].FriendlyName < entities[j].FriendlyName
+		return entities[i].DeviceId < entities[j].DeviceId
 	})
 
 	return manifest, entities, nil
 }
 
-// OnRunStart implements protocol.Handler. Stores the emitter for EmitState calls.
+// OnRunStart implements protocol.Handler. Stores the emitter and asserts
+// current state for every entity with tracked attributes by emitting a
+// StateChanged. The daemon's state cache treats EntityRegistered as
+// register-once (capabilities), so re-registrations against an existing
+// event log are no-ops in state. StateChanged is the durable truth channel
+// — emitting on every Run start means a fresh daemon and a daemon
+// replaying old events both converge to the driver's current view.
 func (d *Driver) OnRunStart(_ context.Context, emit protocol.Emitter) {
 	d.emitMu.Lock()
 	d.emitter = emit
 	d.emitMu.Unlock()
+
+	d.mu.RLock()
+	type pending struct {
+		id    string
+		attrs *entityv1.Attributes
+	}
+	out := make([]pending, 0, len(d.entities))
+	for id, e := range d.entities {
+		if e.attrs != nil {
+			out = append(out, pending{id: id, attrs: e.attrs})
+		}
+	}
+	d.mu.RUnlock()
+
+	for _, p := range out {
+		_ = emit.Send(&carportv1alpha1.DriverToHost{
+			Kind: &carportv1alpha1.DriverToHost_StateChanged{
+				StateChanged: &eventv1.StateChanged{EntityId: p.id, Attributes: p.attrs},
+			},
+		})
+	}
 }
 
 // OnCommand implements protocol.Handler. Routes to the registered CapabilityHandler.
@@ -255,7 +331,7 @@ func (d *Driver) OnCommand(ctx context.Context, cmd *carportv1alpha1.Command, em
 		// which tears the stream down and triggers the reconnect loop.
 		_ = emit.Send(&carportv1alpha1.DriverToHost{
 			Kind: &carportv1alpha1.DriverToHost_StateChanged{
-				StateChanged: &eventv1.StateChanged{Attributes: attrs},
+				StateChanged: &eventv1.StateChanged{EntityId: entityID, Attributes: attrs},
 			},
 		})
 	}

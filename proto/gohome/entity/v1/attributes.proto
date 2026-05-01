@@ -14,12 +14,18 @@ message Attributes {
     Switch switch_device = 11;
     Sensor sensor        = 12;
   }
+  // 90-99: cross-cutting metadata
+  // available is the driver's claim that the entity is currently reachable.
+  // Default false (zero) means unknown / unreachable; drivers explicitly set
+  // true after confirming connectivity. The state cache surfaces this.
+  bool available = 90;
 }
 
 message Light {
   bool   on         = 1;
   uint32 brightness = 2;   // 0-255
   uint32 color_temp = 3;   // mireds; 0 if unsupported
+  uint32 color_rgb  = 4;   // 0xRRGGBB; 0 if unsupported / not active
   // RGB/XY/capabilities flesh out later; C1 only needs the message existing.
 }
 

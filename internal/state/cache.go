@@ -90,16 +90,18 @@ func (c *Cache) Apply(_ context.Context, _ storage.Tx, e eventstore.Event) error
 		c.pending = c.pending.Set(e.Entity, s)
 
 	case *eventv1.Payload_EntityRegistered:
-		// Registration seeds capability-level state so reads before first
-		// state_changed still return a meaningful Attributes envelope.
+		// Registration is schema only — it tells the cache the entity exists
+		// so state list shows it, but Attributes stays nil until a
+		// StateChanged event arrives. Drivers re-assert state via
+		// StateChanged on every Run start (driverkit's OnRunStart).
 		if _, exists := c.pending.Get(e.Entity); !exists {
 			c.pending = c.pending.Set(e.Entity, State{
-				EntityID:   e.Entity,
-				UpdatedAt:  e.Timestamp,
-				UpdatedBy:  e.Source,
-				Attributes: proto.Clone(payload.EntityRegistered.GetCapabilities()).(*entityv1.Attributes),
+				EntityID:  e.Entity,
+				UpdatedAt: e.Timestamp,
+				UpdatedBy: e.Source,
 			})
 		}
+		_ = payload // payload.EntityRegistered.Capabilities is intentionally ignored.
 
 	case *eventv1.Payload_EntityUnregistered:
 		c.pending = c.pending.Delete(e.Entity)

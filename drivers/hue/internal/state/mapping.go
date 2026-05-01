@@ -7,6 +7,7 @@ import (
 	"math"
 	"strconv"
 
+	"github.com/fdatoo/gohome-driverkit/colorconv"
 	"github.com/fdatoo/gohome/drivers/hue/internal/bridge"
 	entityv1 "github.com/fdatoo/gohome/gen/gohome/entity/v1"
 )
@@ -14,8 +15,8 @@ import (
 // colorToRgb is the bridge xy → packed gohome RGB conversion. Used by
 // both LightToAttrs and MergeEvent to populate Light.ColorRgb.
 func colorToRgb(xy bridge.ColorXY) uint32 {
-	r, g, b := bridge.XYToRGB(xy)
-	return bridge.PackRGB(r, g, b)
+	r, g, b := colorconv.XYToRGB(xy)
+	return colorconv.PackRGB(r, g, b)
 }
 
 // EntityID returns the gohome entity ID for a Hue light. The first 8 chars
@@ -128,8 +129,8 @@ func CommandToUpdate(capability string, args map[string]string, gamut bridge.Gam
 		if err != nil {
 			return bridge.LightUpdate{}, fmt.Errorf("set_color: %w", err)
 		}
-		raw := bridge.RGBToXY(r, g, b)
-		clamped := bridge.ClampToGamut(raw, gamut)
+		raw := colorconv.RGBToXY(r, g, b)
+		clamped := colorconv.ClampToGamut(raw, gamut)
 		u.On = &bridge.OnState{On: true}
 		u.Color = &bridge.ColorUpdate{XY: clamped}
 	default:

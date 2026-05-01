@@ -34,30 +34,31 @@ A general-purpose MQTT publish/subscribe driver. Register any topic as an entity
 
 ---
 
-### Zigbee2MQTT (`driver.zigbee2mqtt`)
+### Zigbee2MQTT (`driver.z2m`)
 
 !!! status-alpha "Alpha — shipped, interface evolving"
 
-Integrates with a running [Zigbee2MQTT](https://www.zigbee2mqtt.io/) bridge. Devices paired to the bridge are automatically discovered and registered as gohome entities. State changes and commands flow through the bridge's MQTT topics using the Zigbee2MQTT API.
+Mirrors a [Zigbee2MQTT](https://www.zigbee2mqtt.io/) deployment into gohome over the MQTT broker that Z2M publishes to. Discovers all paired devices on startup, then reconciles live via the retained `bridge/devices` topic. v0.1 surfaces three device classes: lights (`light.*`), numeric sensors (`numeric_sensor.*`), and binary sensors (`binary_sensor.*`).
 
 **Config fields**
 
 | Field | Type | Required | Description |
 |---|---|---|---|
-| `mqtt_broker_url` | `string` | yes | URL of the MQTT broker used by Zigbee2MQTT |
-| `base_topic` | `string` | no | Zigbee2MQTT base topic. Defaults to `zigbee2mqtt` |
-| `username` | `string` | no | MQTT username |
+| `broker_url` | `string` | yes | `tcp://host:1883` or `ssl://host:8883` |
+| `username` | `string` | no | MQTT broker username |
 | `password_env` | `string` | no | Env var containing the MQTT password |
-| `friendly_name_prefix` | `string` | no | Prefix stripped from Zigbee2MQTT friendly names when forming entity IDs |
-| `permit_join` | `bool` | no | If `true`, the driver can send permit-join commands via CLI |
+| `base_topic` | `string` | no | Z2M's `mqtt.base_topic` setting (default `zigbee2mqtt`) |
+| `client_id` | `string` | no | MQTT client identifier (default `gohome-z2m-<random8>`) |
+| `tls_skip_verify` | `bool` | no | Skip TLS verification (default `false`) |
 
 **Known caveats**
 
-- Requires Zigbee2MQTT to be running independently; the driver does not manage the bridge process.
-- Entity discovery happens on startup and when new devices are paired — no hot-reload without driver restart.
-- Device availability is polled via the `zigbee2mqtt/bridge/devices` topic; brief disconnects may leave entities in a stale state until the next availability update.
+- New devices paired in Z2M are picked up automatically; no driver restart needed.
+- Smart-plug actuators (writable `state`) are out of scope in v0.1 — read-only sub-properties (`power`, `energy`) still surface.
+- Per-device availability depends on Z2M's availability feature being enabled server-side; otherwise entities default to `Available=true`.
+- `/set` publishes are best-effort: a successful publish is reported as `ok=true` even if Z2M silently ignores the command (no MQTT 5 request/response in v0.1).
 
-[Source repo](https://github.com/fynn-labs/driver-zigbee2mqtt)
+[Source repo](https://github.com/fdatoo/gohome/tree/main/drivers/z2m)
 
 ---
 

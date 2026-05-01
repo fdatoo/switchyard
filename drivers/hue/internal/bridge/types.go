@@ -1,6 +1,8 @@
 // Package bridge is the HTTPS + SSE client for the Philips Hue CLIP v2 API.
 package bridge
 
+import "github.com/fdatoo/gohome-driverkit/colorconv"
+
 // Light is a single light resource as returned by GET /clip/v2/resource/light.
 // Only the fields we use are modeled; the bridge sends more.
 type Light struct {
@@ -101,19 +103,12 @@ type Color struct {
 	Gamut Gamut   `json:"gamut"`
 }
 
-// ColorXY is a CIE 1931 chromaticity point. Both dimensions are 0..1.
-type ColorXY struct {
-	X float64 `json:"x"`
-	Y float64 `json:"y"`
-}
+// ColorXY is an alias to keep wire-format JSON tags working without
+// touching every call site. New code should use colorconv.XY directly.
+type ColorXY = colorconv.XY
 
-// Gamut is the triangle of representable colors for one bulb model.
-// Hue v2 returns the three corners explicitly.
-type Gamut struct {
-	Red   ColorXY `json:"red"`
-	Green ColorXY `json:"green"`
-	Blue  ColorXY `json:"blue"`
-}
+// Gamut is an alias to colorconv.Gamut for the same reason.
+type Gamut = colorconv.Gamut
 
 // ColorUpdate is the body shape for a PUT — only xy, no gamut.
 type ColorUpdate struct {

@@ -1,9 +1,9 @@
-module github.com/fdatoo/gohome-driverkit
+module github.com/fdatoo/switchyard-driverkit
 
 go 1.25.9
 
 require (
-	github.com/fdatoo/gohome v0.1.1
+	github.com/fdatoo/switchyard v0.1.1
 	github.com/google/uuid v1.6.0
 	google.golang.org/grpc v1.79.1
 	google.golang.org/protobuf v1.36.11

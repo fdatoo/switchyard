@@ -2,7 +2,7 @@
 
 !!! status-alpha "Alpha — shipped, interface evolving"
 
-Starlark is gohome's embedded scripting language. It is a deterministic, sandboxed subset of Python with no I/O except through the built-ins provided by each execution context. If you can write Python, you can write Starlark — the syntax is nearly identical.
+Starlark is switchyard's embedded scripting language. It is a deterministic, sandboxed subset of Python with no I/O except through the built-ins provided by each execution context. If you can write Python, you can write Starlark — the syntax is nearly identical.
 
 ---
 
@@ -203,10 +203,10 @@ call_service("light.hall", "turn_on", brightness=brightness_for_lux(lux))
 
 **Resolution rules:**
 
-- Paths must start with `//` — resolved relative to your config directory (`~/.config/gohome/`).
+- Paths must start with `//` — resolved relative to your config directory (`~/.config/switchyard/`).
 - Path traversal (`..`) is rejected.
 - Circular loads are detected and reported as errors.
-- Modules are cached per `config apply`; editing a `.star` file takes effect after the next `gohome config apply`.
+- Modules are cached per `config apply`; editing a `.star` file takes effect after the next `switchyard config apply`.
 - Non-`//` schemes (`http:`, bare relative paths, `file:`) are rejected.
 
 **Defining a shared module:**
@@ -231,19 +231,19 @@ load("//lib/helpers.star", "clamp")   # only clamp is available
 
 ---
 
-## `gohome eval` — scratch tool
+## `switchyard eval` — scratch tool
 
 Run a Starlark snippet against the live daemon without writing a file:
 
 ```
-$ gohome eval 'state("light.kitchen").state'
+$ switchyard eval 'state("light.kitchen").state'
 → "off"  (3ms / 12 steps)
 ```
 
 Pass a file:
 
 ```
-$ gohome eval my_script.star
+$ switchyard eval my_script.star
 [log] brightness=180
 → 180  (8ms / 423 steps)
 ```
@@ -261,7 +261,7 @@ $ gohome eval my_script.star
 - `elapsed` + `steps` on the last line.
 - Errors go to stderr; exit code 1.
 
-Use `gohome eval` to prototype snippets before putting them in an automation, or to query live state interactively.
+Use `switchyard eval` to prototype snippets before putting them in an automation, or to query live state interactively.
 
 ---
 
@@ -285,12 +285,12 @@ for e in ents:
 **Test conditions without running actions:**
 
 ```
-$ gohome eval --context condition \
+$ switchyard eval --context condition \
   'state("binary_sensor.hall_motion").state == "on"'
 → False  (2ms / 8 steps)
 ```
 
-**Write unit tests with `gohome test`:**
+**Write unit tests with `switchyard test`:**
 
 ```python
 # automations/test_lights.star
@@ -303,17 +303,17 @@ def test_brightness_clamp():
 ```
 
 ```
-$ gohome test automations/test_lights.star
+$ switchyard test automations/test_lights.star
 --- PASS: test_brightness_clamp  (4ms / 63 steps)
 ```
 
 **Trace a full run:**
 
 ```
-$ gohome automation trigger hall_motion_night
+$ switchyard automation trigger hall_motion_night
 ▶ triggered hall_motion_night (manual) corr=a3f2
 
-$ gohome automation trace a3f2
+$ switchyard automation trace a3f2
 automation.run          hall_motion_night  corr=a3f2
  ├─ conditions          PASS (2 checked)
  ├─ action[0]  call_service  light.hall.turn_on    ✓  2ms

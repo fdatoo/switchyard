@@ -4,9 +4,9 @@ hide:
   - toc
 ---
 
-# gohome
+# switchyard
 
-**gohome** is a Go-native home automation daemon built for people who want their home to be as reliable as production infrastructure. Every state change is an immutable event stored in SQLite, every entity has a typed schema, and the entire system is designed to be queried and controlled by AI agents via MCP — no hacks, no YAML glue.
+**switchyard** is a Go-native home automation daemon built for people who want their home to be as reliable as production infrastructure. Every state change is an immutable event stored in SQLite, every entity has a typed schema, and the entire system is designed to be queried and controlled by AI agents via MCP — no hacks, no YAML glue.
 
 If you're coming from Home Assistant, you'll find the concepts familiar but the implementation dramatically simpler: typed entities instead of string states, Pkl configuration instead of sprawling YAML, Starlark instead of Jinja templates.
 
@@ -14,7 +14,7 @@ If you're coming from Home Assistant, you'll find the concepts familiar but the 
 
 <div class="grid cards" markdown>
 
--   :material-download-circle:{ .lg .middle } **Install gohome**
+-   :material-download-circle:{ .lg .middle } **Install switchyard**
 
     ---
 
@@ -42,7 +42,7 @@ If you're coming from Home Assistant, you'll find the concepts familiar but the 
 
 ---
 
-## Why gohome?
+## Why switchyard?
 
 <div class="grid" markdown>
 
@@ -90,7 +90,7 @@ Entities have schemas. A `light` has `brightness: Int` and `color_temp: Kelvin` 
 
 **Single binary**
 
-`gohomed` is a single statically linked binary with no runtime dependencies. Drop it on a Raspberry Pi, point it at a config directory, and it runs.
+`switchyardd` is a single statically linked binary with no runtime dependencies. Drop it on a Raspberry Pi, point it at a config directory, and it runs.
 
 </div>
 

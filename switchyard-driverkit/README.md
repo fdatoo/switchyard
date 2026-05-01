@@ -1,6 +1,6 @@
-# gohome-driverkit
+# switchyard-driverkit
 
-Go SDK for writing [gohome](https://github.com/fdatoo/gohome) Carport drivers.
+Go SDK for writing [switchyard](https://github.com/fdatoo/switchyard) Carport drivers.
 
 ## Quick start
 
@@ -11,8 +11,8 @@ import (
     "context"
     "log"
 
-    entityv1 "github.com/fdatoo/gohome/gen/gohome/entity/v1"
-    "github.com/fdatoo/gohome-driverkit/driver"
+    entityv1 "github.com/fdatoo/switchyard/gen/switchyard/entity/v1"
+    "github.com/fdatoo/switchyard-driverkit/driver"
 )
 
 func main() {
@@ -32,12 +32,12 @@ func main() {
 }
 ```
 
-Point `gohomed` at the compiled binary via `drivers.toml`, and it will spawn and supervise your driver automatically.
+Point `switchyardd` at the compiled binary via `drivers.toml`, and it will spawn and supervise your driver automatically.
 
 ## Install
 
 ```bash
-go get github.com/fdatoo/gohome-driverkit@latest
+go get github.com/fdatoo/switchyard-driverkit@latest
 ```
 
 ## Packages
@@ -57,12 +57,12 @@ go get github.com/fdatoo/gohome-driverkit@latest
 ## CLI harness
 
 ```bash
-go install github.com/fdatoo/gohome-driverkit/drivertest/cmd/drivertest@latest
+go install github.com/fdatoo/switchyard-driverkit/drivertest/cmd/drivertest@latest
 drivertest run ./my-driver --scenario happy-path
 ```
 
 ## Carport protocol compatibility
 
-| driverkit | Carport protocol | gohome |
+| driverkit | Carport protocol | switchyard |
 |---|---|---|
 | v0.x | v1alpha1 | v0.1.1+ |

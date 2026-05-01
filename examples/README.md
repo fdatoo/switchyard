@@ -1,18 +1,18 @@
-# GoHome Configuration Examples
+# Switchyard Configuration Examples
 
-This directory contains example `main.pkl` configuration files to help you get started with gohome.
+This directory contains example `main.pkl` configuration files to help you get started with switchyard.
 
 ## Which file should I use?
 
-### `minimal-main.pkl` — New to gohome?
+### `minimal-main.pkl` — New to switchyard?
 
-Start here. This file shows the bare minimum configuration needed to run gohome:
+Start here. This file shows the bare minimum configuration needed to run switchyard:
 
-- Listeners (how gohome accepts connections)
+- Listeners (how switchyard accepts connections)
 - One example entity (a light)
 - Empty sections for entities, automations, dashboards, etc.
 
-**Best for:** Getting gohome running quickly, understanding the configuration structure, beginners.
+**Best for:** Getting switchyard running quickly, understanding the configuration structure, beginners.
 
 **Copy it:**
 \`\`\`bash
@@ -22,7 +22,7 @@ cp minimal-main.pkl main.pkl
 
 ### `full-main.pkl` — Ready to see everything?
 
-This file demonstrates all major gohome subsystems in a realistic smart home scenario:
+This file demonstrates all major switchyard subsystems in a realistic smart home scenario:
 
 - Multiple entities (lights, sensors, switches across rooms)
 - Automations (motion-activated lights, temperature alerts)
@@ -47,13 +47,13 @@ cp full-main.pkl main.pkl
    - Replace entity IDs with your actual device names
    - Add your devices and automations
    - Set up users/roles if needed
-3. Run gohomed:
+3. Run switchyardd:
    \`\`\`bash
-   gohomed --config-dir /path/to/config/directory
+   switchyardd --config-dir /path/to/config/directory
    \`\`\`
 
 ## Need more help?
 
 - See the comments in each `.pkl` file for configuration guidance
-- Check the main gohome documentation for detailed guides
+- Check the main switchyard documentation for detailed guides
 - Refer to the Pkl language docs if you need syntax help

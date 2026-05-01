@@ -77,13 +77,13 @@ class SceneAction extends Action {
 new automations.SceneAction { slug = "night_mode" }
 ```
 
-This is equivalent to `gohome scene apply night_mode`. The scene engine resolves which entities to update; the automation does not need to know them individually.
+This is equivalent to `switchyard scene apply night_mode`. The scene engine resolves which entities to update; the automation does not need to know them individually.
 
 ---
 
 ## Run a named script
 
-`ScriptAction` calls a named script. The script runs under the same correlation ID as the automation, so `gohome automation trace <id>` shows the full chain.
+`ScriptAction` calls a named script. The script runs under the same correlation ID as the automation, so `switchyard automation trace <id>` shows the full chain.
 
 ```pkl
 class ScriptAction extends Action {

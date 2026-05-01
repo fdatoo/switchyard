@@ -17,7 +17,7 @@ conn, err := protocol.FromEnv()
 
 // Or construct directly:
 conn := &protocol.Conn{
-    SocketPath:    "/run/gohome/my-driver.sock",
+    SocketPath:    "/run/switchyard/my-driver.sock",
     Secret:        "...",
     InstanceID:    "my-driver",
     Config:        []byte(`{"key":"value"}`),

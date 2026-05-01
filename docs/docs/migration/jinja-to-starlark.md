@@ -1,9 +1,9 @@
 # Jinja to Starlark
 
 !!! status-wip "In development"
-    This feature is in active development. The `gohome import-ha` command is not yet shipped.
+    This feature is in active development. The `switchyard import-ha` command is not yet shipped.
 
-Home Assistant uses Jinja2 templates extensively: in automation conditions, action templates, computed (template) entities, and notification messages. gohome uses [Starlark](../automations/starlark.md) — a deterministic, sandboxed subset of Python — for the same purposes.
+Home Assistant uses Jinja2 templates extensively: in automation conditions, action templates, computed (template) entities, and notification messages. switchyard uses [Starlark](../automations/starlark.md) — a deterministic, sandboxed subset of Python — for the same purposes.
 
 The importer includes a Jinja → Starlark transpiler that automatically converts the most common Jinja patterns. This page documents exactly what the transpiler handles, what it cannot handle, and how to fix the `# FIXME` markers it leaves behind.
 
@@ -121,7 +121,7 @@ state('sensor.temperature').attributes["unit_of_measurement"]
 {{ area_name('abc123') }}
 ```
 
-These require gohome stdlib helpers that do not exist in v1.0. Use `entities(domain)` with an area filter as a starting point, or list the entities explicitly.
+These require switchyard stdlib helpers that do not exist in v1.0. Use `entities(domain)` with an area filter as a starting point, or list the entities explicitly.
 
 ### Geographic helpers
 
@@ -130,7 +130,7 @@ These require gohome stdlib helpers that do not exist in v1.0. Use `entities(dom
 {{ distance('zone.home', 'device_tracker.phone') }}
 ```
 
-No equivalent in gohome v1.0. These require a `gohome.geo` stdlib that is deferred to a future release.
+No equivalent in switchyard v1.0. These require a `switchyard.geo` stdlib that is deferred to a future release.
 
 ### Jinja macros
 
@@ -160,7 +160,7 @@ Not supported. Extract the logic to a `.star` module and use Starlark's `load()`
 value_template: "{{ states(config.entity_id) }}"
 ```
 
-Blueprint `!input` references embedded in templates are flagged with `# FIXME(blueprint-input)`. Blueprints are not a v1.0 gohome concept.
+Blueprint `!input` references embedded in templates are flagged with `# FIXME(blueprint-input)`. Blueprints are not a v1.0 switchyard concept.
 
 ---
 
@@ -207,10 +207,10 @@ The following are complete before/after examples for common HA templates.
 
 ## How to handle unmapped constructs
 
-After running `gohome import-ha`, search the output directory for all items that need attention:
+After running `switchyard import-ha`, search the output directory for all items that need attention:
 
 ```
-$ grep -r 'FIXME(' ./my-gohome/
+$ grep -r 'FIXME(' ./my-switchyard/
 ```
 
 Or read the summary in `IMPORT_REPORT.md` — the **Open FIXMEs** section lists every FIXME with its file, line, and the original Jinja that triggered it.
@@ -221,7 +221,7 @@ For each FIXME:
 2. Understand what it computes.
 3. Write the Starlark equivalent using the [Starlark guide](../automations/starlark.md) and the built-ins available in the relevant context.
 4. Replace the `result = None` placeholder (or `pass`) with the new Starlark expression.
-5. Run `gohome config validate` to confirm the file is valid.
-6. Test the automation with `gohome automation trigger <id>` or `gohome eval`.
+5. Run `switchyard config validate` to confirm the file is valid.
+6. Test the automation with `switchyard automation trigger <id>` or `switchyard eval`.
 
 Most FIXMEs arise from `states.entity_id` property-style access or from area expansion helpers. The fix is usually a small, mechanical rewrite.

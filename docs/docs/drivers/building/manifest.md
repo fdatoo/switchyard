@@ -2,7 +2,7 @@
 
 !!! status-alpha "Alpha — shipped, interface evolving"
 
-The driver manifest is a Pkl file that describes the driver to `gohomed`: its name, version, what entity types it produces, and the typed schema for per-instance configuration. The manifest is embedded in the driver binary at build time.
+The driver manifest is a Pkl file that describes the driver to `switchyardd`: its name, version, what entity types it produces, and the typed schema for per-instance configuration. The manifest is embedded in the driver binary at build time.
 
 !!! note "Pkl manifests are a C4 deliverable"
     In v0.x, the Carport handshake carries manifest fields directly from Go code (name, version, supported capabilities). The Pkl-typed manifest (`DriverManifest.pkl_module`) is reserved in the protocol but not yet populated — it ships with C4 (the Pkl config loader milestone). This page documents the intended C4 manifest format so you can design your driver's config schema ahead of time.
@@ -15,7 +15,7 @@ A `DriverManifest.pkl` file at the root of your driver repository:
 
 ```pkl
 // DriverManifest.pkl
-import "gohome:driver" as driver
+import "switchyard:driver" as driver
 
 manifest: driver.DriverManifest = new {
   name    = "driver.hue"
@@ -23,7 +23,7 @@ manifest: driver.DriverManifest = new {
 
   description = "Philips Hue bridge integration using the local CLIP API."
 
-  // The typed Pkl class that gohomed will use to validate per-instance config.
+  // The typed Pkl class that switchyardd will use to validate per-instance config.
   instanceConfig = HueInstanceConfig
 
   // Entity types this driver can register.
@@ -55,7 +55,7 @@ manifest: driver.DriverManifest = new {
 
 ## Defining `instanceConfig` in Pkl
 
-The `instanceConfig` field references a typed Pkl class. `gohomed` will validate each instance's config block against this class before spawning the driver, and will report type errors at `gohome config validate` time rather than at runtime.
+The `instanceConfig` field references a typed Pkl class. `switchyardd` will validate each instance's config block against this class before spawning the driver, and will report type errors at `switchyard config validate` time rather than at runtime.
 
 ```pkl
 // DriverManifest.pkl (continued)
@@ -107,7 +107,7 @@ DriverManifest.pkl.bin: DriverManifest.pkl
     pkl compile --format binary -o DriverManifest.pkl.bin DriverManifest.pkl
 ```
 
-At runtime, the driver passes `manifestBytes` back to `gohomed` via `HandshakeResponse.manifest.pkl_module`. `gohomed` uses it to validate configs for future instances without spawning the binary.
+At runtime, the driver passes `manifestBytes` back to `switchyardd` via `HandshakeResponse.manifest.pkl_module`. `switchyardd` uses it to validate configs for future instances without spawning the binary.
 
 !!! note
     In v0.x (C3), `pkl_module` is reserved but empty. The Go SDK's `driver.Driver` returns a `DriverManifest` proto with `Name`, `Version`, `ProtocolVersion`, and `SupportedCapabilities` populated from code. The embedding pattern is documented here so you can prepare your build pipeline for C4.
@@ -119,7 +119,7 @@ At runtime, the driver passes `manifestBytes` back to `gohomed` via `HandshakeRe
 A complete `DriverManifest.pkl` for the Hue driver:
 
 ```pkl
-import "gohome:driver" as driver
+import "switchyard:driver" as driver
 
 class HueInstanceConfig {
   bridgeAddress: String
@@ -140,10 +140,10 @@ manifest: driver.DriverManifest = new {
 }
 ```
 
-Instance config in `gohome.pkl` (after C4):
+Instance config in `switchyard.pkl` (after C4):
 
 ```pkl
-import "gohome:drivers" as drivers
+import "switchyard:drivers" as drivers
 
 drivers: Listing<drivers.DriverInstance> = new {
   new drivers.DriverInstance {
@@ -158,4 +158,4 @@ drivers: Listing<drivers.DriverInstance> = new {
 }
 ```
 
-Type errors in `config` are caught at `gohome config validate`, before the driver is ever spawned.
+Type errors in `config` are caught at `switchyard config validate`, before the driver is ever spawned.

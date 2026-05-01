@@ -28,7 +28,7 @@ class Listener {
 }
 
 class UDSListener {
-  path: String = "@data/gohomed.sock"
+  path: String = "@data/switchyardd.sock"
   mode: UInt   = 0o600
 }
 

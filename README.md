@@ -5,6 +5,8 @@
 
 Switchyard is a self-hosted home automation platform. `switchyardd` runs on your local network and connects to devices via a driver model; `switchyard` is the CLI for managing it.
 
+> **Warning**: This project is in early development. It's definitely not ready for production use, and the API is likely to change.
+
 ## Modules
 
 | Module | Path | Description |
@@ -25,7 +27,7 @@ Both modules are linked by a Go workspace (`go.work`), so `go build ./...` and `
 ## Building
 
 ```bash
-task build          # builds switchyardd + gohome binaries into dist/
+task build          # builds switchyardd + switchyard binaries into dist/
 task web:build      # builds the web UI (required before task build)
 ```
 

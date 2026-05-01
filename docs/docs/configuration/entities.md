@@ -2,7 +2,7 @@
 
 !!! status-alpha "Alpha — shipped, interface evolving"
 
-An entity is the primary unit of state in gohome. Everything you control or monitor — a light, a thermostat, a door sensor — is exposed as one or more entities. Entities have typed state and typed attributes declared via Pkl classes, not string blobs.
+An entity is the primary unit of state in switchyard. Everything you control or monitor — a light, a thermostat, a door sensor — is exposed as one or more entities. Entities have typed state and typed attributes declared via Pkl classes, not string blobs.
 
 ## Entity id format
 
@@ -20,10 +20,10 @@ The domain is the entity class family (`light`, `sensor`, `binary_sensor`, `swit
 
 ## Standard entity classes
 
-The `gohome:entities` module defines the built-in classes:
+The `switchyard:entities` module defines the built-in classes:
 
 ```pkl
-module gohome.entities
+module switchyard.entities
 
 abstract class Entity {
   id: String           // "light.kitchen_ceiling"
@@ -54,7 +54,7 @@ Drivers declare additional entity classes by extending `Entity` and publishing t
 
 ## Typed state and attributes
 
-Unlike Home Assistant's string state, gohome entity state is typed at the class level. A `Light`'s state is a structured object — `on: Bool`, `brightness: Int` (0–255), `color_temp: Int` (Kelvin). A `Sensor`'s state is a `Float`. The type is enforced when a driver reports a state change; the event store records a structured value, not a raw string.
+Unlike Home Assistant's string state, switchyard entity state is typed at the class level. A `Light`'s state is a structured object — `on: Bool`, `brightness: Int` (0–255), `color_temp: Int` (Kelvin). A `Sensor`'s state is a `Float`. The type is enforced when a driver reports a state change; the event store records a structured value, not a raw string.
 
 This matters for automations. A Starlark condition can write:
 
@@ -73,7 +73,7 @@ int(entities["light.kitchen_ceiling"].attributes["brightness"]) > 128
 Drivers register entities automatically. If a driver names an entity `light.hue_1` but you want it to appear as `light.kitchen_ceiling`, or if it places an entity in the wrong area, you fix that in `entities/overrides.pkl`:
 
 ```pkl
-import "gohome:entities" as entities
+import "switchyard:entities" as entities
 
 overrides: Listing<entities.Entity> = new {
   // Rename and re-room a light
@@ -103,7 +103,7 @@ If you have a hardware type that doesn't fit the built-in classes, extend `Entit
 
 ```pkl
 // my_entities.pkl
-import "gohome:entities" as entities
+import "switchyard:entities" as entities
 
 class AirQualitySensor extends entities.Entity {
   unit: String = "AQI"

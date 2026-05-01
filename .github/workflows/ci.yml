@@ -11,7 +11,7 @@ jobs:
   changes:
     runs-on: ubuntu-latest
     outputs:
-      gohome: ${{ steps.filter.outputs.gohome }}
+      switchyard: ${{ steps.filter.outputs.switchyard }}
       driverkit: ${{ steps.filter.outputs.driverkit }}
     steps:
       - uses: actions/checkout@v4
@@ -19,7 +19,7 @@ jobs:
         id: filter
         with:
           filters: |
-            gohome:
+            switchyard:
               - 'cmd/**'
               - 'gen/**'
               - 'internal/**'
@@ -36,15 +36,15 @@ jobs:
               - 'buf.gen.yaml'
               - 'Taskfile.yml'
             driverkit:
-              - 'gohome-driverkit/**'
+              - 'switchyard-driverkit/**'
               - 'go.work'
               - 'go.work.sum'
 
-  # ── gohome ──────────────────────────────────────────────────────────────────
+  # ── switchyard ──────────────────────────────────────────────────────────────────
 
-  gohome-build-and-test:
+  switchyard-build-and-test:
     needs: changes
-    if: github.event_name != 'pull_request' || needs.changes.outputs.gohome == 'true'
+    if: github.event_name != 'pull_request' || needs.changes.outputs.switchyard == 'true'
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
@@ -109,9 +109,9 @@ jobs:
       - name: Integration
         run: task test:integration
 
-  gohome-lint:
+  switchyard-lint:
     needs: changes
-    if: github.event_name != 'pull_request' || needs.changes.outputs.gohome == 'true'
+    if: github.event_name != 'pull_request' || needs.changes.outputs.switchyard == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -129,9 +129,9 @@ jobs:
         with:
           version: v2.11.4
 
-  gohome-coverage:
+  switchyard-coverage:
     needs: changes
-    if: github.event_name != 'pull_request' || needs.changes.outputs.gohome == 'true'
+    if: github.event_name != 'pull_request' || needs.changes.outputs.switchyard == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -152,9 +152,9 @@ jobs:
           }
           echo "carport coverage ${pct}% — passes ≥70% gate"
 
-  gohome-proto:
+  switchyard-proto:
     needs: changes
-    if: github.event_name != 'pull_request' || needs.changes.outputs.gohome == 'true'
+    if: github.event_name != 'pull_request' || needs.changes.outputs.switchyard == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -177,7 +177,7 @@ jobs:
       - name: Buf lint
         run: buf lint
 
-  gohome-fuzz-scheduled:
+  switchyard-fuzz-scheduled:
     needs: changes
     if: github.event_name == 'schedule'
     runs-on: ubuntu-latest
@@ -190,7 +190,7 @@ jobs:
       - run: go test -fuzz=FuzzFilterMatch -fuzztime=5m ./internal/eventstore
       - run: go test -fuzz=FuzzEnvelopeDecode -fuzztime=5m ./internal/carport
 
-  # ── gohome-driverkit ────────────────────────────────────────────────────────
+  # ── switchyard-driverkit ────────────────────────────────────────────────────────
 
   driverkit-build-and-test:
     needs: changes
@@ -201,14 +201,14 @@ jobs:
     runs-on: ${{ matrix.os }}
     defaults:
       run:
-        working-directory: gohome-driverkit
+        working-directory: switchyard-driverkit
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
           go-version: '1.25'
           cache: true
-          cache-dependency-path: gohome-driverkit/go.sum
+          cache-dependency-path: switchyard-driverkit/go.sum
 
       - name: Tidy
         run: go mod tidy && git diff --exit-code go.mod go.sum
@@ -234,4 +234,4 @@ jobs:
       - uses: golangci/golangci-lint-action@v7
         with:
           version: v2.11.4
-          working-directory: gohome-driverkit
+          working-directory: switchyard-driverkit

@@ -2,11 +2,11 @@
 
 !!! status-alpha "Alpha — shipped, interface evolving"
 
-All gohome services are served under the `gohome.v1alpha1.*` protobuf package over [Connect-RPC](https://connectrpc.com/). The same handlers speak Connect, gRPC, and gRPC-Web on both the Unix domain socket (UDS) and the TCP listener.
+All switchyard services are served under the `switchyard.v1alpha1.*` protobuf package over [Connect-RPC](https://connectrpc.com/). The same handlers speak Connect, gRPC, and gRPC-Web on both the Unix domain socket (UDS) and the TCP listener.
 
-**Base URL (default):** `http://127.0.0.1:8080` (TCP) or `unix://$GOHOME_DATA_DIR/gohomed.sock` (UDS)
+**Base URL (default):** `http://127.0.0.1:8080` (TCP) or `unix://$GOHOME_DATA_DIR/switchyardd.sock` (UDS)
 
-**Package prefix:** `gohome.v1alpha1`
+**Package prefix:** `switchyard.v1alpha1`
 
 ---
 
@@ -76,7 +76,7 @@ message Heartbeat {
 
 ### Error model
 
-Every error carries a structured `gohome.error.v1alpha1.ErrorDetail` in the Connect trailer:
+Every error carries a structured `switchyard.error.v1alpha1.ErrorDetail` in the Connect trailer:
 
 ```proto
 message ErrorDetail {
@@ -577,7 +577,7 @@ Returns daemon-side limits used by the MCP server (buffer sizes, eval result cap
 |------|--------|------|-------------|
 | `/healthz` | `GET` | None | Liveness probe; returns `200 OK` when the daemon is running |
 | `/metrics` | `GET` | None | Prometheus metrics scrape endpoint |
-| `/webhooks/{slug}` | `POST` | HMAC-SHA256 signature | Webhook ingress; validates `X-GoHome-Signature: v1=<hex>` against the per-slug Pkl secret |
+| `/webhooks/{slug}` | `POST` | HMAC-SHA256 signature | Webhook ingress; validates `X-Switchyard-Signature: v1=<hex>` against the per-slug Pkl secret |
 
 ---
 
@@ -585,7 +585,7 @@ Returns daemon-side limits used by the MCP server (buffer sizes, eval result cap
 
 ### Current: `v1alpha1`
 
-All services live in `gohome.v1alpha1.*`. Wire-breaking changes between releases are permitted with a migration note in the docs.
+All services live in `switchyard.v1alpha1.*`. Wire-breaking changes between releases are permitted with a migration note in the docs.
 
 ### Graduation to `v1`
 
@@ -597,4 +597,4 @@ Graduation is a one-way door. Requirements:
 
 ### Data messages
 
-`gohome.event.v1`, `gohome.entity.v1`, and `gohome.config.v1` are stable data messages referenced by `v1alpha1` services as-is. Their stability was established in C1–C4.
+`switchyard.event.v1`, `switchyard.entity.v1`, and `switchyard.config.v1` are stable data messages referenced by `v1alpha1` services as-is. Their stability was established in C1–C4.

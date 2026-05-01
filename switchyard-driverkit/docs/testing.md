@@ -66,7 +66,7 @@ case <-time.After(2 * time.Second):
 Install:
 
 ```bash
-go install github.com/fdatoo/gohome-driverkit/drivertest/cmd/drivertest@latest
+go install github.com/fdatoo/switchyard-driverkit/drivertest/cmd/drivertest@latest
 ```
 
 Run against a compiled binary:
@@ -93,7 +93,7 @@ drivertest run ./my-driver --scenario happy-path --json   # structured output
 
 ```yaml
 - name: Install drivertest
-  run: go install github.com/fdatoo/gohome-driverkit/drivertest/cmd/drivertest@latest
+  run: go install github.com/fdatoo/switchyard-driverkit/drivertest/cmd/drivertest@latest
 
 - name: Build driver
   run: go build -o my-driver .

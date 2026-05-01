@@ -1,6 +1,6 @@
-// full-main.pkl: Complete gohome configuration example
+// full-main.pkl: Complete switchyard configuration example
 //
-// This example demonstrates all major gohome subsystems in a realistic
+// This example demonstrates all major switchyard subsystems in a realistic
 // smart home setup. It shows how to:
 // - Define entities (lights, sensors, switches)
 // - Create automations (motion-activated lights, temperature alerts)
@@ -72,7 +72,7 @@ entities: Listing<ent.Entity> = new {
 // ============================================================================
 // DRIVER INSTANCES: Hardware connectors (Zigbee, MQTT, Z-Wave, etc.)
 // ============================================================================
-// These tell gohome how to communicate with your physical devices.
+// These tell switchyard how to communicate with your physical devices.
 // You need at least one driver configured for devices to work.
 //
 // CUSTOMIZATION:
@@ -198,7 +198,7 @@ dashboards: Listing<dash.Dashboard> = new {
 // ============================================================================
 // AUTHENTICATION: Users, roles, and access control
 // ============================================================================
-// Set up users who can access gohome and what they can control.
+// Set up users who can access switchyard and what they can control.
 // Useful for multi-user homes, guests, or remote access.
 //
 // CUSTOMIZATION:
@@ -248,7 +248,7 @@ policies: Listing<authmod.Policy> = new {
 // ============================================================================
 // MCP: Model Context Protocol Integration
 // ============================================================================
-// MCP allows AI models (like Claude) to interact with your gohome.
+// MCP allows AI models (like Claude) to interact with your switchyard.
 // Useful for voice control, intelligent automations, etc.
 //
 // CUSTOMIZATION:
@@ -258,14 +258,14 @@ policies: Listing<authmod.Policy> = new {
 mcp: mcpmod.MCPConfig = new mcpmod.MCPConfig {}
 
 // ============================================================================
-// LISTENERS: How gohome accepts connections
+// LISTENERS: How switchyard accepts connections
 // ============================================================================
-// gohome listens on two channels:
+// switchyard listens on two channels:
 // 1. Unix Domain Socket (UDS): Local connections only (most secure)
 // 2. TCP: Network connections (requires TLS for security)
 //
 // CUSTOMIZATION:
-// - UDS path: customize if @data/gohomed.sock conflicts with something
+// - UDS path: customize if @data/switchyardd.sock conflicts with something
 // - TCP bind: change from 127.0.0.1:8080 for remote access (use TLS!)
 // - TLS: provide cert/key files for HTTPS
 
@@ -279,7 +279,7 @@ class Listener {
 class UDSListener {
   // Unix Domain Socket: Local connections only
   // Safe for testing; fastest local connection
-  path: String = "@data/gohomed.sock"
+  path: String = "@data/switchyardd.sock"
   mode: UInt   = 0o600  // Read/write for owner only
 }
 

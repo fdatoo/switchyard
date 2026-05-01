@@ -153,7 +153,7 @@ Your Starlark code can fire custom events with `event.fire("home.presence_change
 **Tips**
 
 - `kind` is an exact string match. For prefix matching or patterns, write a `StarlarkCondition` that evaluates `event.kind.startswith("driver_event.hue.")`.
-- Event triggers receive `event = None` when fired manually via `gohome automation trigger`; guard with `if event != None:` if you access event data in conditions or actions.
+- Event triggers receive `event = None` when fired manually via `switchyard automation trigger`; guard with `if event != None:` if you access event data in conditions or actions.
 
 ---
 

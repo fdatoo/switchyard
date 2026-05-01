@@ -18,10 +18,10 @@ If a secret value ends up in Pkl, it ends up in git history. Use a secret refere
 
 ## Secret reference types
 
-All four are defined in `gohome:base` as **typealiases** — constrained `String` values with a mandatory prefix:
+All four are defined in `switchyard:base` as **typealiases** — constrained `String` values with a mandatory prefix:
 
 ```pkl
-module gohome.base
+module switchyard.base
 
 typealias EnvSecret     = String(matches(Regex("env:[A-Z_][A-Z0-9_]*")))
 typealias FileSecret    = String(matches(Regex("file:/.+")))
@@ -37,7 +37,7 @@ Secrets are plain strings with a prefix. The Pkl evaluator validates the format 
 apiToken: base.Secret = "env:HUE_API_TOKEN"
 ```
 
-Resolved by `os.Getenv("HUE_API_TOKEN")` at apply time. The value must be set in the daemon's environment — in a systemd unit via `EnvironmentFile=`, in a Docker container via `-e` or `--env-file`, or in a `.env` file sourced before launching `gohomed`.
+Resolved by `os.Getenv("HUE_API_TOKEN")` at apply time. The value must be set in the daemon's environment — in a systemd unit via `EnvironmentFile=`, in a Docker container via `-e` or `--env-file`, or in a `.env` file sourced before launching `switchyardd`.
 
 This is the lowest-friction option for simple setups.
 
@@ -47,14 +47,14 @@ This is the lowest-friction option for simple setups.
 apiToken: base.Secret = "file:/run/secrets/hue_api_token"
 ```
 
-Resolved by reading the file at the given absolute path and trimming leading/trailing whitespace. The file must be readable by the user running `gohomed`.
+Resolved by reading the file at the given absolute path and trimming leading/trailing whitespace. The file must be readable by the user running `switchyardd`.
 
 This is well-suited to secrets injected by a secrets manager (HashiCorp Vault agent, Kubernetes secrets projected into a volume, Docker secrets).
 
 ### `keyring:` — system keyring
 
 ```pkl
-apiToken: base.Secret = "keyring:gohome/hue_api_token"
+apiToken: base.Secret = "keyring:switchyard/hue_api_token"
 ```
 
 Format: `keyring:<service>/<account>`. Resolved via the system keyring: macOS Keychain, Linux Secret Service (GNOME Keyring, KWallet), or Windows Credential Manager. Backed by the `go-keyring` library.
@@ -64,25 +64,25 @@ This is the best option for workstation installs where the operator wants OS-lev
 To pre-populate a keyring secret from the CLI:
 
 ```
-$ secret-tool store --label "Hue API token" service gohome user hue_api_token
+$ secret-tool store --label "Hue API token" service switchyard user hue_api_token
 ```
 
 Or on macOS:
 
 ```
-$ security add-generic-password -s gohome -a hue_api_token -w "sk-abc123xyz"
+$ security add-generic-password -s switchyard -a hue_api_token -w "sk-abc123xyz"
 ```
 
 ## How resolution works
 
-At `gohome config apply` time, after the Pkl evaluator produces a `ConfigSnapshot`, the secret resolver walks the snapshot and replaces every tagged secret reference with its resolved plaintext value.
+At `switchyard config apply` time, after the Pkl evaluator produces a `ConfigSnapshot`, the secret resolver walks the snapshot and replaces every tagged secret reference with its resolved plaintext value.
 
-The Pkl evaluator serializes secret references as tagged strings: `"__secret__:env:HUE_API_TOKEN"`, `"__secret__:file:/run/secrets/hue"`, `"__secret__:keyring:gohome/hue_api_token"`. The Go resolver detects these tags and dispatches to the appropriate resolver.
+The Pkl evaluator serializes secret references as tagged strings: `"__secret__:env:HUE_API_TOKEN"`, `"__secret__:file:/run/secrets/hue"`, `"__secret__:keyring:switchyard/hue_api_token"`. The Go resolver detects these tags and dispatches to the appropriate resolver.
 
 **Resolved values are never persisted:**
 
 - Not written to the event store. `ConfigApplied` events carry diff metadata only.
-- Not printed in `gohome config apply` diff output.
+- Not printed in `switchyard config apply` diff output.
 - Not written to any log file.
 - Passed to the carport supervisor in memory, held only for the duration of driver instance startup.
 
@@ -92,8 +92,8 @@ If a secret cannot be resolved (variable not set, file missing, keyring entry ab
 
 ```pkl
 // drivers.pkl
-import "gohome:base"    as base
-import "gohome:carport" as carport
+import "switchyard:base"    as base
+import "switchyard:carport" as carport
 import "driver:hue"     as hue
 
 drivers: Listing<carport.DriverInstance> = new {
@@ -126,4 +126,4 @@ When these ship, they will follow the same `Secret` interface. Your Pkl config w
 - Use `file:` secrets with files mounted from a secrets manager (Vault agent, Kubernetes secret projection).
 - Use `keyring:` secrets on workstation installs.
 - Never commit `.env` files containing actual secret values. Add them to `.gitignore`.
-- Rotate secrets by updating the environment variable or file, then running `gohome config apply`. If the secret is an `env:` reference whose variable name did not change, the driver instance config hash does not change, so the driver is not restarted — the new value takes effect on the next driver restart or on a subsequent config apply that does change the instance.
+- Rotate secrets by updating the environment variable or file, then running `switchyard config apply`. If the secret is an `env:` reference whose variable name did not change, the driver instance config hash does not change, so the driver is not restarted — the new value takes effect on the next driver restart or on a subsequent config apply that does change the instance.

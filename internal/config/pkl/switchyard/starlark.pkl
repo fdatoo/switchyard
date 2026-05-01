@@ -2,12 +2,12 @@ module switchyard.starlark
 
 // Starlark snippet validation.
 //
-// The Pkl evaluator in gohomed registers a `gohome-validator:` resource reader
+// The Pkl evaluator in switchyardd registers a `switchyard-validator:` resource reader
 // (see internal/config/evaluator.go). When Pkl evaluates a typealias constraint,
 // it calls `read()` which routes to the Go-side reader. The reader parses the
 // source with `go.starlark.net/syntax` and returns "true" or "false".
 //
-// The URI shape is `gohome-validator:<fn>?<url-encoded-source>`. The `<fn>`
+// The URI shape is `switchyard-validator:<fn>?<url-encoded-source>`. The `<fn>`
 // segment selects between expression, script, and condition (an expression).
 local const function validate(fn: String, src: String): Boolean =
     read("switchyard-validator:" + fn + "?" + encodeSource(src)).text == "true"

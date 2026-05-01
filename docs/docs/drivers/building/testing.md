@@ -13,16 +13,16 @@ Both exercise the real Carport gRPC path. Neither mocks the protocol layer.
 
 ## In-process harness
 
-`drivertest.New` starts your driver's `RunConn` in a background goroutine, creates a temporary Unix socket, dials in as a gRPC client, and performs the Carport handshake — exactly what `gohomed` does, but in-process and without subprocess overhead. The harness is cleaned up automatically via `t.Cleanup`.
+`drivertest.New` starts your driver's `RunConn` in a background goroutine, creates a temporary Unix socket, dials in as a gRPC client, and performs the Carport handshake — exactly what `switchyardd` does, but in-process and without subprocess overhead. The harness is cleaned up automatically via `t.Cleanup`.
 
 ```go
 import (
     "context"
     "testing"
 
-    entityv1 "github.com/fynn-labs/gohome/gen/gohome/entity/v1"
-    "github.com/fynn-labs/gohome-driverkit/driver"
-    "github.com/fynn-labs/gohome-driverkit/drivertest"
+    entityv1 "github.com/fynn-labs/switchyard/gen/switchyard/entity/v1"
+    "github.com/fynn-labs/switchyard-driverkit/driver"
+    "github.com/fynn-labs/switchyard-driverkit/drivertest"
 )
 
 func TestTurnOn(t *testing.T) {
@@ -216,7 +216,7 @@ func TestCapabilities(t *testing.T) {
 The `drivertest` CLI binary exercises a compiled driver end-to-end. Install it:
 
 ```
-go install github.com/fynn-labs/gohome-driverkit/drivertest/cmd/drivertest@latest
+go install github.com/fynn-labs/switchyard-driverkit/drivertest/cmd/drivertest@latest
 ```
 
 Run built-in scenarios against your binary:
@@ -243,10 +243,10 @@ drivertest run ./bin/my-driver \
 - `--json` produces structured output for CI reporting.
 - Exit code 0 = all assertions passed; non-zero = failure with reason.
 
-### Running `gohome test` against a driver
+### Running `switchyard test` against a driver
 
 ```
-gohome driver test ./bin/my-driver --instance hue_main
+switchyard driver test ./bin/my-driver --instance hue_main
 ```
 
 This is a wrapper around `drivertest run` that reads instance config from your local `drivers.toml`, so you don't need to pass `--config` manually.

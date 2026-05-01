@@ -98,7 +98,7 @@ message SystemEvent {
 
 ```proto
 message StateChanged {
-  gohome.entity.v1.Attributes attributes = 1;
+  switchyard.entity.v1.Attributes attributes = 1;
 }
 ```
 
@@ -172,7 +172,7 @@ message EntityRegistered {
   string                      device_id          = 2;
   string                      entity_type        = 3;   // "light" | "switch" | ...
   string                      friendly_name      = 4;
-  gohome.entity.v1.Attributes capabilities       = 5;
+  switchyard.entity.v1.Attributes capabilities       = 5;
 }
 ```
 
@@ -539,7 +539,7 @@ message DriverInstanceRestarted {
 !!! status-planned "Planned — SceneService not yet implemented"
     SceneApplied events will be emitted when the SceneService ships.
 
-**When emitted:** When a scene is applied via `gohome scene apply` or from an automation.
+**When emitted:** When a scene is applied via `switchyard scene apply` or from an automation.
 
 | Field | Type | Description |
 |---|---|---|
@@ -585,7 +585,7 @@ Declare a `StateChangeTrigger` or `EventTrigger` in Pkl to react to any of the a
 
 ### MCP event tailing
 
-Use the `gohome__tail_events` MCP tool or `EventService.Tail` directly to stream events into an AI agent's context. Filter by `kinds` to limit to the relevant event types. Use `from_cursor` to resume after a disconnect without missing events.
+Use the `switchyard__tail_events` MCP tool or `EventService.Tail` directly to stream events into an AI agent's context. Filter by `kinds` to limit to the relevant event types. Use `from_cursor` to resume after a disconnect without missing events.
 
 ### At-least-once delivery on resume
 

@@ -3,26 +3,26 @@
 !!! status-alpha "Alpha — shipped, interface evolving"
     The OCI image is published to GitHub Container Registry. The image API (environment variables, volume paths) is stable for v0.x but may change at v1.0.
 
-gohome ships a minimal OCI image. It is a good fit if you run Docker, Docker Compose, Portainer, Unraid, or any other container host.
+switchyard ships a minimal OCI image. It is a good fit if you run Docker, Docker Compose, Portainer, Unraid, or any other container host.
 
 ## Image
 
 ```
-ghcr.io/fynn-labs/gohome:latest
+ghcr.io/fynn-labs/switchyard:latest
 ```
 
 Versioned tags are preferred for production use:
 
 ```
-ghcr.io/fynn-labs/gohome:v0.1.0
+ghcr.io/fynn-labs/switchyard:v0.1.0
 ```
 
-The image contains only `gohomed` and `gohome`. It is built `FROM scratch` — no shell, no package manager, no OS layer. The binary handles everything.
+The image contains only `switchyardd` and `switchyard`. It is built `FROM scratch` — no shell, no package manager, no OS layer. The binary handles everything.
 
 Pull the image to verify it is accessible:
 
 ```bash
-docker pull ghcr.io/fynn-labs/gohome:latest
+docker pull ghcr.io/fynn-labs/switchyard:latest
 ```
 
 ## Quick start (single container)
@@ -37,14 +37,14 @@ Then start the container:
 
 ```bash
 docker run -d \
-  --name gohomed \
+  --name switchyardd \
   --restart unless-stopped \
   -p 8080:8080 \
   -p 9090:9090 \
   -v "$(pwd)/config:/config" \
   -v "$(pwd)/data:/data" \
   -e LOG_LEVEL=info \
-  ghcr.io/fynn-labs/gohome:latest
+  ghcr.io/fynn-labs/switchyard:latest
 ```
 
 This binds:
@@ -58,9 +58,9 @@ Save this as `compose.yaml` (or `docker-compose.yml`):
 
 ```yaml
 services:
-  gohomed:
-    image: ghcr.io/fynn-labs/gohome:v0.1.0
-    container_name: gohomed
+  switchyardd:
+    image: ghcr.io/fynn-labs/switchyard:v0.1.0
+    container_name: switchyardd
     restart: unless-stopped
     ports:
       - "8080:8080"   # Connect-RPC API + embedded web UI
@@ -86,7 +86,7 @@ docker compose up -d
 View logs:
 
 ```bash
-docker compose logs -f gohomed
+docker compose logs -f switchyardd
 ```
 
 Stop and remove the container (volumes are preserved):
@@ -111,7 +111,7 @@ docker compose down
 
 | Port | Protocol | Description |
 |---|---|---|
-| `8080` | HTTP/2 (Connect-RPC), HTTP/1.1 (SSE) | Connect-RPC API — used by the `gohome` CLI, the embedded web UI, and third-party clients |
+| `8080` | HTTP/2 (Connect-RPC), HTTP/1.1 (SSE) | Connect-RPC API — used by the `switchyard` CLI, the embedded web UI, and third-party clients |
 | `9090` | HTTP | MCP server — used by AI agents (Claude, etc.) over the HTTP MCP transport |
 
 If you are running behind a reverse proxy (nginx, Caddy, Traefik), expose only `8080` externally and handle TLS termination at the proxy. The MCP server on `9090` should remain internal unless you are explicitly exposing it to an external agent runtime.
@@ -120,7 +120,7 @@ If you are running behind a reverse proxy (nginx, Caddy, Traefik), expose only `
 
 | Container path | Purpose | Notes |
 |---|---|---|
-| `/config` | Pkl configuration files | Mount as read-write; gohome reads and watches this directory. Consider mounting read-only if you manage config externally and reload via `gohome config apply`. |
+| `/config` | Pkl configuration files | Mount as read-write; switchyard reads and watches this directory. Consider mounting read-only if you manage config externally and reload via `switchyard config apply`. |
 | `/data` | Event store and runtime data | Must be read-write and persistent. Contains `events.db` (SQLite), `drivers/` (per-driver state), and `certs/` (generated mTLS certificates for edge agents). |
 
 !!! warning "Do not use a tmpfs for /data"
@@ -128,25 +128,25 @@ If you are running behind a reverse proxy (nginx, Caddy, Traefik), expose only `
 
 ## Running the CLI against a Docker container
 
-The `gohome` CLI connects to the daemon over Connect-RPC. You can run it from your host (if `8080` is published), from inside the container, or from another container on the same network.
+The `switchyard` CLI connects to the daemon over Connect-RPC. You can run it from your host (if `8080` is published), from inside the container, or from another container on the same network.
 
 **From your host:**
 
 ```bash
-gohome --server http://localhost:8080 status
+switchyard --server http://localhost:8080 status
 ```
 
 **From inside the running container:**
 
 ```bash
-docker exec gohomed gohome status
+docker exec switchyardd switchyard status
 ```
 
 **Set a default server** so you don't repeat the flag:
 
 ```bash
 export GOHOME_SERVER=http://localhost:8080
-gohome status
+switchyard status
 ```
 
 ## Next step

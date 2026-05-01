@@ -1,18 +1,18 @@
 # Getting started
 
-This guide walks you from zero to a working Carport driver connected to `gohomed`.
+This guide walks you from zero to a working Carport driver connected to `switchyardd`.
 
 ## Prerequisites
 
 - Go 1.25+
-- A running `gohomed` instance (C2 or later)
+- A running `switchyardd` instance (C2 or later)
 
 ## 1. Create your module
 
 ```bash
 mkdir my-driver && cd my-driver
 go mod init github.com/you/my-driver
-go get github.com/fdatoo/gohome-driverkit@latest
+go get github.com/fdatoo/switchyard-driverkit@latest
 ```
 
 ## 2. Declare entities
@@ -26,8 +26,8 @@ import (
     "context"
     "log"
 
-    entityv1 "github.com/fdatoo/gohome/gen/gohome/entity/v1"
-    "github.com/fdatoo/gohome-driverkit/driver"
+    entityv1 "github.com/fdatoo/switchyard/gen/switchyard/entity/v1"
+    "github.com/fdatoo/switchyard-driverkit/driver"
 )
 
 const entityID = "light.ceiling"
@@ -44,7 +44,7 @@ func main() {
     }
 ```
 
-Entity IDs follow the format `<type>.<name>`, matching gohome's domain conventions.
+Entity IDs follow the format `<type>.<name>`, matching switchyard's domain conventions.
 
 ## 3. Register capability handlers
 
@@ -87,7 +87,7 @@ The returned `*entityv1.Attributes` becomes the new tracked state and is automat
 }
 ```
 
-`d.Run` reads env vars set by `gohomed` (`GOHOME_CARPORT_SOCKET`, `GOHOME_CARPORT_SECRET`, etc.) and serves in a reconnect loop until the process exits.
+`d.Run` reads env vars set by `switchyardd` (`GOHOME_CARPORT_SOCKET`, `GOHOME_CARPORT_SECRET`, etc.) and serves in a reconnect loop until the process exits.
 
 ## 6. Background state emission
 
@@ -104,7 +104,7 @@ go func() {
 }()
 ```
 
-`ErrNotConnected` is expected when `gohomed` hasn't connected yet; log other errors.
+`ErrNotConnected` is expected when `switchyardd` hasn't connected yet; log other errors.
 
 ## 7. Build and register
 
@@ -121,10 +121,10 @@ binary  = "/path/to/my-driver"
 enabled = true
 ```
 
-Restart `gohomed`. Check health:
+Restart `switchyardd`. Check health:
 
 ```bash
-gohome driver status my_driver
+switchyard driver status my_driver
 ```
 
 ## 8. Write tests

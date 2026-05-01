@@ -3,12 +3,12 @@
 !!! status-wip "In development"
     Package distribution (`.deb`, `.rpm`, Homebrew) is not yet available in the current alpha. Use the [static binary](binary.md) or [Docker](docker.md) install method for now. The systemd unit template described here works with the static binary today.
 
-On production Linux servers, running `gohomed` as a systemd service is the recommended approach. systemd handles process supervision, log collection, restart on failure, and startup ordering.
+On production Linux servers, running `switchyardd` as a systemd service is the recommended approach. systemd handles process supervision, log collection, restart on failure, and startup ordering.
 
 ## Option A: Install from package (Debian/Ubuntu)
 
 ```bash
-# Add the gohome apt repository
+# Add the switchyard apt repository
 curl -fsSL https://packages.fynn-labs.dev/gpg.key \
   | sudo gpg --dearmor -o /usr/share/keyrings/fynn-labs.gpg
 
@@ -17,43 +17,43 @@ echo "deb [arch=amd64 signed-by=/usr/share/keyrings/fynn-labs.gpg] \
   | sudo tee /etc/apt/sources.list.d/fynn-labs.list
 
 sudo apt update
-sudo apt install gohome
+sudo apt install switchyard
 ```
 
 The package installs:
 
-- `/usr/bin/gohomed` — the daemon
-- `/usr/bin/gohome` — the CLI
-- `/etc/systemd/system/gohomed.service` — the systemd unit
-- `/etc/gohome/` — default config directory (empty; populate before starting)
+- `/usr/bin/switchyardd` — the daemon
+- `/usr/bin/switchyard` — the CLI
+- `/etc/systemd/system/switchyardd.service` — the systemd unit
+- `/etc/switchyard/` — default config directory (empty; populate before starting)
 
 ## Option B: Install from package (Fedora / RHEL / Rocky)
 
 ```bash
-# Add the gohome RPM repository
+# Add the switchyard RPM repository
 sudo tee /etc/yum.repos.d/fynn-labs.repo <<'EOF'
 [fynn-labs]
-name=Fynn Labs – gohome
+name=Fynn Labs – switchyard
 baseurl=https://packages.fynn-labs.dev/rpm/stable/$basearch
 enabled=1
 gpgcheck=1
 gpgkey=https://packages.fynn-labs.dev/gpg.key
 EOF
 
-sudo dnf install gohome
+sudo dnf install switchyard
 ```
 
 ## Option C: Install via Homebrew (macOS) {#homebrew}
 
 ```bash
 brew tap fynn-labs/tap
-brew install fynn-labs/tap/gohome
+brew install fynn-labs/tap/switchyard
 ```
 
-This installs both `gohomed` and `gohome`. On macOS, `gohomed` can be run as a LaunchAgent rather than systemd — see the formula's caveats after install:
+This installs both `switchyardd` and `switchyard`. On macOS, `switchyardd` can be run as a LaunchAgent rather than systemd — see the formula's caveats after install:
 
 ```bash
-brew info fynn-labs/tap/gohome
+brew info fynn-labs/tap/switchyard
 ```
 
 ## Option D: systemd unit with the static binary
@@ -63,23 +63,23 @@ If you installed via the [static binary](binary.md) method and want systemd supe
 Create a dedicated user:
 
 ```bash
-sudo useradd --system --no-create-home --shell /usr/sbin/nologin gohomed
+sudo useradd --system --no-create-home --shell /usr/sbin/nologin switchyardd
 ```
 
 Create the config and data directories:
 
 ```bash
-sudo mkdir -p /etc/gohome /var/lib/gohome
-sudo chown gohomed:gohomed /etc/gohome /var/lib/gohome
-sudo chmod 750 /etc/gohome /var/lib/gohome
+sudo mkdir -p /etc/switchyard /var/lib/switchyard
+sudo chown switchyardd:switchyardd /etc/switchyard /var/lib/switchyard
+sudo chmod 750 /etc/switchyard /var/lib/switchyard
 ```
 
-Create the systemd unit at `/etc/systemd/system/gohomed.service`:
+Create the systemd unit at `/etc/systemd/system/switchyardd.service`:
 
 ```ini
 [Unit]
-Description=gohome daemon
-Documentation=https://gohome.dev/docs/installation/
+Description=switchyard daemon
+Documentation=https://switchyard.dev/docs/installation/
 After=network-online.target
 Wants=network-online.target
 StartLimitBurst=5
@@ -87,12 +87,12 @@ StartLimitIntervalSec=60s
 
 [Service]
 Type=simple
-User=gohomed
-Group=gohomed
+User=switchyardd
+Group=switchyardd
 
-ExecStart=/usr/local/bin/gohomed \
-  --config /etc/gohome/main.pkl \
-  --data-dir /var/lib/gohome
+ExecStart=/usr/local/bin/switchyardd \
+  --config /etc/switchyard/main.pkl \
+  --data-dir /var/lib/switchyard
 
 ExecReload=/bin/kill -HUP $MAINPID
 
@@ -102,13 +102,13 @@ RestartSec=5s
 # Logging — all output goes to the journal
 StandardOutput=journal
 StandardError=journal
-SyslogIdentifier=gohomed
+SyslogIdentifier=switchyardd
 
 # Hardening (optional but recommended)
 NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=strict
-ReadWritePaths=/var/lib/gohome /etc/gohome
+ReadWritePaths=/var/lib/switchyard /etc/switchyard
 ProtectHome=true
 CapabilityBoundingSet=
 
@@ -124,49 +124,49 @@ Populate your config before starting (see [First run](first-run.md)):
 
 ```bash
 # Minimal smoke-check: validate config before the daemon tries to load it
-gohome config validate --config /etc/gohome/main.pkl
+switchyard config validate --config /etc/switchyard/main.pkl
 ```
 
 Enable and start:
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable gohomed
-sudo systemctl start gohomed
+sudo systemctl enable switchyardd
+sudo systemctl start switchyardd
 ```
 
 Check status:
 
 ```bash
-sudo systemctl status gohomed
+sudo systemctl status switchyardd
 ```
 
 ## View logs
 
 ```bash
 # Follow live logs
-journalctl -u gohomed -f
+journalctl -u switchyardd -f
 
 # Show the last 100 lines
-journalctl -u gohomed -n 100
+journalctl -u switchyardd -n 100
 
 # Show logs since last boot
-journalctl -u gohomed -b
+journalctl -u switchyardd -b
 
 # Show logs between two timestamps
-journalctl -u gohomed --since "2026-04-27 08:00" --until "2026-04-27 10:00"
+journalctl -u switchyardd --since "2026-04-27 08:00" --until "2026-04-27 10:00"
 ```
 
 ## Reload config without a restart
 
-gohomed supports SIGHUP-triggered config reloads. Only changed driver instances and automations are re-initialized; the event store and existing connections are not interrupted.
+switchyardd supports SIGHUP-triggered config reloads. Only changed driver instances and automations are re-initialized; the event store and existing connections are not interrupted.
 
 ```bash
 # Via systemctl
-sudo systemctl reload gohomed
+sudo systemctl reload switchyardd
 
 # Or via the CLI (sends the reload RPC)
-gohome config apply
+switchyard config apply
 ```
 
 ## Uninstall
@@ -174,25 +174,25 @@ gohome config apply
 === "apt"
 
     ```bash
-    sudo apt remove gohome
+    sudo apt remove switchyard
     # Config and data directories are preserved; remove manually if desired:
-    # sudo rm -rf /etc/gohome /var/lib/gohome
+    # sudo rm -rf /etc/switchyard /var/lib/switchyard
     ```
 
 === "dnf"
 
     ```bash
-    sudo dnf remove gohome
+    sudo dnf remove switchyard
     ```
 
 === "Manual"
 
     ```bash
-    sudo systemctl stop gohomed
-    sudo systemctl disable gohomed
-    sudo rm /etc/systemd/system/gohomed.service
+    sudo systemctl stop switchyardd
+    sudo systemctl disable switchyardd
+    sudo rm /etc/systemd/system/switchyardd.service
     sudo systemctl daemon-reload
-    sudo rm /usr/local/bin/gohomed /usr/local/bin/gohome
+    sudo rm /usr/local/bin/switchyardd /usr/local/bin/switchyard
     ```
 
 ## Next step

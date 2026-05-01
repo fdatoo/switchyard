@@ -8,11 +8,11 @@ A script is a named, callable Starlark function declared in Pkl. Scripts are ind
 
 ## Declaring scripts
 
-Scripts are declared in a `gohome.scripts` Pkl module:
+Scripts are declared in a `switchyard.scripts` Pkl module:
 
 ```pkl
 // scripts.pkl
-import "gohome:scripts" as scripts
+import "switchyard:scripts" as scripts
 
 scripts: Listing<scripts.Script> = new {
   new scripts.Script {
@@ -80,7 +80,7 @@ params["active"]    # bool
 params["entity"]    # string (entity id)
 ```
 
-Required params missing at call time → compile-time error from `gohome config validate`; type coercion failures at runtime → `ErrScriptArgs`.
+Required params missing at call time → compile-time error from `switchyard config validate`; type coercion failures at runtime → `ErrScriptArgs`.
 
 ---
 
@@ -95,14 +95,14 @@ new automations.ScriptAction {
 }
 ```
 
-The script runs under the automation's correlation ID so `gohome automation trace <id>` shows the full chain including the nested `ScriptInvoked` and `ScriptFinished` events.
+The script runs under the automation's correlation ID so `switchyard automation trace <id>` shows the full chain including the nested `ScriptInvoked` and `ScriptFinished` events.
 
 ---
 
 ## Calling scripts from the CLI
 
 ```
-$ gohome script run notify_residents --arg message="Test alert" --arg priority=high
+$ switchyard script run notify_residents --arg message="Test alert" --arg priority=high
 [log] Notifying residents: Test alert (priority=high)
 → None  (12ms / 847 steps)
 ```
@@ -112,7 +112,7 @@ Streaming output: `log()` calls appear as they execute. The final line shows the
 **List registered scripts:**
 
 ```
-$ gohome script list
+$ switchyard script list
 NAME                 PARAMS
 notify_residents     message:string  [priority:string]="normal"
 adaptive_brightness  entity:entity_id  [min_pct:int]=20
@@ -149,7 +149,7 @@ The MCP server returns the script's return value and logs after execution.
 For longer scripts, move the Starlark body to a `.star` file and reference it via `load()`:
 
 ```
-~/.config/gohome/
+~/.config/switchyard/
 ├── scripts.pkl
 └── scripts/
     ├── notify_residents.star
@@ -218,4 +218,4 @@ ScriptInvoked   script=notify_residents  corr=a3f2  by=cli:alice  args={message:
 ScriptFinished  script=notify_residents  corr=a3f2  outcome=OK    elapsed=12ms  steps=847
 ```
 
-This makes script execution auditable and traceable through `gohome automation trace`.
+This makes script execution auditable and traceable through `switchyard automation trace`.

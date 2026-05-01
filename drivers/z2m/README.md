@@ -18,16 +18,37 @@ The driver does not talk to Z2M directly — it talks to whatever MQTT broker Z2
 
 ### 2. Configure the driver
 
-The driver reads the following environment variables, set by `gohomed`:
+The driver receives its instance config as a JSON blob in the `GOHOME_CARPORT_INSTANCE_CONFIG` environment variable, which `gohomed` populates from the carport instance's `config_json` TOML field.
 
-| Variable | Required | Default | Purpose |
-|---|---|---|---|
-| `Z2M_BROKER_URL` | yes | — | `tcp://host:1883` or `ssl://host:8883` |
-| `Z2M_USERNAME` | no | — | MQTT broker username |
-| `Z2M_PASSWORD` | no | — | MQTT broker password |
-| `Z2M_BASE_TOPIC` | no | `zigbee2mqtt` | Z2M's `mqtt.base_topic` setting |
-| `Z2M_CLIENT_ID` | no | `gohome-z2m-<random8>` | MQTT client identifier |
-| `Z2M_TLS_SKIP_VERIFY` | no | `false` | Skip TLS verification (self-signed brokers) |
+| Field | Type | Required | Default | Purpose |
+|---|---|---|---|---|
+| `broker_url` | string | yes | — | `tcp://host:1883` or `ssl://host:8883` |
+| `username` | string | no | — | MQTT broker username |
+| `password_env` | string | no | — | Name of an env var holding the MQTT password (referenced indirectly so secrets stay out of config files) |
+| `base_topic` | string | no | `zigbee2mqtt` | Z2M's `mqtt.base_topic` setting |
+| `client_id` | string | no | `gohome-z2m-<random8>` | MQTT client identifier |
+| `tls_skip_verify` | bool | no | `false` | Skip TLS verification (self-signed brokers) |
+
+Example carport instance TOML:
+
+```toml
+[[carport.instances]]
+id = "z2m-home"
+binary = "/usr/local/bin/z2m-driver"
+config_json = '''
+{
+  "broker_url": "tcp://10.0.0.5:1883",
+  "username": "gohome",
+  "password_env": "Z2M_PASSWORD"
+}
+'''
+```
+
+Operational env vars (independent of the JSON config):
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `Z2M_LOG_LEVEL` | `info` | `debug` / `info` / `warn` / `error` |
 
 ## What gets surfaced
 

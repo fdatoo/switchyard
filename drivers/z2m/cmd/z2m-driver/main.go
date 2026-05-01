@@ -10,7 +10,6 @@ import (
 	"log/slog"
 	"os"
 	"os/signal"
-	"strconv"
 	"strings"
 	"sync"
 	"syscall"
@@ -84,41 +83,39 @@ func main() {
 	}
 }
 
-// config holds parsed environment variables.
+// config is the JSON shape carried in GOHOME_CARPORT_INSTANCE_CONFIG.
+// Password is resolved at load time from the env var named by PasswordEnv;
+// it is never serialized.
 type config struct {
-	BrokerURL     string
-	Username      string
-	Password      string
-	BaseTopic     string
-	ClientID      string
-	TLSSkipVerify bool
+	BrokerURL     string `json:"broker_url"`
+	Username      string `json:"username,omitempty"`
+	PasswordEnv   string `json:"password_env,omitempty"`
+	BaseTopic     string `json:"base_topic,omitempty"`
+	ClientID      string `json:"client_id,omitempty"`
+	TLSSkipVerify bool   `json:"tls_skip_verify,omitempty"`
+
+	Password string `json:"-"`
 }
 
 func loadConfig() (config, error) {
-	c := config{
-		BrokerURL: os.Getenv("Z2M_BROKER_URL"),
-		Username:  os.Getenv("Z2M_USERNAME"),
-		Password:  os.Getenv("Z2M_PASSWORD"),
-		BaseTopic: os.Getenv("Z2M_BASE_TOPIC"),
-		ClientID:  os.Getenv("Z2M_CLIENT_ID"),
+	raw := os.Getenv("GOHOME_CARPORT_INSTANCE_CONFIG")
+	if raw == "" {
+		return config{}, errors.New("GOHOME_CARPORT_INSTANCE_CONFIG is required")
+	}
+	c := config{BaseTopic: "zigbee2mqtt"}
+	if err := json.Unmarshal([]byte(raw), &c); err != nil {
+		return config{}, fmt.Errorf("parse instance config: %w", err)
 	}
 	if c.BrokerURL == "" {
-		return config{}, errors.New("Z2M_BROKER_URL is required")
+		return config{}, errors.New("broker_url is required")
 	}
-	if c.BaseTopic == "" {
-		c.BaseTopic = "zigbee2mqtt"
+	if c.PasswordEnv != "" {
+		c.Password = os.Getenv(c.PasswordEnv)
 	}
 	if c.ClientID == "" {
 		var b [4]byte
 		_, _ = rand.Read(b[:])
 		c.ClientID = "gohome-z2m-" + hex.EncodeToString(b[:])
-	}
-	if v := os.Getenv("Z2M_TLS_SKIP_VERIFY"); v != "" {
-		b, err := strconv.ParseBool(v)
-		if err != nil {
-			return config{}, errors.New("Z2M_TLS_SKIP_VERIFY must be a boolean")
-		}
-		c.TLSSkipVerify = b
 	}
 	return c, nil
 }

@@ -5,12 +5,12 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log/slog"
 	"os"
 	"os/signal"
-	"strconv"
 	"strings"
 	"sync"
 	"syscall"
@@ -32,7 +32,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	client, err := bridge.New(cfg.Address, cfg.APIKey, cfg.TLSSkipVerify)
+	client, err := bridge.New(cfg.Address, cfg.APIKey, *cfg.TLSSkipVerify)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "hue-driver: bridge: %v\n", err)
 		os.Exit(1)
@@ -92,31 +92,43 @@ func parseLogLevel(s string) slog.Level {
 	}
 }
 
-// config holds parsed environment variables.
+// config is the JSON shape carried in GOHOME_CARPORT_INSTANCE_CONFIG.
+// APIKey is resolved at load time from the env var named by APIKeyEnv;
+// it is never serialized. TLSSkipVerify uses a pointer so the JSON-omitted
+// case is distinguishable from an explicit false (default is true — the
+// bridge ships a self-signed cert).
 type config struct {
-	Address       string
-	APIKey        string
-	TLSSkipVerify bool
+	Address       string `json:"bridge_address"`
+	APIKeyEnv     string `json:"api_key_env"`
+	TLSSkipVerify *bool  `json:"tls_skip_verify,omitempty"`
+
+	APIKey string `json:"-"`
 }
 
 func loadConfig() (config, error) {
-	addr := os.Getenv("HUE_BRIDGE_ADDRESS")
-	if addr == "" {
-		return config{}, errors.New("HUE_BRIDGE_ADDRESS is required")
+	raw := os.Getenv("GOHOME_CARPORT_INSTANCE_CONFIG")
+	if raw == "" {
+		return config{}, errors.New("GOHOME_CARPORT_INSTANCE_CONFIG is required")
 	}
-	key := os.Getenv("HUE_API_KEY")
-	if key == "" {
-		return config{}, errors.New("HUE_API_KEY is required")
+	var c config
+	if err := json.Unmarshal([]byte(raw), &c); err != nil {
+		return config{}, fmt.Errorf("parse instance config: %w", err)
 	}
-	skip := true
-	if v := os.Getenv("HUE_TLS_SKIP_VERIFY"); v != "" {
-		b, err := strconv.ParseBool(v)
-		if err != nil {
-			return config{}, errors.New("HUE_TLS_SKIP_VERIFY must be a boolean")
-		}
-		skip = b
+	if c.Address == "" {
+		return config{}, errors.New("bridge_address is required")
 	}
-	return config{Address: addr, APIKey: key, TLSSkipVerify: skip}, nil
+	if c.APIKeyEnv == "" {
+		return config{}, errors.New("api_key_env is required")
+	}
+	c.APIKey = os.Getenv(c.APIKeyEnv)
+	if c.APIKey == "" {
+		return config{}, fmt.Errorf("api_key_env %q is unset or empty", c.APIKeyEnv)
+	}
+	if c.TLSSkipVerify == nil {
+		t := true
+		c.TLSSkipVerify = &t
+	}
+	return c, nil
 }
 
 // reachabilityTracker debounces bridge_unreachable / bridge_recovered

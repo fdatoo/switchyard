@@ -40,16 +40,16 @@ A general-purpose MQTT publish/subscribe driver. Register any topic as an entity
 
 Mirrors a [Zigbee2MQTT](https://www.zigbee2mqtt.io/) deployment into gohome over the MQTT broker that Z2M publishes to. Discovers all paired devices on startup, then reconciles live via the retained `bridge/devices` topic. v0.1 surfaces three device classes: lights (`light.*`), numeric sensors (`numeric_sensor.*`), and binary sensors (`binary_sensor.*`).
 
-**Config fields (env)**
+**Config fields**
 
-| Variable | Required | Default | Purpose |
+| Field | Type | Required | Description |
 |---|---|---|---|
-| `Z2M_BROKER_URL` | yes | — | `tcp://host:1883` or `ssl://host:8883` |
-| `Z2M_USERNAME` | no | — | MQTT broker username |
-| `Z2M_PASSWORD` | no | — | MQTT broker password |
-| `Z2M_BASE_TOPIC` | no | `zigbee2mqtt` | Z2M's `mqtt.base_topic` setting |
-| `Z2M_CLIENT_ID` | no | `gohome-z2m-<random8>` | MQTT client identifier |
-| `Z2M_TLS_SKIP_VERIFY` | no | `false` | Skip TLS verification |
+| `broker_url` | `string` | yes | `tcp://host:1883` or `ssl://host:8883` |
+| `username` | `string` | no | MQTT broker username |
+| `password_env` | `string` | no | Env var containing the MQTT password |
+| `base_topic` | `string` | no | Z2M's `mqtt.base_topic` setting (default `zigbee2mqtt`) |
+| `client_id` | `string` | no | MQTT client identifier (default `gohome-z2m-<random8>`) |
+| `tls_skip_verify` | `bool` | no | Skip TLS verification (default `false`) |
 
 **Known caveats**
 

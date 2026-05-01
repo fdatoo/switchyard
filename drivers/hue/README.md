@@ -34,13 +34,33 @@ The `username` field is your API key. Store it in your secret manager and refere
 
 ### 3. Configure the driver
 
-The driver reads three environment variables, set by `gohomed`:
+The driver receives its instance config as a JSON blob in the `GOHOME_CARPORT_INSTANCE_CONFIG` environment variable, which `gohomed` populates from the carport instance's `config_json` TOML field.
 
-| Variable | Required | Default | Purpose |
-|---|---|---|---|
-| `HUE_BRIDGE_ADDRESS` | yes | — | IP or hostname of the bridge. |
-| `HUE_API_KEY` | yes | — | Application key from step 2. |
-| `HUE_TLS_SKIP_VERIFY` | no | `true` | The bridge ships a self-signed cert. |
+| Field | Type | Required | Default | Purpose |
+|---|---|---|---|---|
+| `bridge_address` | string | yes | — | IP or hostname of the bridge |
+| `api_key_env` | string | yes | — | Name of an env var holding the API key (referenced indirectly so secrets stay out of config files) |
+| `tls_skip_verify` | bool | no | `true` | The bridge ships a self-signed cert |
+
+Example carport instance TOML:
+
+```toml
+[[carport.instances]]
+id = "hue-living-room"
+binary = "/usr/local/bin/hue-driver"
+config_json = '''
+{
+  "bridge_address": "192.168.1.10",
+  "api_key_env": "HUE_API_KEY"
+}
+'''
+```
+
+Operational env vars (independent of the JSON config):
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `HUE_LOG_LEVEL` | `info` | `debug` / `info` / `warn` / `error` |
 
 ## Known caveats
 

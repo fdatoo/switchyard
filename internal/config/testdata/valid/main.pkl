@@ -9,6 +9,7 @@ driverInstances {
   new FakeDriverInstance {
     id = "fake-main"
     driverName = "fake"
+    binary = "/usr/local/bin/fake-driver"
   }
 }
 

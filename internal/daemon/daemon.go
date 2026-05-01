@@ -102,7 +102,7 @@ func (d *Daemon) Run(ctx context.Context) error {
 	d.lockfile = lf
 	defer func() { _ = d.lockfile.Release() }()
 
-	db, err := storage.Open(ctx, storage.Config{Path: filepath.Join(dataDir, "gohome.db")})
+	db, err := storage.Open(ctx, storage.Config{Path: filepath.Join(dataDir, "switchyard.db")})
 	if err != nil {
 		return fmt.Errorf("open db: %w", err)
 	}
@@ -139,8 +139,8 @@ func (d *Daemon) Run(ctx context.Context) error {
 		AccessTTL:   15 * time.Minute,
 		RefreshTTL:  7 * 24 * time.Hour,
 		RefreshIdle: 24 * time.Hour,
-		AccessName:  "gohome_access",
-		RefreshName: "gohome_refresh",
+		AccessName:  "switchyard_access",
+		RefreshName: "switchyard_refresh",
 	})
 	throttleStore := throttle.New(db, throttle.Config{
 		Window:    15 * time.Minute,
@@ -401,7 +401,7 @@ func (d *Daemon) Run(ctx context.Context) error {
 
 	udsPath := expandPath(listenerCfg.GetUds().GetPath(), dataDir)
 	if udsPath == "" {
-		udsPath = filepath.Join(dataDir, "gohomed.sock")
+		udsPath = filepath.Join(dataDir, "switchyardd.sock")
 	}
 	udsMode := os.FileMode(listenerCfg.GetUds().GetMode())
 	if udsMode == 0 {
@@ -471,7 +471,7 @@ func (d *Daemon) Run(ctx context.Context) error {
 
 	if _, err := store.Append(ctx, eventstore.Event{
 		Kind:      "system",
-		Source:    "gohomed",
+		Source:    "switchyardd",
 		Timestamp: time.Now(),
 		Payload: &eventv1.Payload{Kind: &eventv1.Payload_System{
 			System: &eventv1.SystemEvent{Kind: "startup", Data: map[string]string{
@@ -483,7 +483,7 @@ func (d *Daemon) Run(ctx context.Context) error {
 	}); err != nil {
 		d.logger.Error("failed to append startup event", "err", err)
 	}
-	d.logger.Info("gohomed ready", "version", Version, "data_dir", dataDir, "admin_port", d.cfg.AdminPort)
+	d.logger.Info("switchyardd ready", "version", Version, "data_dir", dataDir, "admin_port", d.cfg.AdminPort)
 
 	<-ctx.Done()
 	d.logger.Info("shutdown requested")

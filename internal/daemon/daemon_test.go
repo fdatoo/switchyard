@@ -31,7 +31,7 @@ func TestDaemon_StartsAndShutsDownCleanly(t *testing.T) {
 		LogLevel:   slog.LevelInfo,
 		LogFormat:  "json",
 		AdminPort:  adminPort,
-		SocketPath: fmt.Sprintf("gohomed-%d.sock", os.Getpid()),
+		SocketPath: fmt.Sprintf("switchyardd-%d.sock", os.Getpid()),
 	}, logger, metrics)
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -82,7 +82,7 @@ func TestDaemon_APIVersion(t *testing.T) {
 		LogLevel:   slog.LevelInfo,
 		LogFormat:  "json",
 		AdminPort:  adminPort,
-		SocketPath: fmt.Sprintf("gohomed-%d.sock", os.Getpid()),
+		SocketPath: fmt.Sprintf("switchyardd-%d.sock", os.Getpid()),
 	}, logger, metrics)
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -113,7 +113,7 @@ func TestDaemon_APIVersion(t *testing.T) {
 	}
 
 	// Dial the Connect API over the Unix-domain socket.
-	sock := filepath.Join(dir, "gohomed.sock")
+	sock := filepath.Join(dir, "switchyardd.sock")
 	httpClient := &http.Client{Transport: &http.Transport{
 		DialContext: func(ctx context.Context, _, _ string) (net.Conn, error) {
 			return (&net.Dialer{}).DialContext(ctx, "unix", sock)

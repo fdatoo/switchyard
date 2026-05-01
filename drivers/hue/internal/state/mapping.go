@@ -1,5 +1,5 @@
 // Package state translates between Philips Hue CLIP v2 resources and
-// gohome entityv1 attributes. Pure functions, no I/O.
+// switchyard entityv1 attributes. Pure functions, no I/O.
 package state
 
 import (
@@ -11,14 +11,14 @@ import (
 	entityv1 "github.com/fdatoo/switchyard/gen/switchyard/entity/v1"
 )
 
-// colorToRgb is the bridge xy → packed gohome RGB conversion. Used by
+// colorToRgb is the bridge xy → packed switchyard RGB conversion. Used by
 // both LightToAttrs and MergeEvent to populate Light.ColorRgb.
 func colorToRgb(xy bridge.ColorXY) uint32 {
 	r, g, b := bridge.XYToRGB(xy)
 	return bridge.PackRGB(r, g, b)
 }
 
-// EntityID returns the gohome entity ID for a Hue light. The first 8 chars
+// EntityID returns the switchyard entity ID for a Hue light. The first 8 chars
 // of the Hue v2 stable resource UUID are deterministic across renames and
 // short enough to read in logs.
 func EntityID(l bridge.Light) string {
@@ -34,7 +34,7 @@ func EntityID(l bridge.Light) string {
 func LightToAttrs(l bridge.Light, available bool) *entityv1.Attributes {
 	light := &entityv1.Light{On: l.On.On}
 	if l.Dimming != nil {
-		light.Brightness = brightnessHueToGohome(l.Dimming.Brightness)
+		light.Brightness = brightnessHueToSwitchyard(l.Dimming.Brightness)
 	}
 	switch {
 	case l.Color != nil:
@@ -49,8 +49,8 @@ func LightToAttrs(l bridge.Light, available bool) *entityv1.Attributes {
 	}
 }
 
-// brightnessHueToGohome converts Hue's 0-100 float to gohome's 0-255 uint32.
-func brightnessHueToGohome(h float64) uint32 {
+// brightnessHueToSwitchyard converts Hue's 0-100 float to switchyard's 0-255 uint32.
+func brightnessHueToSwitchyard(h float64) uint32 {
 	if h < 0 {
 		h = 0
 	}
@@ -152,7 +152,7 @@ func MergeEvent(prev *entityv1.Light, ev bridge.Event, available bool) *entityv1
 		next.On = ev.On.On
 	}
 	if ev.Dimming != nil {
-		next.Brightness = brightnessHueToGohome(ev.Dimming.Brightness)
+		next.Brightness = brightnessHueToSwitchyard(ev.Dimming.Brightness)
 	}
 	switch {
 	case ev.Color != nil:

@@ -22,7 +22,7 @@ func NewHTTPHandler(deps Deps, cfg HTTPConfig) http.Handler {
 		opts = &sdk.ServerOptions{}
 	}
 	server := sdk.NewServer(&sdk.Implementation{
-		Name:    "gohome",
+		Name:    "switchyard",
 		Version: deps.Version,
 	}, opts)
 	if deps.RegisterTools != nil {

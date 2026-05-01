@@ -318,18 +318,18 @@ func TestRun_HeartbeatPong(t *testing.T) {
 }
 
 func TestFromEnv_MissingSocket(t *testing.T) {
-	t.Setenv("GOHOME_CARPORT_SOCKET", "")
+	t.Setenv("SWITCHYARD_CARPORT_SOCKET", "")
 	_, err := protocol.FromEnv()
 	if err == nil {
-		t.Fatal("expected error when GOHOME_CARPORT_SOCKET is unset")
+		t.Fatal("expected error when SWITCHYARD_CARPORT_SOCKET is unset")
 	}
 }
 
 func TestFromEnv_Success(t *testing.T) {
-	t.Setenv("GOHOME_CARPORT_SOCKET", "/tmp/test.sock")
-	t.Setenv("GOHOME_CARPORT_SECRET", "mysecret")
-	t.Setenv("GOHOME_CARPORT_INSTANCE_ID", "inst1")
-	t.Setenv("GOHOME_CARPORT_INSTANCE_CONFIG", `{"key":"val"}`)
+	t.Setenv("SWITCHYARD_CARPORT_SOCKET", "/tmp/test.sock")
+	t.Setenv("SWITCHYARD_CARPORT_SECRET", "mysecret")
+	t.Setenv("SWITCHYARD_CARPORT_INSTANCE_ID", "inst1")
+	t.Setenv("SWITCHYARD_CARPORT_INSTANCE_CONFIG", `{"key":"val"}`)
 	c, err := protocol.FromEnv()
 	if err != nil {
 		t.Fatalf("FromEnv: %v", err)

@@ -20,7 +20,7 @@ func TestZalandoKeyring_SatisfiesInterface(t *testing.T) {
 // TestZalandoKeyring_RoundTrip exercises the real adapter against go-keyring.
 // Skips when no OS keyring backend is available (CI without secret service).
 func TestZalandoKeyring_RoundTrip(t *testing.T) {
-	const service = "gohome-test"
+	const service = "switchyard-test"
 	const user = "round-trip"
 	const want = "hunter2"
 

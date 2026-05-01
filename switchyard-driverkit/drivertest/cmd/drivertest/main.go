@@ -122,10 +122,10 @@ func runHappyPath(ctx context.Context, cfg config) error {
 
 	cmd := exec.CommandContext(ctx, cfg.binary)
 	cmd.Env = append(os.Environ(),
-		"GOHOME_CARPORT_SOCKET="+sock,
-		"GOHOME_CARPORT_SECRET="+secret,
-		"GOHOME_CARPORT_INSTANCE_ID="+cfg.instanceID,
-		"GOHOME_CARPORT_INSTANCE_CONFIG="+cfg.cfgJSON,
+		"SWITCHYARD_CARPORT_SOCKET="+sock,
+		"SWITCHYARD_CARPORT_SECRET="+secret,
+		"SWITCHYARD_CARPORT_INSTANCE_ID="+cfg.instanceID,
+		"SWITCHYARD_CARPORT_INSTANCE_CONFIG="+cfg.cfgJSON,
 	)
 	cmd.Stderr = os.Stderr
 	if err := cmd.Start(); err != nil {
@@ -206,10 +206,10 @@ func runReconnect(ctx context.Context, cfg config) error {
 
 	cmd := exec.CommandContext(ctx, cfg.binary)
 	cmd.Env = append(os.Environ(),
-		"GOHOME_CARPORT_SOCKET="+sock,
-		"GOHOME_CARPORT_SECRET="+secret,
-		"GOHOME_CARPORT_INSTANCE_ID="+cfg.instanceID,
-		"GOHOME_CARPORT_INSTANCE_CONFIG="+cfg.cfgJSON,
+		"SWITCHYARD_CARPORT_SOCKET="+sock,
+		"SWITCHYARD_CARPORT_SECRET="+secret,
+		"SWITCHYARD_CARPORT_INSTANCE_ID="+cfg.instanceID,
+		"SWITCHYARD_CARPORT_INSTANCE_CONFIG="+cfg.cfgJSON,
 	)
 	cmd.Stderr = os.Stderr
 	if err := cmd.Start(); err != nil {

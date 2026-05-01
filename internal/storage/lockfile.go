@@ -16,17 +16,17 @@ type Lockfile struct {
 	path string
 }
 
-// AcquireLockfile writes <dataDir>/gohomed.lock with the current PID.
+// AcquireLockfile writes <dataDir>/switchyardd.lock with the current PID.
 // Returns an error if a live process already owns the file.
 func AcquireLockfile(dataDir string) (*Lockfile, error) {
-	path := filepath.Join(dataDir, "gohomed.lock")
+	path := filepath.Join(dataDir, "switchyardd.lock")
 	if err := os.MkdirAll(dataDir, 0o755); err != nil {
 		return nil, fmt.Errorf("mkdir %s: %w", dataDir, err)
 	}
 
 	if existingPID, ok := readPID(path); ok {
 		if processAlive(existingPID) {
-			return nil, fmt.Errorf("gohomed already running (pid %d)", existingPID)
+			return nil, fmt.Errorf("switchyardd already running (pid %d)", existingPID)
 		}
 		// Stale — fall through and overwrite.
 	}

@@ -31,7 +31,7 @@ func TestSourceInterceptor_ReadsHeader(t *testing.T) {
 	})
 	h := api.SourceInterceptor().WrapUnary(next)
 	req := connect.NewRequest(&struct{}{})
-	req.Header().Set("x-gohome-source", "mcp")
+	req.Header().Set("x-switchyard-source", "mcp")
 	_, _ = h(context.Background(), req)
 	require.Equal(t, "mcp", observed)
 }

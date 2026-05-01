@@ -57,10 +57,10 @@ func TestResolveSecrets_File(t *testing.T) {
 }
 
 func TestResolveSecrets_Keyring(t *testing.T) {
-	kr := &fakeKeyring{data: map[string]string{"gohome/hue_key": "kr-secret"}}
+	kr := &fakeKeyring{data: map[string]string{"switchyard/hue_key": "kr-secret"}}
 	snap := &configpb.ConfigSnapshot{
 		DriverInstances: []*configpb.DriverInstanceConfig{
-			{Id: "hue", Params: []byte(`{"id":"hue","apiKey":"keyring:gohome/hue_key"}`)},
+			{Id: "hue", Params: []byte(`{"id":"hue","apiKey":"keyring:switchyard/hue_key"}`)},
 		},
 	}
 	if err := ResolveSecrets(context.Background(), snap, kr); err != nil {

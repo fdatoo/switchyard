@@ -14,7 +14,7 @@ import (
 
 func driverEvt(pos uint64, ts time.Time, driverID, kind, detail string) eventstore.Event {
 	return eventstore.Event{
-		Position: pos, Timestamp: ts, Kind: "driver_event", Source: "gohomed",
+		Position: pos, Timestamp: ts, Kind: "driver_event", Source: "switchyardd",
 		Payload: &eventv1.Payload{Kind: &eventv1.Payload_DriverEvent{
 			DriverEvent: &eventv1.DriverEvent{
 				DriverInstanceId: driverID, Kind: kind, Detail: detail,

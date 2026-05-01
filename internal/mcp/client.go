@@ -1,4 +1,4 @@
-// Package mcp implements the gohome MCP server (stdio transport).
+// Package mcp implements the switchyard MCP server (stdio transport).
 package mcp
 
 import (
@@ -43,7 +43,7 @@ func NewClient(opts ClientOptions) (*Client, error) {
 	httpc := &http.Client{Transport: buildTransport(u)}
 	base := opts.EndpointURL
 	if u.Scheme == "unix" {
-		base = "http://gohomed"
+		base = "http://switchyardd"
 	}
 	interceptors := connect.WithInterceptors(headerInterceptor(opts.SessionID))
 	c := &Client{
@@ -76,13 +76,13 @@ func buildTransport(u *url.URL) http.RoundTripper {
 	return http.DefaultTransport
 }
 
-// headerInterceptor sets x-gohome-source: mcp and x-gohome-mcp-session on
+// headerInterceptor sets x-switchyard-source: mcp and x-switchyard-mcp-session on
 // every outgoing unary call.
 func headerInterceptor(sessionID string) connect.UnaryInterceptorFunc {
 	return func(next connect.UnaryFunc) connect.UnaryFunc {
 		return func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {
-			req.Header().Set("x-gohome-source", "mcp")
-			req.Header().Set("x-gohome-mcp-session", sessionID)
+			req.Header().Set("x-switchyard-source", "mcp")
+			req.Header().Set("x-switchyard-mcp-session", sessionID)
 			return next(ctx, req)
 		}
 	}
@@ -99,12 +99,12 @@ type HeaderOption struct {
 
 // SetToolHeader returns a HeaderOption that adds the tool header.
 func SetToolHeader(name string) *HeaderOption {
-	return &HeaderOption{Key: "x-gohome-mcp-tool", Value: name}
+	return &HeaderOption{Key: "x-switchyard-mcp-tool", Value: name}
 }
 
 // SetResourceHeader returns a HeaderOption that adds the resource header.
 func SetResourceHeader(uri string) *HeaderOption {
-	return &HeaderOption{Key: "x-gohome-mcp-resource", Value: uri}
+	return &HeaderOption{Key: "x-switchyard-mcp-resource", Value: uri}
 }
 
 // Apply sets the header on req.

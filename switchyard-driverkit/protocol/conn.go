@@ -56,17 +56,17 @@ type Conn struct {
 }
 
 // FromEnv constructs a Conn from Carport environment variables.
-// Returns an error if GOHOME_CARPORT_SOCKET is unset.
+// Returns an error if SWITCHYARD_CARPORT_SOCKET is unset.
 func FromEnv() (*Conn, error) {
-	sock := os.Getenv("GOHOME_CARPORT_SOCKET")
+	sock := os.Getenv("SWITCHYARD_CARPORT_SOCKET")
 	if sock == "" {
-		return nil, errors.New("GOHOME_CARPORT_SOCKET not set")
+		return nil, errors.New("SWITCHYARD_CARPORT_SOCKET not set")
 	}
 	return &Conn{
 		SocketPath: sock,
-		Secret:     os.Getenv("GOHOME_CARPORT_SECRET"),
-		InstanceID: os.Getenv("GOHOME_CARPORT_INSTANCE_ID"),
-		Config:     []byte(os.Getenv("GOHOME_CARPORT_INSTANCE_CONFIG")),
+		Secret:     os.Getenv("SWITCHYARD_CARPORT_SECRET"),
+		InstanceID: os.Getenv("SWITCHYARD_CARPORT_INSTANCE_ID"),
+		Config:     []byte(os.Getenv("SWITCHYARD_CARPORT_INSTANCE_CONFIG")),
 	}, nil
 }
 

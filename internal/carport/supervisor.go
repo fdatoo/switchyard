@@ -186,10 +186,10 @@ func (h *Host) spawn(ctx context.Context, cfg Instance) (string, *exec.Cmd, stri
 
 	cmd := exec.CommandContext(ctx, cfg.Binary)
 	cmd.Env = append(os.Environ(),
-		"GOHOME_CARPORT_SOCKET="+socketPath,
-		"GOHOME_CARPORT_SECRET="+secret,
-		"GOHOME_CARPORT_INSTANCE_ID="+cfg.ID,
-		"GOHOME_CARPORT_INSTANCE_CONFIG="+string(cfg.ConfigJSON),
+		"SWITCHYARD_CARPORT_SOCKET="+socketPath,
+		"SWITCHYARD_CARPORT_SECRET="+secret,
+		"SWITCHYARD_CARPORT_INSTANCE_ID="+cfg.ID,
+		"SWITCHYARD_CARPORT_INSTANCE_CONFIG="+string(cfg.ConfigJSON),
 	)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr

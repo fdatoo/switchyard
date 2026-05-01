@@ -74,7 +74,7 @@ func SlogInterceptor() connect.Interceptor {
 }
 
 // MetricsInterceptor records per-procedure request count and latency via the
-// gohome_api_* Prometheus metrics.
+// switchyard_api_* Prometheus metrics.
 func MetricsInterceptor(m *observability.Metrics) connect.Interceptor {
 	return connect.UnaryInterceptorFunc(func(next connect.UnaryFunc) connect.UnaryFunc {
 		return func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {

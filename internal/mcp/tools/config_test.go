@@ -71,7 +71,7 @@ func TestValidateConfig_HappyPath(t *testing.T) {
 	d, s := newConfigTestDeps(t, handler)
 	tools.Register(d)
 
-	result, err := callTool(t, s, "gohome__validate_config", map[string]any{
+	result, err := callTool(t, s, "switchyard__validate_config", map[string]any{
 		"pkl_bundle": "bundle",
 	})
 	require.NoError(t, err)
@@ -95,7 +95,7 @@ func TestApplyConfig_DryRunForwarded(t *testing.T) {
 	d, s := newConfigTestDeps(t, handler)
 	tools.Register(d)
 
-	result, err := callTool(t, s, "gohome__apply_config", map[string]any{
+	result, err := callTool(t, s, "switchyard__apply_config", map[string]any{
 		"pkl_bundle": "bundle",
 		"dry_run":    true,
 	})

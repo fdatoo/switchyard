@@ -13,20 +13,20 @@ import (
 	"github.com/fdatoo/switchyard/internal/mcp"
 )
 
-// RunScriptInput is the input schema for gohome__run_script.
+// RunScriptInput is the input schema for switchyard__run_script.
 type RunScriptInput struct {
 	Name string         `json:"name"`
 	Args map[string]any `json:"args,omitempty"`
 }
 
-// EvalStarlarkInput is the input schema for gohome__eval_starlark.
+// EvalStarlarkInput is the input schema for switchyard__eval_starlark.
 type EvalStarlarkInput struct {
 	Source string `json:"source"`
 }
 
 func registerScripts(d Deps) {
 	sdk.AddTool(d.Server, &sdk.Tool{
-		Name:        "gohome__run_script",
+		Name:        "switchyard__run_script",
 		Description: "Run a named Starlark script by name, passing optional arguments.",
 	}, func(ctx context.Context, _ *sdk.CallToolRequest, in RunScriptInput) (*sdk.CallToolResult, any, error) {
 		var args *structpb.Struct
@@ -41,7 +41,7 @@ func registerScripts(d Deps) {
 			Name: in.Name,
 			Args: args,
 		})
-		mcp.SetToolHeader("gohome__run_script").Apply(req)
+		mcp.SetToolHeader("switchyard__run_script").Apply(req)
 		resp, err := d.Client.Script.Run(ctx, req)
 		if err != nil {
 			return nil, nil, toToolError(err)
@@ -63,11 +63,11 @@ func registerScripts(d Deps) {
 	})
 
 	sdk.AddTool(d.Server, &sdk.Tool{
-		Name:        "gohome__eval_starlark",
+		Name:        "switchyard__eval_starlark",
 		Description: "Evaluate a Starlark expression and return the result.",
 	}, func(ctx context.Context, _ *sdk.CallToolRequest, in EvalStarlarkInput) (*sdk.CallToolResult, any, error) {
 		req := connect.NewRequest(&v1.EvalScriptRequest{Expr: in.Source})
-		mcp.SetToolHeader("gohome__eval_starlark").Apply(req)
+		mcp.SetToolHeader("switchyard__eval_starlark").Apply(req)
 		resp, err := d.Client.Script.Eval(ctx, req)
 		if err != nil {
 			return nil, nil, toToolError(err)

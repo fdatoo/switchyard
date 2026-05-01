@@ -40,8 +40,8 @@ func newAuthTestDeps(t *testing.T) (api.AuthDeps, *sql.DB) {
 		AccessTTL:   15 * time.Minute,
 		RefreshTTL:  7 * 24 * time.Hour,
 		RefreshIdle: 24 * time.Hour,
-		AccessName:  "gohome_access",
-		RefreshName: "gohome_refresh",
+		AccessName:  "switchyard_access",
+		RefreshName: "switchyard_refresh",
 	})
 	throttleStore := throttle.New(db, throttle.Config{
 		Window:    15 * time.Minute,
@@ -106,8 +106,8 @@ func TestAuthService_Login_Success(t *testing.T) {
 	for _, c := range cookies {
 		names = append(names, c.Name)
 	}
-	require.Contains(t, names, "gohome_access")
-	require.Contains(t, names, "gohome_refresh")
+	require.Contains(t, names, "switchyard_access")
+	require.Contains(t, names, "switchyard_refresh")
 }
 
 func TestAuthService_Login_BadPassword(t *testing.T) {

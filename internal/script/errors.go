@@ -27,7 +27,7 @@ func (e *ItemError) Error() string {
 }
 
 // CompileError aggregates every ItemError found during Compile so authors
-// see every problem from a single `gohome config validate`.
+// see every problem from a single `switchyard config validate`.
 type CompileError struct {
 	Items []*ItemError
 }

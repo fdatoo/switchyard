@@ -17,7 +17,7 @@ import (
 
 func main() {
 	var (
-		dbPath = flag.String("db", "", "path to gohome.db")
+		dbPath = flag.String("db", "", "path to switchyard.db")
 		count  = flag.Int("count", 1000, "events to append")
 	)
 	flag.Parse()

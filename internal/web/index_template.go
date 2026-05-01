@@ -13,10 +13,10 @@ const indexTemplateSource = `<!doctype html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>gohome</title>
-<meta name="gohome-version" content="{{.Version}}">
+<title>switchyard</title>
+<meta name="switchyard-version" content="{{.Version}}">
 <script>
-(function(){try{var m=localStorage.getItem('gohome.themeMode')||'system';var r=m==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):m;document.documentElement.setAttribute('data-theme','developer-'+r);}catch(_){}})();
+(function(){try{var m=localStorage.getItem('switchyard.themeMode')||'system';var r=m==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):m;document.documentElement.setAttribute('data-theme','developer-'+r);}catch(_){}})();
 </script>
 {{.AssetTags}}
 </head>

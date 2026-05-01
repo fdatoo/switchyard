@@ -47,7 +47,7 @@ func (t *Tokens) Issue(ctx context.Context, in IssueTokenInput) (plaintext, toke
 
 	tokenID = ulid.Make().String()
 	encoded := base32.StdEncoding.WithPadding(base32.NoPadding).EncodeToString(secret)
-	plaintext = "gohome_" + tokenID + "_" + encoded
+	plaintext = "switchyard_" + tokenID + "_" + encoded
 
 	sum := sha256.Sum256(secret)
 	hashHex := hex.EncodeToString(sum[:])
@@ -72,7 +72,7 @@ func (t *Tokens) Issue(ctx context.Context, in IssueTokenInput) (plaintext, toke
 
 func (t *Tokens) Verify(ctx context.Context, plaintext string) (Lookup, error) {
 	parts := strings.SplitN(plaintext, "_", 3)
-	if len(parts) != 3 || parts[0] != "gohome" {
+	if len(parts) != 3 || parts[0] != "switchyard" {
 		return Lookup{}, ErrTokenInvalid
 	}
 	tokenID := parts[1]

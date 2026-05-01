@@ -32,8 +32,8 @@ func newSessionStore(db *sql.DB) *sessions.Store {
 		AccessTTL:   15 * time.Minute,
 		RefreshTTL:  30 * 24 * time.Hour,
 		RefreshIdle: 14 * 24 * time.Hour,
-		AccessName:  "gohome_access",
-		RefreshName: "gohome_refresh",
+		AccessName:  "switchyard_access",
+		RefreshName: "switchyard_refresh",
 	})
 }
 

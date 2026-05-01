@@ -222,7 +222,7 @@ func compileCondition(cc *configpb.ConditionConfig) (condition.Evaluator, error)
 }
 
 // compileActionInstrumented wraps leaf executors in
-// metricExecutor so that gohome_automation_actions_total is recorded per
+// metricExecutor so that switchyard_automation_actions_total is recorded per
 // action. automationID and metrics may be empty/nil for tests that don't need
 // metrics (the wrapper is a no-op when metrics == nil).
 func compileActionInstrumented(acfg *configpb.ActionConfig, scripts map[string]bool, rt *ghstarlark.Runtime, automationID string, metrics metricsIface) (action.Executor, error) {

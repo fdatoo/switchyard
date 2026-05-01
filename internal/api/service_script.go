@@ -81,7 +81,7 @@ func (s *ScriptService) Eval(ctx context.Context, req *connect.Request[v1.EvalSc
 		if err == nil {
 			cap = cfg.EvalResultMaxBytes
 		}
-		sessionID = req.Header().Get("x-gohome-mcp-session")
+		sessionID = req.Header().Get("x-switchyard-mcp-session")
 	}
 
 	started := time.Now()

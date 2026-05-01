@@ -16,7 +16,7 @@ func newUICmd() *cobra.Command {
 func newUIDevCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "dev",
-		Short: "Start the Vite dev server proxied to gohomed",
+		Short: "Start the Vite dev server proxied to switchyardd",
 		RunE: func(_ *cobra.Command, _ []string) error {
 			return nil
 		},

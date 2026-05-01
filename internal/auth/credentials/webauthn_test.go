@@ -215,7 +215,7 @@ func TestWebAuthn_RegisterThenAuthenticate(t *testing.T) {
 	)
 	w, err := wa.New(&wa.Config{
 		RPID:          rpID,
-		RPDisplayName: "GoHome Test",
+		RPDisplayName: "Switchyard Test",
 		RPOrigins:     []string{origin},
 		AuthenticatorSelection: protocol.AuthenticatorSelection{
 			ResidentKey:      protocol.ResidentKeyRequirementRequired,
@@ -273,7 +273,7 @@ func TestWebAuthn_FinishLogin_RejectsSignCountRegression(t *testing.T) {
 	)
 	w, err := wa.New(&wa.Config{
 		RPID:          rpID,
-		RPDisplayName: "GoHome Test",
+		RPDisplayName: "Switchyard Test",
 		RPOrigins:     []string{origin},
 		AuthenticatorSelection: protocol.AuthenticatorSelection{
 			ResidentKey:      protocol.ResidentKeyRequirementRequired,

@@ -1,5 +1,5 @@
 // Command hue-driver is a Carport driver for the Philips Hue bridge.
-// It mirrors all lights on one bridge into gohome as light.* entities
+// It mirrors all lights on one bridge into switchyard as light.* entities
 // over the CLIP v2 API (HTTPS + server-sent events).
 package main
 
@@ -41,7 +41,7 @@ func main() {
 	logger := slog.New(slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{
 		Level: parseLogLevel(os.Getenv("HUE_LOG_LEVEL")),
 	})).With(
-		"instance_id", os.Getenv("GOHOME_CARPORT_INSTANCE_ID"),
+		"instance_id", os.Getenv("SWITCHYARD_CARPORT_INSTANCE_ID"),
 		"bridge_address", cfg.Address,
 	)
 	slog.SetDefault(logger)
@@ -152,11 +152,11 @@ func (t *reachabilityTracker) record(d *driver.Driver, err error) {
 // read+write it.
 type stateCache struct {
 	mu         sync.Mutex
-	byEntID    map[string]*entityv1.Light // last known state per gohome entity ID
-	available  map[string]bool            // last known reachability per gohome entity ID
-	hueToID    map[string]string          // Hue light resource UUID → gohome entity ID
-	deviceToID map[string]string          // Hue device UUID → gohome entity ID (for connectivity events)
-	gamuts     map[string]bridge.Gamut    // gohome entity ID → bulb colour gamut (populated by C-Task 8)
+	byEntID    map[string]*entityv1.Light // last known state per switchyard entity ID
+	available  map[string]bool            // last known reachability per switchyard entity ID
+	hueToID    map[string]string          // Hue light resource UUID → switchyard entity ID
+	deviceToID map[string]string          // Hue device UUID → switchyard entity ID (for connectivity events)
+	gamuts     map[string]bridge.Gamut    // switchyard entity ID → bulb colour gamut (populated by C-Task 8)
 	reach      reachabilityTracker
 }
 

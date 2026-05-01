@@ -13,12 +13,12 @@ import (
 	"github.com/fdatoo/switchyard/internal/mcp"
 )
 
-// GetStateInput is the input schema for gohome__get_state.
+// GetStateInput is the input schema for switchyard__get_state.
 type GetStateInput struct {
 	EntityID string `json:"entity_id"`
 }
 
-// ListEntitiesInput is the input schema for gohome__list_entities.
+// ListEntitiesInput is the input schema for switchyard__list_entities.
 type ListEntitiesInput struct {
 	Areas    []string `json:"areas,omitempty"`
 	Zones    []string `json:"zones,omitempty"`
@@ -28,7 +28,7 @@ type ListEntitiesInput struct {
 	Cursor   string   `json:"cursor,omitempty"`
 }
 
-// CallCapabilityInput is the input schema for gohome__call_capability.
+// CallCapabilityInput is the input schema for switchyard__call_capability.
 type CallCapabilityInput struct {
 	EntityID   string         `json:"entity_id"`
 	Capability string         `json:"capability"`
@@ -37,11 +37,11 @@ type CallCapabilityInput struct {
 
 func registerEntities(d Deps) {
 	sdk.AddTool(d.Server, &sdk.Tool{
-		Name:        "gohome__get_state",
+		Name:        "switchyard__get_state",
 		Description: "Get the current state of a single entity by ID.",
 	}, func(ctx context.Context, _ *sdk.CallToolRequest, in GetStateInput) (*sdk.CallToolResult, any, error) {
 		req := connect.NewRequest(&v1.GetEntityRequest{Id: in.EntityID})
-		mcp.SetToolHeader("gohome__get_state").Apply(req)
+		mcp.SetToolHeader("switchyard__get_state").Apply(req)
 		resp, err := d.Client.Entity.Get(ctx, req)
 		if err != nil {
 			return nil, nil, toToolError(err)
@@ -54,7 +54,7 @@ func registerEntities(d Deps) {
 	})
 
 	sdk.AddTool(d.Server, &sdk.Tool{
-		Name:        "gohome__list_entities",
+		Name:        "switchyard__list_entities",
 		Description: "List entities, optionally filtered by area, zone, class, or device.",
 	}, func(ctx context.Context, _ *sdk.CallToolRequest, in ListEntitiesInput) (*sdk.CallToolResult, any, error) {
 		var pageSize uint32
@@ -73,7 +73,7 @@ func registerEntities(d Deps) {
 			Page:     &v1.PageRequest{PageSize: pageSize, PageToken: in.Cursor},
 			Selector: selector,
 		})
-		mcp.SetToolHeader("gohome__list_entities").Apply(req)
+		mcp.SetToolHeader("switchyard__list_entities").Apply(req)
 		resp, err := d.Client.Entity.List(ctx, req)
 		if err != nil {
 			return nil, nil, toToolError(err)
@@ -99,7 +99,7 @@ func registerEntities(d Deps) {
 	})
 
 	sdk.AddTool(d.Server, &sdk.Tool{
-		Name:        "gohome__call_capability",
+		Name:        "switchyard__call_capability",
 		Description: "Call a capability on an entity (e.g. turn on/off, set brightness).",
 	}, func(ctx context.Context, _ *sdk.CallToolRequest, in CallCapabilityInput) (*sdk.CallToolResult, any, error) {
 		var params *structpb.Struct
@@ -115,7 +115,7 @@ func registerEntities(d Deps) {
 			Capability: in.Capability,
 			Parameters: params,
 		})
-		mcp.SetToolHeader("gohome__call_capability").Apply(req)
+		mcp.SetToolHeader("switchyard__call_capability").Apply(req)
 		resp, err := d.Client.Entity.CallCapability(ctx, req)
 		if err != nil {
 			return nil, nil, toToolError(err)

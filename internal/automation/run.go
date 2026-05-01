@@ -86,7 +86,7 @@ func (e *Engine) executeRun(ctx context.Context, auto *Automation, m trigger.Mat
 }
 
 // runOutcomeLabel converts a RunOutcome proto enum to the lower-snake label
-// used in gohome_automation_runs_total{outcome}. Strips the "OUTCOME_" prefix
+// used in switchyard_automation_runs_total{outcome}. Strips the "OUTCOME_" prefix
 // and lowercases the remainder (e.g. OUTCOME_OK → "ok").
 func runOutcomeLabel(o eventv1.RunOutcome) string {
 	s := o.String() // e.g. "OUTCOME_OK"

@@ -44,7 +44,7 @@ func StateChanged(entity string, brightness uint32, opts ...EventOption) eventst
 func SystemStartup(opts ...EventOption) eventstore.Event {
 	e := eventstore.Event{
 		Kind:      "system",
-		Source:    "gohomed",
+		Source:    "switchyardd",
 		Timestamp: time.Now(),
 		Payload: &eventv1.Payload{Kind: &eventv1.Payload_System{
 			System: &eventv1.SystemEvent{Kind: "startup"},

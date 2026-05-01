@@ -99,7 +99,7 @@ func TestEntityRead_Single(t *testing.T) {
 	}
 	s, _ := newResourcesServer(t, svc)
 
-	result, err := readResource(t, s, "gohome://entities/light.kitchen")
+	result, err := readResource(t, s, "switchyard://entities/light.kitchen")
 	require.NoError(t, err)
 	require.Len(t, result.Contents, 1)
 
@@ -123,7 +123,7 @@ func TestEntityRead_List(t *testing.T) {
 	}
 	s, _ := newResourcesServer(t, svc)
 
-	result, err := readResource(t, s, "gohome://entities/")
+	result, err := readResource(t, s, "switchyard://entities/")
 	require.NoError(t, err)
 	require.Len(t, result.Contents, 1)
 
@@ -201,7 +201,7 @@ func TestEntityWatch_CoalescesOnOverflow(t *testing.T) {
 
 	// Subscribe to the entity resource.
 	err = cs.Subscribe(context.Background(), &sdk.SubscribeParams{
-		URI: "gohome://entities/light.x",
+		URI: "switchyard://entities/light.x",
 	})
 	require.NoError(t, err)
 
@@ -228,7 +228,7 @@ func TestEntityWatch_CoalescesOnOverflow(t *testing.T) {
 	assert.GreaterOrEqual(t, got, int64(1), "expected at least one notification")
 
 	// Verify the overflow metric was incremented.
-	coalesceMetric := getCounterValue(t, m, "gohome_mcp_resource_overflow_closes_total")
+	coalesceMetric := getCounterValue(t, m, "switchyard_mcp_resource_overflow_closes_total")
 	assert.GreaterOrEqual(t, coalesceMetric, 0.0, "coalesced metric should be non-negative")
 }
 

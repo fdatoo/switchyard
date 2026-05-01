@@ -1,4 +1,4 @@
-// Package tools registers all gohome MCP tools.
+// Package tools registers all switchyard MCP tools.
 package tools
 
 import (

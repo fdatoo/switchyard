@@ -21,7 +21,7 @@ func main() {
 
 func run() int {
 	var (
-		dataDir          = flag.String("data-dir", "", "data directory (default ~/.local/share/gohome)")
+		dataDir          = flag.String("data-dir", "", "data directory (default ~/.local/share/switchyard)")
 		logLevel         = flag.String("log-level", "info", "error|warn|info|debug")
 		logFormat        = flag.String("log-format", "auto", "auto|tty|json")
 		adminPort        = flag.Int("admin-port", 9190, "HTTP admin port for /metrics and /health")

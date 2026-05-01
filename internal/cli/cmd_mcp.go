@@ -50,7 +50,7 @@ func newMCPServeCmd(gf *globalFlags) *cobra.Command {
 			// Fetch config dir
 			cdResp, err := client.System.GetConfigDir(ctx, connect.NewRequest(&v1.GetConfigDirRequest{}))
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "gohome mcp: cannot reach gohomed at %s: %v\n", endpoint, err)
+				fmt.Fprintf(os.Stderr, "switchyard mcp: cannot reach switchyardd at %s: %v\n", endpoint, err)
 				return err
 			}
 

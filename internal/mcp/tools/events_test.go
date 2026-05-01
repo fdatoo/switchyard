@@ -84,7 +84,7 @@ func TestQueryEvents_HappyPath(t *testing.T) {
 	d, s := newEventsTestDeps(t, handler)
 	tools.Register(d)
 
-	result, err := callTool(t, s, "gohome__query_events", map[string]any{
+	result, err := callTool(t, s, "switchyard__query_events", map[string]any{
 		"kinds": []any{"state_changed"},
 	})
 	require.NoError(t, err)
@@ -115,7 +115,7 @@ func TestTailEvents_ReadsUntilMaxEvents(t *testing.T) {
 	d, s := newEventsTestDeps(t, handler)
 	tools.Register(d)
 
-	result, err := callTool(t, s, "gohome__tail_events", map[string]any{
+	result, err := callTool(t, s, "switchyard__tail_events", map[string]any{
 		"max_events":   2,
 		"wait_seconds": 5,
 	})

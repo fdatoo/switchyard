@@ -73,7 +73,7 @@ func TestRunScript_HappyPath(t *testing.T) {
 	d, s := newScriptsTestDeps(t, handler)
 	tools.Register(d)
 
-	result, err := callTool(t, s, "gohome__run_script", map[string]any{
+	result, err := callTool(t, s, "switchyard__run_script", map[string]any{
 		"name": "my_script",
 	})
 	require.NoError(t, err)
@@ -100,7 +100,7 @@ func TestEvalStarlark_TruncatedPropagated(t *testing.T) {
 	d, s := newScriptsTestDeps(t, handler)
 	tools.Register(d)
 
-	result, err := callTool(t, s, "gohome__eval_starlark", map[string]any{
+	result, err := callTool(t, s, "switchyard__eval_starlark", map[string]any{
 		"source": "1+1",
 	})
 	require.NoError(t, err)

@@ -47,7 +47,7 @@ func decodeTrigger(raw json.RawMessage) (*configpb.TriggerConfig, error) {
 		return nil, fmt.Errorf("trigger header: %w", err)
 	}
 	switch head.Type {
-	case "gohome.automations#StateChangeTrigger":
+	case "switchyard.automations#StateChangeTrigger":
 		var s struct {
 			Entities []string `json:"entities"`
 			From     string   `json:"from"`
@@ -69,7 +69,7 @@ func decodeTrigger(raw json.RawMessage) (*configpb.TriggerConfig, error) {
 				ForDurNs: int64(dur),
 			}},
 		}, nil
-	case "gohome.automations#EventTrigger":
+	case "switchyard.automations#EventTrigger":
 		var s struct {
 			Kind string            `json:"kind"`
 			Data map[string]string `json:"data"`
@@ -80,7 +80,7 @@ func decodeTrigger(raw json.RawMessage) (*configpb.TriggerConfig, error) {
 		return &configpb.TriggerConfig{
 			Kind: &configpb.TriggerConfig_Event{Event: &configpb.EventTrigger{Kind: s.Kind, Data: s.Data}},
 		}, nil
-	case "gohome.automations#TimeTrigger":
+	case "switchyard.automations#TimeTrigger":
 		var s struct {
 			At    string `json:"at"`
 			Cron  string `json:"cron"`
@@ -100,7 +100,7 @@ func decodeTrigger(raw json.RawMessage) (*configpb.TriggerConfig, error) {
 		return &configpb.TriggerConfig{
 			Kind: &configpb.TriggerConfig_Time{Time: &configpb.TimeTrigger{At: s.At, Cron: s.Cron, EveryNs: everyNs}},
 		}, nil
-	case "gohome.automations#WebhookTrigger":
+	case "switchyard.automations#WebhookTrigger":
 		var s struct {
 			Path    string   `json:"path"`
 			Methods []string `json:"methods"`
@@ -122,7 +122,7 @@ func decodeCondition(raw json.RawMessage) (*configpb.ConditionConfig, error) {
 		return nil, err
 	}
 	switch head.Type {
-	case "gohome.automations#StateCondition":
+	case "switchyard.automations#StateCondition":
 		var s struct {
 			Entity string   `json:"entity"`
 			Equals string   `json:"equals"`
@@ -135,7 +135,7 @@ func decodeCondition(raw json.RawMessage) (*configpb.ConditionConfig, error) {
 		return &configpb.ConditionConfig{Kind: &configpb.ConditionConfig_State{State: &configpb.StateCondition{
 			Entity: s.Entity, Equals: s.Equals, OneOf: s.OneOf, Not: s.Not,
 		}}}, nil
-	case "gohome.automations#NumericCondition":
+	case "switchyard.automations#NumericCondition":
 		var s struct {
 			Entity    string  `json:"entity"`
 			Attribute string  `json:"attribute"`
@@ -148,7 +148,7 @@ func decodeCondition(raw json.RawMessage) (*configpb.ConditionConfig, error) {
 		return &configpb.ConditionConfig{Kind: &configpb.ConditionConfig_Numeric{Numeric: &configpb.NumericCondition{
 			Entity: s.Entity, Attribute: s.Attribute, Op: s.Op, Value: s.Value,
 		}}}, nil
-	case "gohome.automations#TimeCondition":
+	case "switchyard.automations#TimeCondition":
 		var s struct {
 			After    string   `json:"after"`
 			Before   string   `json:"before"`
@@ -160,7 +160,7 @@ func decodeCondition(raw json.RawMessage) (*configpb.ConditionConfig, error) {
 		return &configpb.ConditionConfig{Kind: &configpb.ConditionConfig_Time{Time: &configpb.TimeCondition{
 			After: s.After, Before: s.Before, Weekdays: s.Weekdays,
 		}}}, nil
-	case "gohome.automations#StarlarkCondition":
+	case "switchyard.automations#StarlarkCondition":
 		var s struct {
 			Expr string `json:"expr"`
 		}
@@ -168,7 +168,7 @@ func decodeCondition(raw json.RawMessage) (*configpb.ConditionConfig, error) {
 			return nil, err
 		}
 		return &configpb.ConditionConfig{Kind: &configpb.ConditionConfig_Starlark{Starlark: &configpb.StarlarkCondition{Expr: s.Expr}}}, nil
-	case "gohome.automations#AndCondition":
+	case "switchyard.automations#AndCondition":
 		var s struct {
 			All []json.RawMessage `json:"all"`
 		}
@@ -184,7 +184,7 @@ func decodeCondition(raw json.RawMessage) (*configpb.ConditionConfig, error) {
 			andc.All = append(andc.All, c)
 		}
 		return &configpb.ConditionConfig{Kind: &configpb.ConditionConfig_And{And: andc}}, nil
-	case "gohome.automations#OrCondition":
+	case "switchyard.automations#OrCondition":
 		var s struct {
 			Any []json.RawMessage `json:"any"`
 		}
@@ -200,7 +200,7 @@ func decodeCondition(raw json.RawMessage) (*configpb.ConditionConfig, error) {
 			orc.Any = append(orc.Any, c)
 		}
 		return &configpb.ConditionConfig{Kind: &configpb.ConditionConfig_Or{Or: orc}}, nil
-	case "gohome.automations#NotCondition":
+	case "switchyard.automations#NotCondition":
 		var s struct {
 			Not json.RawMessage `json:"not"`
 		}
@@ -226,7 +226,7 @@ func decodeAction(raw json.RawMessage) (*configpb.ActionConfig, error) {
 		return nil, err
 	}
 	switch head.Type {
-	case "gohome.automations#CallServiceAction":
+	case "switchyard.automations#CallServiceAction":
 		var s struct {
 			Entity     string            `json:"entity"`
 			Capability string            `json:"capability"`
@@ -241,7 +241,7 @@ func decodeAction(raw json.RawMessage) (*configpb.ActionConfig, error) {
 				Entity: s.Entity, Capability: s.Capability, Args: s.Args,
 			}},
 		}, nil
-	case "gohome.automations#SceneAction":
+	case "switchyard.automations#SceneAction":
 		var s struct {
 			Slug string `json:"slug"`
 		}
@@ -252,7 +252,7 @@ func decodeAction(raw json.RawMessage) (*configpb.ActionConfig, error) {
 			ContinueOnError: head.ContinueOnError,
 			Kind:            &configpb.ActionConfig_Scene{Scene: &configpb.SceneAction{Slug: s.Slug}},
 		}, nil
-	case "gohome.automations#ScriptAction":
+	case "switchyard.automations#ScriptAction":
 		var s struct {
 			Name string            `json:"name"`
 			Args map[string]string `json:"args"`
@@ -264,7 +264,7 @@ func decodeAction(raw json.RawMessage) (*configpb.ActionConfig, error) {
 			ContinueOnError: head.ContinueOnError,
 			Kind:            &configpb.ActionConfig_Script{Script: &configpb.ScriptAction{Name: s.Name, Args: s.Args}},
 		}, nil
-	case "gohome.automations#StarlarkAction":
+	case "switchyard.automations#StarlarkAction":
 		var s struct {
 			Body string `json:"body"`
 		}
@@ -275,7 +275,7 @@ func decodeAction(raw json.RawMessage) (*configpb.ActionConfig, error) {
 			ContinueOnError: head.ContinueOnError,
 			Kind:            &configpb.ActionConfig_Starlark{Starlark: &configpb.StarlarkAction{Body: s.Body}},
 		}, nil
-	case "gohome.automations#WaitAction":
+	case "switchyard.automations#WaitAction":
 		var s struct {
 			Duration string `json:"duration"`
 		}
@@ -290,7 +290,7 @@ func decodeAction(raw json.RawMessage) (*configpb.ActionConfig, error) {
 			ContinueOnError: head.ContinueOnError,
 			Kind:            &configpb.ActionConfig_Wait{Wait: &configpb.WaitAction{DurationNs: int64(d)}},
 		}, nil
-	case "gohome.automations#SequenceBlock":
+	case "switchyard.automations#SequenceBlock":
 		var s struct {
 			Actions []json.RawMessage `json:"actions"`
 		}
@@ -309,7 +309,7 @@ func decodeAction(raw json.RawMessage) (*configpb.ActionConfig, error) {
 			ContinueOnError: head.ContinueOnError,
 			Kind:            &configpb.ActionConfig_Sequence{Sequence: blk},
 		}, nil
-	case "gohome.automations#ParallelBlock":
+	case "switchyard.automations#ParallelBlock":
 		var s struct {
 			Actions []json.RawMessage `json:"actions"`
 		}

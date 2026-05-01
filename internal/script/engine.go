@@ -213,7 +213,7 @@ func (e *Engine) Call(
 }
 
 // scriptOutcomeLabel converts a RunOutcome to the lower-snake label string
-// for gohome_script_invocations_total{outcome}. Strips "OUTCOME_" prefix.
+// for switchyard_script_invocations_total{outcome}. Strips "OUTCOME_" prefix.
 func scriptOutcomeLabel(o eventv1.RunOutcome) string {
 	s := o.String()
 	const prefix = "OUTCOME_"

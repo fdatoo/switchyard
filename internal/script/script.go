@@ -8,7 +8,7 @@ import (
 	configpb "github.com/fdatoo/switchyard/gen/switchyard/config/v1"
 )
 
-// Script is the runtime representation of a compiled gohome.scripts entry.
+// Script is the runtime representation of a compiled switchyard.scripts entry.
 // Immutable after Compile; callers obtain pointers under the engine RLock.
 type Script struct {
 	Name    string

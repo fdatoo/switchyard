@@ -55,13 +55,13 @@ func TestSystemService_CreateSnapshot(t *testing.T) {
 }
 
 func TestSystemService_GetConfigDir(t *testing.T) {
-	s := api.NewSystemService(&fakeSystem{configDir: "/etc/gohome"})
+	s := api.NewSystemService(&fakeSystem{configDir: "/etc/switchyard"})
 	resp, err := s.GetConfigDir(context.Background(), connect.NewRequest(&systemv1.GetConfigDirRequest{}))
 	if err != nil {
 		t.Fatalf("GetConfigDir: %v", err)
 	}
-	if resp.Msg.ConfigDir != "/etc/gohome" {
-		t.Errorf("got %q, want /etc/gohome", resp.Msg.ConfigDir)
+	if resp.Msg.ConfigDir != "/etc/switchyard" {
+		t.Errorf("got %q, want /etc/switchyard", resp.Msg.ConfigDir)
 	}
 }
 
@@ -80,7 +80,7 @@ func TestSystemService_GetMCPConfig(t *testing.T) {
 }
 
 func TestSystemService_RecordConfigFileEdit(t *testing.T) {
-	fake := &fakeSystem{configDir: "/etc/gohome", recordResult: 42}
+	fake := &fakeSystem{configDir: "/etc/switchyard", recordResult: 42}
 	s := api.NewSystemService(fake)
 	ctx := auth.WithPrincipal(context.Background(), auth.Principal{ID: "system:local"})
 	resp, err := s.RecordConfigFileEdit(ctx, connect.NewRequest(&systemv1.RecordConfigFileEditRequest{

@@ -19,12 +19,12 @@ import (
 	mcpfs "github.com/fdatoo/switchyard/internal/mcp/fs"
 )
 
-// ReadConfigFileInput is the input schema for gohome__read_config_file.
+// ReadConfigFileInput is the input schema for switchyard__read_config_file.
 type ReadConfigFileInput struct {
 	Path string `json:"path"`
 }
 
-// WriteConfigFileInput is the input schema for gohome__write_config_file.
+// WriteConfigFileInput is the input schema for switchyard__write_config_file.
 type WriteConfigFileInput struct {
 	Path    string `json:"path"`
 	Content string `json:"content"`
@@ -32,7 +32,7 @@ type WriteConfigFileInput struct {
 
 func registerFiles(d Deps) {
 	sdk.AddTool(d.Server, &sdk.Tool{
-		Name:        "gohome__read_config_file",
+		Name:        "switchyard__read_config_file",
 		Description: "Read a file from the config directory.",
 	}, func(ctx context.Context, _ *sdk.CallToolRequest, in ReadConfigFileInput) (*sdk.CallToolResult, any, error) {
 		target, err := mcpfs.Resolve(d.ConfigDir, in.Path)
@@ -79,7 +79,7 @@ func registerFiles(d Deps) {
 	})
 
 	sdk.AddTool(d.Server, &sdk.Tool{
-		Name:        "gohome__write_config_file",
+		Name:        "switchyard__write_config_file",
 		Description: "Write (create or overwrite) a file in the config directory. Supports .pkl and .star files.",
 	}, func(ctx context.Context, _ *sdk.CallToolRequest, in WriteConfigFileInput) (*sdk.CallToolResult, any, error) {
 		target, err := mcpfs.Resolve(d.ConfigDir, in.Path)

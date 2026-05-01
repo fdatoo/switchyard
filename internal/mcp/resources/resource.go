@@ -1,4 +1,4 @@
-// Package resources registers gohome MCP resource handlers for entity state
+// Package resources registers switchyard MCP resource handlers for entity state
 // and automation traces, including live-subscription support.
 package resources
 

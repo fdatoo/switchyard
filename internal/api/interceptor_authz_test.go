@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	gohomev1alpha1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	switchyardv1alpha1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
 	"github.com/fdatoo/switchyard/internal/api"
 	"github.com/fdatoo/switchyard/internal/auth"
 	"github.com/fdatoo/switchyard/internal/observability"
@@ -30,12 +30,12 @@ func (f *testProcedureCatalog) Resolve(_ string, _ any) (auth.Action, auth.Targe
 
 // testUnaryFunc is a connect.UnaryFunc that succeeds unconditionally.
 func testUnaryFunc(_ context.Context, _ connect.AnyRequest) (connect.AnyResponse, error) {
-	return connect.NewResponse(&gohomev1alpha1.CurrentUserResponse{}), nil
+	return connect.NewResponse(&switchyardv1alpha1.CurrentUserResponse{}), nil
 }
 
 // testConnectRequest returns a minimal connect.AnyRequest for tests.
 func testConnectRequest() connect.AnyRequest {
-	return connect.NewRequest(&gohomev1alpha1.CurrentUserRequest{})
+	return connect.NewRequest(&switchyardv1alpha1.CurrentUserRequest{})
 }
 
 // testNoopRoles implements policy.Roles: every principal has no roles.

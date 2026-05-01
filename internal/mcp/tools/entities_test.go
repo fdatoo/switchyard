@@ -83,7 +83,7 @@ func TestGetState_HappyPath(t *testing.T) {
 	d, s := newEntitiesTestDeps(t, handler)
 	tools.Register(d)
 
-	result, err := callTool(t, s, "gohome__get_state", map[string]any{"entity_id": "light.kitchen"})
+	result, err := callTool(t, s, "switchyard__get_state", map[string]any{"entity_id": "light.kitchen"})
 	require.NoError(t, err)
 
 	var m map[string]any
@@ -102,7 +102,7 @@ func TestGetState_NotFound(t *testing.T) {
 	d, s := newEntitiesTestDeps(t, handler)
 	tools.Register(d)
 
-	result, err := callTool(t, s, "gohome__get_state", map[string]any{"entity_id": "light.missing"})
+	result, err := callTool(t, s, "switchyard__get_state", map[string]any{"entity_id": "light.missing"})
 	require.NoError(t, err)
 	assert.True(t, result.IsError, "expected IsError=true for not_found")
 }
@@ -123,7 +123,7 @@ func TestListEntities_PassesSelector(t *testing.T) {
 	d, s := newEntitiesTestDeps(t, handler)
 	tools.Register(d)
 
-	result, err := callTool(t, s, "gohome__list_entities", map[string]any{
+	result, err := callTool(t, s, "switchyard__list_entities", map[string]any{
 		"areas":     []any{"kitchen"},
 		"device_id": "dev1",
 		"limit":     10,
@@ -159,7 +159,7 @@ func TestCallCapability_HappyPath(t *testing.T) {
 	d, s := newEntitiesTestDeps(t, handler)
 	tools.Register(d)
 
-	result, err := callTool(t, s, "gohome__call_capability", map[string]any{
+	result, err := callTool(t, s, "switchyard__call_capability", map[string]any{
 		"entity_id":  "light.kitchen",
 		"capability": "turn_on",
 	})

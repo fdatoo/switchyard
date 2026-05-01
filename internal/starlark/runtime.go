@@ -218,7 +218,7 @@ func (r *Runtime) WithRandSeed(seed int64) *Runtime {
 
 func (r *Runtime) Logger() *slog.Logger { return r.logger }
 
-// assert is injected for gohome test contexts.
+// assert is injected for switchyard test contexts.
 var assertBuiltin = starlarkgo.NewBuiltin("assert", func(_ *starlarkgo.Thread, b *starlarkgo.Builtin, args starlarkgo.Tuple, kwargs []starlarkgo.Tuple) (starlarkgo.Value, error) {
 	var cond starlarkgo.Value
 	msg := "assertion failed"
@@ -232,7 +232,7 @@ var assertBuiltin = starlarkgo.NewBuiltin("assert", func(_ *starlarkgo.Thread, b
 })
 
 // ExecuteTest runs a test_* function loaded from script, injecting an assert builtin.
-// Used by the gohome test daemon handler.
+// Used by the switchyard test daemon handler.
 func (r *Runtime) ExecuteTest(ctx context.Context, script, fnName string) (*Result, error) {
 	// First pass: load the module to get exported names.
 	globals := starlarkgo.StringDict{

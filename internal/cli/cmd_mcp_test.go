@@ -18,8 +18,8 @@ func TestMCPToolsHuman(t *testing.T) {
 	err := root.Execute()
 	require.NoError(t, err)
 	out := buf.String()
-	require.Contains(t, out, "gohome__get_state")
-	require.Contains(t, out, "gohome__write_config_file")
+	require.Contains(t, out, "switchyard__get_state")
+	require.Contains(t, out, "switchyard__write_config_file")
 	require.Contains(t, out, "UNIMPLEMENTED")
 }
 
@@ -43,7 +43,7 @@ func TestMCPToolsJSON(t *testing.T) {
 	require.Equal(t, 2, admins)
 	// Check apply_scene is unimplemented
 	for _, td := range cat {
-		if td["name"] == "gohome__apply_scene" {
+		if td["name"] == "switchyard__apply_scene" {
 			require.Equal(t, "unimplemented", td["status"])
 		}
 	}

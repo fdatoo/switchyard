@@ -1,6 +1,6 @@
 // Package main is a minimal scenario-driven driver binary used by integration
 // tests. Behavior is selected by TESTDRIVER_MODE, encoded in
-// GOHOME_CARPORT_INSTANCE_CONFIG as JSON: {"TESTDRIVER_MODE":"<mode>"}.
+// SWITCHYARD_CARPORT_INSTANCE_CONFIG as JSON: {"TESTDRIVER_MODE":"<mode>"}.
 package main
 
 import (
@@ -25,16 +25,16 @@ type cfg struct {
 }
 
 func main() {
-	sock := os.Getenv("GOHOME_CARPORT_SOCKET")
-	secret := os.Getenv("GOHOME_CARPORT_SECRET")
-	instanceID := os.Getenv("GOHOME_CARPORT_INSTANCE_ID")
-	raw := os.Getenv("GOHOME_CARPORT_INSTANCE_CONFIG")
+	sock := os.Getenv("SWITCHYARD_CARPORT_SOCKET")
+	secret := os.Getenv("SWITCHYARD_CARPORT_SECRET")
+	instanceID := os.Getenv("SWITCHYARD_CARPORT_INSTANCE_ID")
+	raw := os.Getenv("SWITCHYARD_CARPORT_INSTANCE_CONFIG")
 	var c cfg
 	if raw != "" {
 		_ = json.Unmarshal([]byte(raw), &c)
 	}
 	if sock == "" {
-		log.Fatal("GOHOME_CARPORT_SOCKET unset")
+		log.Fatal("SWITCHYARD_CARPORT_SOCKET unset")
 	}
 
 	ln, err := net.Listen("unix", sock)

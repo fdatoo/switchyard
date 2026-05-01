@@ -129,14 +129,14 @@ func TestConfigService_Reload(t *testing.T) {
 }
 
 func TestConfigService_GetArtifact(t *testing.T) {
-	snap := &configv1.ConfigSnapshot{ConfigDir: "/etc/gohome"}
+	snap := &configv1.ConfigSnapshot{ConfigDir: "/etc/switchyard"}
 	fc := &fakeConfig{snapshot: snap}
 	s := api.NewConfigService(fc)
 	resp, err := s.GetArtifact(context.Background(), connect.NewRequest(&v1.GetConfigArtifactRequest{}))
 	if err != nil {
 		t.Fatalf("err: %v", err)
 	}
-	if resp.Msg.Snapshot == nil || resp.Msg.Snapshot.ConfigDir != "/etc/gohome" {
+	if resp.Msg.Snapshot == nil || resp.Msg.Snapshot.ConfigDir != "/etc/switchyard" {
 		t.Errorf("unexpected snapshot: %+v", resp.Msg.Snapshot)
 	}
 }

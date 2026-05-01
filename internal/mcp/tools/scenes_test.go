@@ -58,7 +58,7 @@ func TestApplyScene_Unimplemented(t *testing.T) {
 	d, s := newScenesTestDeps(t, handler)
 	tools.Register(d)
 
-	result, err := callTool(t, s, "gohome__apply_scene", map[string]any{"slug": "morning"})
+	result, err := callTool(t, s, "switchyard__apply_scene", map[string]any{"slug": "morning"})
 	require.NoError(t, err)
 	assert.True(t, result.IsError, "expected IsError=true for unimplemented")
 }

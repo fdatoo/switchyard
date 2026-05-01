@@ -21,7 +21,7 @@ import (
 
 func TestCrash_Kill9MidAppendLeavesConsistentDB(t *testing.T) {
 	dir := t.TempDir()
-	dbPath := filepath.Join(dir, "gohome.db")
+	dbPath := filepath.Join(dir, "switchyard.db")
 
 	binary := buildHelper(t)
 

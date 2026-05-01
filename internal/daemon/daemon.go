@@ -582,8 +582,8 @@ func entityStateStr(a *entityv1.Attributes) string {
 			return "on"
 		}
 		return "off"
-	case *entityv1.Attributes_Sensor:
-		return fmt.Sprintf("%g", kind.Sensor.GetValue())
+	case *entityv1.Attributes_NumericSensor:
+		return fmt.Sprintf("%g", kind.NumericSensor.GetValue())
 	default:
 		return "unknown"
 	}

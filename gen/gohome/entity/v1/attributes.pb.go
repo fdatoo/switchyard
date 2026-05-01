@@ -32,7 +32,8 @@ type Attributes struct {
 	//
 	//	*Attributes_Light
 	//	*Attributes_SwitchDevice
-	//	*Attributes_Sensor
+	//	*Attributes_NumericSensor
+	//	*Attributes_BinarySensor
 	Kind isAttributes_Kind `protobuf_oneof:"kind"`
 	// 90-99: cross-cutting metadata
 	// available is the driver's claim that the entity is currently reachable.
@@ -98,10 +99,19 @@ func (x *Attributes) GetSwitchDevice() *Switch {
 	return nil
 }
 
-func (x *Attributes) GetSensor() *Sensor {
+func (x *Attributes) GetNumericSensor() *NumericSensor {
 	if x != nil {
-		if x, ok := x.Kind.(*Attributes_Sensor); ok {
-			return x.Sensor
+		if x, ok := x.Kind.(*Attributes_NumericSensor); ok {
+			return x.NumericSensor
+		}
+	}
+	return nil
+}
+
+func (x *Attributes) GetBinarySensor() *BinarySensor {
+	if x != nil {
+		if x, ok := x.Kind.(*Attributes_BinarySensor); ok {
+			return x.BinarySensor
 		}
 	}
 	return nil
@@ -127,15 +137,21 @@ type Attributes_SwitchDevice struct {
 	SwitchDevice *Switch `protobuf:"bytes,11,opt,name=switch_device,json=switchDevice,proto3,oneof"`
 }
 
-type Attributes_Sensor struct {
-	Sensor *Sensor `protobuf:"bytes,12,opt,name=sensor,proto3,oneof"`
+type Attributes_NumericSensor struct {
+	NumericSensor *NumericSensor `protobuf:"bytes,12,opt,name=numeric_sensor,json=numericSensor,proto3,oneof"` // was: Sensor sensor; field number stays
+}
+
+type Attributes_BinarySensor struct {
+	BinarySensor *BinarySensor `protobuf:"bytes,13,opt,name=binary_sensor,json=binarySensor,proto3,oneof"`
 }
 
 func (*Attributes_Light) isAttributes_Kind() {}
 
 func (*Attributes_SwitchDevice) isAttributes_Kind() {}
 
-func (*Attributes_Sensor) isAttributes_Kind() {}
+func (*Attributes_NumericSensor) isAttributes_Kind() {}
+
+func (*Attributes_BinarySensor) isAttributes_Kind() {}
 
 type Light struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -249,7 +265,7 @@ func (x *Switch) GetOn() bool {
 	return false
 }
 
-type Sensor struct {
+type NumericSensor struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Unit          string                 `protobuf:"bytes,1,opt,name=unit,proto3" json:"unit,omitempty"`
 	Value         float64                `protobuf:"fixed64,2,opt,name=value,proto3" json:"value,omitempty"`
@@ -257,20 +273,20 @@ type Sensor struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *Sensor) Reset() {
-	*x = Sensor{}
+func (x *NumericSensor) Reset() {
+	*x = NumericSensor{}
 	mi := &file_gohome_entity_v1_attributes_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *Sensor) String() string {
+func (x *NumericSensor) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Sensor) ProtoMessage() {}
+func (*NumericSensor) ProtoMessage() {}
 
-func (x *Sensor) ProtoReflect() protoreflect.Message {
+func (x *NumericSensor) ProtoReflect() protoreflect.Message {
 	mi := &file_gohome_entity_v1_attributes_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -282,38 +298,87 @@ func (x *Sensor) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Sensor.ProtoReflect.Descriptor instead.
-func (*Sensor) Descriptor() ([]byte, []int) {
+// Deprecated: Use NumericSensor.ProtoReflect.Descriptor instead.
+func (*NumericSensor) Descriptor() ([]byte, []int) {
 	return file_gohome_entity_v1_attributes_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *Sensor) GetUnit() string {
+func (x *NumericSensor) GetUnit() string {
 	if x != nil {
 		return x.Unit
 	}
 	return ""
 }
 
-func (x *Sensor) GetValue() float64 {
+func (x *NumericSensor) GetValue() float64 {
 	if x != nil {
 		return x.Value
 	}
 	return 0
 }
 
+type BinarySensor struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// on encodes the active reading: motion detected, contact closed,
+	// water present, etc. Drivers may invert at the source if a device
+	// reports the inverse polarity natively (the inversion choice is the
+	// driver's, not the proto's).
+	On            bool `protobuf:"varint,1,opt,name=on,proto3" json:"on,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BinarySensor) Reset() {
+	*x = BinarySensor{}
+	mi := &file_gohome_entity_v1_attributes_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BinarySensor) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BinarySensor) ProtoMessage() {}
+
+func (x *BinarySensor) ProtoReflect() protoreflect.Message {
+	mi := &file_gohome_entity_v1_attributes_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BinarySensor.ProtoReflect.Descriptor instead.
+func (*BinarySensor) Descriptor() ([]byte, []int) {
+	return file_gohome_entity_v1_attributes_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *BinarySensor) GetOn() bool {
+	if x != nil {
+		return x.On
+	}
+	return false
+}
+
 var File_gohome_entity_v1_attributes_proto protoreflect.FileDescriptor
 
 const file_gohome_entity_v1_attributes_proto_rawDesc = "" +
 	"\n" +
-	"!gohome/entity/v1/attributes.proto\x12\x10gohome.entity.v1\"\xd8\x01\n" +
+	"!gohome/entity/v1/attributes.proto\x12\x10gohome.entity.v1\"\xbd\x02\n" +
 	"\n" +
 	"Attributes\x12/\n" +
 	"\x05light\x18\n" +
 	" \x01(\v2\x17.gohome.entity.v1.LightH\x00R\x05light\x12?\n" +
-	"\rswitch_device\x18\v \x01(\v2\x18.gohome.entity.v1.SwitchH\x00R\fswitchDevice\x122\n" +
-	"\x06sensor\x18\f \x01(\v2\x18.gohome.entity.v1.SensorH\x00R\x06sensor\x12\x1c\n" +
+	"\rswitch_device\x18\v \x01(\v2\x18.gohome.entity.v1.SwitchH\x00R\fswitchDevice\x12H\n" +
+	"\x0enumeric_sensor\x18\f \x01(\v2\x1f.gohome.entity.v1.NumericSensorH\x00R\rnumericSensor\x12E\n" +
+	"\rbinary_sensor\x18\r \x01(\v2\x1e.gohome.entity.v1.BinarySensorH\x00R\fbinarySensor\x12\x1c\n" +
 	"\tavailable\x18Z \x01(\bR\tavailableB\x06\n" +
-	"\x04kind\"s\n" +
+	"\x04kindR\x06sensor\"s\n" +
 	"\x05Light\x12\x0e\n" +
 	"\x02on\x18\x01 \x01(\bR\x02on\x12\x1e\n" +
 	"\n" +
@@ -323,10 +388,12 @@ const file_gohome_entity_v1_attributes_proto_rawDesc = "" +
 	"color_temp\x18\x03 \x01(\rR\tcolorTemp\x12\x1b\n" +
 	"\tcolor_rgb\x18\x04 \x01(\rR\bcolorRgb\"\x18\n" +
 	"\x06Switch\x12\x0e\n" +
-	"\x02on\x18\x01 \x01(\bR\x02on\"2\n" +
-	"\x06Sensor\x12\x12\n" +
+	"\x02on\x18\x01 \x01(\bR\x02on\"9\n" +
+	"\rNumericSensor\x12\x12\n" +
 	"\x04unit\x18\x01 \x01(\tR\x04unit\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\x01R\x05valueB\xc1\x01\n" +
+	"\x05value\x18\x02 \x01(\x01R\x05value\"\x1e\n" +
+	"\fBinarySensor\x12\x0e\n" +
+	"\x02on\x18\x01 \x01(\bR\x02onB\xc1\x01\n" +
 	"\x14com.gohome.entity.v1B\x0fAttributesProtoP\x01Z6github.com/fdatoo/gohome/gen/gohome/entity/v1;entityv1\xa2\x02\x03GEX\xaa\x02\x10Gohome.Entity.V1\xca\x02\x10Gohome\\Entity\\V1\xe2\x02\x1cGohome\\Entity\\V1\\GPBMetadata\xea\x02\x12Gohome::Entity::V1b\x06proto3"
 
 var (
@@ -341,22 +408,24 @@ func file_gohome_entity_v1_attributes_proto_rawDescGZIP() []byte {
 	return file_gohome_entity_v1_attributes_proto_rawDescData
 }
 
-var file_gohome_entity_v1_attributes_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_gohome_entity_v1_attributes_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_gohome_entity_v1_attributes_proto_goTypes = []any{
-	(*Attributes)(nil), // 0: gohome.entity.v1.Attributes
-	(*Light)(nil),      // 1: gohome.entity.v1.Light
-	(*Switch)(nil),     // 2: gohome.entity.v1.Switch
-	(*Sensor)(nil),     // 3: gohome.entity.v1.Sensor
+	(*Attributes)(nil),    // 0: gohome.entity.v1.Attributes
+	(*Light)(nil),         // 1: gohome.entity.v1.Light
+	(*Switch)(nil),        // 2: gohome.entity.v1.Switch
+	(*NumericSensor)(nil), // 3: gohome.entity.v1.NumericSensor
+	(*BinarySensor)(nil),  // 4: gohome.entity.v1.BinarySensor
 }
 var file_gohome_entity_v1_attributes_proto_depIdxs = []int32{
 	1, // 0: gohome.entity.v1.Attributes.light:type_name -> gohome.entity.v1.Light
 	2, // 1: gohome.entity.v1.Attributes.switch_device:type_name -> gohome.entity.v1.Switch
-	3, // 2: gohome.entity.v1.Attributes.sensor:type_name -> gohome.entity.v1.Sensor
-	3, // [3:3] is the sub-list for method output_type
-	3, // [3:3] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	3, // 2: gohome.entity.v1.Attributes.numeric_sensor:type_name -> gohome.entity.v1.NumericSensor
+	4, // 3: gohome.entity.v1.Attributes.binary_sensor:type_name -> gohome.entity.v1.BinarySensor
+	4, // [4:4] is the sub-list for method output_type
+	4, // [4:4] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_gohome_entity_v1_attributes_proto_init() }
@@ -367,7 +436,8 @@ func file_gohome_entity_v1_attributes_proto_init() {
 	file_gohome_entity_v1_attributes_proto_msgTypes[0].OneofWrappers = []any{
 		(*Attributes_Light)(nil),
 		(*Attributes_SwitchDevice)(nil),
-		(*Attributes_Sensor)(nil),
+		(*Attributes_NumericSensor)(nil),
+		(*Attributes_BinarySensor)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -375,7 +445,7 @@ func file_gohome_entity_v1_attributes_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_gohome_entity_v1_attributes_proto_rawDesc), len(file_gohome_entity_v1_attributes_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

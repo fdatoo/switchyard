@@ -112,7 +112,7 @@ func newEventsTailCmd(gf *globalFlags) *cobra.Command {
 					continue
 				}
 				if !headerPrinted {
-					fmt.Fprintln(os.Stdout, Header.Render(fmt.Sprintf("%-12s  %-22s  %-30s  %-20s  %s", "TIME", "KIND", "ENTITY", "SOURCE", "CORR")))
+					_, _ = fmt.Fprintln(os.Stdout, Header.Render(fmt.Sprintf("%-12s  %-22s  %-30s  %-20s  %s", "TIME", "KIND", "ENTITY", "SOURCE", "CORR")))
 					headerPrinted = true
 				}
 				renderProtoEventLine(os.Stdout, ev)
@@ -259,7 +259,7 @@ func renderProtoEventLine(w io.Writer, e *v1.Event) {
 	}
 	// Pad raw values to width, then apply styling (so ANSI escapes don't
 	// throw off column alignment).
-	fmt.Fprintf(w, "%-12s  %s  %s  %s  %s\n",
+	_, _ = fmt.Fprintf(w, "%-12s  %s  %s  %s  %s\n",
 		ts,
 		Kind.Render(padOrTrunc(e.GetKind(), 22)),
 		EntityID.Render(padOrTrunc(e.GetEntity(), 30)),

@@ -8,11 +8,18 @@ package gohome.entity.v1;
 // for an entity. Specific payloads land in later milestones — C1 only
 // needs the envelope compiling. Future oneof variants get added here.
 message Attributes {
+  // Old name retired in favor of `numeric_sensor` for symmetry with
+  // `binary_sensor`. Field number 12 stays (wire-compatible). Per
+  // dev/proto-hygiene.md rule 3, we reserve the old name to prevent
+  // accidental reuse.
+  reserved "sensor";
+
   oneof kind {
     // 10-19: actuator/sensor domains
-    Light  light         = 10;
-    Switch switch_device = 11;
-    Sensor sensor        = 12;
+    Light          light           = 10;
+    Switch         switch_device   = 11;
+    NumericSensor  numeric_sensor  = 12;  // was: Sensor sensor; field number stays
+    BinarySensor   binary_sensor   = 13;
   }
   // 90-99: cross-cutting metadata
   // available is the driver's claim that the entity is currently reachable.
@@ -33,7 +40,15 @@ message Switch {
   bool on = 1;
 }
 
-message Sensor {
+message NumericSensor {
   string unit  = 1;
   double value = 2;
+}
+
+message BinarySensor {
+  // on encodes the active reading: motion detected, contact closed,
+  // water present, etc. Drivers may invert at the source if a device
+  // reports the inverse polarity natively (the inversion choice is the
+  // driver's, not the proto's).
+  bool on = 1;
 }

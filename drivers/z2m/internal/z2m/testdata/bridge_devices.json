@@ -1,0 +1,83 @@
+[
+  {
+    "ieee_address": "0x00158d0001234abc",
+    "friendly_name": "kitchen_light",
+    "type": "Router",
+    "definition": {
+      "vendor": "IKEA",
+      "model": "LED1545G12",
+      "description": "TRADFRI LED bulb E26/E27 980 lumen, dimmable, white spectrum, opal white",
+      "exposes": [
+        {
+          "type": "light",
+          "features": [
+            {"type": "binary", "name": "state", "property": "state", "access": 7, "value_on": "ON", "value_off": "OFF"},
+            {"type": "numeric", "name": "brightness", "property": "brightness", "access": 7, "value_min": 0, "value_max": 254},
+            {"type": "numeric", "name": "color_temp", "property": "color_temp", "access": 7, "value_min": 250, "value_max": 454},
+            {"type": "composite", "name": "color_xy", "property": "color", "access": 7, "features": [
+              {"type": "numeric", "name": "x", "property": "x", "access": 7},
+              {"type": "numeric", "name": "y", "property": "y", "access": 7}
+            ]}
+          ]
+        },
+        {"type": "numeric", "name": "linkquality", "property": "linkquality", "access": 1, "unit": "lqi", "value_min": 0, "value_max": 255}
+      ]
+    }
+  },
+  {
+    "ieee_address": "0x00158d0009876543",
+    "friendly_name": "hallway_motion",
+    "type": "EndDevice",
+    "definition": {
+      "vendor": "Aqara",
+      "model": "RTCGQ11LM",
+      "description": "Aqara human body movement and illuminance sensor",
+      "exposes": [
+        {"type": "binary", "name": "occupancy", "property": "occupancy", "access": 1, "value_on": true, "value_off": false},
+        {"type": "numeric", "name": "battery", "property": "battery", "access": 1, "unit": "%", "value_min": 0, "value_max": 100},
+        {"type": "numeric", "name": "temperature", "property": "temperature", "access": 1, "unit": "°C"},
+        {"type": "numeric", "name": "humidity", "property": "humidity", "access": 1, "unit": "%"},
+        {"type": "numeric", "name": "linkquality", "property": "linkquality", "access": 1, "unit": "lqi"},
+        {"type": "numeric", "name": "voltage", "property": "voltage", "access": 1, "unit": "mV"}
+      ]
+    }
+  },
+  {
+    "ieee_address": "0x00158d0002468ace",
+    "friendly_name": "front_door",
+    "type": "EndDevice",
+    "definition": {
+      "vendor": "Aqara",
+      "model": "MCCGQ11LM",
+      "description": "Aqara door & window contact sensor",
+      "exposes": [
+        {"type": "binary", "name": "contact", "property": "contact", "access": 1, "value_on": false, "value_off": true},
+        {"type": "numeric", "name": "battery", "property": "battery", "access": 1, "unit": "%"},
+        {"type": "numeric", "name": "linkquality", "property": "linkquality", "access": 1, "unit": "lqi"}
+      ]
+    }
+  },
+  {
+    "ieee_address": "0x00158d0011223344",
+    "friendly_name": "office_plug",
+    "type": "Router",
+    "definition": {
+      "vendor": "Innr",
+      "model": "SP 220",
+      "description": "Smart plug",
+      "exposes": [
+        {"type": "switch", "features": [
+          {"type": "binary", "name": "state", "property": "state", "access": 7, "value_on": "ON", "value_off": "OFF"}
+        ]},
+        {"type": "numeric", "name": "power", "property": "power", "access": 1, "unit": "W"},
+        {"type": "numeric", "name": "linkquality", "property": "linkquality", "access": 1, "unit": "lqi"}
+      ]
+    }
+  },
+  {
+    "ieee_address": "0x00124b0000000000",
+    "friendly_name": "Coordinator",
+    "type": "Coordinator",
+    "definition": {"vendor": "", "model": "", "description": "", "exposes": []}
+  }
+]

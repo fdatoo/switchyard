@@ -2,10 +2,10 @@
 
 syntax = "proto3";
 
-package gohome.v1alpha1;
+package switchyard.v1alpha1;
 
-import "gohome/v1alpha1/common.proto";
-import "gohome/entity/v1/attributes.proto";
+import "switchyard/v1alpha1/common.proto";
+import "switchyard/entity/v1/attributes.proto";
 import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 
@@ -26,8 +26,8 @@ message Entity {
   string friendly_name = 6;
 
   // 10-19: payload
-  gohome.entity.v1.Attributes state        = 10;
-  gohome.entity.v1.Attributes capabilities = 11;
+  switchyard.entity.v1.Attributes state        = 10;
+  switchyard.entity.v1.Attributes capabilities = 11;
 }
 
 message ListEntitiesRequest {

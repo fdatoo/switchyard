@@ -2,9 +2,9 @@
 
 syntax = "proto3";
 
-package gohome.v1alpha1;
+package switchyard.v1alpha1;
 
-import "gohome/v1alpha1/common.proto";
+import "switchyard/v1alpha1/common.proto";
 
 service DeviceService {
   rpc List    (ListDevicesRequest)    returns (ListDevicesResponse);

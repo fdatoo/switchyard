@@ -1,12 +1,12 @@
 syntax = "proto3";
 
-package gohome.carport.v1alpha1;
+package switchyard.carport.v1alpha1;
 
 // See docs/proto-hygiene.md.
 
-import "gohome/carport/v1alpha1/envelope.proto";
-import "gohome/carport/v1alpha1/manifest.proto";
-import "gohome/event/v1/event.proto";
+import "switchyard/carport/v1alpha1/envelope.proto";
+import "switchyard/carport/v1alpha1/manifest.proto";
+import "switchyard/event/v1/event.proto";
 
 service Driver {
   // Initial negotiation. Called exactly once before Run.
@@ -40,7 +40,7 @@ message HandshakeResponse {
   DriverManifest manifest = 10;
 
   // 20-29: initial registry delta
-  repeated gohome.event.v1.EntityRegistered initial_entities = 20;
+  repeated switchyard.event.v1.EntityRegistered initial_entities = 20;
 }
 
 message HealthRequest  {}

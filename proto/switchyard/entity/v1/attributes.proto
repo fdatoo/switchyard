@@ -2,7 +2,7 @@
 
 syntax = "proto3";
 
-package gohome.entity.v1;
+package switchyard.entity.v1;
 
 // Attributes carries both capabilities (static) and live state (dynamic)
 // for an entity.

@@ -2,10 +2,10 @@
 
 syntax = "proto3";
 
-package gohome.event.v1;
+package switchyard.event.v1;
 
-import "gohome/entity/v1/attributes.proto";
-import "gohome/event/v1/auth_event.proto";
+import "switchyard/entity/v1/attributes.proto";
+import "switchyard/event/v1/auth_event.proto";
 
 // Payload is the on-the-wire variant union. The DB stores this marshalled
 // inside the `events.payload` BLOB column; position/ts/kind/entity/source/
@@ -50,7 +50,7 @@ message SystemEvent {
 }
 
 message StateChanged {
-  gohome.entity.v1.Attributes attributes = 1;
+  switchyard.entity.v1.Attributes attributes = 1;
   // 2-9: identity (added v1alpha1.2 — drivers must populate)
   string                      entity_id  = 2;
 }
@@ -75,7 +75,7 @@ message EntityRegistered {
   // capability metadata. The daemon ignores this field — state flows over
   // StateChanged, which the driverkit re-emits at every Run start. Reserved
   // here to keep wire compatibility; do not populate.
-  gohome.entity.v1.Attributes capabilities       = 5;
+  switchyard.entity.v1.Attributes capabilities       = 5;
 }
 
 message EntityUnregistered {

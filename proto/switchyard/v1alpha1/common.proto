@@ -2,7 +2,7 @@
 
 syntax = "proto3";
 
-package gohome.v1alpha1;
+package switchyard.v1alpha1;
 
 import "google/protobuf/timestamp.proto";
 

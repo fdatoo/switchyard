@@ -2,9 +2,9 @@
 
 syntax = "proto3";
 
-package gohome.v1alpha1;
+package switchyard.v1alpha1;
 
-import "gohome/config/v1/snapshot.proto";
+import "switchyard/config/v1/snapshot.proto";
 import "google/protobuf/struct.proto";
 
 service ConfigService {
@@ -41,7 +41,7 @@ message ReloadConfigRequest  {}
 message ReloadConfigResponse { ConfigDiff diff = 1; string correlation_id = 2; }
 
 message GetConfigArtifactRequest  {}
-message GetConfigArtifactResponse { gohome.config.v1.ConfigSnapshot snapshot = 1; }
+message GetConfigArtifactResponse { switchyard.config.v1.ConfigSnapshot snapshot = 1; }
 
 message EvalComputeRequest {
   string                 dashboard_slug = 1;

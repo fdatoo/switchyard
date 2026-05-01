@@ -2,7 +2,7 @@
 
 syntax = "proto3";
 
-package gohome.config.v1;
+package switchyard.config.v1;
 
 message ConfigSnapshot {
   // 1-9: meta

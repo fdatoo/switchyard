@@ -2,9 +2,9 @@
 
 syntax = "proto3";
 
-package gohome.event.v1;
+package switchyard.event.v1;
 
-import "gohome/entity/v1/attributes.proto";
+import "switchyard/entity/v1/attributes.proto";
 
 // StateCacheSnapshot is the serialised form of the in-memory state cache,
 // written per-projector by the snapshotter goroutine and read during Replay
@@ -21,5 +21,5 @@ message EntityState {
   string                      entity_id  = 1;
   int64                       updated_at = 2;   // unix nanos
   string                      updated_by = 3;
-  gohome.entity.v1.Attributes attributes = 4;
+  switchyard.entity.v1.Attributes attributes = 4;
 }

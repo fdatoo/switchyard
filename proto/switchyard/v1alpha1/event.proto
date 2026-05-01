@@ -2,10 +2,10 @@
 
 syntax = "proto3";
 
-package gohome.v1alpha1;
+package switchyard.v1alpha1;
 
-import "gohome/v1alpha1/common.proto";
-import "gohome/event/v1/event.proto";
+import "switchyard/v1alpha1/common.proto";
+import "switchyard/event/v1/event.proto";
 import "google/protobuf/timestamp.proto";
 
 service EventService {
@@ -21,7 +21,7 @@ message Event {
   string                    source         = 5;
   string                    correlation_id = 6;
   string                    cause_id       = 7;
-  gohome.event.v1.Payload   payload        = 10;
+  switchyard.event.v1.Payload   payload        = 10;
 }
 
 message QueryEventsRequest {

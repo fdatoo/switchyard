@@ -2,7 +2,7 @@
 
 syntax = "proto3";
 
-package gohome.error.v1alpha1;
+package switchyard.error.v1alpha1;
 
 message ErrorDetail {
   // 1-9: classification

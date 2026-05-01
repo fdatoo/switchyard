@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package gohome.carport.v1alpha1;
+package switchyard.carport.v1alpha1;
 
 // See docs/proto-hygiene.md.
 

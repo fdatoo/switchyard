@@ -15,7 +15,6 @@ type Config struct {
 	SocketPath          string // UNIX socket for CLI mutative ops
 	SnapshotEveryEvents int
 	SnapshotEveryPeriod time.Duration
-	DriversTOMLPath     string // resolved against DataDir in Run; "@data/drivers.toml" is the sentinel
 	CarportSocketDir    string // resolved against DataDir in Run; "@data/carport" is the sentinel
 	ConfigDir           string // resolved against DataDir in Run; "@data/config" is the sentinel
 }
@@ -38,9 +37,6 @@ func (c *Config) WithDefaults() {
 	}
 	if c.SnapshotEveryPeriod == 0 {
 		c.SnapshotEveryPeriod = time.Hour
-	}
-	if c.DriversTOMLPath == "" {
-		c.DriversTOMLPath = "@data/drivers.toml"
 	}
 	if c.CarportSocketDir == "" {
 		c.CarportSocketDir = "@data/carport"

@@ -5,8 +5,6 @@ import (
 	"context"
 	"database/sql"
 	"log/slog"
-	"os"
-	"path/filepath"
 	"testing"
 
 	carportpb "github.com/fdatoo/gohome/gen/gohome/carport/v1alpha1"
@@ -62,11 +60,9 @@ func newHostForDispatch(t *testing.T, f *storeFixture, seed func(*storeFixture))
 	if seed != nil {
 		seed(f)
 	}
-	cfgPath := filepath.Join(t.TempDir(), "drivers.toml")
-	_ = os.WriteFile(cfgPath, []byte(""), 0o644)
 	logger := observability.Init(observability.LogConfig{Level: slog.LevelWarn, Format: "json", Output: &bytes.Buffer{}})
 	metrics := observability.NewMetrics()
-	h, err := carport.New(carport.HostConfig{DriversTOMLPath: cfgPath, SocketDir: t.TempDir()},
+	h, err := carport.New(carport.HostConfig{SocketDir: t.TempDir()},
 		f.db, f.store, reg, logger, metrics)
 	if err != nil {
 		t.Fatal(err)

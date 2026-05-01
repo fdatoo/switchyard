@@ -186,17 +186,12 @@ func (d *Daemon) Run(ctx context.Context) error {
 	}
 
 	// Phase 4.5: carport — driver supervisor
-	driversTOML := d.cfg.DriversTOMLPath
-	if driversTOML == "@data/drivers.toml" {
-		driversTOML = filepath.Join(dataDir, "drivers.toml")
-	}
 	socketDir := d.cfg.CarportSocketDir
 	if socketDir == "@data/carport" {
 		socketDir = filepath.Join(dataDir, "carport")
 	}
 	cport, err := carport.New(carport.HostConfig{
-		DriversTOMLPath: driversTOML,
-		SocketDir:       socketDir,
+		SocketDir: socketDir,
 	}, d.db, d.store, d.registry, d.logger, d.metrics)
 	if err != nil {
 		return fmt.Errorf("carport: %w", err)

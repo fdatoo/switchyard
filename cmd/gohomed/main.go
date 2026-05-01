@@ -27,7 +27,6 @@ func run() int {
 		adminPort        = flag.Int("admin-port", 9190, "HTTP admin port for /metrics and /health")
 		snapshotEveryEvt = flag.Int("snapshot-every-events", 10_000, "snapshot cadence: events since last")
 		snapshotEveryDur = flag.Duration("snapshot-every-period", time.Hour, "snapshot cadence: wall-clock period")
-		driversTOML      = flag.String("drivers-toml", "", "path to drivers.toml (default <data-dir>/drivers.toml)")
 		configDir        = flag.String("config-dir", "", "config directory with main.pkl (default <data-dir>/config)")
 	)
 	flag.Parse()
@@ -56,7 +55,6 @@ func run() int {
 		AdminPort:           *adminPort,
 		SnapshotEveryEvents: *snapshotEveryEvt,
 		SnapshotEveryPeriod: *snapshotEveryDur,
-		DriversTOMLPath:     *driversTOML,
 		ConfigDir:           *configDir,
 	}
 	d := daemon.New(cfg, logger, metrics)

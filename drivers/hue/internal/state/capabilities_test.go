@@ -5,7 +5,7 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/fdatoo/gohome/drivers/hue/internal/bridge"
+	"github.com/fdatoo/switchyard/drivers/hue/internal/bridge"
 )
 
 func TestCapabilities(t *testing.T) {

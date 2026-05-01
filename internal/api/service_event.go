@@ -6,15 +6,15 @@ import (
 
 	"connectrpc.com/connect"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
 )
 
 type EventService struct{ be EventSource }
 
 func NewEventService(be EventSource) *EventService { return &EventService{be: be} }
 
-var _ gohomev1alpha1connect.EventServiceHandler = (*EventService)(nil)
+var _ switchyardv1alpha1connect.EventServiceHandler = (*EventService)(nil)
 
 func (s *EventService) Query(ctx context.Context, req *connect.Request[v1.QueryEventsRequest]) (*connect.Response[v1.QueryEventsResponse], error) {
 	cur, err := DecodeCursor(pageToken(req.Msg.Page))

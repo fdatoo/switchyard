@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/fdatoo/gohome/internal/eventstore"
-	"github.com/fdatoo/gohome/internal/state"
-	"github.com/fdatoo/gohome/internal/testutil"
+	"github.com/fdatoo/switchyard/internal/eventstore"
+	"github.com/fdatoo/switchyard/internal/state"
+	"github.com/fdatoo/switchyard/internal/testutil"
 )
 
 func TestSnapshotNow_WritesRowForOwner(t *testing.T) {

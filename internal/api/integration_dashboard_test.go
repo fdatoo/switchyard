@@ -8,8 +8,8 @@ import (
 
 	"connectrpc.com/connect"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/internal/dashboard"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/internal/dashboard"
 )
 
 func TestIntegration_DashboardCRUD(t *testing.T) {

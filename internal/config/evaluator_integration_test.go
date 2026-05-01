@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	configpb "github.com/fdatoo/gohome/gen/gohome/config/v1"
+	configpb "github.com/fdatoo/switchyard/gen/switchyard/config/v1"
 )
 
 func testdataDir(t *testing.T, name string) string {

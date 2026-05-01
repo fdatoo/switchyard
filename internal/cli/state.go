@@ -9,8 +9,8 @@ import (
 	"github.com/spf13/cobra"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
 )
 
 func newStateCmd(gf *globalFlags) *cobra.Command {
@@ -31,7 +31,7 @@ func newStateGetCmd(gf *globalFlags) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			svc := gohomev1alpha1connect.NewEntityServiceClient(httpClient, base)
+			svc := switchyardv1alpha1connect.NewEntityServiceClient(httpClient, base)
 			resp, err := svc.Get(cmd.Context(), connect.NewRequest(&v1.GetEntityRequest{Id: args[0]}))
 			if err != nil {
 				return renderConnectErr(err)
@@ -76,7 +76,7 @@ func newStateDumpCmd(gf *globalFlags) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			svc := gohomev1alpha1connect.NewEntityServiceClient(httpClient, base)
+			svc := switchyardv1alpha1connect.NewEntityServiceClient(httpClient, base)
 
 			out := map[string]any{}
 			var pageToken string

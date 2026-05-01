@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	carportpb "github.com/fdatoo/gohome/gen/gohome/carport/v1alpha1"
-	"github.com/fdatoo/gohome/internal/carport"
-	"github.com/fdatoo/gohome/internal/eventstore"
+	carportpb "github.com/fdatoo/switchyard/gen/switchyard/carport/v1alpha1"
+	"github.com/fdatoo/switchyard/internal/carport"
+	"github.com/fdatoo/switchyard/internal/eventstore"
 )
 
 func TestDispatch_EntityUnknown(t *testing.T) {

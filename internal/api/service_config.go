@@ -5,16 +5,16 @@ import (
 
 	"connectrpc.com/connect"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
-	"github.com/fdatoo/gohome/internal/compute"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
+	"github.com/fdatoo/switchyard/internal/compute"
 )
 
 type ConfigService struct{ be ConfigApplier }
 
 func NewConfigService(be ConfigApplier) *ConfigService { return &ConfigService{be: be} }
 
-var _ gohomev1alpha1connect.ConfigServiceHandler = (*ConfigService)(nil)
+var _ switchyardv1alpha1connect.ConfigServiceHandler = (*ConfigService)(nil)
 
 func (s *ConfigService) Validate(ctx context.Context, req *connect.Request[v1.ValidateConfigRequest]) (*connect.Response[v1.ValidateConfigResponse], error) {
 	valid, errs, diff, hash, err := s.be.Validate(ctx, req.Msg.PklBundle)

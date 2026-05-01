@@ -10,7 +10,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/fdatoo/gohome/internal/api"
+	"github.com/fdatoo/switchyard/internal/api"
 )
 
 type fakeWebhookRouter struct {

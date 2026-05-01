@@ -8,10 +8,10 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/fdatoo/gohome/internal/eventstore"
-	"github.com/fdatoo/gohome/internal/state"
-	"github.com/fdatoo/gohome/internal/storage"
-	"github.com/fdatoo/gohome/internal/testutil"
+	"github.com/fdatoo/switchyard/internal/eventstore"
+	"github.com/fdatoo/switchyard/internal/state"
+	"github.com/fdatoo/switchyard/internal/storage"
+	"github.com/fdatoo/switchyard/internal/testutil"
 )
 
 func TestAppendBatch(t *testing.T) {

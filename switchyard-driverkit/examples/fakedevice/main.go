@@ -9,9 +9,9 @@ import (
 	"strconv"
 	"sync"
 
-	entityv1 "github.com/fdatoo/gohome/gen/gohome/entity/v1"
+	entityv1 "github.com/fdatoo/switchyard/gen/switchyard/entity/v1"
 
-	"github.com/fdatoo/gohome-driverkit/driver"
+	"github.com/fdatoo/switchyard-driverkit/driver"
 )
 
 const entityID = "light.fake_light"

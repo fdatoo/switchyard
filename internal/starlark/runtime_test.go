@@ -9,7 +9,7 @@ import (
 
 	starlarkgo "go.starlark.net/starlark"
 
-	ghs "github.com/fdatoo/gohome/internal/starlark"
+	ghs "github.com/fdatoo/switchyard/internal/starlark"
 )
 
 func newTestRuntime(t *testing.T) *ghs.Runtime {

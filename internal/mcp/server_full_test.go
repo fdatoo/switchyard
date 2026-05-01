@@ -16,14 +16,14 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
-	"github.com/fdatoo/gohome/internal/auth"
-	"github.com/fdatoo/gohome/internal/mcp"
-	"github.com/fdatoo/gohome/internal/mcp/audit"
-	"github.com/fdatoo/gohome/internal/mcp/resources"
-	"github.com/fdatoo/gohome/internal/mcp/tools"
-	"github.com/fdatoo/gohome/internal/observability"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
+	"github.com/fdatoo/switchyard/internal/auth"
+	"github.com/fdatoo/switchyard/internal/mcp"
+	"github.com/fdatoo/switchyard/internal/mcp/audit"
+	"github.com/fdatoo/switchyard/internal/mcp/resources"
+	"github.com/fdatoo/switchyard/internal/mcp/tools"
+	"github.com/fdatoo/switchyard/internal/observability"
 )
 
 // ---------------------------------------------------------------------------
@@ -31,7 +31,7 @@ import (
 // ---------------------------------------------------------------------------
 
 type fullFakeSystemSvc struct {
-	gohomev1alpha1connect.UnimplementedSystemServiceHandler
+	switchyardv1alpha1connect.UnimplementedSystemServiceHandler
 	recordFn func(context.Context, *connect.Request[v1.RecordConfigFileEditRequest]) (*connect.Response[v1.RecordConfigFileEditResponse], error)
 }
 
@@ -43,7 +43,7 @@ func (h *fullFakeSystemSvc) RecordConfigFileEdit(ctx context.Context, req *conne
 }
 
 type fullFakeEntitySvc struct {
-	gohomev1alpha1connect.UnimplementedEntityServiceHandler
+	switchyardv1alpha1connect.UnimplementedEntityServiceHandler
 	getFn            func(context.Context, *connect.Request[v1.GetEntityRequest]) (*connect.Response[v1.GetEntityResponse], error)
 	listFn           func(context.Context, *connect.Request[v1.ListEntitiesRequest]) (*connect.Response[v1.ListEntitiesResponse], error)
 	callCapabilityFn func(context.Context, *connect.Request[v1.CallCapabilityRequest]) (*connect.Response[v1.CallCapabilityResponse], error)
@@ -79,7 +79,7 @@ func (h *fullFakeEntitySvc) Subscribe(ctx context.Context, req *connect.Request[
 }
 
 type fullFakeEventSvc struct {
-	gohomev1alpha1connect.UnimplementedEventServiceHandler
+	switchyardv1alpha1connect.UnimplementedEventServiceHandler
 	queryFn func(context.Context, *connect.Request[v1.QueryEventsRequest]) (*connect.Response[v1.QueryEventsResponse], error)
 	tailFn  func(context.Context, *connect.Request[v1.TailEventsRequest], *connect.ServerStream[v1.TailEventsResponse]) error
 }
@@ -99,7 +99,7 @@ func (h *fullFakeEventSvc) Tail(ctx context.Context, req *connect.Request[v1.Tai
 }
 
 type fullFakeSceneSvc struct {
-	gohomev1alpha1connect.UnimplementedSceneServiceHandler
+	switchyardv1alpha1connect.UnimplementedSceneServiceHandler
 	applyFn func(context.Context, *connect.Request[v1.ApplySceneRequest]) (*connect.Response[v1.ApplySceneResponse], error)
 }
 
@@ -111,7 +111,7 @@ func (h *fullFakeSceneSvc) Apply(ctx context.Context, req *connect.Request[v1.Ap
 }
 
 type fullFakeScriptSvc struct {
-	gohomev1alpha1connect.UnimplementedScriptServiceHandler
+	switchyardv1alpha1connect.UnimplementedScriptServiceHandler
 	runFn  func(context.Context, *connect.Request[v1.RunScriptRequest]) (*connect.Response[v1.RunScriptResponse], error)
 	evalFn func(context.Context, *connect.Request[v1.EvalScriptRequest]) (*connect.Response[v1.EvalScriptResponse], error)
 }
@@ -131,7 +131,7 @@ func (h *fullFakeScriptSvc) Eval(ctx context.Context, req *connect.Request[v1.Ev
 }
 
 type fullFakeConfigSvc struct {
-	gohomev1alpha1connect.UnimplementedConfigServiceHandler
+	switchyardv1alpha1connect.UnimplementedConfigServiceHandler
 	validateFn func(context.Context, *connect.Request[v1.ValidateConfigRequest]) (*connect.Response[v1.ValidateConfigResponse], error)
 	applyFn    func(context.Context, *connect.Request[v1.ApplyConfigRequest]) (*connect.Response[v1.ApplyConfigResponse], error)
 }
@@ -190,27 +190,27 @@ func newFullStack(t *testing.T, configDir ...string) (*sdk.ClientSession, *testF
 	// Wire all services onto a single HTTP mux.
 	mux := http.NewServeMux()
 
-	p, h := gohomev1alpha1connect.NewSystemServiceHandler(fakes.System)
+	p, h := switchyardv1alpha1connect.NewSystemServiceHandler(fakes.System)
 	mux.Handle(p, h)
 
-	p, h = gohomev1alpha1connect.NewEntityServiceHandler(fakes.Entity)
+	p, h = switchyardv1alpha1connect.NewEntityServiceHandler(fakes.Entity)
 	mux.Handle(p, h)
 
-	p, h = gohomev1alpha1connect.NewEventServiceHandler(fakes.Event)
+	p, h = switchyardv1alpha1connect.NewEventServiceHandler(fakes.Event)
 	mux.Handle(p, h)
 
-	p, h = gohomev1alpha1connect.NewSceneServiceHandler(fakes.Scene)
+	p, h = switchyardv1alpha1connect.NewSceneServiceHandler(fakes.Scene)
 	mux.Handle(p, h)
 
-	p, h = gohomev1alpha1connect.NewScriptServiceHandler(fakes.Script)
+	p, h = switchyardv1alpha1connect.NewScriptServiceHandler(fakes.Script)
 	mux.Handle(p, h)
 
-	p, h = gohomev1alpha1connect.NewConfigServiceHandler(fakes.Config)
+	p, h = switchyardv1alpha1connect.NewConfigServiceHandler(fakes.Config)
 	mux.Handle(p, h)
 
 	// Register automation service for trace subscriptions (unimplemented is fine).
-	p, h = gohomev1alpha1connect.NewAutomationServiceHandler(
-		gohomev1alpha1connect.UnimplementedAutomationServiceHandler{},
+	p, h = switchyardv1alpha1connect.NewAutomationServiceHandler(
+		switchyardv1alpha1connect.UnimplementedAutomationServiceHandler{},
 	)
 	mux.Handle(p, h)
 
@@ -630,19 +630,19 @@ func TestFullStack_EntitySubscribe(t *testing.T) {
 	}
 
 	mux := http.NewServeMux()
-	p, h := gohomev1alpha1connect.NewSystemServiceHandler(fakes.System)
+	p, h := switchyardv1alpha1connect.NewSystemServiceHandler(fakes.System)
 	mux.Handle(p, h)
-	p, h = gohomev1alpha1connect.NewEntityServiceHandler(fakes.Entity)
+	p, h = switchyardv1alpha1connect.NewEntityServiceHandler(fakes.Entity)
 	mux.Handle(p, h)
-	p, h = gohomev1alpha1connect.NewEventServiceHandler(fakes.Event)
+	p, h = switchyardv1alpha1connect.NewEventServiceHandler(fakes.Event)
 	mux.Handle(p, h)
-	p, h = gohomev1alpha1connect.NewSceneServiceHandler(fakes.Scene)
+	p, h = switchyardv1alpha1connect.NewSceneServiceHandler(fakes.Scene)
 	mux.Handle(p, h)
-	p, h = gohomev1alpha1connect.NewScriptServiceHandler(fakes.Script)
+	p, h = switchyardv1alpha1connect.NewScriptServiceHandler(fakes.Script)
 	mux.Handle(p, h)
-	p, h = gohomev1alpha1connect.NewConfigServiceHandler(fakes.Config)
+	p, h = switchyardv1alpha1connect.NewConfigServiceHandler(fakes.Config)
 	mux.Handle(p, h)
-	p, h = gohomev1alpha1connect.NewAutomationServiceHandler(gohomev1alpha1connect.UnimplementedAutomationServiceHandler{})
+	p, h = switchyardv1alpha1connect.NewAutomationServiceHandler(switchyardv1alpha1connect.UnimplementedAutomationServiceHandler{})
 	mux.Handle(p, h)
 
 	srv := httptest.NewServer(mux)

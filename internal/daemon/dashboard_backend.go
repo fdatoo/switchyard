@@ -3,7 +3,7 @@ package daemon
 import (
 	"context"
 
-	"github.com/fdatoo/gohome/internal/dashboard"
+	"github.com/fdatoo/switchyard/internal/dashboard"
 )
 
 type dashboardBackend struct {

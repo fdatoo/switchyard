@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/fdatoo/gohome/internal/dashboard"
-	"github.com/fdatoo/gohome/internal/dashboard/regen"
+	"github.com/fdatoo/switchyard/internal/dashboard"
+	"github.com/fdatoo/switchyard/internal/dashboard/regen"
 )
 
 func TestRender_EmptyDashboard(t *testing.T) {

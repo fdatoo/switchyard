@@ -5,8 +5,8 @@ import (
 
 	"connectrpc.com/connect"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
 )
 
 func unimplemented(ctx context.Context, reason string) error {
@@ -18,7 +18,7 @@ type SceneService struct{}
 
 func NewSceneService() *SceneService { return &SceneService{} }
 
-var _ gohomev1alpha1connect.SceneServiceHandler = (*SceneService)(nil)
+var _ switchyardv1alpha1connect.SceneServiceHandler = (*SceneService)(nil)
 
 func (*SceneService) List(ctx context.Context, _ *connect.Request[v1.ListScenesRequest]) (*connect.Response[v1.ListScenesResponse], error) {
 	return nil, unimplemented(ctx, "scene_unimplemented")
@@ -35,7 +35,7 @@ type DashboardService struct{}
 
 func NewDashboardService() *DashboardService { return &DashboardService{} }
 
-var _ gohomev1alpha1connect.DashboardServiceHandler = (*DashboardService)(nil)
+var _ switchyardv1alpha1connect.DashboardServiceHandler = (*DashboardService)(nil)
 
 func (*DashboardService) List(ctx context.Context, _ *connect.Request[v1.ListDashboardsRequest]) (*connect.Response[v1.ListDashboardsResponse], error) {
 	return nil, unimplemented(ctx, "dashboard_unimplemented")

@@ -13,8 +13,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	carportv1alpha1 "github.com/fdatoo/gohome/gen/gohome/carport/v1alpha1"
-	eventv1 "github.com/fdatoo/gohome/gen/gohome/event/v1"
+	carportv1alpha1 "github.com/fdatoo/switchyard/gen/switchyard/carport/v1alpha1"
+	eventv1 "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
 )
 
 // Emitter sends messages on the active Run stream.

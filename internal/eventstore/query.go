@@ -8,7 +8,7 @@ import (
 
 	"google.golang.org/protobuf/proto"
 
-	eventv1 "github.com/fdatoo/gohome/gen/gohome/event/v1"
+	eventv1 "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
 )
 
 type QueryOptions struct {

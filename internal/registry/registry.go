@@ -7,10 +7,10 @@ import (
 
 	"google.golang.org/protobuf/proto"
 
-	eventv1 "github.com/fdatoo/gohome/gen/gohome/event/v1"
-	"github.com/fdatoo/gohome/internal/eventstore"
-	regMigrations "github.com/fdatoo/gohome/internal/registry/migrations"
-	"github.com/fdatoo/gohome/internal/storage"
+	eventv1 "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
+	"github.com/fdatoo/switchyard/internal/eventstore"
+	regMigrations "github.com/fdatoo/switchyard/internal/registry/migrations"
+	"github.com/fdatoo/switchyard/internal/storage"
 )
 
 // Registry is the read API and projector for driver instances, devices, and entities.

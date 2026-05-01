@@ -6,8 +6,8 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/fdatoo/gohome/internal/auth"
-	"github.com/fdatoo/gohome/internal/auth/credentials"
+	"github.com/fdatoo/switchyard/internal/auth"
+	"github.com/fdatoo/switchyard/internal/auth/credentials"
 )
 
 // Bearer authenticates requests that carry an "Authorization: Bearer <token>" header.

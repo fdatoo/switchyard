@@ -9,7 +9,7 @@ import (
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
 )
 
 // isTraceURI returns true when the URI looks like an automation trace resource.

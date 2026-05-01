@@ -20,7 +20,7 @@ import (
 	wa "github.com/go-webauthn/webauthn/webauthn"
 	"github.com/stretchr/testify/require"
 
-	"github.com/fdatoo/gohome/internal/auth/credentials"
+	"github.com/fdatoo/switchyard/internal/auth/credentials"
 )
 
 // virtualAuthenticator is a minimal ES256 authenticator used to drive the

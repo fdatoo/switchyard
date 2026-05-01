@@ -7,8 +7,8 @@ import (
 	"connectrpc.com/connect"
 	"github.com/stretchr/testify/require"
 
-	"github.com/fdatoo/gohome/internal/api"
-	"github.com/fdatoo/gohome/internal/observability"
+	"github.com/fdatoo/switchyard/internal/api"
+	"github.com/fdatoo/switchyard/internal/observability"
 )
 
 func TestMCPInterceptor_TagsToolCall(t *testing.T) {

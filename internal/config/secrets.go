@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	configpb "github.com/fdatoo/gohome/gen/gohome/config/v1"
+	configpb "github.com/fdatoo/switchyard/gen/switchyard/config/v1"
 )
 
 // Keyring is satisfied by go-keyring and by test doubles.

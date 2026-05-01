@@ -18,10 +18,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	authpb "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
-	"github.com/fdatoo/gohome/internal/daemon"
-	"github.com/fdatoo/gohome/internal/observability"
+	authpb "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
+	"github.com/fdatoo/switchyard/internal/daemon"
+	"github.com/fdatoo/switchyard/internal/observability"
 )
 
 func TestAuthSmokeE2E(t *testing.T) {
@@ -52,7 +52,7 @@ func TestAuthSmokeE2E(t *testing.T) {
 		},
 	}}
 	const base = "http://gohomed"
-	authSvc := gohomev1alpha1connect.NewAuthServiceClient(httpClient, base)
+	authSvc := switchyardv1alpha1connect.NewAuthServiceClient(httpClient, base)
 
 	// 1. ListUsers returns empty list (no Pkl config loaded → no users)
 	t.Run("ListUsers_empty", func(t *testing.T) {

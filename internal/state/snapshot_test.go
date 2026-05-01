@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/fdatoo/gohome/internal/state"
-	"github.com/fdatoo/gohome/internal/testutil"
+	"github.com/fdatoo/switchyard/internal/state"
+	"github.com/fdatoo/switchyard/internal/testutil"
 )
 
 func TestCache_SnapshotRoundTrip(t *testing.T) {

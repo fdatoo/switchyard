@@ -4,11 +4,11 @@ import (
 	"context"
 	"testing"
 
-	carportpb "github.com/fdatoo/gohome/gen/gohome/carport/v1alpha1"
-	entitypb "github.com/fdatoo/gohome/gen/gohome/entity/v1"
-	eventpb "github.com/fdatoo/gohome/gen/gohome/event/v1"
-	"github.com/fdatoo/gohome/internal/carport"
-	"github.com/fdatoo/gohome/internal/eventstore"
+	carportpb "github.com/fdatoo/switchyard/gen/switchyard/carport/v1alpha1"
+	entitypb "github.com/fdatoo/switchyard/gen/switchyard/entity/v1"
+	eventpb "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
+	"github.com/fdatoo/switchyard/internal/carport"
+	"github.com/fdatoo/switchyard/internal/eventstore"
 )
 
 func TestIngestMessage_StateChanged(t *testing.T) {

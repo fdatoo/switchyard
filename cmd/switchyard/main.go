@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/fdatoo/gohome/internal/cli"
+	"github.com/fdatoo/switchyard/internal/cli"
 )
 
 func main() {

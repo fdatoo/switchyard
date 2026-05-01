@@ -6,8 +6,8 @@ import (
 
 	"connectrpc.com/connect"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
 )
 
 type AutomationService struct{ be AutomationControl }
@@ -16,7 +16,7 @@ func NewAutomationService(be AutomationControl) *AutomationService {
 	return &AutomationService{be: be}
 }
 
-var _ gohomev1alpha1connect.AutomationServiceHandler = (*AutomationService)(nil)
+var _ switchyardv1alpha1connect.AutomationServiceHandler = (*AutomationService)(nil)
 
 func (s *AutomationService) List(ctx context.Context, req *connect.Request[v1.ListAutomationsRequest]) (*connect.Response[v1.ListAutomationsResponse], error) {
 	cur, err := DecodeCursor(pageToken(req.Msg.Page))

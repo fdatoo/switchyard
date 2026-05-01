@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/fdatoo/gohome/internal/widgetpack"
+	"github.com/fdatoo/switchyard/internal/widgetpack"
 )
 
 func TestStore_AddAndGet(t *testing.T) {

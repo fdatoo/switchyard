@@ -6,10 +6,10 @@ import (
 	"testing"
 	"time"
 
-	entityv1 "github.com/fdatoo/gohome/gen/gohome/entity/v1"
+	entityv1 "github.com/fdatoo/switchyard/gen/switchyard/entity/v1"
 
-	"github.com/fdatoo/gohome-driverkit/driver"
-	"github.com/fdatoo/gohome-driverkit/drivertest"
+	"github.com/fdatoo/switchyard-driverkit/driver"
+	"github.com/fdatoo/switchyard-driverkit/drivertest"
 )
 
 func lightSpec(caps ...string) driver.EntitySpec {

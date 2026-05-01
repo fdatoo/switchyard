@@ -8,11 +8,11 @@ import (
 	"sync"
 	"time"
 
-	carportv1alpha1 "github.com/fdatoo/gohome/gen/gohome/carport/v1alpha1"
-	entityv1 "github.com/fdatoo/gohome/gen/gohome/entity/v1"
-	eventv1 "github.com/fdatoo/gohome/gen/gohome/event/v1"
+	carportv1alpha1 "github.com/fdatoo/switchyard/gen/switchyard/carport/v1alpha1"
+	entityv1 "github.com/fdatoo/switchyard/gen/switchyard/entity/v1"
+	eventv1 "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
 
-	"github.com/fdatoo/gohome-driverkit/protocol"
+	"github.com/fdatoo/switchyard-driverkit/protocol"
 )
 
 // Sentinel errors returned by Driver methods.

@@ -7,10 +7,10 @@ import (
 
 	"google.golang.org/protobuf/encoding/protojson"
 
-	"github.com/fdatoo/gohome/internal/eventstore"
-	"github.com/fdatoo/gohome/internal/registry"
-	"github.com/fdatoo/gohome/internal/state"
-	"github.com/fdatoo/gohome/internal/testutil"
+	"github.com/fdatoo/switchyard/internal/eventstore"
+	"github.com/fdatoo/switchyard/internal/registry"
+	"github.com/fdatoo/switchyard/internal/state"
+	"github.com/fdatoo/switchyard/internal/testutil"
 )
 
 func TestGoldenReplay(t *testing.T) {

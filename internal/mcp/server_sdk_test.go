@@ -9,7 +9,7 @@ import (
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 
-	"github.com/fdatoo/gohome/internal/mcp"
+	"github.com/fdatoo/switchyard/internal/mcp"
 )
 
 func TestRun_RegisterToolsCalled(t *testing.T) {

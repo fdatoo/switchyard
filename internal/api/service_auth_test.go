@@ -11,16 +11,16 @@ import (
 	"connectrpc.com/connect"
 	"github.com/stretchr/testify/require"
 
-	eventv1 "github.com/fdatoo/gohome/gen/gohome/event/v1"
-	authpb "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/internal/api"
-	"github.com/fdatoo/gohome/internal/auth"
-	"github.com/fdatoo/gohome/internal/auth/audit"
-	"github.com/fdatoo/gohome/internal/auth/credentials"
-	"github.com/fdatoo/gohome/internal/auth/identity"
-	"github.com/fdatoo/gohome/internal/auth/sessions"
-	"github.com/fdatoo/gohome/internal/auth/throttle"
-	"github.com/fdatoo/gohome/internal/testutil"
+	eventv1 "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
+	authpb "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/internal/api"
+	"github.com/fdatoo/switchyard/internal/auth"
+	"github.com/fdatoo/switchyard/internal/auth/audit"
+	"github.com/fdatoo/switchyard/internal/auth/credentials"
+	"github.com/fdatoo/switchyard/internal/auth/identity"
+	"github.com/fdatoo/switchyard/internal/auth/sessions"
+	"github.com/fdatoo/switchyard/internal/auth/throttle"
+	"github.com/fdatoo/switchyard/internal/testutil"
 )
 
 // nopAppender discards all audit events (for tests).

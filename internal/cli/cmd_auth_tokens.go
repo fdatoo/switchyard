@@ -6,8 +6,8 @@ import (
 	"connectrpc.com/connect"
 	"github.com/spf13/cobra"
 
-	authpb "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
+	authpb "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
 )
 
 func newTokensCmd(gf *globalFlags) *cobra.Command {
@@ -28,7 +28,7 @@ func newTokensCreateCmd(gf *globalFlags) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			svc := gohomev1alpha1connect.NewAuthServiceClient(httpClient, base)
+			svc := switchyardv1alpha1connect.NewAuthServiceClient(httpClient, base)
 			resp, err := svc.CreateToken(cmd.Context(),
 				connect.NewRequest(&authpb.CreateTokenRequest{
 					DisplayName: label,
@@ -56,7 +56,7 @@ func newTokensRevokeCmd(gf *globalFlags) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			svc := gohomev1alpha1connect.NewAuthServiceClient(httpClient, base)
+			svc := switchyardv1alpha1connect.NewAuthServiceClient(httpClient, base)
 			_, err = svc.RevokeToken(cmd.Context(),
 				connect.NewRequest(&authpb.RevokeTokenRequest{TokenId: args[0]}))
 			if err != nil {

@@ -1,7 +1,7 @@
 package driver
 
 import (
-	entityv1 "github.com/fdatoo/gohome/gen/gohome/entity/v1"
+	entityv1 "github.com/fdatoo/switchyard/gen/switchyard/entity/v1"
 )
 
 // EntitySpec describes a driver-owned entity.

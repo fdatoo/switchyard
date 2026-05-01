@@ -3,8 +3,8 @@ package automation
 import (
 	"context"
 
-	"github.com/fdatoo/gohome/internal/automation/action"
-	"github.com/fdatoo/gohome/internal/observability"
+	"github.com/fdatoo/switchyard/internal/automation/action"
+	"github.com/fdatoo/switchyard/internal/observability"
 )
 
 // metricExecutor wraps a leaf action.Executor to record

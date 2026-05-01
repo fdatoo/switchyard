@@ -8,15 +8,15 @@ import (
 
 	"connectrpc.com/connect"
 
-	authpb "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/internal/auth"
-	"github.com/fdatoo/gohome/internal/auth/audit"
-	"github.com/fdatoo/gohome/internal/auth/credentials"
-	"github.com/fdatoo/gohome/internal/auth/identity"
-	"github.com/fdatoo/gohome/internal/auth/sessions"
-	"github.com/fdatoo/gohome/internal/auth/throttle"
-	"github.com/fdatoo/gohome/internal/observability"
-	"github.com/fdatoo/gohome/internal/policy"
+	authpb "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/internal/auth"
+	"github.com/fdatoo/switchyard/internal/auth/audit"
+	"github.com/fdatoo/switchyard/internal/auth/credentials"
+	"github.com/fdatoo/switchyard/internal/auth/identity"
+	"github.com/fdatoo/switchyard/internal/auth/sessions"
+	"github.com/fdatoo/switchyard/internal/auth/throttle"
+	"github.com/fdatoo/switchyard/internal/observability"
+	"github.com/fdatoo/switchyard/internal/policy"
 )
 
 // AuthDeps holds the dependencies required by the real AuthService.

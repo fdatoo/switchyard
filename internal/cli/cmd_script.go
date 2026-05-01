@@ -9,8 +9,8 @@ import (
 	"github.com/spf13/cobra"
 	"google.golang.org/protobuf/types/known/structpb"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
 )
 
 func newScriptCmd(gf *globalFlags) *cobra.Command {
@@ -29,7 +29,7 @@ func newScriptListCmd(gf *globalFlags) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			svc := gohomev1alpha1connect.NewScriptServiceClient(httpClient, base)
+			svc := switchyardv1alpha1connect.NewScriptServiceClient(httpClient, base)
 			resp, err := svc.List(cmd.Context(), connect.NewRequest(&v1.ListScriptsRequest{}))
 			if err != nil {
 				return renderConnectErr(err)
@@ -72,7 +72,7 @@ func newScriptRunCmd(gf *globalFlags) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			svc := gohomev1alpha1connect.NewScriptServiceClient(httpClient, base)
+			svc := switchyardv1alpha1connect.NewScriptServiceClient(httpClient, base)
 			resp, err := svc.Run(cmd.Context(), connect.NewRequest(&v1.RunScriptRequest{
 				Name: args[0],
 				Args: argsStruct,

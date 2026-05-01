@@ -12,16 +12,16 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
-	"github.com/fdatoo/gohome/internal/auth"
-	"github.com/fdatoo/gohome/internal/mcp"
-	"github.com/fdatoo/gohome/internal/mcp/tools"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
+	"github.com/fdatoo/switchyard/internal/auth"
+	"github.com/fdatoo/switchyard/internal/mcp"
+	"github.com/fdatoo/switchyard/internal/mcp/tools"
 )
 
-// fakeEntityHandler implements gohomev1alpha1connect.EntityServiceHandler.
+// fakeEntityHandler implements switchyardv1alpha1connect.EntityServiceHandler.
 type fakeEntityHandler struct {
-	gohomev1alpha1connect.UnimplementedEntityServiceHandler
+	switchyardv1alpha1connect.UnimplementedEntityServiceHandler
 
 	getEntity      func(context.Context, *connect.Request[v1.GetEntityRequest]) (*connect.Response[v1.GetEntityResponse], error)
 	listEntities   func(context.Context, *connect.Request[v1.ListEntitiesRequest]) (*connect.Response[v1.ListEntitiesResponse], error)
@@ -51,7 +51,7 @@ func (h *fakeEntityHandler) CallCapability(ctx context.Context, req *connect.Req
 
 func newEntitiesTestDeps(t *testing.T, handler *fakeEntityHandler) (tools.Deps, *sdk.Server) {
 	t.Helper()
-	_, handler2 := gohomev1alpha1connect.NewEntityServiceHandler(handler)
+	_, handler2 := switchyardv1alpha1connect.NewEntityServiceHandler(handler)
 	srv := httptest.NewServer(handler2)
 	t.Cleanup(srv.Close)
 

@@ -11,15 +11,15 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
-	"github.com/fdatoo/gohome/internal/auth"
-	"github.com/fdatoo/gohome/internal/mcp"
-	"github.com/fdatoo/gohome/internal/mcp/tools"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
+	"github.com/fdatoo/switchyard/internal/auth"
+	"github.com/fdatoo/switchyard/internal/mcp"
+	"github.com/fdatoo/switchyard/internal/mcp/tools"
 )
 
 type fakeSceneHandler struct {
-	gohomev1alpha1connect.UnimplementedSceneServiceHandler
+	switchyardv1alpha1connect.UnimplementedSceneServiceHandler
 
 	applyFn func(context.Context, *connect.Request[v1.ApplySceneRequest]) (*connect.Response[v1.ApplySceneResponse], error)
 }
@@ -33,7 +33,7 @@ func (h *fakeSceneHandler) Apply(ctx context.Context, req *connect.Request[v1.Ap
 
 func newScenesTestDeps(t *testing.T, handler *fakeSceneHandler) (tools.Deps, *sdk.Server) {
 	t.Helper()
-	_, h := gohomev1alpha1connect.NewSceneServiceHandler(handler)
+	_, h := switchyardv1alpha1connect.NewSceneServiceHandler(handler)
 	srv := httptest.NewServer(h)
 	t.Cleanup(srv.Close)
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/fdatoo/gohome/internal/compute"
+	"github.com/fdatoo/switchyard/internal/compute"
 )
 
 func TestService_Eval_ReturnsErrorForUnimplemented(t *testing.T) {

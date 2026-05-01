@@ -16,11 +16,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/fdatoo/gohome-driverkit/driver"
-	entityv1 "github.com/fdatoo/gohome/gen/gohome/entity/v1"
+	"github.com/fdatoo/switchyard-driverkit/driver"
+	entityv1 "github.com/fdatoo/switchyard/gen/switchyard/entity/v1"
 
-	"github.com/fdatoo/gohome/drivers/hue/internal/bridge"
-	"github.com/fdatoo/gohome/drivers/hue/internal/state"
+	"github.com/fdatoo/switchyard/drivers/hue/internal/bridge"
+	"github.com/fdatoo/switchyard/drivers/hue/internal/state"
 )
 
 const driverName, driverVersion = "driver.hue", "0.1.0"

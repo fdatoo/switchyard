@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/fdatoo/gohome/internal/registry"
+	"github.com/fdatoo/switchyard/internal/registry"
 )
 
 // Router resolves an entity_id to its owning driver_instance_id by reading the

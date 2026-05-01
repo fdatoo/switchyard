@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/fdatoo/gohome/internal/storage"
+	"github.com/fdatoo/switchyard/internal/storage"
 )
 
 func TestOpen_MigrationsCreateEventsTable(t *testing.T) {

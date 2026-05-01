@@ -15,13 +15,13 @@ func TestCLI_HappyPath(t *testing.T) {
 
 	fakedeviceBin := filepath.Join(tmp, "fakedevice")
 	if out, err := exec.Command("go", "build", "-o", fakedeviceBin,
-		"github.com/fdatoo/gohome-driverkit/examples/fakedevice").CombinedOutput(); err != nil {
+		"github.com/fdatoo/switchyard-driverkit/examples/fakedevice").CombinedOutput(); err != nil {
 		t.Fatalf("build fakedevice: %v\n%s", err, out)
 	}
 
 	driverTestBin := filepath.Join(tmp, "drivertest")
 	if out, err := exec.Command("go", "build", "-o", driverTestBin,
-		"github.com/fdatoo/gohome-driverkit/drivertest/cmd/drivertest").CombinedOutput(); err != nil {
+		"github.com/fdatoo/switchyard-driverkit/drivertest/cmd/drivertest").CombinedOutput(); err != nil {
 		t.Fatalf("build drivertest: %v\n%s", err, out)
 	}
 
@@ -41,13 +41,13 @@ func TestCLI_Reconnect(t *testing.T) {
 
 	fakedeviceBin := filepath.Join(tmp, "fakedevice")
 	if out, err := exec.Command("go", "build", "-o", fakedeviceBin,
-		"github.com/fdatoo/gohome-driverkit/examples/fakedevice").CombinedOutput(); err != nil {
+		"github.com/fdatoo/switchyard-driverkit/examples/fakedevice").CombinedOutput(); err != nil {
 		t.Fatalf("build fakedevice: %v\n%s", err, out)
 	}
 
 	driverTestBin := filepath.Join(tmp, "drivertest")
 	if out, err := exec.Command("go", "build", "-o", driverTestBin,
-		"github.com/fdatoo/gohome-driverkit/drivertest/cmd/drivertest").CombinedOutput(); err != nil {
+		"github.com/fdatoo/switchyard-driverkit/drivertest/cmd/drivertest").CombinedOutput(); err != nil {
 		t.Fatalf("build drivertest: %v\n%s", err, out)
 	}
 

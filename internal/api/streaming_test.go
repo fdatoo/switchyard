@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/fdatoo/gohome/internal/api"
+	"github.com/fdatoo/switchyard/internal/api"
 )
 
 func TestHeartbeatTicker_FiresOnIdle(t *testing.T) {

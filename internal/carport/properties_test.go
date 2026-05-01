@@ -5,7 +5,7 @@ import (
 	"testing"
 	"testing/quick"
 
-	"github.com/fdatoo/gohome/internal/carport"
+	"github.com/fdatoo/switchyard/internal/carport"
 )
 
 // TestProp_FSMLegalReachability — generate random trigger sequences from

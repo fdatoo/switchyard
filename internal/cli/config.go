@@ -11,9 +11,9 @@ import (
 	lgtable "github.com/charmbracelet/lipgloss/table"
 	"github.com/spf13/cobra"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
-	"github.com/fdatoo/gohome/internal/config"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
+	"github.com/fdatoo/switchyard/internal/config"
 )
 
 func newConfigCmd(gf *globalFlags) *cobra.Command {
@@ -61,7 +61,7 @@ func newConfigValidateCmd(gf *globalFlags) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			svc := gohomev1alpha1connect.NewConfigServiceClient(httpClient, base)
+			svc := switchyardv1alpha1connect.NewConfigServiceClient(httpClient, base)
 			resp, err := svc.Validate(cmd.Context(), connect.NewRequest(&v1.ValidateConfigRequest{}))
 			if err != nil {
 				return renderConnectErr(err)
@@ -105,7 +105,7 @@ func newConfigApplyCmd(gf *globalFlags) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			svc := gohomev1alpha1connect.NewConfigServiceClient(httpClient, base)
+			svc := switchyardv1alpha1connect.NewConfigServiceClient(httpClient, base)
 			resp, err := svc.Apply(cmd.Context(), connect.NewRequest(&v1.ApplyConfigRequest{
 				Message: message,
 				DryRun:  dryRun,
@@ -155,7 +155,7 @@ func newConfigReloadCmd(gf *globalFlags) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			svc := gohomev1alpha1connect.NewConfigServiceClient(httpClient, base)
+			svc := switchyardv1alpha1connect.NewConfigServiceClient(httpClient, base)
 			resp, err := svc.Reload(cmd.Context(), connect.NewRequest(&v1.ReloadConfigRequest{}))
 			if err != nil {
 				return renderConnectErr(err)

@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/fdatoo/gohome/internal/storage"
+	"github.com/fdatoo/switchyard/internal/storage"
 )
 
 // NewTestDB opens a file-backed SQLite in t.TempDir(), applies migrations,

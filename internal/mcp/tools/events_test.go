@@ -12,16 +12,16 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
-	"github.com/fdatoo/gohome/internal/auth"
-	"github.com/fdatoo/gohome/internal/mcp"
-	"github.com/fdatoo/gohome/internal/mcp/tools"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
+	"github.com/fdatoo/switchyard/internal/auth"
+	"github.com/fdatoo/switchyard/internal/mcp"
+	"github.com/fdatoo/switchyard/internal/mcp/tools"
 )
 
-// fakeEventHandler implements gohomev1alpha1connect.EventServiceHandler.
+// fakeEventHandler implements switchyardv1alpha1connect.EventServiceHandler.
 type fakeEventHandler struct {
-	gohomev1alpha1connect.UnimplementedEventServiceHandler
+	switchyardv1alpha1connect.UnimplementedEventServiceHandler
 
 	queryFn func(context.Context, *connect.Request[v1.QueryEventsRequest]) (*connect.Response[v1.QueryEventsResponse], error)
 	tailFn  func(context.Context, *connect.Request[v1.TailEventsRequest], *connect.ServerStream[v1.TailEventsResponse]) error
@@ -43,7 +43,7 @@ func (h *fakeEventHandler) Tail(ctx context.Context, req *connect.Request[v1.Tai
 
 func newEventsTestDeps(t *testing.T, handler *fakeEventHandler) (tools.Deps, *sdk.Server) {
 	t.Helper()
-	_, h := gohomev1alpha1connect.NewEventServiceHandler(handler)
+	_, h := switchyardv1alpha1connect.NewEventServiceHandler(handler)
 	srv := httptest.NewServer(h)
 	t.Cleanup(srv.Close)
 

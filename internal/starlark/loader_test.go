@@ -8,7 +8,7 @@ import (
 
 	starlarkgo "go.starlark.net/starlark"
 
-	ghs "github.com/fdatoo/gohome/internal/starlark"
+	ghs "github.com/fdatoo/switchyard/internal/starlark"
 )
 
 func newTestRuntimeWithDir(t *testing.T, dir string) *ghs.Runtime {

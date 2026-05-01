@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/fdatoo/gohome/internal/cli"
+	"github.com/fdatoo/switchyard/internal/cli"
 )
 
 func TestMCPToolsHuman(t *testing.T) {

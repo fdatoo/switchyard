@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/fdatoo/gohome/internal/observability"
+	"github.com/fdatoo/switchyard/internal/observability"
 )
 
 type remoteAddrKey struct{}

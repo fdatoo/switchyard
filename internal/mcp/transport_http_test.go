@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/fdatoo/gohome/internal/mcp"
+	"github.com/fdatoo/switchyard/internal/mcp"
 )
 
 func newTestHandler(t *testing.T) http.Handler {

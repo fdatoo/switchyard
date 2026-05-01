@@ -11,7 +11,7 @@ import (
 	lgtable "github.com/charmbracelet/lipgloss/table"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	"github.com/fdatoo/gohome/internal/eventstore"
+	"github.com/fdatoo/switchyard/internal/eventstore"
 )
 
 type outputFormat int

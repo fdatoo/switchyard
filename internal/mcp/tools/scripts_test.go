@@ -13,15 +13,15 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/structpb"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
-	"github.com/fdatoo/gohome/internal/auth"
-	"github.com/fdatoo/gohome/internal/mcp"
-	"github.com/fdatoo/gohome/internal/mcp/tools"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
+	"github.com/fdatoo/switchyard/internal/auth"
+	"github.com/fdatoo/switchyard/internal/mcp"
+	"github.com/fdatoo/switchyard/internal/mcp/tools"
 )
 
 type fakeScriptHandler struct {
-	gohomev1alpha1connect.UnimplementedScriptServiceHandler
+	switchyardv1alpha1connect.UnimplementedScriptServiceHandler
 
 	runFn  func(context.Context, *connect.Request[v1.RunScriptRequest]) (*connect.Response[v1.RunScriptResponse], error)
 	evalFn func(context.Context, *connect.Request[v1.EvalScriptRequest]) (*connect.Response[v1.EvalScriptResponse], error)
@@ -43,7 +43,7 @@ func (h *fakeScriptHandler) Eval(ctx context.Context, req *connect.Request[v1.Ev
 
 func newScriptsTestDeps(t *testing.T, handler *fakeScriptHandler) (tools.Deps, *sdk.Server) {
 	t.Helper()
-	_, h := gohomev1alpha1connect.NewScriptServiceHandler(handler)
+	_, h := switchyardv1alpha1connect.NewScriptServiceHandler(handler)
 	srv := httptest.NewServer(h)
 	t.Cleanup(srv.Close)
 

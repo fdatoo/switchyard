@@ -1,9 +1,9 @@
 package authn
 
 import (
-	"github.com/fdatoo/gohome/internal/auth"
-	"github.com/fdatoo/gohome/internal/auth/credentials"
-	"github.com/fdatoo/gohome/internal/auth/sessions"
+	"github.com/fdatoo/switchyard/internal/auth"
+	"github.com/fdatoo/switchyard/internal/auth/credentials"
+	"github.com/fdatoo/switchyard/internal/auth/sessions"
 )
 
 // Build assembles the C9 authenticator chain in priority order:

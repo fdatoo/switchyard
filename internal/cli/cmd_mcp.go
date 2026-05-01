@@ -12,12 +12,12 @@ import (
 
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/internal/auth"
-	internalmcp "github.com/fdatoo/gohome/internal/mcp"
-	"github.com/fdatoo/gohome/internal/mcp/audit"
-	"github.com/fdatoo/gohome/internal/mcp/resources"
-	"github.com/fdatoo/gohome/internal/mcp/tools"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/internal/auth"
+	internalmcp "github.com/fdatoo/switchyard/internal/mcp"
+	"github.com/fdatoo/switchyard/internal/mcp/audit"
+	"github.com/fdatoo/switchyard/internal/mcp/resources"
+	"github.com/fdatoo/switchyard/internal/mcp/tools"
 )
 
 func newMCPCmd(gf *globalFlags) *cobra.Command {

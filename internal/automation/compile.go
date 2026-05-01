@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"time"
 
-	configpb "github.com/fdatoo/gohome/gen/gohome/config/v1"
-	"github.com/fdatoo/gohome/internal/automation/action"
-	"github.com/fdatoo/gohome/internal/automation/condition"
-	"github.com/fdatoo/gohome/internal/automation/trigger"
-	"github.com/fdatoo/gohome/internal/observability"
-	"github.com/fdatoo/gohome/internal/script"
-	ghstarlark "github.com/fdatoo/gohome/internal/starlark"
+	configpb "github.com/fdatoo/switchyard/gen/switchyard/config/v1"
+	"github.com/fdatoo/switchyard/internal/automation/action"
+	"github.com/fdatoo/switchyard/internal/automation/condition"
+	"github.com/fdatoo/switchyard/internal/automation/trigger"
+	"github.com/fdatoo/switchyard/internal/observability"
+	"github.com/fdatoo/switchyard/internal/script"
+	ghstarlark "github.com/fdatoo/switchyard/internal/starlark"
 )
 
 // metricsIface is a thin optional wrapper so that compile functions can thread

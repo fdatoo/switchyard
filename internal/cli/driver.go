@@ -8,8 +8,8 @@ import (
 	lgtable "github.com/charmbracelet/lipgloss/table"
 	"github.com/spf13/cobra"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
 )
 
 func newDriverCmd(gf *globalFlags) *cobra.Command {
@@ -30,7 +30,7 @@ func newDriverListCmd(gf *globalFlags) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			svc := gohomev1alpha1connect.NewDriverServiceClient(httpClient, base)
+			svc := switchyardv1alpha1connect.NewDriverServiceClient(httpClient, base)
 			resp, err := svc.ListInstances(cmd.Context(), connect.NewRequest(&v1.ListInstancesRequest{}))
 			if err != nil {
 				return renderConnectErr(err)
@@ -68,7 +68,7 @@ func newDriverStatusCmd(gf *globalFlags) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			svc := gohomev1alpha1connect.NewDriverServiceClient(httpClient, base)
+			svc := switchyardv1alpha1connect.NewDriverServiceClient(httpClient, base)
 			resp, err := svc.InstanceHealth(cmd.Context(), connect.NewRequest(&v1.InstanceHealthRequest{
 				InstanceId: args[0],
 			}))
@@ -102,7 +102,7 @@ func newDriverRestartCmd(gf *globalFlags) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			svc := gohomev1alpha1connect.NewDriverServiceClient(httpClient, base)
+			svc := switchyardv1alpha1connect.NewDriverServiceClient(httpClient, base)
 			_, err = svc.RestartInstance(cmd.Context(), connect.NewRequest(&v1.RestartInstanceRequest{
 				InstanceId: args[0],
 				Reason:     reason,

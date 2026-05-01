@@ -3,7 +3,7 @@ package eventstore
 import (
 	"context"
 
-	"github.com/fdatoo/gohome/internal/storage"
+	"github.com/fdatoo/switchyard/internal/storage"
 )
 
 type ProjectorMode int

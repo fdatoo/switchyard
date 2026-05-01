@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	ghs "github.com/fdatoo/gohome/internal/starlark"
+	ghs "github.com/fdatoo/switchyard/internal/starlark"
 )
 
 func TestLimitError_StepsMessage(t *testing.T) {

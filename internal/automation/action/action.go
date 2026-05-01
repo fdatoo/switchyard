@@ -8,9 +8,9 @@ import (
 	"log/slog"
 	"sync"
 
-	"github.com/fdatoo/gohome/internal/eventstore"
-	"github.com/fdatoo/gohome/internal/observability"
-	ghstarlark "github.com/fdatoo/gohome/internal/starlark"
+	"github.com/fdatoo/switchyard/internal/eventstore"
+	"github.com/fdatoo/switchyard/internal/observability"
+	ghstarlark "github.com/fdatoo/switchyard/internal/starlark"
 )
 
 type Run struct {

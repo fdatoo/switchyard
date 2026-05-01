@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/fdatoo/gohome/internal/web"
+	"github.com/fdatoo/switchyard/internal/web"
 )
 
 func TestHandler_ServesIndexAtRoot(t *testing.T) {

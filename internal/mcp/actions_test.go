@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/fdatoo/gohome/internal/mcp"
+	"github.com/fdatoo/switchyard/internal/mcp"
 )
 
 func TestToolActions_AllPresent(t *testing.T) {

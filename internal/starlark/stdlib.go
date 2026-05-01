@@ -11,8 +11,8 @@ import (
 	starlarkgo "go.starlark.net/starlark"
 	"go.starlark.net/starlarkstruct"
 
-	eventv1 "github.com/fdatoo/gohome/gen/gohome/event/v1"
-	"github.com/fdatoo/gohome/internal/eventstore"
+	eventv1 "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
+	"github.com/fdatoo/switchyard/internal/eventstore"
 )
 
 // EntityState is the Starlark-visible view of an entity.

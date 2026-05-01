@@ -1,7 +1,7 @@
 package script
 
 import (
-	configpb "github.com/fdatoo/gohome/gen/gohome/config/v1"
+	configpb "github.com/fdatoo/switchyard/gen/switchyard/config/v1"
 )
 
 // Reload re-compiles the snapshot and atomically swaps the script registry.

@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	carportv1alpha1 "github.com/fdatoo/gohome/gen/gohome/carport/v1alpha1"
+	carportv1alpha1 "github.com/fdatoo/switchyard/gen/switchyard/carport/v1alpha1"
 )
 
 func main() {

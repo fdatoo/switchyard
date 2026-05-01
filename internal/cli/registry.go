@@ -8,7 +8,7 @@ import (
 	lgtable "github.com/charmbracelet/lipgloss/table"
 	"github.com/spf13/cobra"
 
-	"github.com/fdatoo/gohome/internal/registry"
+	"github.com/fdatoo/switchyard/internal/registry"
 )
 
 func newRegistryCmd(gf *globalFlags) *cobra.Command {

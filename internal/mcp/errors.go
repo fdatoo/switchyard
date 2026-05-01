@@ -5,7 +5,7 @@ import (
 
 	"connectrpc.com/connect"
 
-	errorpb "github.com/fdatoo/gohome/gen/gohome/error/v1alpha1"
+	errorpb "github.com/fdatoo/switchyard/gen/switchyard/error/v1alpha1"
 )
 
 // MCPErrorEnvelope is the JSON shape returned in MCP tool errors.

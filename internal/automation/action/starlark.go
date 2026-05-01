@@ -17,7 +17,7 @@ import (
 
 	starlarkgo "go.starlark.net/starlark"
 
-	ghstarlark "github.com/fdatoo/gohome/internal/starlark"
+	ghstarlark "github.com/fdatoo/switchyard/internal/starlark"
 )
 
 type StarlarkAction struct{ Body string }

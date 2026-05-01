@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/fdatoo/gohome/internal/carport"
+	"github.com/fdatoo/switchyard/internal/carport"
 )
 
 func writeTOML(t *testing.T, content string) string {

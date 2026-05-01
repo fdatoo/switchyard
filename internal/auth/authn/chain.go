@@ -3,7 +3,7 @@ package authn
 import (
 	"net/http"
 
-	"github.com/fdatoo/gohome/internal/auth"
+	"github.com/fdatoo/switchyard/internal/auth"
 )
 
 // RequestFromHTTP builds an auth.Request from an *http.Request.

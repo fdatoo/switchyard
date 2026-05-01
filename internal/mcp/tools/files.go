@@ -15,8 +15,8 @@ import (
 
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 
-	"github.com/fdatoo/gohome/internal/mcp/audit"
-	mcpfs "github.com/fdatoo/gohome/internal/mcp/fs"
+	"github.com/fdatoo/switchyard/internal/mcp/audit"
+	mcpfs "github.com/fdatoo/switchyard/internal/mcp/fs"
 )
 
 // ReadConfigFileInput is the input schema for gohome__read_config_file.

@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/fdatoo/gohome/internal/policy"
+	"github.com/fdatoo/switchyard/internal/policy"
 )
 
 func TestSelector_Matches_AreaSet(t *testing.T) {

@@ -12,15 +12,15 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
-	"github.com/fdatoo/gohome/internal/auth"
-	"github.com/fdatoo/gohome/internal/mcp"
-	"github.com/fdatoo/gohome/internal/mcp/tools"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
+	"github.com/fdatoo/switchyard/internal/auth"
+	"github.com/fdatoo/switchyard/internal/mcp"
+	"github.com/fdatoo/switchyard/internal/mcp/tools"
 )
 
 type fakeConfigHandler struct {
-	gohomev1alpha1connect.UnimplementedConfigServiceHandler
+	switchyardv1alpha1connect.UnimplementedConfigServiceHandler
 
 	validateFn func(context.Context, *connect.Request[v1.ValidateConfigRequest]) (*connect.Response[v1.ValidateConfigResponse], error)
 	applyFn    func(context.Context, *connect.Request[v1.ApplyConfigRequest]) (*connect.Response[v1.ApplyConfigResponse], error)
@@ -42,7 +42,7 @@ func (h *fakeConfigHandler) Apply(ctx context.Context, req *connect.Request[v1.A
 
 func newConfigTestDeps(t *testing.T, handler *fakeConfigHandler) (tools.Deps, *sdk.Server) {
 	t.Helper()
-	_, h := gohomev1alpha1connect.NewConfigServiceHandler(handler)
+	_, h := switchyardv1alpha1connect.NewConfigServiceHandler(handler)
 	srv := httptest.NewServer(h)
 	t.Cleanup(srv.Close)
 

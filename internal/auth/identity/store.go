@@ -6,8 +6,8 @@ import (
 	"errors"
 	"fmt"
 
-	authMigrations "github.com/fdatoo/gohome/internal/auth/migrations"
-	"github.com/fdatoo/gohome/internal/storage"
+	authMigrations "github.com/fdatoo/switchyard/internal/auth/migrations"
+	"github.com/fdatoo/switchyard/internal/storage"
 )
 
 var ErrNotFound = errors.New("identity: user not found")

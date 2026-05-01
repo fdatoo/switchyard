@@ -11,7 +11,7 @@ import (
 
 	"connectrpc.com/connect"
 
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
 )
 
 // ClientOptions configures the MCP-side Connect client.
@@ -26,13 +26,13 @@ type Client struct {
 	baseURL    string
 	sessionID  string
 
-	System     gohomev1alpha1connect.SystemServiceClient
-	Entity     gohomev1alpha1connect.EntityServiceClient
-	Event      gohomev1alpha1connect.EventServiceClient
-	Script     gohomev1alpha1connect.ScriptServiceClient
-	Config     gohomev1alpha1connect.ConfigServiceClient
-	Automation gohomev1alpha1connect.AutomationServiceClient
-	Scene      gohomev1alpha1connect.SceneServiceClient
+	System     switchyardv1alpha1connect.SystemServiceClient
+	Entity     switchyardv1alpha1connect.EntityServiceClient
+	Event      switchyardv1alpha1connect.EventServiceClient
+	Script     switchyardv1alpha1connect.ScriptServiceClient
+	Config     switchyardv1alpha1connect.ConfigServiceClient
+	Automation switchyardv1alpha1connect.AutomationServiceClient
+	Scene      switchyardv1alpha1connect.SceneServiceClient
 }
 
 func NewClient(opts ClientOptions) (*Client, error) {
@@ -50,13 +50,13 @@ func NewClient(opts ClientOptions) (*Client, error) {
 		httpClient: httpc,
 		baseURL:    base,
 		sessionID:  opts.SessionID,
-		System:     gohomev1alpha1connect.NewSystemServiceClient(httpc, base, interceptors),
-		Entity:     gohomev1alpha1connect.NewEntityServiceClient(httpc, base, interceptors),
-		Event:      gohomev1alpha1connect.NewEventServiceClient(httpc, base, interceptors),
-		Script:     gohomev1alpha1connect.NewScriptServiceClient(httpc, base, interceptors),
-		Config:     gohomev1alpha1connect.NewConfigServiceClient(httpc, base, interceptors),
-		Automation: gohomev1alpha1connect.NewAutomationServiceClient(httpc, base, interceptors),
-		Scene:      gohomev1alpha1connect.NewSceneServiceClient(httpc, base, interceptors),
+		System:     switchyardv1alpha1connect.NewSystemServiceClient(httpc, base, interceptors),
+		Entity:     switchyardv1alpha1connect.NewEntityServiceClient(httpc, base, interceptors),
+		Event:      switchyardv1alpha1connect.NewEventServiceClient(httpc, base, interceptors),
+		Script:     switchyardv1alpha1connect.NewScriptServiceClient(httpc, base, interceptors),
+		Config:     switchyardv1alpha1connect.NewConfigServiceClient(httpc, base, interceptors),
+		Automation: switchyardv1alpha1connect.NewAutomationServiceClient(httpc, base, interceptors),
+		Scene:      switchyardv1alpha1connect.NewSceneServiceClient(httpc, base, interceptors),
 	}
 	return c, nil
 }

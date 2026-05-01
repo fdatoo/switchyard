@@ -9,10 +9,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/fdatoo/gohome/internal/eventstore"
-	"github.com/fdatoo/gohome/internal/observability"
-	"github.com/fdatoo/gohome/internal/storage"
-	"github.com/fdatoo/gohome/internal/testutil"
+	"github.com/fdatoo/switchyard/internal/eventstore"
+	"github.com/fdatoo/switchyard/internal/observability"
+	"github.com/fdatoo/switchyard/internal/storage"
+	"github.com/fdatoo/switchyard/internal/testutil"
 )
 
 func main() {

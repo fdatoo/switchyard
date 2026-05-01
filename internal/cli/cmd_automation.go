@@ -8,8 +8,8 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
 )
 
 func newAutomationCmd(gf *globalFlags) *cobra.Command {
@@ -36,7 +36,7 @@ func newAutomationListCmd(gf *globalFlags) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			svc := gohomev1alpha1connect.NewAutomationServiceClient(httpClient, base)
+			svc := switchyardv1alpha1connect.NewAutomationServiceClient(httpClient, base)
 			resp, err := svc.List(cmd.Context(), connect.NewRequest(&v1.ListAutomationsRequest{}))
 			if err != nil {
 				return renderConnectErr(err)
@@ -70,7 +70,7 @@ func newAutomationGetCmd(gf *globalFlags) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			svc := gohomev1alpha1connect.NewAutomationServiceClient(httpClient, base)
+			svc := switchyardv1alpha1connect.NewAutomationServiceClient(httpClient, base)
 			resp, err := svc.Get(cmd.Context(), connect.NewRequest(&v1.GetAutomationRequest{Id: args[0]}))
 			if err != nil {
 				return renderConnectErr(err)
@@ -99,7 +99,7 @@ func newAutomationEnableCmd(gf *globalFlags, enable bool) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			svc := gohomev1alpha1connect.NewAutomationServiceClient(httpClient, base)
+			svc := switchyardv1alpha1connect.NewAutomationServiceClient(httpClient, base)
 			if enable {
 				_, err = svc.Enable(cmd.Context(), connect.NewRequest(&v1.EnableAutomationRequest{Id: args[0]}))
 			} else {
@@ -130,7 +130,7 @@ func newAutomationTriggerCmd(gf *globalFlags) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			svc := gohomev1alpha1connect.NewAutomationServiceClient(httpClient, base)
+			svc := switchyardv1alpha1connect.NewAutomationServiceClient(httpClient, base)
 			_, err = svc.Trigger(cmd.Context(), connect.NewRequest(&v1.TriggerAutomationRequest{Id: args[0]}))
 			if err != nil {
 				return renderConnectErr(err)
@@ -157,7 +157,7 @@ func newAutomationTraceCmd(gf *globalFlags) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			svc := gohomev1alpha1connect.NewAutomationServiceClient(httpClient, base)
+			svc := switchyardv1alpha1connect.NewAutomationServiceClient(httpClient, base)
 			stream, err := svc.Trace(cmd.Context(), connect.NewRequest(&v1.TraceAutomationRequest{
 				Id:    automationID,
 				RunId: runID,
@@ -281,7 +281,7 @@ func newAutomationWatchCmd(gf *globalFlags) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			evtSvc := gohomev1alpha1connect.NewEventServiceClient(httpClient, base)
+			evtSvc := switchyardv1alpha1connect.NewEventServiceClient(httpClient, base)
 			stream, err := evtSvc.Tail(cmd.Context(), connect.NewRequest(&v1.TailEventsRequest{
 				Filter: &v1.EventFilter{Kinds: []string{
 					"automation_triggered", "automation_finished",

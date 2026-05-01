@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/fdatoo/gohome/internal/observability"
+	"github.com/fdatoo/switchyard/internal/observability"
 )
 
 func TestMetrics_AppendIncrementsCounter(t *testing.T) {

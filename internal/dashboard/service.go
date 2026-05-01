@@ -7,8 +7,8 @@ import (
 	"connectrpc.com/connect"
 	"google.golang.org/protobuf/types/known/structpb"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
 )
 
 // Backend is the persistence + business logic interface for dashboards.
@@ -69,7 +69,7 @@ func NewService(be Backend, catalog *Catalog) *Service {
 	return &Service{be: be, catalog: catalog}
 }
 
-var _ gohomev1alpha1connect.DashboardServiceHandler = (*Service)(nil)
+var _ switchyardv1alpha1connect.DashboardServiceHandler = (*Service)(nil)
 
 func (s *Service) List(ctx context.Context, _ *connect.Request[v1.ListDashboardsRequest]) (*connect.Response[v1.ListDashboardsResponse], error) {
 	metas, err := s.be.List(ctx)

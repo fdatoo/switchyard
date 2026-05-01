@@ -8,13 +8,13 @@ import (
 
 	"github.com/google/uuid"
 
-	eventv1 "github.com/fdatoo/gohome/gen/gohome/event/v1"
-	"github.com/fdatoo/gohome/internal/automation/action"
-	"github.com/fdatoo/gohome/internal/automation/condition"
-	"github.com/fdatoo/gohome/internal/automation/trigger"
-	"github.com/fdatoo/gohome/internal/eventstore"
-	"github.com/fdatoo/gohome/internal/observability"
-	ghstarlark "github.com/fdatoo/gohome/internal/starlark"
+	eventv1 "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
+	"github.com/fdatoo/switchyard/internal/automation/action"
+	"github.com/fdatoo/switchyard/internal/automation/condition"
+	"github.com/fdatoo/switchyard/internal/automation/trigger"
+	"github.com/fdatoo/switchyard/internal/eventstore"
+	"github.com/fdatoo/switchyard/internal/observability"
+	ghstarlark "github.com/fdatoo/switchyard/internal/starlark"
 )
 
 func (e *Engine) executeRun(ctx context.Context, auto *Automation, m trigger.Match, invokedBy string) eventv1.RunOutcome {

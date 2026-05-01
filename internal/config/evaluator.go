@@ -12,8 +12,8 @@ import (
 
 	"github.com/apple/pkl-go/pkl"
 
-	configpb "github.com/fdatoo/gohome/gen/gohome/config/v1"
-	ghstarlark "github.com/fdatoo/gohome/internal/starlark"
+	configpb "github.com/fdatoo/switchyard/gen/switchyard/config/v1"
+	ghstarlark "github.com/fdatoo/switchyard/internal/starlark"
 )
 
 //go:embed pkl

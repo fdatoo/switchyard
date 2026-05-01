@@ -6,9 +6,9 @@ import (
 
 	"connectrpc.com/connect"
 
-	systemv1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/internal/api"
-	"github.com/fdatoo/gohome/internal/auth"
+	systemv1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/internal/api"
+	"github.com/fdatoo/switchyard/internal/auth"
 )
 
 func TestSystemService_Version(t *testing.T) {

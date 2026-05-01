@@ -8,9 +8,9 @@ import (
 
 	starlarkgo "go.starlark.net/starlark"
 
-	"github.com/fdatoo/gohome/internal/automation/condition"
-	"github.com/fdatoo/gohome/internal/eventstore"
-	ghstarlark "github.com/fdatoo/gohome/internal/starlark"
+	"github.com/fdatoo/switchyard/internal/automation/condition"
+	"github.com/fdatoo/switchyard/internal/eventstore"
+	ghstarlark "github.com/fdatoo/switchyard/internal/starlark"
 )
 
 // --- StateCondition error / default branch ---

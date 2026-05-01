@@ -13,10 +13,10 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 
-	carportv1alpha1 "github.com/fdatoo/gohome/gen/gohome/carport/v1alpha1"
-	eventv1 "github.com/fdatoo/gohome/gen/gohome/event/v1"
+	carportv1alpha1 "github.com/fdatoo/switchyard/gen/switchyard/carport/v1alpha1"
+	eventv1 "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
 
-	"github.com/fdatoo/gohome-driverkit/protocol"
+	"github.com/fdatoo/switchyard-driverkit/protocol"
 )
 
 // stubHandler is a minimal protocol.Handler for tests.

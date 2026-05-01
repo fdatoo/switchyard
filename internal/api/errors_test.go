@@ -7,9 +7,9 @@ import (
 
 	"connectrpc.com/connect"
 
-	errorv1 "github.com/fdatoo/gohome/gen/gohome/error/v1alpha1"
-	"github.com/fdatoo/gohome/internal/api"
-	"github.com/fdatoo/gohome/internal/auth"
+	errorv1 "github.com/fdatoo/switchyard/gen/switchyard/error/v1alpha1"
+	"github.com/fdatoo/switchyard/internal/api"
+	"github.com/fdatoo/switchyard/internal/auth"
 )
 
 var errSentinel = errors.New("sentinel")

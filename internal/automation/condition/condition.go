@@ -9,8 +9,8 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/fdatoo/gohome/internal/eventstore"
-	ghstarlark "github.com/fdatoo/gohome/internal/starlark"
+	"github.com/fdatoo/switchyard/internal/eventstore"
+	ghstarlark "github.com/fdatoo/switchyard/internal/starlark"
 )
 
 type Env struct {

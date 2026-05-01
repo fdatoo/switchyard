@@ -11,9 +11,9 @@ import (
 	"connectrpc.com/connect"
 	"github.com/oklog/ulid/v2"
 
-	errorv1 "github.com/fdatoo/gohome/gen/gohome/error/v1alpha1"
-	"github.com/fdatoo/gohome/internal/auth"
-	"github.com/fdatoo/gohome/internal/observability"
+	errorv1 "github.com/fdatoo/switchyard/gen/switchyard/error/v1alpha1"
+	"github.com/fdatoo/switchyard/internal/auth"
+	"github.com/fdatoo/switchyard/internal/observability"
 )
 
 // SchemeClassifier classifies a request into an auth scheme and whether it

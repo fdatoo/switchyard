@@ -7,12 +7,12 @@ import (
 
 	dto "github.com/prometheus/client_model/go"
 
-	configpb "github.com/fdatoo/gohome/gen/gohome/config/v1"
-	"github.com/fdatoo/gohome/internal/automation"
-	automTestutil "github.com/fdatoo/gohome/internal/automation/testutil"
-	"github.com/fdatoo/gohome/internal/observability"
-	"github.com/fdatoo/gohome/internal/script"
-	sltestutil "github.com/fdatoo/gohome/internal/starlark/testutil"
+	configpb "github.com/fdatoo/switchyard/gen/switchyard/config/v1"
+	"github.com/fdatoo/switchyard/internal/automation"
+	automTestutil "github.com/fdatoo/switchyard/internal/automation/testutil"
+	"github.com/fdatoo/switchyard/internal/observability"
+	"github.com/fdatoo/switchyard/internal/script"
+	sltestutil "github.com/fdatoo/switchyard/internal/starlark/testutil"
 )
 
 // gatherMetric finds the MetricFamily by name from the registry.

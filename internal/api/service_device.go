@@ -5,9 +5,9 @@ import (
 
 	"connectrpc.com/connect"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
-	"github.com/fdatoo/gohome/internal/auth"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
+	"github.com/fdatoo/switchyard/internal/auth"
 )
 
 type DeviceService struct {
@@ -19,7 +19,7 @@ func NewDeviceService(r DeviceReader, w DeviceWriter) *DeviceService {
 	return &DeviceService{r: r, w: w}
 }
 
-var _ gohomev1alpha1connect.DeviceServiceHandler = (*DeviceService)(nil)
+var _ switchyardv1alpha1connect.DeviceServiceHandler = (*DeviceService)(nil)
 
 func (s *DeviceService) List(ctx context.Context, req *connect.Request[v1.ListDevicesRequest]) (*connect.Response[v1.ListDevicesResponse], error) {
 	cur, err := DecodeCursor(pageToken(req.Msg.Page))

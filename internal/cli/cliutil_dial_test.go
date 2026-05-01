@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/fdatoo/gohome/internal/cli"
+	"github.com/fdatoo/switchyard/internal/cli"
 )
 
 func TestDial_TCPEndpoint(t *testing.T) {

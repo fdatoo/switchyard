@@ -7,8 +7,8 @@ import (
 	"math"
 	"strconv"
 
-	"github.com/fdatoo/gohome/drivers/hue/internal/bridge"
-	entityv1 "github.com/fdatoo/gohome/gen/gohome/entity/v1"
+	"github.com/fdatoo/switchyard/drivers/hue/internal/bridge"
+	entityv1 "github.com/fdatoo/switchyard/gen/switchyard/entity/v1"
 )
 
 // colorToRgb is the bridge xy → packed gohome RGB conversion. Used by

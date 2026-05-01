@@ -6,7 +6,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/fdatoo/gohome/internal/automation/trigger"
+	"github.com/fdatoo/switchyard/internal/automation/trigger"
 )
 
 type runState struct {

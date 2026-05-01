@@ -10,7 +10,7 @@ import (
 
 	_ "modernc.org/sqlite"
 
-	eventMigrations "github.com/fdatoo/gohome/internal/storage/migrations"
+	eventMigrations "github.com/fdatoo/switchyard/internal/storage/migrations"
 )
 
 type Config struct {

@@ -1,7 +1,7 @@
 package state
 
 import (
-	"github.com/fdatoo/gohome/drivers/hue/internal/bridge"
+	"github.com/fdatoo/switchyard/drivers/hue/internal/bridge"
 )
 
 // Capabilities returns the gohome capability strings the bulb supports,

@@ -7,10 +7,10 @@ import (
 
 	"connectrpc.com/connect"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
-	"github.com/fdatoo/gohome/internal/auth"
-	"github.com/fdatoo/gohome/internal/policy"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
+	"github.com/fdatoo/switchyard/internal/auth"
+	"github.com/fdatoo/switchyard/internal/policy"
 )
 
 type EntityService struct {
@@ -35,7 +35,7 @@ func (s *EntityService) SetStreamSource(src EntityStreamSource) { s.streamSource
 // SetPolicyRuntime wires the policy runtime after construction.
 func (s *EntityService) SetPolicyRuntime(rt *policy.Runtime) { s.policyRuntime = rt }
 
-var _ gohomev1alpha1connect.EntityServiceHandler = (*EntityService)(nil)
+var _ switchyardv1alpha1connect.EntityServiceHandler = (*EntityService)(nil)
 
 func (s *EntityService) List(ctx context.Context, req *connect.Request[v1.ListEntitiesRequest]) (*connect.Response[v1.ListEntitiesResponse], error) {
 	cur, err := DecodeCursor(pageToken(req.Msg.Page))

@@ -7,9 +7,9 @@ import (
 
 	"connectrpc.com/connect"
 
-	configv1 "github.com/fdatoo/gohome/gen/gohome/config/v1"
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/internal/api"
+	configv1 "github.com/fdatoo/switchyard/gen/switchyard/config/v1"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/internal/api"
 )
 
 type fakeConfig struct {

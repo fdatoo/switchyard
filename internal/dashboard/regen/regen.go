@@ -6,7 +6,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/fdatoo/gohome/internal/dashboard"
+	"github.com/fdatoo/switchyard/internal/dashboard"
 )
 
 // Render serializes a DashboardData to its canonical .layout.pkl representation.

@@ -4,7 +4,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/fdatoo/gohome/internal/dashboard"
+	"github.com/fdatoo/switchyard/internal/dashboard"
 )
 
 func TestCatalog_BuiltinsOnly(t *testing.T) {

@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/fdatoo/gohome/internal/mcp/fs"
+	"github.com/fdatoo/switchyard/internal/mcp/fs"
 )
 
 func TestCheckSyntax_PklOK(t *testing.T) {

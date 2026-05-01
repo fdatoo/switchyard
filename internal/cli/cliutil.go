@@ -16,9 +16,9 @@ import (
 
 	"connectrpc.com/connect"
 
-	errorv1 "github.com/fdatoo/gohome/gen/gohome/error/v1alpha1"
-	"github.com/fdatoo/gohome/internal/observability"
-	"github.com/fdatoo/gohome/internal/storage"
+	errorv1 "github.com/fdatoo/switchyard/gen/switchyard/error/v1alpha1"
+	"github.com/fdatoo/switchyard/internal/observability"
+	"github.com/fdatoo/switchyard/internal/storage"
 )
 
 func openReadOnlyDB(ctx context.Context, dataDir string) (*sql.DB, error) {

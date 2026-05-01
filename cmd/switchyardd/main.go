@@ -11,8 +11,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/fdatoo/gohome/internal/daemon"
-	"github.com/fdatoo/gohome/internal/observability"
+	"github.com/fdatoo/switchyard/internal/daemon"
+	"github.com/fdatoo/switchyard/internal/observability"
 )
 
 func main() {

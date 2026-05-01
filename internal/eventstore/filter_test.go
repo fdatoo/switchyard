@@ -6,7 +6,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/fdatoo/gohome/internal/eventstore"
+	"github.com/fdatoo/switchyard/internal/eventstore"
 )
 
 func TestFilter_MatchesEmptyFilterMatchesEverything(t *testing.T) {

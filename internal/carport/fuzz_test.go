@@ -5,7 +5,7 @@ import (
 
 	"google.golang.org/protobuf/proto"
 
-	carportpb "github.com/fdatoo/gohome/gen/gohome/carport/v1alpha1"
+	carportpb "github.com/fdatoo/switchyard/gen/switchyard/carport/v1alpha1"
 )
 
 // FuzzEnvelopeDecode — random bytes should never panic either envelope type.

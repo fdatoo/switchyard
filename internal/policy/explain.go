@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/fdatoo/gohome/internal/auth"
+	"github.com/fdatoo/switchyard/internal/auth"
 )
 
 type Trace struct {

@@ -8,7 +8,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/fdatoo/gohome/internal/auth/credentials"
+	"github.com/fdatoo/switchyard/internal/auth/credentials"
 )
 
 func TestTokens_IssueThenVerify(t *testing.T) {

@@ -3,7 +3,7 @@ package widgetpack_test
 import (
 	"testing"
 
-	"github.com/fdatoo/gohome/internal/widgetpack"
+	"github.com/fdatoo/switchyard/internal/widgetpack"
 )
 
 func TestTrustPolicy_AllowUnsigned(t *testing.T) {

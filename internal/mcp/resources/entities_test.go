@@ -14,18 +14,18 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
-	"github.com/fdatoo/gohome/internal/mcp"
-	"github.com/fdatoo/gohome/internal/mcp/resources"
-	"github.com/fdatoo/gohome/internal/observability"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
+	"github.com/fdatoo/switchyard/internal/mcp"
+	"github.com/fdatoo/switchyard/internal/mcp/resources"
+	"github.com/fdatoo/switchyard/internal/observability"
 )
 
 var testImpl = &sdk.Implementation{Name: "test", Version: "0"}
 
 // fakeEntitySvc implements only the methods we need.
 type fakeEntitySvc struct {
-	gohomev1alpha1connect.UnimplementedEntityServiceHandler
+	switchyardv1alpha1connect.UnimplementedEntityServiceHandler
 
 	getFn       func(context.Context, *connect.Request[v1.GetEntityRequest]) (*connect.Response[v1.GetEntityResponse], error)
 	listFn      func(context.Context, *connect.Request[v1.ListEntitiesRequest]) (*connect.Response[v1.ListEntitiesResponse], error)
@@ -57,7 +57,7 @@ func (h *fakeEntitySvc) Subscribe(ctx context.Context, req *connect.Request[v1.S
 // handlers registered and returns the MCP server + resources deps.
 func newResourcesServer(t *testing.T, svc *fakeEntitySvc) (*sdk.Server, resources.Deps) {
 	t.Helper()
-	_, h := gohomev1alpha1connect.NewEntityServiceHandler(svc)
+	_, h := switchyardv1alpha1connect.NewEntityServiceHandler(svc)
 	srv := httptest.NewServer(h)
 	t.Cleanup(srv.Close)
 
@@ -157,7 +157,7 @@ func TestEntityWatch_CoalescesOnOverflow(t *testing.T) {
 		},
 	}
 
-	_, h := gohomev1alpha1connect.NewEntityServiceHandler(svc)
+	_, h := switchyardv1alpha1connect.NewEntityServiceHandler(svc)
 	srv := httptest.NewServer(h)
 	t.Cleanup(srv.Close)
 

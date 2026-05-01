@@ -6,7 +6,7 @@ package trigger
 import (
 	"sync"
 
-	"github.com/fdatoo/gohome/internal/eventstore"
+	"github.com/fdatoo/switchyard/internal/eventstore"
 )
 
 // Match is one fired trigger hit threaded through the mode state machine.

@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/fdatoo/gohome/internal/api/listener"
+	"github.com/fdatoo/switchyard/internal/api/listener"
 )
 
 func TestListener_HealthzOnTCP(t *testing.T) {

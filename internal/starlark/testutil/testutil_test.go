@@ -5,8 +5,8 @@ import (
 
 	starlarkgo "go.starlark.net/starlark"
 
-	ghs "github.com/fdatoo/gohome/internal/starlark"
-	"github.com/fdatoo/gohome/internal/starlark/testutil"
+	ghs "github.com/fdatoo/switchyard/internal/starlark"
+	"github.com/fdatoo/switchyard/internal/starlark/testutil"
 )
 
 func TestNewTestRuntime_Smoke(t *testing.T) {

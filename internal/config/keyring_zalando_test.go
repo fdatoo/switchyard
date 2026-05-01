@@ -6,7 +6,7 @@ import (
 
 	"github.com/zalando/go-keyring"
 
-	"github.com/fdatoo/gohome/internal/config"
+	"github.com/fdatoo/switchyard/internal/config"
 )
 
 // TestZalandoKeyring_SatisfiesInterface is a compile-time check that

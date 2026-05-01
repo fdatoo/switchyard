@@ -11,8 +11,8 @@ import (
 	"connectrpc.com/connect"
 	"github.com/spf13/cobra"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
 )
 
 func newTestCmd(gf *globalFlags) *cobra.Command {
@@ -31,7 +31,7 @@ func newTestCmd(gf *globalFlags) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			svc := gohomev1alpha1connect.NewScriptServiceClient(httpClient, base)
+			svc := switchyardv1alpha1connect.NewScriptServiceClient(httpClient, base)
 
 			var totalPass, totalFail int
 			for _, f := range files {
@@ -78,7 +78,7 @@ func collectTestFiles(target string) ([]string, error) {
 
 // runConnectTestFile streams test results for a single path via RunTests.
 // Returns (passCount, failCount, error).
-func runConnectTestFile(ctx context.Context, svc gohomev1alpha1connect.ScriptServiceClient, filePath string, out io.Writer) (int, int, error) {
+func runConnectTestFile(ctx context.Context, svc switchyardv1alpha1connect.ScriptServiceClient, filePath string, out io.Writer) (int, int, error) {
 	stream, err := svc.RunTests(ctx, connect.NewRequest(&v1.RunTestsRequest{Path: filePath}))
 	if err != nil {
 		return 0, 0, renderConnectErr(err)

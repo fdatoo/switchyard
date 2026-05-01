@@ -3,8 +3,8 @@ package trigger_test
 import (
 	"testing"
 
-	"github.com/fdatoo/gohome/internal/automation/trigger"
-	"github.com/fdatoo/gohome/internal/eventstore"
+	"github.com/fdatoo/switchyard/internal/automation/trigger"
+	"github.com/fdatoo/switchyard/internal/eventstore"
 )
 
 func TestRegistry_DispatchEmpty(t *testing.T) {

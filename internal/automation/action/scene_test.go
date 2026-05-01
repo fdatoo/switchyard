@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/fdatoo/gohome/internal/automation/action"
+	"github.com/fdatoo/switchyard/internal/automation/action"
 )
 
 type fakeSceneApplier struct {

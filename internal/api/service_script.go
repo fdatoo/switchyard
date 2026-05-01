@@ -11,10 +11,10 @@ import (
 
 	"connectrpc.com/connect"
 
-	eventv1 "github.com/fdatoo/gohome/gen/gohome/event/v1"
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
-	"github.com/fdatoo/gohome/internal/auth"
+	eventv1 "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
+	"github.com/fdatoo/switchyard/internal/auth"
 )
 
 type ScriptService struct {
@@ -27,7 +27,7 @@ func NewScriptService(be ScriptRunner, events EventAppender, caps MCPCapsProvide
 	return &ScriptService{be: be, events: events, mcpCaps: caps}
 }
 
-var _ gohomev1alpha1connect.ScriptServiceHandler = (*ScriptService)(nil)
+var _ switchyardv1alpha1connect.ScriptServiceHandler = (*ScriptService)(nil)
 
 func (s *ScriptService) List(ctx context.Context, req *connect.Request[v1.ListScriptsRequest]) (*connect.Response[v1.ListScriptsResponse], error) {
 	cur, err := DecodeCursor(pageToken(req.Msg.Page))

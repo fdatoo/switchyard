@@ -6,7 +6,7 @@ import (
 
 	"connectrpc.com/connect"
 
-	systempb "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
+	systempb "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
 )
 
 // SystemClient is the subset of the SystemService client that audit needs.

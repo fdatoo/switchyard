@@ -6,9 +6,9 @@ import (
 
 	"connectrpc.com/connect"
 
-	systemv1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
-	"github.com/fdatoo/gohome/internal/auth"
+	systemv1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
+	"github.com/fdatoo/switchyard/internal/auth"
 )
 
 type SystemService struct {
@@ -19,7 +19,7 @@ func NewSystemService(be SystemBackend) *SystemService {
 	return &SystemService{be: be}
 }
 
-var _ gohomev1alpha1connect.SystemServiceHandler = (*SystemService)(nil)
+var _ switchyardv1alpha1connect.SystemServiceHandler = (*SystemService)(nil)
 
 func (s *SystemService) Version(_ context.Context, _ *connect.Request[systemv1.VersionRequest]) (*connect.Response[systemv1.VersionResponse], error) {
 	v := s.be.Version()

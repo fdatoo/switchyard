@@ -13,7 +13,7 @@ import (
 	starlarkgo "go.starlark.net/starlark"
 	"go.starlark.net/syntax"
 
-	"github.com/fdatoo/gohome/internal/observability"
+	"github.com/fdatoo/switchyard/internal/observability"
 )
 
 // Runtime executes Starlark scripts. Construct once via NewRuntime; safe for concurrent use.

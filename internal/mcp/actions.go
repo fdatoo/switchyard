@@ -1,6 +1,6 @@
 package mcp
 
-import "github.com/fdatoo/gohome/internal/auth"
+import "github.com/fdatoo/switchyard/internal/auth"
 
 // ToolActions maps tool names to auth actions.
 var ToolActions = map[string]auth.Action{

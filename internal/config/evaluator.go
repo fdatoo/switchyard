@@ -311,16 +311,17 @@ func parseConfigJSON(text, configDir string) (*configpb.ConfigSnapshot, error) {
 		var base struct {
 			ID         string `json:"id"`
 			DriverName string `json:"driverName"`
-			Binary     string `json:"binary"`
 		}
 		if err := json.Unmarshal(rawInst, &base); err != nil {
 			return nil, fmt.Errorf("parse driver instance: %w", err)
 		}
 		h := sha256.Sum256(rawInst)
+		// Binary is populated server-side in Manager.Apply by looking up the
+		// driver registry. Per-instance enabled and lifecycle live in the
+		// raw Params JSON and are decoded by parseInstanceOptions at apply time.
 		snap.DriverInstances = append(snap.DriverInstances, &configpb.DriverInstanceConfig{
 			Id:         base.ID,
 			DriverName: base.DriverName,
-			Binary:     base.Binary,
 			ConfigHash: h[:],
 			Params:     rawInst,
 		})

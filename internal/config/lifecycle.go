@@ -1,6 +1,10 @@
 package config
 
-import "time"
+import (
+	"encoding/json"
+	"fmt"
+	"time"
+)
 
 // LifecycleOverride mirrors the Pkl `switchyard.carport.LifecycleOverride`
 // class. Used at every override layer (driver manifest defaults and
@@ -31,6 +35,39 @@ type lifecycleOverrideJSON struct {
 	RestartBackoffMax       *string `json:"restartBackoffMax"`
 	RestartBudgetWindow     *string `json:"restartBudgetWindow"`
 	RestartBudgetMax        *int    `json:"restartBudgetMax"`
+}
+
+// InstanceOptions captures the per-instance non-driver-typed fields:
+// `enabled` and the `lifecycle` override block. Parsed from the raw
+// per-instance JSON in Manager.Apply.
+type InstanceOptions struct {
+	Enabled  bool
+	Override LifecycleOverride
+}
+
+// instanceOptionsJSON mirrors the relevant fields rendered by Pkl per
+// instance. enabled defaults to true (Pkl's default) but Pkl always emits
+// the field, so we don't have to disambiguate "absent" vs "false."
+type instanceOptionsJSON struct {
+	Enabled   *bool                  `json:"enabled"`
+	Lifecycle *lifecycleOverrideJSON `json:"lifecycle"`
+}
+
+// parseInstanceOptions extracts enabled + lifecycle override from the raw
+// per-instance JSON. Missing `enabled` is treated as true.
+func parseInstanceOptions(rawInst []byte) (InstanceOptions, error) {
+	var raw instanceOptionsJSON
+	if err := json.Unmarshal(rawInst, &raw); err != nil {
+		return InstanceOptions{}, fmt.Errorf("parse instance options: %w", err)
+	}
+	out := InstanceOptions{Enabled: true}
+	if raw.Enabled != nil {
+		out.Enabled = *raw.Enabled
+	}
+	if raw.Lifecycle != nil {
+		out.Override = decodeLifecycleOverride(*raw.Lifecycle)
+	}
+	return out, nil
 }
 
 // decodeLifecycleOverride converts the wire shape to the Go shape, parsing

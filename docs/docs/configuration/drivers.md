@@ -2,46 +2,51 @@
 
 !!! status-alpha "Alpha — shipped, interface evolving"
 
-Driver instances are declared in `drivers.pkl`. Each instance binds a driver binary to a specific set of parameters — credentials, host addresses, poll intervals, and anything else the driver needs to connect to its hardware or cloud service.
+Driver instances are declared in `main.pkl` under the `driverInstances` listing. Each instance binds an installed driver to a specific set of parameters — credentials, host addresses, anything else the driver needs to connect to its hardware or cloud service.
+
+## Where drivers live
+
+Each installed driver lives in its own subdirectory under `<data-dir>/drivers/`:
+
+```
+~/.local/share/switchyard/drivers/
+├── hue/
+│   ├── hue-driver       # the binary
+│   └── manifest.pkl     # typed config schema, lifecycle defaults, version
+└── zigbee2mqtt/
+    ├── z2m-driver
+    └── manifest.pkl
+```
+
+The directory name is the import key: `import "driver:hue"` resolves to `~/.local/share/switchyard/drivers/hue/manifest.pkl`. The directory name **must** match the manifest's `name` field; switchyardd refuses to start otherwise.
+
+By default, the binary is `<dir>/<name>-driver`. The manifest may override this with a `binary` field (absolute or relative to the driver directory).
+
+The drivers root defaults to `<data-dir>/drivers/`. Override with `--drivers-dir <path>` on `switchyardd` and on `switchyard config validate`.
 
 ## Declaring driver instances
 
-All driver instances live under the `drivers` listing in your config. The `switchyard:carport` module provides the base `DriverInstance` class that every driver extends:
-
-```pkl
-module switchyard.carport
-
-abstract class DriverInstance {
-  driverName: String   // must match an installed driver binary
-  id: String           // user-chosen slug, unique across all instances
-}
-```
-
-Drivers extend this with their own typed fields. The driver's Pkl class is published in its manifest and imported directly into your config.
+The `switchyard:carport` module provides the base `DriverInstance` class. Driver authors extend it (transitively, via `switchyard:driver.Instance`) with their own typed fields, declared in the manifest. The driver's typed instance class is what your config imports.
 
 ## Hue example
 
 ```pkl
-// drivers.pkl
-import "switchyard:base"    as base
+// main.pkl
+amends "switchyard:config"
+
 import "switchyard:carport" as carport
+import "driver:hue"          as hue
 
-// Import the Hue driver's typed config class.
-// This comes from the driver's installed manifest.
-import "driver:hue" as hue
-
-drivers: Listing<carport.DriverInstance> = new {
+driverInstances = new {
   new hue.HueInstance {
     id         = "hue_main"
-    driverName = "hue"
     bridgeHost = "10.0.0.42"
     apiToken   = "env:HUE_TOKEN"
-    area       = "living_room"    // default area for entities from this instance
   }
 }
 ```
 
-The Pkl evaluator will type-check every field. If `bridgeHost` is missing or not a `String`, `switchyard config validate` fails with a clear error pointing at the line.
+The Pkl evaluator type-checks every field. If `bridgeHost` is missing or not a `String`, `switchyard config validate` fails with a clear error pointing at the line. You don't write `driverName = "hue"` — the manifest's `HueInstance` class auto-derives it.
 
 ## Zigbee2MQTT example
 
@@ -50,7 +55,6 @@ import "driver:zigbee2mqtt" as z2m
 
 new z2m.Zigbee2MQTTInstance {
   id             = "z2m_main"
-  driverName     = "zigbee2mqtt"
   mqttHost       = "10.0.0.10"
   mqttPort       = 1883
   mqttUsername   = "switchyard"
@@ -65,25 +69,51 @@ new z2m.Zigbee2MQTTInstance {
 You can declare as many instances of any driver as you like — for example, two Hue bridges in a large home:
 
 ```pkl
-drivers: Listing<carport.DriverInstance> = new {
+driverInstances = new {
   new hue.HueInstance {
     id         = "hue_ground_floor"
-    driverName = "hue"
     bridgeHost = "10.0.0.42"
     apiToken   = "env:HUE_GROUND_TOKEN"
-    area       = "ground_floor"
   }
   new hue.HueInstance {
     id         = "hue_upstairs"
-    driverName = "hue"
     bridgeHost = "10.0.0.43"
     apiToken   = "env:HUE_UPSTAIRS_TOKEN"
-    area       = "upstairs"
   }
 }
 ```
 
 Each instance gets its own supervisor slot. Restarting one does not affect the other. The event log records the `source` on every event, so `hue_ground_floor` and `hue_upstairs` events are distinguishable in history.
+
+## Disabling an instance
+
+Set `enabled = false` on any instance to keep it in your config without spawning the driver. switchyardd evaluates and tracks the instance but never registers it with the supervisor.
+
+```pkl
+new hue.HueInstance {
+  id         = "hue_upstairs"
+  enabled    = false
+  bridgeHost = "10.0.0.43"
+  apiToken   = "env:HUE_UPSTAIRS_TOKEN"
+}
+```
+
+## Per-instance lifecycle overrides
+
+Each driver's `manifest.pkl` ships sensible lifecycle defaults (handshake deadline, restart budget, etc.). Operators may override individual fields per-instance with a `lifecycle` block:
+
+```pkl
+new hue.HueInstance {
+  id         = "hue_main"
+  bridgeHost = "10.0.0.42"
+  apiToken   = "env:HUE_TOKEN"
+  lifecycle  = new carport.LifecycleOverride {
+    restartBudgetMax = 20      // bump from manifest default
+  }
+}
+```
+
+Only fields you explicitly set override the manifest default; everything else falls through to either the manifest's `lifecycleDefaults` (set by the driver author) or, if those don't set it either, to switchyardd's hard-coded `DefaultLifecycleConfig`.
 
 ## Secret references in driver config
 

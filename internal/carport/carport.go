@@ -111,9 +111,16 @@ func (h *Host) Stop(ctx context.Context) {
 }
 
 // RegisterInstance adds a new driver instance and begins its lifecycle goroutine.
+// Implements config.CarportManager.
+//
 // Returns an error if an instance with that ID is already registered, if the host
 // has not been started, or if the host has been stopped.
-func (h *Host) RegisterInstance(_ context.Context, id, driverName, binary string, params []byte) error {
+//
+// driverName is currently unused at this layer (the supervisor identifies
+// instances by ID and uses Binary for spawn) but is part of the interface so
+// future work — e.g. event-source attribution, runtime manifest cross-checks —
+// has the value without touching the call signature.
+func (h *Host) RegisterInstance(_ context.Context, id, _, binary string, params []byte, enabled bool, lc LifecycleConfig) error {
 	if h.ctx == nil {
 		return fmt.Errorf("carport host not started")
 	}
@@ -130,38 +137,7 @@ func (h *Host) RegisterInstance(_ context.Context, id, driverName, binary string
 	inst := Instance{
 		ID:         id,
 		Binary:     binary,
-		Enabled:    true,
-		ConfigJSON: params,
-		Lifecycle:  defaultLifecycleConfig(),
-	}
-	m := &managedInstance{cfg: inst, state: StateDeclared}
-	h.instances[id] = m
-	h.mu.Unlock()
-	h.launchLifecycle(h.ctx, m) //nolint:contextcheck // lifecycle goroutine must outlive the caller's context
-	return nil
-}
-
-// RegisterInstanceWithLifecycle is like RegisterInstance but accepts an explicit
-// LifecycleConfig, allowing callers (e.g. integration tests) to override timing.
-// The CarportManager interface uses RegisterInstance which applies defaultLifecycleConfig.
-func (h *Host) RegisterInstanceWithLifecycle(_ context.Context, id, _, binary string, params []byte, lc LifecycleConfig) error {
-	if h.ctx == nil {
-		return fmt.Errorf("carport host not started")
-	}
-	select {
-	case <-h.stopped:
-		return fmt.Errorf("carport host is stopped")
-	default:
-	}
-	h.mu.Lock()
-	if _, exists := h.instances[id]; exists {
-		h.mu.Unlock()
-		return fmt.Errorf("instance %q already registered", id)
-	}
-	inst := Instance{
-		ID:         id,
-		Binary:     binary,
-		Enabled:    true,
+		Enabled:    enabled,
 		ConfigJSON: params,
 		Lifecycle:  lc,
 	}
@@ -170,6 +146,12 @@ func (h *Host) RegisterInstanceWithLifecycle(_ context.Context, id, _, binary st
 	h.mu.Unlock()
 	h.launchLifecycle(h.ctx, m) //nolint:contextcheck // lifecycle goroutine must outlive the caller's context
 	return nil
+}
+
+// RegisterInstanceWithLifecycle is a thin convenience wrapper preserved for
+// existing test code. New callers should use RegisterInstance directly.
+func (h *Host) RegisterInstanceWithLifecycle(ctx context.Context, id, driverName, binary string, params []byte, lc LifecycleConfig) error {
+	return h.RegisterInstance(ctx, id, driverName, binary, params, true, lc)
 }
 
 // UnregisterInstance stops and removes a driver instance by ID.

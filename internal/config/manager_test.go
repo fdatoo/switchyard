@@ -6,6 +6,7 @@ import (
 	"time"
 
 	configpb "github.com/fdatoo/switchyard/gen/switchyard/config/v1"
+	"github.com/fdatoo/switchyard/internal/carport"
 	"github.com/fdatoo/switchyard/internal/eventstore"
 )
 
@@ -14,7 +15,7 @@ type fakeCarport struct {
 	unregistered []string
 }
 
-func (f *fakeCarport) RegisterInstance(_ context.Context, id, _, _ string, _ []byte) error {
+func (f *fakeCarport) RegisterInstance(_ context.Context, id, _, _ string, _ []byte, _ bool, _ carport.LifecycleConfig) error {
 	f.registered = append(f.registered, id)
 	return nil
 }
@@ -31,6 +32,17 @@ type fakeStore struct {
 func (f *fakeStore) Append(_ context.Context, e eventstore.Event) (uint64, error) {
 	f.appended = append(f.appended, e)
 	return uint64(len(f.appended)), nil
+}
+
+// testRegistryWith returns a registry pre-populated with one driver entry per
+// name. Useful for unit tests that drive Manager.Apply without going through
+// the disk-scanning NewDriverRegistry path.
+func testRegistryWith(names ...string) *DriverRegistry {
+	r := &DriverRegistry{entries: map[string]DriverEntry{}}
+	for _, n := range names {
+		r.entries[n] = DriverEntry{Name: n, Version: "0.0.0", BinaryPath: "/test/bin/" + n}
+	}
+	return r
 }
 
 func TestManager_Apply_CallsCarportAndAppends(t *testing.T) {
@@ -50,6 +62,7 @@ func TestManager_Apply_CallsCarportAndAppends(t *testing.T) {
 		ev:         fakeEv,
 		store:      fs,
 		carportMgr: fc,
+		registry:   testRegistryWith("hue"),
 	}
 
 	if err := mgr.Apply(context.Background(), false); err != nil {
@@ -80,7 +93,7 @@ func TestManager_Apply_DryRun_NoSideEffects(t *testing.T) {
 	}
 	fc := &fakeCarport{}
 	fs := &fakeStore{}
-	mgr := &Manager{configDir: "/fake", ev: &fakeEval{snap: snap}, store: fs, carportMgr: fc}
+	mgr := &Manager{configDir: "/fake", ev: &fakeEval{snap: snap}, store: fs, carportMgr: fc, registry: testRegistryWith("hue")}
 
 	if err := mgr.Apply(context.Background(), true); err != nil {
 		t.Fatalf("dry-run Apply: %v", err)

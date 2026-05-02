@@ -8,14 +8,16 @@ import (
 
 	configpb "github.com/fdatoo/switchyard/gen/switchyard/config/v1"
 	eventv1 "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
+	"github.com/fdatoo/switchyard/internal/carport"
 	"github.com/fdatoo/switchyard/internal/eventstore"
 )
 
 // CarportManager is the subset of carport.Host that config.Manager needs.
-// For C4, the daemon passes a no-op implementation; dynamic carport management
-// will be wired when carport.Host gains RegisterInstance/UnregisterInstance methods.
+// RegisterInstance receives the fully-resolved binary path (looked up in the
+// driver registry by Manager.Apply), the per-instance enabled flag, and the
+// effective lifecycle config (defaults ← manifest ← per-instance override).
 type CarportManager interface {
-	RegisterInstance(ctx context.Context, id, driverName, binary string, params []byte) error
+	RegisterInstance(ctx context.Context, id, driverName, binary string, params []byte, enabled bool, lifecycle carport.LifecycleConfig) error
 	UnregisterInstance(ctx context.Context, id string) error
 }
 
@@ -30,6 +32,7 @@ type Manager struct {
 	configDir   string
 	driversRoot string
 	ev          configEvaluator
+	registry    *DriverRegistry
 	store       eventStore
 	carportMgr  CarportManager
 	keyring     Keyring
@@ -55,13 +58,37 @@ func NewManager(ctx context.Context, configDir, driversRoot string, store eventS
 	if err != nil {
 		return nil, fmt.Errorf("init pkl evaluator: %w", err)
 	}
+	registry, err := NewDriverRegistry(ctx, driversRoot)
+	if err != nil {
+		return nil, fmt.Errorf("scan drivers root %s: %w", driversRoot, err)
+	}
 	return &Manager{
 		configDir:   configDir,
 		driversRoot: driversRoot,
 		ev:          ev,
+		registry:    registry,
 		store:       store,
 		carportMgr:  carportMgr,
 	}, nil
+}
+
+// registerInstance resolves the binary path and lifecycle for one instance
+// (looking up the driver registry and merging defaults ← manifest ← override)
+// and forwards to the carport. Skips registration if enabled=false.
+func (m *Manager) registerInstance(ctx context.Context, di *configpb.DriverInstanceConfig) error {
+	entry, ok := m.registry.Lookup(di.GetDriverName())
+	if !ok {
+		return fmt.Errorf("driver %q not installed at %s", di.GetDriverName(), m.driversRoot)
+	}
+	opts, err := parseInstanceOptions(di.GetParams())
+	if err != nil {
+		return fmt.Errorf("instance %q: %w", di.GetId(), err)
+	}
+	if !opts.Enabled {
+		return nil
+	}
+	lifecycle := MergeLifecycle(entry.LifecycleDefaults, opts.Override)
+	return m.carportMgr.RegisterInstance(ctx, di.GetId(), di.GetDriverName(), entry.BinaryPath, di.GetParams(), opts.Enabled, lifecycle)
 }
 
 // Current returns the most-recently-applied ConfigSnapshot. Nil before first Apply.
@@ -108,7 +135,7 @@ func (m *Manager) Apply(ctx context.Context, dryRun bool) error {
 	}
 	for _, id := range diff.DriverInstancesAdded {
 		di := findInstance(snap, id)
-		if err := m.carportMgr.RegisterInstance(ctx, di.GetId(), di.GetDriverName(), di.GetBinary(), di.GetParams()); err != nil {
+		if err := m.registerInstance(ctx, di); err != nil {
 			return fmt.Errorf("register %q: %w", id, err)
 		}
 	}
@@ -117,7 +144,7 @@ func (m *Manager) Apply(ctx context.Context, dryRun bool) error {
 		if err := m.carportMgr.UnregisterInstance(ctx, id); err != nil {
 			return fmt.Errorf("unregister changed %q: %w", id, err)
 		}
-		if err := m.carportMgr.RegisterInstance(ctx, di.GetId(), di.GetDriverName(), di.GetBinary(), di.GetParams()); err != nil {
+		if err := m.registerInstance(ctx, di); err != nil {
 			return fmt.Errorf("re-register changed %q: %w", id, err)
 		}
 	}

@@ -11,7 +11,7 @@ func TestRegisterInstance_HostNotStarted(t *testing.T) {
 		stopped:   make(chan struct{}),
 		// ctx is nil — host not started
 	}
-	err := h.RegisterInstance(context.Background(), "new", "fake", "/bin/fake", nil)
+	err := h.RegisterInstance(context.Background(), "new", "fake", "/bin/fake", nil, true, DefaultLifecycleConfig())
 	if err == nil {
 		t.Fatal("expected error when host not started (ctx nil)")
 	}
@@ -27,7 +27,7 @@ func TestRegisterInstance_DuplicateID(t *testing.T) {
 		stopped: make(chan struct{}),
 		ctx:     ctx,
 	}
-	err := h.RegisterInstance(context.Background(), "existing", "fake", "/bin/fake", nil)
+	err := h.RegisterInstance(context.Background(), "existing", "fake", "/bin/fake", nil, true, DefaultLifecycleConfig())
 	if err == nil {
 		t.Fatal("expected error for duplicate instance ID")
 	}
@@ -41,7 +41,7 @@ func TestRegisterInstance_HostStopped(t *testing.T) {
 		stopped:   stopped,
 		ctx:       context.Background(),
 	}
-	err := h.RegisterInstance(context.Background(), "new", "fake", "/bin/fake", nil)
+	err := h.RegisterInstance(context.Background(), "new", "fake", "/bin/fake", nil, true, DefaultLifecycleConfig())
 	if err == nil {
 		t.Fatal("expected error when host is stopped")
 	}

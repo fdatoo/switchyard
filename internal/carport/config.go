@@ -27,9 +27,9 @@ type Instance struct {
 	Lifecycle  LifecycleConfig
 }
 
-// defaultLifecycleConfig returns the defaults used for dynamically registered
+// DefaultLifecycleConfig returns the defaults used for dynamically registered
 // instances (those coming from main.pkl rather than drivers.toml).
-func defaultLifecycleConfig() LifecycleConfig {
+func DefaultLifecycleConfig() LifecycleConfig {
 	return LifecycleConfig{
 		HandshakeDeadline:       5 * time.Second,
 		HealthProbeInterval:     15 * time.Second,

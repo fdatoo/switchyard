@@ -6,9 +6,9 @@ import (
 	"sync"
 	"time"
 
-	configpb "github.com/fdatoo/gohome/gen/gohome/config/v1"
-	eventv1 "github.com/fdatoo/gohome/gen/gohome/event/v1"
-	"github.com/fdatoo/gohome/internal/eventstore"
+	configpb "github.com/fdatoo/switchyard/gen/switchyard/config/v1"
+	eventv1 "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
+	"github.com/fdatoo/switchyard/internal/eventstore"
 )
 
 // CarportManager is the subset of carport.Host that config.Manager needs.

@@ -13,16 +13,16 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
-	"github.com/fdatoo/gohome/internal/mcp"
-	"github.com/fdatoo/gohome/internal/mcp/resources"
-	"github.com/fdatoo/gohome/internal/observability"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
+	"github.com/fdatoo/switchyard/internal/mcp"
+	"github.com/fdatoo/switchyard/internal/mcp/resources"
+	"github.com/fdatoo/switchyard/internal/observability"
 )
 
 // fakeAutoSvc implements only the Trace method.
 type fakeAutoSvc struct {
-	gohomev1alpha1connect.UnimplementedAutomationServiceHandler
+	switchyardv1alpha1connect.UnimplementedAutomationServiceHandler
 	traceFn func(context.Context, *connect.Request[v1.TraceAutomationRequest], *connect.ServerStream[v1.TraceAutomationResponse]) error
 }
 
@@ -36,7 +36,7 @@ func (h *fakeAutoSvc) Trace(ctx context.Context, req *connect.Request[v1.TraceAu
 // newTraceResourcesServer wires a fake automation service and returns an MCP server.
 func newTraceResourcesServer(t *testing.T, svc *fakeAutoSvc, caps mcp.MCPCaps) (*sdk.Server, *observability.Metrics) {
 	t.Helper()
-	_, h := gohomev1alpha1connect.NewAutomationServiceHandler(svc)
+	_, h := switchyardv1alpha1connect.NewAutomationServiceHandler(svc)
 	srv := httptest.NewServer(h)
 	t.Cleanup(srv.Close)
 
@@ -77,7 +77,7 @@ func TestTraceRead_HappyPath(t *testing.T) {
 	}
 	s, _ := newTraceResourcesServer(t, svc, mcp.MCPCaps{})
 
-	result, err := readResource(t, s, "gohome://automations/lights-auto/runs/run-abc/trace")
+	result, err := readResource(t, s, "switchyard://automations/lights-auto/runs/run-abc/trace")
 	require.NoError(t, err)
 	require.Len(t, result.Contents, 1)
 
@@ -135,7 +135,7 @@ func TestTraceWatch_OverflowCloses(t *testing.T) {
 	require.NoError(t, err)
 	t.Cleanup(func() { cs.Close() })
 
-	const uri = "gohome://automations/myauto/runs/run-xyz/trace"
+	const uri = "switchyard://automations/myauto/runs/run-xyz/trace"
 	err = cs.Subscribe(context.Background(), &sdk.SubscribeParams{URI: uri})
 	require.NoError(t, err)
 
@@ -157,6 +157,6 @@ func TestTraceWatch_OverflowCloses(t *testing.T) {
 	time.Sleep(200 * time.Millisecond)
 
 	// Check that overflow metric was incremented.
-	overflowMetric := getCounterValue(t, m, "gohome_mcp_resource_overflow_closes_total")
+	overflowMetric := getCounterValue(t, m, "switchyard_mcp_resource_overflow_closes_total")
 	assert.GreaterOrEqual(t, overflowMetric, 1.0, "expected at least one overflow close")
 }

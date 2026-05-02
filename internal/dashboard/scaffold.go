@@ -18,7 +18,7 @@ func ScaffoldDashboard(configDir, slug, title string) error {
 	layoutPath := filepath.Join(configDir, slug+".layout.pkl")
 
 	sourceContent := fmt.Sprintf(`amends "package://pkg.pkl-lang.org/pkl-pantry/pkl.experimental.uri@0.2.0#/URI.pkl"
-import "@gohome/dashboards.pkl" as d
+import "@switchyard/dashboards.pkl" as d
 
 slug = %q
 title = %q

@@ -6,10 +6,10 @@ import (
 
 	dto "github.com/prometheus/client_model/go"
 
-	configpb "github.com/fdatoo/gohome/gen/gohome/config/v1"
-	"github.com/fdatoo/gohome/internal/observability"
-	"github.com/fdatoo/gohome/internal/script"
-	sltestutil "github.com/fdatoo/gohome/internal/starlark/testutil"
+	configpb "github.com/fdatoo/switchyard/gen/switchyard/config/v1"
+	"github.com/fdatoo/switchyard/internal/observability"
+	"github.com/fdatoo/switchyard/internal/script"
+	sltestutil "github.com/fdatoo/switchyard/internal/starlark/testutil"
 )
 
 // gatherScriptMetric finds a MetricFamily by name from the registry.
@@ -73,9 +73,9 @@ func scriptLabelsMatch(pairs []*dto.LabelPair, want map[string]string) bool {
 // TestMetrics_ScriptInvocation creates a script engine with fresh Metrics, calls
 // a script, and asserts:
 //
-//   - gohome_script_invocations_total{script_name, outcome="ok", invoked_by_kind="cli"} == 1
-//   - gohome_script_duration_seconds sample count > 0
-//   - gohome_script_registered gauge == 1
+//   - switchyard_script_invocations_total{script_name, outcome="ok", invoked_by_kind="cli"} == 1
+//   - switchyard_script_duration_seconds sample count > 0
+//   - switchyard_script_registered gauge == 1
 func TestMetrics_ScriptInvocation(t *testing.T) {
 	const scriptName = "greet"
 
@@ -103,7 +103,7 @@ func TestMetrics_ScriptInvocation(t *testing.T) {
 	}
 
 	// --- assert invocations_total{ok, cli} ---
-	invMF := gatherScriptMetric(t, metrics, "gohome_script_invocations_total")
+	invMF := gatherScriptMetric(t, metrics, "switchyard_script_invocations_total")
 	invV := scriptCounterValue(t, invMF, map[string]string{
 		"script_name":     scriptName,
 		"outcome":         "ok",
@@ -114,14 +114,14 @@ func TestMetrics_ScriptInvocation(t *testing.T) {
 	}
 
 	// --- assert duration_seconds observed ---
-	durMF := gatherScriptMetric(t, metrics, "gohome_script_duration_seconds")
+	durMF := gatherScriptMetric(t, metrics, "switchyard_script_duration_seconds")
 	durCount := scriptHistogramCount(t, durMF, map[string]string{"script_name": scriptName})
 	if durCount == 0 {
 		t.Error("script_duration_seconds: no observations")
 	}
 
 	// --- assert script_registered gauge ---
-	regMF := gatherScriptMetric(t, metrics, "gohome_script_registered")
+	regMF := gatherScriptMetric(t, metrics, "switchyard_script_registered")
 	if regMF == nil || len(regMF.GetMetric()) == 0 {
 		t.Error("script_registered: metric not found")
 	} else if v := regMF.GetMetric()[0].GetGauge().GetValue(); v != 1 {
@@ -142,7 +142,7 @@ func TestMetrics_ScriptInvokedByKindUnknown(t *testing.T) {
 	eng := script.NewEngine(scripts, rt, script.Deps{Metrics: metrics})
 	_, _ = eng.Call(context.Background(), "noop", nil, "", "")
 
-	invMF := gatherScriptMetric(t, metrics, "gohome_script_invocations_total")
+	invMF := gatherScriptMetric(t, metrics, "switchyard_script_invocations_total")
 	invV := scriptCounterValue(t, invMF, map[string]string{"invoked_by_kind": "unknown"})
 	if invV != 1 {
 		t.Errorf("invocations_total{unknown} = %.0f, want 1", invV)

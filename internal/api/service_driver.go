@@ -7,15 +7,15 @@ import (
 	"connectrpc.com/connect"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
 )
 
 type DriverService struct{ be DriverControl }
 
 func NewDriverService(be DriverControl) *DriverService { return &DriverService{be: be} }
 
-var _ gohomev1alpha1connect.DriverServiceHandler = (*DriverService)(nil)
+var _ switchyardv1alpha1connect.DriverServiceHandler = (*DriverService)(nil)
 
 func (s *DriverService) ListDrivers(ctx context.Context, req *connect.Request[v1.ListDriversRequest]) (*connect.Response[v1.ListDriversResponse], error) {
 	cur, err := DecodeCursor(pageToken(req.Msg.Page))

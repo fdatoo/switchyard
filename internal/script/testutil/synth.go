@@ -8,11 +8,11 @@ import (
 	"sync"
 	"testing"
 
-	configpb "github.com/fdatoo/gohome/gen/gohome/config/v1"
-	"github.com/fdatoo/gohome/internal/eventstore"
-	"github.com/fdatoo/gohome/internal/script"
-	ghstarlark "github.com/fdatoo/gohome/internal/starlark"
-	sltestutil "github.com/fdatoo/gohome/internal/starlark/testutil"
+	configpb "github.com/fdatoo/switchyard/gen/switchyard/config/v1"
+	"github.com/fdatoo/switchyard/internal/eventstore"
+	"github.com/fdatoo/switchyard/internal/script"
+	ghstarlark "github.com/fdatoo/switchyard/internal/starlark"
+	sltestutil "github.com/fdatoo/switchyard/internal/starlark/testutil"
 )
 
 // SyntheticScript builds an in-memory *script.Script bypassing the proto/Pkl

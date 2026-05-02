@@ -1,12 +1,12 @@
 # Domain model
 
-gohome's vocabulary is close to Home Assistant's where it helps — entity ids, domains, areas, scenes, scripts — and diverges where HA's model has caused pain. This page defines every noun the system uses, with Pkl examples and a quick-reference comparison table.
+switchyard's vocabulary is close to Home Assistant's where it helps — entity ids, domains, areas, scenes, scripts — and diverges where HA's model has caused pain. This page defines every noun the system uses, with Pkl examples and a quick-reference comparison table.
 
-## Quick reference: gohome vs. Home Assistant
+## Quick reference: switchyard vs. Home Assistant
 
-| Home Assistant | gohome | Why it changed |
+| Home Assistant | switchyard | Why it changed |
 |---|---|---|
-| Integration | **Driver** + **driver instance** | HA conflates code and config; gohome separates them |
+| Integration | **Driver** + **driver instance** | HA conflates code and config; switchyard separates them |
 | String state (`"on"`, `"22.5"`) | **Typed state** (`bool`, `float64`, enum) | Strings require runtime parsing; types are validated at load |
 | Untyped attribute dict | **Typed attributes** (Pkl class fields) | Dicts have no schema; Pkl fields are validated |
 | Services (global verb-space) | **Capabilities** (methods on entity classes) | Global strings are hard to discover and type-check |
@@ -19,14 +19,14 @@ A **driver** is a separate Go binary that knows how to talk to a category of har
 
 A driver is just code. It has no opinion about your specific setup — which bridge IP address, which credentials, which rooms. All of that lives in a driver instance.
 
-Drivers communicate with `gohomed` over the **Carport** protocol (gRPC over a unix socket for local drivers, mTLS over TCP for remote edge deployments). The daemon supervises driver processes: launches them, health-checks them, restarts them on failure.
+Drivers communicate with `switchyardd` over the **Carport** protocol (gRPC over a unix socket for local drivers, mTLS over TCP for remote edge deployments). The daemon supervises driver processes: launches them, health-checks them, restarts them on failure.
 
 ## Driver instance
 
 A **driver instance** is a user-declared binding of a driver binary to specific parameters. You declare one in Pkl:
 
 ```pkl
-import "gohome:carport" as carport
+import "switchyard:carport" as carport
 
 new HueDriverInstance {
   id        = "hue_main"
@@ -37,7 +37,7 @@ new HueDriverInstance {
 }
 ```
 
-The driver/instance split is the most structural difference from HA. In HA, "integration" means both the code (the Python module) and the config (the options you entered in the UI). In gohome, these are separate. You can declare three Hue instances against three different bridges, all using the same `hue` driver binary.
+The driver/instance split is the most structural difference from HA. In HA, "integration" means both the code (the Python module) and the config (the options you entered in the UI). In switchyard, these are separate. You can declare three Hue instances against three different bridges, all using the same `hue` driver binary.
 
 Driver instance IDs are user-chosen slugs (e.g. `hue_main`, `hue_upstairs`). They appear in the event log as the `source` on every event from that instance.
 
@@ -51,7 +51,7 @@ Devices are not directly addressed in automations. Their entities are.
 
 ## Entity
 
-An **entity** is an addressable, typed property or capability of a device. It is the primary unit of state in gohome.
+An **entity** is an addressable, typed property or capability of a device. It is the primary unit of state in switchyard.
 
 Every entity has:
 
@@ -61,7 +61,7 @@ Every entity has:
 - **Capabilities** — the operations you can invoke on it (e.g. `turn_on`, `set_temperature`).
 
 ```pkl
-import "gohome:entities" as entities
+import "switchyard:entities" as entities
 
 new entities.Light {
   id                 = "light.kitchen_ceiling"
@@ -72,13 +72,13 @@ new entities.Light {
 }
 ```
 
-Entity domains are a closed, versioned enum shipped with gohomed: `light`, `switch`, `sensor`, `binary_sensor`, `climate`, `cover`, `media_player`, `camera`, `lock`, `person`, `vacuum`, `fan`, and the `input_*` helpers. The domain set is deliberately close to HA's; HA domains that have become archaic are omitted.
+Entity domains are a closed, versioned enum shipped with switchyardd: `light`, `switch`, `sensor`, `binary_sensor`, `climate`, `cover`, `media_player`, `camera`, `lock`, `person`, `vacuum`, `fan`, and the `input_*` helpers. The domain set is deliberately close to HA's; HA domains that have become archaic are omitted.
 
 ### Typed state
 
 In HA, every entity's state is a string. `light.kitchen` has state `"on"` or `"off"`. `sensor.outdoor_temp` has state `"22.5"`. Parsing and type-checking happens at runtime in every automation and template.
 
-In gohome, state is typed by the entity class. A `Light` entity has state `bool`. A `Sensor` entity has state `Float`. An enum-valued entity has a proper enum type. Automations work with the actual type:
+In switchyard, state is typed by the entity class. A `Light` entity has state `bool`. A `Sensor` entity has state `Float`. An enum-valued entity has a proper enum type. Automations work with the actual type:
 
 ```starlark
 # Starlark — state is already a bool, no string comparison needed
@@ -93,7 +93,7 @@ if temp < 0.0:
 
 ### Typed attributes
 
-HA attributes are untyped dicts. You access them by string key and hope the value is what you expect. In gohome, attributes are declared as fields on the entity class and validated when config is loaded:
+HA attributes are untyped dicts. You access them by string key and hope the value is what you expect. In switchyard, attributes are declared as fields on the entity class and validated when config is loaded:
 
 ```pkl
 class Light extends Entity {
@@ -102,13 +102,13 @@ class Light extends Entity {
 }
 ```
 
-A driver instance declares the entity; the Pkl config system validates that all declared fields match the class definition. Bad configs are caught at `gohome config validate` time, not at runtime at 2am.
+A driver instance declares the entity; the Pkl config system validates that all declared fields match the class definition. Bad configs are caught at `switchyard config validate` time, not at runtime at 2am.
 
 ### Capabilities
 
 HA's "services" are a global verb-space. You call `light.turn_on` and pass a target entity by string. There is no type-checking; the service either works or it does not.
 
-In gohome, **capabilities** are typed methods on entity classes. To invoke a capability:
+In switchyard, **capabilities** are typed methods on entity classes. To invoke a capability:
 
 ```starlark
 # Starlark inside an automation — typed arguments, no string dispatching
@@ -124,10 +124,10 @@ Both the typed capability form (`e.turn_on()`) and the string-based `call_servic
 
 An **entity class** is a Pkl class that defines the type signature of an entity domain. It declares the typed state shape, the typed attributes, and the available capabilities.
 
-gohome ships built-in entity classes in `gohome:entities`: `Light`, `Thermostat`, `Switch`, `Sensor`, `BinarySensor`, and others. Custom entity classes are a first-class extension point — drivers can declare their own Pkl classes in their manifests.
+switchyard ships built-in entity classes in `switchyard:entities`: `Light`, `Thermostat`, `Switch`, `Sensor`, `BinarySensor`, and others. Custom entity classes are a first-class extension point — drivers can declare their own Pkl classes in their manifests.
 
 ```pkl
-module gohome.entities
+module switchyard.entities
 
 abstract class Entity {
   id:           String   // "light.kitchen_ceiling"
@@ -154,21 +154,21 @@ class Sensor extends Entity {
 
 A **computed entity** is an entity whose state is derived by a Starlark expression over other entities' state. It is re-evaluated reactively whenever any of its inputs change.
 
-Computed entities are first-class in gohome. HA's template entities were second-class — awkward to declare, impossible to unit-test, hidden from most tooling. In gohome, a computed entity is declared exactly like any other entity:
+Computed entities are first-class in switchyard. HA's template entities were second-class — awkward to declare, impossible to unit-test, hidden from most tooling. In switchyard, a computed entity is declared exactly like any other entity:
 
 ```pkl
-import "gohome:entities" as entities
+import "switchyard:entities" as entities
 
 new entities.ComputedEntity {
   id          = "sensor.house_avg_temp"
-  entityClass = "gohome.entities.Temperature"
+  entityClass = "switchyard.entities.Temperature"
   handler     = """
     avg(s.state for s in entities(class='Temperature', area='interior'))
   """
 }
 ```
 
-The short class name `Temperature` in the `entities()` call is an alias for the fully qualified `gohome.entities.Temperature`. Both forms are accepted.
+The short class name `Temperature` in the `entities()` call is an alias for the fully qualified `switchyard.entities.Temperature`. Both forms are accepted.
 
 The Starlark expression runs in a sandboxed context with read-only access to state and a 100ms / 500k-step budget. If it raises or times out, the entity retains its last known good value.
 
@@ -217,7 +217,7 @@ Zones are orthogonal to areas. Areas describe physical space inside a building; 
 An **automation** is a trigger + conditions + actions declaration. The structure is declared in Pkl; logic that requires a real language is written in Starlark.
 
 ```pkl
-import "gohome:automations" as automations
+import "switchyard:automations" as automations
 
 new automations.Automation {
   id       = "auto.lights_off_at_midnight"
@@ -244,7 +244,7 @@ Triggers can fire on state changes, time events, incoming webhooks, or arbitrary
 A **script** is a named, parameterized Starlark procedure. Scripts are callable from automations, the CLI, the web UI, MCP agents, and other scripts.
 
 ```pkl
-import "gohome:scripts" as scripts
+import "switchyard:scripts" as scripts
 
 new scripts.Script {
   id     = "script.good_night"
@@ -263,7 +263,7 @@ new scripts.Script {
 Call it from the CLI:
 
 ```
-gohome script run good_night --param delay_secs=30
+switchyard script run good_night --param delay_secs=30
 ```
 
 ## Scene
@@ -286,7 +286,7 @@ new Scene {
 A **dashboard** is a Pkl-declared collection of pages and widget instances. Dashboards round-trip through the WYSIWYG editor in the web UI: edits in the UI are reflected back to Pkl config, and config changes appear in the UI.
 
 ```pkl
-import "gohome:dashboards" as dashboards
+import "switchyard:dashboards" as dashboards
 
 new dashboards.Dashboard {
   slug  = "main"
@@ -309,7 +309,7 @@ new dashboards.Dashboard {
 
 ## Widget
 
-A **widget** is a UI component instance with a typed Pkl config. Standard widget classes ship with gohomed: `Gauge`, `LineChart`, `EntityToggle`, `CameraStream`, `Markdown`, `ScriptButton`. Third-party widget packs are React component bundles paired with Pkl class definitions.
+A **widget** is a UI component instance with a typed Pkl config. Standard widget classes ship with switchyardd: `Gauge`, `LineChart`, `EntityToggle`, `CameraStream`, `Markdown`, `ScriptButton`. Third-party widget packs are React component bundles paired with Pkl class definitions.
 
 ## User, role, and policy
 
@@ -318,7 +318,7 @@ A **widget** is a UI component instance with a typed Pkl config. Standard widget
 A **user** is a principal with one or more authentication methods (passkey, API token, OIDC). A **role** is a named permission group. Built-in roles are `admin`, `member`, and `guest`; custom roles are supported.
 
 ```pkl
-import "gohome:auth" as auth
+import "switchyard:auth" as auth
 
 new auth.User {
   slug        = "alice"

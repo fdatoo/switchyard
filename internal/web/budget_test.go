@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/fdatoo/gohome/internal/web"
+	"github.com/fdatoo/switchyard/internal/web"
 )
 
 const (

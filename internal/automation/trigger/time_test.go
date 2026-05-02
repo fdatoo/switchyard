@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/fdatoo/gohome/internal/automation/trigger"
+	"github.com/fdatoo/switchyard/internal/automation/trigger"
 )
 
 func TestTimeScheduler_EveryFires(t *testing.T) {

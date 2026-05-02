@@ -16,16 +16,16 @@ import (
 
 	"connectrpc.com/connect"
 
-	errorv1 "github.com/fdatoo/gohome/gen/gohome/error/v1alpha1"
-	"github.com/fdatoo/gohome/internal/observability"
-	"github.com/fdatoo/gohome/internal/storage"
+	errorv1 "github.com/fdatoo/switchyard/gen/switchyard/error/v1alpha1"
+	"github.com/fdatoo/switchyard/internal/observability"
+	"github.com/fdatoo/switchyard/internal/storage"
 )
 
 func openReadOnlyDB(ctx context.Context, dataDir string) (*sql.DB, error) {
 	dataDir = expandHome(dataDir)
-	path := filepath.Join(dataDir, "gohome.db")
+	path := filepath.Join(dataDir, "switchyard.db")
 	if _, err := os.Stat(path); err != nil {
-		return nil, fmt.Errorf("no database at %s — is gohomed running?", path)
+		return nil, fmt.Errorf("no database at %s — is switchyardd running?", path)
 	}
 	return storage.OpenReadOnly(ctx, storage.Config{Path: path})
 }
@@ -60,15 +60,15 @@ func isTerminal(f *os.File) bool {
 const defaultRPCTimeout = 30 * time.Second
 
 // ResolveEndpoint picks the API endpoint to dial.
-// Precedence: explicit flag value > GOHOME_ENDPOINT env > unix://<dataDir>/gohomed.sock.
+// Precedence: explicit flag value > SWITCHYARD_ENDPOINT env > unix://<dataDir>/switchyardd.sock.
 func ResolveEndpoint(flagValue, dataDir string) string {
 	if flagValue != "" {
 		return flagValue
 	}
-	if env := os.Getenv("GOHOME_ENDPOINT"); env != "" {
+	if env := os.Getenv("SWITCHYARD_ENDPOINT"); env != "" {
 		return env
 	}
-	return "unix://" + dataDir + "/gohomed.sock"
+	return "unix://" + dataDir + "/switchyardd.sock"
 }
 
 // Dial returns an http.Client and a base URL for a Connect-Go client constructor.

@@ -6,10 +6,10 @@ import (
 
 	"google.golang.org/protobuf/types/known/structpb"
 
-	configv1 "github.com/fdatoo/gohome/gen/gohome/config/v1"
-	entityv1 "github.com/fdatoo/gohome/gen/gohome/entity/v1"
-	eventv1 "github.com/fdatoo/gohome/gen/gohome/event/v1"
-	"github.com/fdatoo/gohome/internal/auth"
+	configv1 "github.com/fdatoo/switchyard/gen/switchyard/config/v1"
+	entityv1 "github.com/fdatoo/switchyard/gen/switchyard/entity/v1"
+	eventv1 "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
+	"github.com/fdatoo/switchyard/internal/auth"
 )
 
 type VersionInfo struct {

@@ -5,9 +5,9 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/fdatoo/gohome/internal/automation/action"
-	"github.com/fdatoo/gohome/internal/cause"
-	ghstarlark "github.com/fdatoo/gohome/internal/starlark"
+	"github.com/fdatoo/switchyard/internal/automation/action"
+	"github.com/fdatoo/switchyard/internal/cause"
+	ghstarlark "github.com/fdatoo/switchyard/internal/starlark"
 )
 
 type fakeDisp struct {

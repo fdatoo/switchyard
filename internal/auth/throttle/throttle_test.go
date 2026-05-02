@@ -8,9 +8,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/fdatoo/gohome/internal/auth/identity"
-	"github.com/fdatoo/gohome/internal/auth/throttle"
-	"github.com/fdatoo/gohome/internal/testutil"
+	"github.com/fdatoo/switchyard/internal/auth/identity"
+	"github.com/fdatoo/switchyard/internal/auth/throttle"
+	"github.com/fdatoo/switchyard/internal/testutil"
 )
 
 func setupThrottleDB(t *testing.T) *sql.DB {

@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/fdatoo/gohome/internal/cli"
+	"github.com/fdatoo/switchyard/internal/cli"
 )
 
 // configTestdataDir returns the absolute path to a directory under
@@ -39,7 +39,7 @@ func TestConfigValidate_OfflineSucceedsWithoutDaemon(t *testing.T) {
 		"config", "validate",
 		"--offline",
 		"--config-dir", dir,
-		"--endpoint", "unix:///nonexistent/gohomed.sock",
+		"--endpoint", "unix:///nonexistent/switchyardd.sock",
 	})
 
 	if err := root.ExecuteContext(context.Background()); err != nil {

@@ -12,9 +12,9 @@ import (
 
 	"google.golang.org/grpc/status"
 
-	carportpb "github.com/fdatoo/gohome/gen/gohome/carport/v1alpha1"
-	eventpb "github.com/fdatoo/gohome/gen/gohome/event/v1"
-	"github.com/fdatoo/gohome/internal/eventstore"
+	carportpb "github.com/fdatoo/switchyard/gen/switchyard/carport/v1alpha1"
+	eventpb "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
+	"github.com/fdatoo/switchyard/internal/eventstore"
 )
 
 // launchLifecycle starts a per-instance supervisor goroutine. It sets
@@ -186,10 +186,10 @@ func (h *Host) spawn(ctx context.Context, cfg Instance) (string, *exec.Cmd, stri
 
 	cmd := exec.CommandContext(ctx, cfg.Binary)
 	cmd.Env = append(os.Environ(),
-		"GOHOME_CARPORT_SOCKET="+socketPath,
-		"GOHOME_CARPORT_SECRET="+secret,
-		"GOHOME_CARPORT_INSTANCE_ID="+cfg.ID,
-		"GOHOME_CARPORT_INSTANCE_CONFIG="+string(cfg.ConfigJSON),
+		"SWITCHYARD_CARPORT_SOCKET="+socketPath,
+		"SWITCHYARD_CARPORT_SECRET="+secret,
+		"SWITCHYARD_CARPORT_INSTANCE_ID="+cfg.ID,
+		"SWITCHYARD_CARPORT_INSTANCE_CONFIG="+string(cfg.ConfigJSON),
 	)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr

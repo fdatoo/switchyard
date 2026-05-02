@@ -1,6 +1,6 @@
 # Dev Setup
 
-This page covers everything needed to build, test, and run gohome from source.
+This page covers everything needed to build, test, and run switchyard from source.
 
 ---
 
@@ -19,16 +19,16 @@ This page covers everything needed to build, test, and run gohome from source.
 ## Clone and build
 
 ```bash
-git clone https://github.com/fynn-labs/gohome
-cd gohome
-task build      # compiles gohomed and gohome binaries to dist/
+git clone https://github.com/fynn-labs/switchyard
+cd switchyard
+task build      # compiles switchyardd and switchyard binaries to dist/
 ```
 
 All task targets:
 
 | Command | Purpose |
 |---------|---------|
-| `task build` | Build both binaries (`dist/gohomed`, `dist/gohome`) |
+| `task build` | Build both binaries (`dist/switchyardd`, `dist/switchyard`) |
 | `task test` | Run unit tests |
 | `task test:race` | Run unit tests with the race detector |
 | `task test:integration` | Run integration tests (real disk I/O, requires `-tags=integration`) |
@@ -74,14 +74,14 @@ This symlinks `scripts/hooks/pre-commit` and `scripts/hooks/pre-push` into `.git
 Copy a starter config and launch the daemon:
 
 ```bash
-cp examples/minimal-main.pkl ~/.config/gohome/main.pkl
-./dist/gohomed
+cp examples/minimal-main.pkl ~/.config/switchyard/main.pkl
+./dist/switchyardd
 ```
 
-`gohomed` reads its config from `~/.config/gohome/` by default. Edit `main.pkl` and send `SIGHUP` to reload config without restarting:
+`switchyardd` reads its config from `~/.config/switchyard/` by default. Edit `main.pkl` and send `SIGHUP` to reload config without restarting:
 
 ```bash
-kill -HUP "$(pidof gohomed)"
+kill -HUP "$(pidof switchyardd)"
 ```
 
 ---

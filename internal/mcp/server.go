@@ -15,7 +15,7 @@ func Run(ctx context.Context, deps Deps) error {
 		opts = &sdk.ServerOptions{}
 	}
 	server := sdk.NewServer(&sdk.Implementation{
-		Name:    "gohome",
+		Name:    "switchyard",
 		Version: deps.Version,
 	}, opts)
 

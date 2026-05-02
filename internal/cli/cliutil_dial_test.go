@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/fdatoo/gohome/internal/cli"
+	"github.com/fdatoo/switchyard/internal/cli"
 )
 
 func TestDial_TCPEndpoint(t *testing.T) {
@@ -36,13 +36,13 @@ func TestDial_UDSEndpoint(t *testing.T) {
 
 func TestResolveEndpoint_DefaultUDS(t *testing.T) {
 	got := cli.ResolveEndpoint("", "/data")
-	if got != "unix:///data/gohomed.sock" {
+	if got != "unix:///data/switchyardd.sock" {
 		t.Errorf("got %q", got)
 	}
 }
 
 func TestResolveEndpoint_FlagWins(t *testing.T) {
-	t.Setenv("GOHOME_ENDPOINT", "tcp://127.0.0.1:9000")
+	t.Setenv("SWITCHYARD_ENDPOINT", "tcp://127.0.0.1:9000")
 	got := cli.ResolveEndpoint("tcp://127.0.0.1:8888", "/data")
 	if got != "tcp://127.0.0.1:8888" {
 		t.Errorf("got %q", got)
@@ -50,7 +50,7 @@ func TestResolveEndpoint_FlagWins(t *testing.T) {
 }
 
 func TestResolveEndpoint_EnvWins(t *testing.T) {
-	t.Setenv("GOHOME_ENDPOINT", "tcp://127.0.0.1:9000")
+	t.Setenv("SWITCHYARD_ENDPOINT", "tcp://127.0.0.1:9000")
 	got := cli.ResolveEndpoint("", "/data")
 	if got != "tcp://127.0.0.1:9000" {
 		t.Errorf("got %q", got)

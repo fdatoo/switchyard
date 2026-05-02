@@ -6,8 +6,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/fdatoo/gohome/internal/auth/identity"
-	"github.com/fdatoo/gohome/internal/testutil"
+	"github.com/fdatoo/switchyard/internal/auth/identity"
+	"github.com/fdatoo/switchyard/internal/testutil"
 )
 
 func TestStore_ApplySnapshot_PopulatesUsersAndRoles(t *testing.T) {

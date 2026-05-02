@@ -3,9 +3,9 @@ package state
 import (
 	"sort"
 
-	"github.com/fdatoo/gohome-driverkit/driver"
+	"github.com/fdatoo/switchyard-driverkit/driver"
 
-	"github.com/fdatoo/gohome/drivers/z2m/internal/z2m"
+	"github.com/fdatoo/switchyard/drivers/z2m/internal/z2m"
 )
 
 // Action is what Reconcile emits. main switches on the concrete type

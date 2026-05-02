@@ -10,9 +10,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/fdatoo/gohome/internal/carport"
-	"github.com/fdatoo/gohome/internal/eventstore"
-	"github.com/fdatoo/gohome/internal/registry"
+	"github.com/fdatoo/switchyard/internal/carport"
+	"github.com/fdatoo/switchyard/internal/eventstore"
+	"github.com/fdatoo/switchyard/internal/registry"
 )
 
 // buildTestDriver compiles cmd/testdriver into a test-temp binary and returns

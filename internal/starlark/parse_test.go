@@ -3,7 +3,7 @@ package starlark_test
 import (
 	"testing"
 
-	ghs "github.com/fdatoo/gohome/internal/starlark"
+	ghs "github.com/fdatoo/switchyard/internal/starlark"
 )
 
 func TestParseOnly_ValidExpression(t *testing.T) {

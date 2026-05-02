@@ -1,6 +1,6 @@
 # Contributing
 
-gohome is an open project and contributions are welcome. This page covers how to get involved, what kinds of contributions are most useful, and how the review process works.
+switchyard is an open project and contributions are welcome. This page covers how to get involved, what kinds of contributions are most useful, and how the review process works.
 
 ---
 
@@ -14,11 +14,11 @@ This project follows the [Contributor Covenant](https://www.contributor-covenant
 
 ### Driver development
 
-The highest-impact contribution you can make is a new driver. Every new driver makes gohome useful to more people without any changes to the core. Use the [`github.com/fynn-labs/gohome-driverkit`](https://github.com/fynn-labs/gohome-driverkit) Go SDK and the Carport protocol to connect a device or service. See the [Building drivers](../drivers/building/index.md) guide to get started.
+The highest-impact contribution you can make is a new driver. Every new driver makes switchyard useful to more people without any changes to the core. Use the [`github.com/fynn-labs/switchyard-driverkit`](https://github.com/fynn-labs/switchyard-driverkit) Go SDK and the Carport protocol to connect a device or service. See the [Building drivers](../drivers/building/index.md) guide to get started.
 
 ### Pkl module improvements
 
-The entity schema lives in the gohome Pkl modules. Useful work here includes:
+The entity schema lives in the switchyard Pkl modules. Useful work here includes:
 
 - Adding new entity classes for device types not yet modelled
 - Improving validation constraints on existing classes
@@ -30,17 +30,17 @@ For non-trivial bugs, file a GitHub Issue first describing the problem and your 
 
 ### Documentation
 
-Documentation lives in this repository (`github.com/fynn-labs/gohome-docs`). Inaccuracies, missing examples, unclear explanations — open a PR here.
+Documentation lives in this repository (`github.com/fynn-labs/switchyard-docs`). Inaccuracies, missing examples, unclear explanations — open a PR here.
 
 ### Config examples
 
-New or improved configuration examples go in `gohome/examples/`. The directory currently contains `minimal-main.pkl` and `full-main.pkl`. Examples should be commented and demonstrate a real, realistic use case.
+New or improved configuration examples go in `switchyard/examples/`. The directory currently contains `minimal-main.pkl` and `full-main.pkl`. Examples should be commented and demonstrate a real, realistic use case.
 
 ---
 
 ## Pull request process
 
-1. **Fork the relevant repository** — `gohome`, `gohome-driverkit`, or `gohome-docs`, depending on what you are changing.
+1. **Fork the relevant repository** — `switchyard`, `switchyard-driverkit`, or `switchyard-docs`, depending on what you are changing.
 2. **Create a feature branch** — branch from `main` with a descriptive name (`feat/zigbee-driver`, `fix/event-replay-ordering`).
 3. **Run tests** — `task test` must pass before opening a PR. See [Dev setup](dev-setup.md) for all available task targets.
 4. **Open a PR with a clear description** — explain what the change does, why it is needed, and how you tested it. Link to the relevant issue.
@@ -58,7 +58,7 @@ GitHub Issues on the relevant repository is the right place for:
 - Feature proposals
 - Questions about intended behaviour
 
-Before opening an issue, search existing issues to avoid duplicates. For bugs, include the gohome version (`gohome version`), your OS, and the minimal config or steps needed to reproduce the problem.
+Before opening an issue, search existing issues to avoid duplicates. For bugs, include the switchyard version (`switchyard version`), your OS, and the minimal config or steps needed to reproduce the problem.
 
 !!! note "No issue = no merge"
     Non-trivial PRs opened without a prior issue will be asked to link one before review proceeds.

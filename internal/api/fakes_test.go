@@ -4,9 +4,9 @@ import (
 	"context"
 	"time"
 
-	eventv1 "github.com/fdatoo/gohome/gen/gohome/event/v1"
-	"github.com/fdatoo/gohome/internal/api"
-	"github.com/fdatoo/gohome/internal/auth"
+	eventv1 "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
+	"github.com/fdatoo/switchyard/internal/api"
+	"github.com/fdatoo/switchyard/internal/auth"
 )
 
 type fakeSystem struct {

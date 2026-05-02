@@ -3,8 +3,8 @@ package automation
 import (
 	"google.golang.org/protobuf/proto"
 
-	configpb "github.com/fdatoo/gohome/gen/gohome/config/v1"
-	"github.com/fdatoo/gohome/internal/automation/trigger"
+	configpb "github.com/fdatoo/switchyard/gen/switchyard/config/v1"
+	"github.com/fdatoo/switchyard/internal/automation/trigger"
 )
 
 // Reload replaces the live map with a freshly compiled one. In-flight runs

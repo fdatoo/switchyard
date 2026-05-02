@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"github.com/fdatoo/gohome/internal/auth"
-	"github.com/fdatoo/gohome/internal/auth/sessions"
+	"github.com/fdatoo/switchyard/internal/auth"
+	"github.com/fdatoo/switchyard/internal/auth/sessions"
 )
 
 // SessionCookie authenticates requests that carry a valid session access cookie.

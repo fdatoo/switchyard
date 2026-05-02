@@ -14,18 +14,18 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
-	"github.com/fdatoo/gohome/internal/mcp"
-	"github.com/fdatoo/gohome/internal/mcp/resources"
-	"github.com/fdatoo/gohome/internal/observability"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
+	"github.com/fdatoo/switchyard/internal/mcp"
+	"github.com/fdatoo/switchyard/internal/mcp/resources"
+	"github.com/fdatoo/switchyard/internal/observability"
 )
 
 var testImpl = &sdk.Implementation{Name: "test", Version: "0"}
 
 // fakeEntitySvc implements only the methods we need.
 type fakeEntitySvc struct {
-	gohomev1alpha1connect.UnimplementedEntityServiceHandler
+	switchyardv1alpha1connect.UnimplementedEntityServiceHandler
 
 	getFn       func(context.Context, *connect.Request[v1.GetEntityRequest]) (*connect.Response[v1.GetEntityResponse], error)
 	listFn      func(context.Context, *connect.Request[v1.ListEntitiesRequest]) (*connect.Response[v1.ListEntitiesResponse], error)
@@ -57,7 +57,7 @@ func (h *fakeEntitySvc) Subscribe(ctx context.Context, req *connect.Request[v1.S
 // handlers registered and returns the MCP server + resources deps.
 func newResourcesServer(t *testing.T, svc *fakeEntitySvc) (*sdk.Server, resources.Deps) {
 	t.Helper()
-	_, h := gohomev1alpha1connect.NewEntityServiceHandler(svc)
+	_, h := switchyardv1alpha1connect.NewEntityServiceHandler(svc)
 	srv := httptest.NewServer(h)
 	t.Cleanup(srv.Close)
 
@@ -99,7 +99,7 @@ func TestEntityRead_Single(t *testing.T) {
 	}
 	s, _ := newResourcesServer(t, svc)
 
-	result, err := readResource(t, s, "gohome://entities/light.kitchen")
+	result, err := readResource(t, s, "switchyard://entities/light.kitchen")
 	require.NoError(t, err)
 	require.Len(t, result.Contents, 1)
 
@@ -123,7 +123,7 @@ func TestEntityRead_List(t *testing.T) {
 	}
 	s, _ := newResourcesServer(t, svc)
 
-	result, err := readResource(t, s, "gohome://entities/")
+	result, err := readResource(t, s, "switchyard://entities/")
 	require.NoError(t, err)
 	require.Len(t, result.Contents, 1)
 
@@ -157,7 +157,7 @@ func TestEntityWatch_CoalescesOnOverflow(t *testing.T) {
 		},
 	}
 
-	_, h := gohomev1alpha1connect.NewEntityServiceHandler(svc)
+	_, h := switchyardv1alpha1connect.NewEntityServiceHandler(svc)
 	srv := httptest.NewServer(h)
 	t.Cleanup(srv.Close)
 
@@ -201,7 +201,7 @@ func TestEntityWatch_CoalescesOnOverflow(t *testing.T) {
 
 	// Subscribe to the entity resource.
 	err = cs.Subscribe(context.Background(), &sdk.SubscribeParams{
-		URI: "gohome://entities/light.x",
+		URI: "switchyard://entities/light.x",
 	})
 	require.NoError(t, err)
 
@@ -228,7 +228,7 @@ func TestEntityWatch_CoalescesOnOverflow(t *testing.T) {
 	assert.GreaterOrEqual(t, got, int64(1), "expected at least one notification")
 
 	// Verify the overflow metric was incremented.
-	coalesceMetric := getCounterValue(t, m, "gohome_mcp_resource_overflow_closes_total")
+	coalesceMetric := getCounterValue(t, m, "switchyard_mcp_resource_overflow_closes_total")
 	assert.GreaterOrEqual(t, coalesceMetric, 0.0, "coalesced metric should be non-negative")
 }
 

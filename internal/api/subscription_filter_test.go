@@ -9,10 +9,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	commonpb "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/internal/api"
-	"github.com/fdatoo/gohome/internal/auth"
-	"github.com/fdatoo/gohome/internal/policy"
+	commonpb "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/internal/api"
+	"github.com/fdatoo/switchyard/internal/auth"
+	"github.com/fdatoo/switchyard/internal/policy"
 )
 
 func TestEntityFilter_FilterMode_Narrows(t *testing.T) {

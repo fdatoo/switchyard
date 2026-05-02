@@ -5,15 +5,15 @@ import (
 
 	"connectrpc.com/connect"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
 )
 
 type ZoneService struct{ be ZoneReader }
 
 func NewZoneService(be ZoneReader) *ZoneService { return &ZoneService{be: be} }
 
-var _ gohomev1alpha1connect.ZoneServiceHandler = (*ZoneService)(nil)
+var _ switchyardv1alpha1connect.ZoneServiceHandler = (*ZoneService)(nil)
 
 func (s *ZoneService) List(ctx context.Context, req *connect.Request[v1.ListZonesRequest]) (*connect.Response[v1.ListZonesResponse], error) {
 	var tok string

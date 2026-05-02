@@ -21,8 +21,8 @@ type globalFlags struct {
 func NewRoot() *cobra.Command {
 	gf := &globalFlags{}
 	root := &cobra.Command{
-		Use:   "gohome",
-		Short: "gohome CLI — read-only inspection and operator ops",
+		Use:   "switchyard",
+		Short: "switchyard CLI — read-only inspection and operator ops",
 		Long:  "Event-sourced home automation. Query the event log, inspect state, manage snapshots.",
 	}
 	root.PersistentFlags().StringVar(&gf.DataDir, "data-dir", defaultDataDir(), "data directory")
@@ -55,9 +55,9 @@ func NewRoot() *cobra.Command {
 func defaultDataDir() string {
 	home, err := os.UserHomeDir()
 	if err != nil {
-		return ".gohome"
+		return ".switchyard"
 	}
-	return filepath.Join(home, ".local", "share", "gohome")
+	return filepath.Join(home, ".local", "share", "switchyard")
 }
 
 func dieOnError(err error) {

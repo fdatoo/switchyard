@@ -1,10 +1,10 @@
 package automation
 
 import (
-	configpb "github.com/fdatoo/gohome/gen/gohome/config/v1"
-	"github.com/fdatoo/gohome/internal/automation/action"
-	"github.com/fdatoo/gohome/internal/automation/condition"
-	"github.com/fdatoo/gohome/internal/automation/trigger"
+	configpb "github.com/fdatoo/switchyard/gen/switchyard/config/v1"
+	"github.com/fdatoo/switchyard/internal/automation/action"
+	"github.com/fdatoo/switchyard/internal/automation/condition"
+	"github.com/fdatoo/switchyard/internal/automation/trigger"
 )
 
 type Mode int

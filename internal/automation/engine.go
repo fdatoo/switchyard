@@ -8,12 +8,12 @@ import (
 
 	"github.com/google/uuid"
 
-	eventv1 "github.com/fdatoo/gohome/gen/gohome/event/v1"
-	"github.com/fdatoo/gohome/internal/automation/action"
-	"github.com/fdatoo/gohome/internal/automation/trigger"
-	"github.com/fdatoo/gohome/internal/eventstore"
-	"github.com/fdatoo/gohome/internal/script"
-	ghstarlark "github.com/fdatoo/gohome/internal/starlark"
+	eventv1 "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
+	"github.com/fdatoo/switchyard/internal/automation/action"
+	"github.com/fdatoo/switchyard/internal/automation/trigger"
+	"github.com/fdatoo/switchyard/internal/eventstore"
+	"github.com/fdatoo/switchyard/internal/script"
+	ghstarlark "github.com/fdatoo/switchyard/internal/starlark"
 )
 
 type Engine struct {

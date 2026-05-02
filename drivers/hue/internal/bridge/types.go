@@ -1,7 +1,7 @@
 // Package bridge is the HTTPS + SSE client for the Philips Hue CLIP v2 API.
 package bridge
 
-import "github.com/fdatoo/gohome-driverkit/colorconv"
+import "github.com/fdatoo/switchyard-driverkit/colorconv"
 
 // Light is a single light resource as returned by GET /clip/v2/resource/light.
 // Only the fields we use are modeled; the bridge sends more.

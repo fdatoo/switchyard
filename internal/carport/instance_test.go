@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
-	carportpb "github.com/fdatoo/gohome/gen/gohome/carport/v1alpha1"
-	"github.com/fdatoo/gohome/internal/carport"
-	"github.com/fdatoo/gohome/internal/carport/fakedriver"
+	carportpb "github.com/fdatoo/switchyard/gen/switchyard/carport/v1alpha1"
+	"github.com/fdatoo/switchyard/internal/carport"
+	"github.com/fdatoo/switchyard/internal/carport/fakedriver"
 )
 
 func serveFake(t *testing.T, d *fakedriver.Double) string {

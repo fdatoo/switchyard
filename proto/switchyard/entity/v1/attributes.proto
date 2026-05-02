@@ -1,0 +1,48 @@
+// See docs/proto-hygiene.md for grouping conventions.
+
+syntax = "proto3";
+
+package switchyard.entity.v1;
+
+// Attributes carries both capabilities (static) and live state (dynamic)
+// for an entity.
+message Attributes {
+  reserved "sensor";
+
+  oneof kind {
+    // 10-19: actuator/sensor domains
+    Light light = 10;
+    Switch switch_device = 11;
+    NumericSensor numeric_sensor = 12;
+    BinarySensor binary_sensor = 13;
+  }
+  // 90-99: cross-cutting metadata
+  // available is the driver's claim that the entity is currently reachable.
+  // Default false (zero) means unknown / unreachable; drivers explicitly set
+  // true after confirming connectivity. The state cache surfaces this.
+  bool available = 90;
+}
+
+message Light {
+  bool on = 1;
+  uint32 brightness = 2; // 0-255
+  uint32 color_temp = 3; // mireds; 0 if unsupported
+  uint32 color_rgb = 4; // 0xRRGGBB; 0 if unsupported / not active
+}
+
+message Switch {
+  bool on = 1;
+}
+
+message NumericSensor {
+  string unit = 1;
+  double value = 2;
+}
+
+message BinarySensor {
+  // on encodes the active reading: motion detected, contact closed,
+  // water present, etc. Drivers may invert at the source if a device
+  // reports the inverse polarity natively (the inversion choice is the
+  // driver's, not the proto's).
+  bool on = 1;
+}

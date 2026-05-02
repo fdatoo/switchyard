@@ -1,0 +1,9 @@
+module switchyard.carport
+
+// DriverInstance is the base class for all driver instance configs.
+// Driver authors extend this with their own typed fields.
+abstract class DriverInstance {
+  id: String(!isEmpty)
+  driverName: String(!isEmpty)
+  binary: String(!isEmpty)
+}

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/fdatoo/gohome/internal/cause"
+	"github.com/fdatoo/switchyard/internal/cause"
 )
 
 type CallServiceAction struct {

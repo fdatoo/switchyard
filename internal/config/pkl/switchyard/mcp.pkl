@@ -1,0 +1,11 @@
+@ModuleInfo { minPklVersion = "0.27.0" }
+module switchyard.mcp
+
+class MCPConfig {
+  evalResultMaxBytes: UInt = 65536
+  readFileMaxBytes: UInt = 1048576
+  entitySubscriptionBuffer: UInt = 256
+  traceSubscriptionBuffer: UInt = 1024
+  tailDefaultWaitSeconds: UInt = 0
+  tailMaxWaitSeconds: UInt = 60
+}

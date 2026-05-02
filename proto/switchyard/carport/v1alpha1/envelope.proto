@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package switchyard.carport.v1alpha1;
+
+// See docs/proto-hygiene.md.
+
+import "switchyard/carport/v1alpha1/errors.proto";
+import "switchyard/event/v1/event.proto";
+
+// HostToDriver: messages flowing from switchyardd → driver subprocess over Run stream.
+message HostToDriver {
+  oneof kind {
+    // 1-9: command plane
+    Command command = 1;
+
+    // 90-99: transport/health
+    Heartbeat ping = 90;
+  }
+}
+
+// DriverToHost: messages flowing from driver subprocess → switchyardd over Run stream.
+// Reuses the canonical payload types from switchyard.event.v1 where they match semantically.
+message DriverToHost {
+  oneof kind {
+    // 1-9: command response plane
+    CommandResult result = 1;
+
+    // 10-19: state-plane events (reuse event.v1 payload types)
+    switchyard.event.v1.StateChanged       state_changed       = 10;
+    switchyard.event.v1.EntityRegistered   entity_registered   = 11;
+    switchyard.event.v1.EntityUnregistered entity_unregistered = 12;
+
+    // 20-29: driver-typed passthrough
+    switchyard.event.v1.DriverEvent driver_event = 20;
+
+    // 90-99: transport/health
+    Heartbeat pong = 90;
+  }
+}
+
+message Heartbeat {
+  // 1-9: identity
+  int64 ts_unix_ms = 1;
+}
+
+message Command {
+  // 1-9: identity
+  string command_id       = 1;
+  int64  deadline_unix_ms = 2;
+
+  // 10-19: target & payload
+  string              entity_id  = 10;
+  string              capability = 11;
+  map<string, string> args       = 12;
+}
+
+message CommandResult {
+  // 1-9: correlation
+  string command_id = 1;
+
+  // 10-19: outcome
+  bool             ok            = 10;
+  CarportErrorCode code          = 11;
+  string           error_message = 12;
+}

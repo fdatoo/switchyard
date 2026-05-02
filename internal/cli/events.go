@@ -14,10 +14,10 @@ import (
 	lgtable "github.com/charmbracelet/lipgloss/table"
 	"github.com/spf13/cobra"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
 
-	"github.com/fdatoo/gohome/internal/eventstore"
+	"github.com/fdatoo/switchyard/internal/eventstore"
 )
 
 func newEventsCmd(gf *globalFlags) *cobra.Command {
@@ -41,7 +41,7 @@ func newEventsQueryCmd(gf *globalFlags) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			svc := gohomev1alpha1connect.NewEventServiceClient(httpClient, base)
+			svc := switchyardv1alpha1connect.NewEventServiceClient(httpClient, base)
 
 			filter := &v1.EventFilter{}
 			if kind != "" {
@@ -80,7 +80,7 @@ func newEventsTailCmd(gf *globalFlags) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			svc := gohomev1alpha1connect.NewEventServiceClient(httpClient, base)
+			svc := switchyardv1alpha1connect.NewEventServiceClient(httpClient, base)
 
 			filter := &v1.EventFilter{}
 			if kind != "" {

@@ -8,10 +8,10 @@ import (
 
 	"connectrpc.com/connect"
 
-	"github.com/fdatoo/gohome/internal/auth"
-	"github.com/fdatoo/gohome/internal/auth/authn"
-	"github.com/fdatoo/gohome/internal/auth/credentials"
-	"github.com/fdatoo/gohome/internal/policy"
+	"github.com/fdatoo/switchyard/internal/auth"
+	"github.com/fdatoo/switchyard/internal/auth/authn"
+	"github.com/fdatoo/switchyard/internal/auth/credentials"
+	"github.com/fdatoo/switchyard/internal/policy"
 )
 
 // NewAuthenticate returns the C9 authenticate interceptor. Wraps the supplied

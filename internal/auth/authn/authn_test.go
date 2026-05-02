@@ -10,12 +10,12 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/fdatoo/gohome/internal/auth"
-	"github.com/fdatoo/gohome/internal/auth/authn"
-	"github.com/fdatoo/gohome/internal/auth/credentials"
-	"github.com/fdatoo/gohome/internal/auth/identity"
-	"github.com/fdatoo/gohome/internal/auth/sessions"
-	"github.com/fdatoo/gohome/internal/testutil"
+	"github.com/fdatoo/switchyard/internal/auth"
+	"github.com/fdatoo/switchyard/internal/auth/authn"
+	"github.com/fdatoo/switchyard/internal/auth/credentials"
+	"github.com/fdatoo/switchyard/internal/auth/identity"
+	"github.com/fdatoo/switchyard/internal/auth/sessions"
+	"github.com/fdatoo/switchyard/internal/testutil"
 )
 
 func setupAuthnDB(t *testing.T) *sql.DB {
@@ -32,8 +32,8 @@ func newSessionStore(db *sql.DB) *sessions.Store {
 		AccessTTL:   15 * time.Minute,
 		RefreshTTL:  30 * 24 * time.Hour,
 		RefreshIdle: 14 * 24 * time.Hour,
-		AccessName:  "gohome_access",
-		RefreshName: "gohome_refresh",
+		AccessName:  "switchyard_access",
+		RefreshName: "switchyard_refresh",
 	})
 }
 

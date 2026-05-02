@@ -5,16 +5,16 @@ import (
 	"testing"
 	"time"
 
-	entityv1 "github.com/fdatoo/gohome/gen/gohome/entity/v1"
-	eventv1 "github.com/fdatoo/gohome/gen/gohome/event/v1"
-	"github.com/fdatoo/gohome/internal/eventstore"
-	"github.com/fdatoo/gohome/internal/registry"
-	"github.com/fdatoo/gohome/internal/testutil"
+	entityv1 "github.com/fdatoo/switchyard/gen/switchyard/entity/v1"
+	eventv1 "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
+	"github.com/fdatoo/switchyard/internal/eventstore"
+	"github.com/fdatoo/switchyard/internal/registry"
+	"github.com/fdatoo/switchyard/internal/testutil"
 )
 
 func driverEvt(pos uint64, ts time.Time, driverID, kind, detail string) eventstore.Event {
 	return eventstore.Event{
-		Position: pos, Timestamp: ts, Kind: "driver_event", Source: "gohomed",
+		Position: pos, Timestamp: ts, Kind: "driver_event", Source: "switchyardd",
 		Payload: &eventv1.Payload{Kind: &eventv1.Payload_DriverEvent{
 			DriverEvent: &eventv1.DriverEvent{
 				DriverInstanceId: driverID, Kind: kind, Detail: detail,

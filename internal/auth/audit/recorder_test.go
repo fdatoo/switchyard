@@ -6,8 +6,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/fdatoo/gohome/internal/auth/audit"
-	"github.com/fdatoo/gohome/internal/eventstore/eventstoretest"
+	"github.com/fdatoo/switchyard/internal/auth/audit"
+	"github.com/fdatoo/switchyard/internal/eventstore/eventstoretest"
 )
 
 func TestRecorder_LoginSucceeded_EmitsAuthEvent(t *testing.T) {

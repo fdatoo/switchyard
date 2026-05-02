@@ -40,7 +40,7 @@ tasks:
       - npm test
 
   ui:dev:
-    desc: Start Vite dev server (proxies to gohomed)
+    desc: Start Vite dev server (proxies to switchyardd)
     dir: web
     deps: [web:install]
     cmds:
@@ -50,8 +50,8 @@ tasks:
     desc: Build both binaries
     deps: [web:build]
     cmds:
-      - go build -o {{.BIN_DIR}}/gohomed ./cmd/gohomed
-      - go build -o {{.BIN_DIR}}/gohome ./cmd/gohome
+      - go build -o {{.BIN_DIR}}/switchyardd ./cmd/switchyardd
+      - go build -o {{.BIN_DIR}}/switchyard ./cmd/switchyard
 
   test:
     desc: Run unit tests

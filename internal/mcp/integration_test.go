@@ -20,8 +20,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/fdatoo/gohome/internal/daemon"
-	"github.com/fdatoo/gohome/internal/observability"
+	"github.com/fdatoo/switchyard/internal/daemon"
+	"github.com/fdatoo/switchyard/internal/observability"
 )
 
 // moduleRoot walks up from the test's working directory to find go.mod,
@@ -46,23 +46,23 @@ func moduleRoot(t *testing.T) string {
 }
 
 func TestE2E_MCPTools(t *testing.T) {
-	// Just verify that 'gohome mcp tools' works without a daemon.
+	// Just verify that 'switchyard mcp tools' works without a daemon.
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	gohome := filepath.Join(moduleRoot(t), "dist", "gohome")
-	cmd := exec.CommandContext(ctx, gohome, "mcp", "tools", "--json")
+	switchyard := filepath.Join(moduleRoot(t), "dist", "switchyard")
+	cmd := exec.CommandContext(ctx, switchyard, "mcp", "tools", "--json")
 	out, err := cmd.Output()
 	require.NoError(t, err)
-	require.Contains(t, string(out), "gohome__get_state")
-	require.Contains(t, string(out), "gohome__write_config_file")
+	require.Contains(t, string(out), "switchyard__get_state")
+	require.Contains(t, string(out), "switchyard__write_config_file")
 }
 
 func TestE2E_MCPServer(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
 	defer cancel()
 
-	// ── 1. Start a real gohomed daemon in-process ──────────────────────────────
+	// ── 1. Start a real switchyardd daemon in-process ──────────────────────────────
 	dir := t.TempDir()
 	logger := slog.New(slog.NewTextHandler(os.Stderr, nil))
 	metrics := observability.NewMetrics()
@@ -102,11 +102,11 @@ func TestE2E_MCPServer(t *testing.T) {
 		t.Fatal("daemon did not report ready within 30s")
 	}
 
-	// ── 3. Exec 'gohome mcp serve' as a real subprocess ───────────────────────
-	// The daemon always creates its API socket at <DataDir>/gohomed.sock.
-	sockPath := filepath.Join(dir, "gohomed.sock")
-	gohome := filepath.Join(moduleRoot(t), "dist", "gohome")
-	cmd := exec.CommandContext(ctx, gohome, "mcp", "serve",
+	// ── 3. Exec 'switchyard mcp serve' as a real subprocess ───────────────────────
+	// The daemon always creates its API socket at <DataDir>/switchyardd.sock.
+	sockPath := filepath.Join(dir, "switchyardd.sock")
+	switchyard := filepath.Join(moduleRoot(t), "dist", "switchyard")
+	cmd := exec.CommandContext(ctx, switchyard, "mcp", "serve",
 		"--endpoint", "unix://"+sockPath)
 	stdin, err := cmd.StdinPipe()
 	require.NoError(t, err)
@@ -138,12 +138,12 @@ func TestE2E_MCPServer(t *testing.T) {
 	require.NoError(t, err, "ListTools")
 	assert.Len(t, toolsResult.Tools, 12, "expected 12 tools")
 
-	// 5b. ListResources — expect 1 resource (gohome://entities/).
+	// 5b. ListResources — expect 1 resource (switchyard://entities/).
 	resourcesResult, err := cs.ListResources(ctx, nil)
 	require.NoError(t, err, "ListResources")
 	assert.Len(t, resourcesResult.Resources, 1, "expected 1 resource")
 	if len(resourcesResult.Resources) > 0 {
-		assert.Equal(t, "gohome://entities/", resourcesResult.Resources[0].URI, "resource URI")
+		assert.Equal(t, "switchyard://entities/", resourcesResult.Resources[0].URI, "resource URI")
 	}
 
 	// 5c. ListResourceTemplates — expect 2 templates.
@@ -151,33 +151,33 @@ func TestE2E_MCPServer(t *testing.T) {
 	require.NoError(t, err, "ListResourceTemplates")
 	assert.Len(t, tmplResult.ResourceTemplates, 2, "expected 2 resource templates")
 
-	// 5d. CallTool gohome__list_entities — empty daemon has no entities.
+	// 5d. CallTool switchyard__list_entities — empty daemon has no entities.
 	listRes, err := cs.CallTool(ctx, &sdk.CallToolParams{
-		Name:      "gohome__list_entities",
+		Name:      "switchyard__list_entities",
 		Arguments: map[string]any{},
 	})
-	require.NoError(t, err, "CallTool gohome__list_entities")
-	assert.False(t, listRes.IsError, "gohome__list_entities should not error")
-	require.NotEmpty(t, listRes.Content, "gohome__list_entities content")
+	require.NoError(t, err, "CallTool switchyard__list_entities")
+	assert.False(t, listRes.IsError, "switchyard__list_entities should not error")
+	require.NotEmpty(t, listRes.Content, "switchyard__list_entities content")
 	listText, ok := listRes.Content[0].(*sdk.TextContent)
-	require.True(t, ok, "gohome__list_entities content[0] should be TextContent")
+	require.True(t, ok, "switchyard__list_entities content[0] should be TextContent")
 	var listOut map[string]json.RawMessage
 	require.NoError(t, json.Unmarshal([]byte(listText.Text), &listOut), "parse list_entities JSON")
 	assert.Contains(t, listOut, "entities", "entities key present")
 	assert.Contains(t, listOut, "next_cursor", "next_cursor key present")
 
-	// 5e. CallTool gohome__eval_starlark — evaluates log(1 + 1), expects "2" in stdout.
+	// 5e. CallTool switchyard__eval_starlark — evaluates log(1 + 1), expects "2" in stdout.
 	// The Starlark runtime captures log() calls in the stdout field; the built-in
 	// print() goes to the process stderr and is not captured in the response.
 	evalRes, err := cs.CallTool(ctx, &sdk.CallToolParams{
-		Name:      "gohome__eval_starlark",
+		Name:      "switchyard__eval_starlark",
 		Arguments: map[string]any{"source": "log(1 + 1)"},
 	})
-	require.NoError(t, err, "CallTool gohome__eval_starlark")
-	assert.False(t, evalRes.IsError, "gohome__eval_starlark should not error")
-	require.NotEmpty(t, evalRes.Content, "gohome__eval_starlark content")
+	require.NoError(t, err, "CallTool switchyard__eval_starlark")
+	assert.False(t, evalRes.IsError, "switchyard__eval_starlark should not error")
+	require.NotEmpty(t, evalRes.Content, "switchyard__eval_starlark content")
 	evalText, ok := evalRes.Content[0].(*sdk.TextContent)
-	require.True(t, ok, "gohome__eval_starlark content[0] should be TextContent")
+	require.True(t, ok, "switchyard__eval_starlark content[0] should be TextContent")
 	var evalOut map[string]json.RawMessage
 	require.NoError(t, json.Unmarshal([]byte(evalText.Text), &evalOut), "parse eval_starlark JSON")
 	var stdoutStr string

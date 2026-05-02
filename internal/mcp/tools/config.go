@@ -8,17 +8,17 @@ import (
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/internal/mcp"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/internal/mcp"
 )
 
-// ValidateConfigInput is the input schema for gohome__validate_config.
+// ValidateConfigInput is the input schema for switchyard__validate_config.
 // PklBundle is a base64-encoded PKL bundle or a plain string containing PKL source.
 type ValidateConfigInput struct {
 	PklBundle string `json:"pkl_bundle"`
 }
 
-// ApplyConfigInput is the input schema for gohome__apply_config.
+// ApplyConfigInput is the input schema for switchyard__apply_config.
 // PklBundle is a base64-encoded PKL bundle or a plain string containing PKL source.
 type ApplyConfigInput struct {
 	PklBundle string `json:"pkl_bundle"`
@@ -29,13 +29,13 @@ type ApplyConfigInput struct {
 
 func registerConfig(d Deps) {
 	sdk.AddTool(d.Server, &sdk.Tool{
-		Name:        "gohome__validate_config",
+		Name:        "switchyard__validate_config",
 		Description: "Validate a PKL config bundle without applying it.",
 	}, func(ctx context.Context, _ *sdk.CallToolRequest, in ValidateConfigInput) (*sdk.CallToolResult, any, error) {
 		req := connect.NewRequest(&v1.ValidateConfigRequest{
 			PklBundle: []byte(in.PklBundle),
 		})
-		mcp.SetToolHeader("gohome__validate_config").Apply(req)
+		mcp.SetToolHeader("switchyard__validate_config").Apply(req)
 		resp, err := d.Client.Config.Validate(ctx, req)
 		if err != nil {
 			return nil, nil, toToolError(err)
@@ -58,7 +58,7 @@ func registerConfig(d Deps) {
 	})
 
 	sdk.AddTool(d.Server, &sdk.Tool{
-		Name:        "gohome__apply_config",
+		Name:        "switchyard__apply_config",
 		Description: "Apply a PKL config bundle to the daemon.",
 	}, func(ctx context.Context, _ *sdk.CallToolRequest, in ApplyConfigInput) (*sdk.CallToolResult, any, error) {
 		req := connect.NewRequest(&v1.ApplyConfigRequest{
@@ -67,7 +67,7 @@ func registerConfig(d Deps) {
 			DryRun:    in.DryRun,
 			Strict:    in.Strict,
 		})
-		mcp.SetToolHeader("gohome__apply_config").Apply(req)
+		mcp.SetToolHeader("switchyard__apply_config").Apply(req)
 		resp, err := d.Client.Config.Apply(ctx, req)
 		if err != nil {
 			return nil, nil, toToolError(err)

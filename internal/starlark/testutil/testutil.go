@@ -11,8 +11,8 @@ import (
 
 	starlarkgo "go.starlark.net/starlark"
 
-	"github.com/fdatoo/gohome/internal/eventstore"
-	ghs "github.com/fdatoo/gohome/internal/starlark"
+	"github.com/fdatoo/switchyard/internal/eventstore"
+	ghs "github.com/fdatoo/switchyard/internal/starlark"
 )
 
 // FakeState maps entity ID → EntityState for test injection.

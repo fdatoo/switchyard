@@ -7,8 +7,8 @@ import (
 	"connectrpc.com/connect"
 	"github.com/spf13/cobra"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
 )
 
 func newEvalCmd(gf *globalFlags) *cobra.Command {
@@ -27,7 +27,7 @@ func newEvalCmd(gf *globalFlags) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			svc := gohomev1alpha1connect.NewScriptServiceClient(httpClient, base)
+			svc := switchyardv1alpha1connect.NewScriptServiceClient(httpClient, base)
 			resp, err := svc.Eval(cmd.Context(), connect.NewRequest(&v1.EvalScriptRequest{
 				Expr: string(src),
 			}))

@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/fdatoo/gohome/internal/automation/condition"
+	"github.com/fdatoo/switchyard/internal/automation/condition"
 )
 
 type fakeEv struct {

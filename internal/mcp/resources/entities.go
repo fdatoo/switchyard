@@ -9,19 +9,19 @@ import (
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
 )
 
-// isEntityURI returns true when uri is a gohome entity resource URI.
+// isEntityURI returns true when uri is a switchyard entity resource URI.
 func isEntityURI(uri string) bool {
-	return strings.HasPrefix(uri, "gohome://entities/")
+	return strings.HasPrefix(uri, "switchyard://entities/")
 }
 
 // parseEntityID extracts the entity ID from an entity URI.
-// "gohome://entities/light.foo" → "light.foo"
-// "gohome://entities/"         → "" (list all)
+// "switchyard://entities/light.foo" → "light.foo"
+// "switchyard://entities/"         → "" (list all)
 func parseEntityID(uri string) string {
-	return strings.TrimPrefix(uri, "gohome://entities/")
+	return strings.TrimPrefix(uri, "switchyard://entities/")
 }
 
 // entityReadHandler returns an sdk.ResourceHandler that serves both single-
@@ -156,15 +156,15 @@ func RegisterEntities(server *sdk.Server, d Deps) {
 	handler := entityReadHandler(d)
 
 	server.AddResource(&sdk.Resource{
-		URI:         "gohome://entities/",
-		Name:        "gohome-entities",
-		Description: "All gohome entities (list)",
+		URI:         "switchyard://entities/",
+		Name:        "switchyard-entities",
+		Description: "All switchyard entities (list)",
 		MIMEType:    "application/json",
 	}, handler)
 
 	server.AddResourceTemplate(&sdk.ResourceTemplate{
-		URITemplate: "gohome://entities/{id}",
-		Name:        "gohome-entity",
-		Description: "Read a single gohome entity by ID",
+		URITemplate: "switchyard://entities/{id}",
+		Name:        "switchyard-entity",
+		Description: "Read a single switchyard entity by ID",
 	}, handler)
 }

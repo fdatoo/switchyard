@@ -16,14 +16,14 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
-	"github.com/fdatoo/gohome/internal/auth"
-	"github.com/fdatoo/gohome/internal/mcp"
-	"github.com/fdatoo/gohome/internal/mcp/audit"
-	"github.com/fdatoo/gohome/internal/mcp/resources"
-	"github.com/fdatoo/gohome/internal/mcp/tools"
-	"github.com/fdatoo/gohome/internal/observability"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
+	"github.com/fdatoo/switchyard/internal/auth"
+	"github.com/fdatoo/switchyard/internal/mcp"
+	"github.com/fdatoo/switchyard/internal/mcp/audit"
+	"github.com/fdatoo/switchyard/internal/mcp/resources"
+	"github.com/fdatoo/switchyard/internal/mcp/tools"
+	"github.com/fdatoo/switchyard/internal/observability"
 )
 
 // ---------------------------------------------------------------------------
@@ -31,7 +31,7 @@ import (
 // ---------------------------------------------------------------------------
 
 type fullFakeSystemSvc struct {
-	gohomev1alpha1connect.UnimplementedSystemServiceHandler
+	switchyardv1alpha1connect.UnimplementedSystemServiceHandler
 	recordFn func(context.Context, *connect.Request[v1.RecordConfigFileEditRequest]) (*connect.Response[v1.RecordConfigFileEditResponse], error)
 }
 
@@ -43,7 +43,7 @@ func (h *fullFakeSystemSvc) RecordConfigFileEdit(ctx context.Context, req *conne
 }
 
 type fullFakeEntitySvc struct {
-	gohomev1alpha1connect.UnimplementedEntityServiceHandler
+	switchyardv1alpha1connect.UnimplementedEntityServiceHandler
 	getFn            func(context.Context, *connect.Request[v1.GetEntityRequest]) (*connect.Response[v1.GetEntityResponse], error)
 	listFn           func(context.Context, *connect.Request[v1.ListEntitiesRequest]) (*connect.Response[v1.ListEntitiesResponse], error)
 	callCapabilityFn func(context.Context, *connect.Request[v1.CallCapabilityRequest]) (*connect.Response[v1.CallCapabilityResponse], error)
@@ -79,7 +79,7 @@ func (h *fullFakeEntitySvc) Subscribe(ctx context.Context, req *connect.Request[
 }
 
 type fullFakeEventSvc struct {
-	gohomev1alpha1connect.UnimplementedEventServiceHandler
+	switchyardv1alpha1connect.UnimplementedEventServiceHandler
 	queryFn func(context.Context, *connect.Request[v1.QueryEventsRequest]) (*connect.Response[v1.QueryEventsResponse], error)
 	tailFn  func(context.Context, *connect.Request[v1.TailEventsRequest], *connect.ServerStream[v1.TailEventsResponse]) error
 }
@@ -99,7 +99,7 @@ func (h *fullFakeEventSvc) Tail(ctx context.Context, req *connect.Request[v1.Tai
 }
 
 type fullFakeSceneSvc struct {
-	gohomev1alpha1connect.UnimplementedSceneServiceHandler
+	switchyardv1alpha1connect.UnimplementedSceneServiceHandler
 	applyFn func(context.Context, *connect.Request[v1.ApplySceneRequest]) (*connect.Response[v1.ApplySceneResponse], error)
 }
 
@@ -111,7 +111,7 @@ func (h *fullFakeSceneSvc) Apply(ctx context.Context, req *connect.Request[v1.Ap
 }
 
 type fullFakeScriptSvc struct {
-	gohomev1alpha1connect.UnimplementedScriptServiceHandler
+	switchyardv1alpha1connect.UnimplementedScriptServiceHandler
 	runFn  func(context.Context, *connect.Request[v1.RunScriptRequest]) (*connect.Response[v1.RunScriptResponse], error)
 	evalFn func(context.Context, *connect.Request[v1.EvalScriptRequest]) (*connect.Response[v1.EvalScriptResponse], error)
 }
@@ -131,7 +131,7 @@ func (h *fullFakeScriptSvc) Eval(ctx context.Context, req *connect.Request[v1.Ev
 }
 
 type fullFakeConfigSvc struct {
-	gohomev1alpha1connect.UnimplementedConfigServiceHandler
+	switchyardv1alpha1connect.UnimplementedConfigServiceHandler
 	validateFn func(context.Context, *connect.Request[v1.ValidateConfigRequest]) (*connect.Response[v1.ValidateConfigResponse], error)
 	applyFn    func(context.Context, *connect.Request[v1.ApplyConfigRequest]) (*connect.Response[v1.ApplyConfigResponse], error)
 }
@@ -190,27 +190,27 @@ func newFullStack(t *testing.T, configDir ...string) (*sdk.ClientSession, *testF
 	// Wire all services onto a single HTTP mux.
 	mux := http.NewServeMux()
 
-	p, h := gohomev1alpha1connect.NewSystemServiceHandler(fakes.System)
+	p, h := switchyardv1alpha1connect.NewSystemServiceHandler(fakes.System)
 	mux.Handle(p, h)
 
-	p, h = gohomev1alpha1connect.NewEntityServiceHandler(fakes.Entity)
+	p, h = switchyardv1alpha1connect.NewEntityServiceHandler(fakes.Entity)
 	mux.Handle(p, h)
 
-	p, h = gohomev1alpha1connect.NewEventServiceHandler(fakes.Event)
+	p, h = switchyardv1alpha1connect.NewEventServiceHandler(fakes.Event)
 	mux.Handle(p, h)
 
-	p, h = gohomev1alpha1connect.NewSceneServiceHandler(fakes.Scene)
+	p, h = switchyardv1alpha1connect.NewSceneServiceHandler(fakes.Scene)
 	mux.Handle(p, h)
 
-	p, h = gohomev1alpha1connect.NewScriptServiceHandler(fakes.Script)
+	p, h = switchyardv1alpha1connect.NewScriptServiceHandler(fakes.Script)
 	mux.Handle(p, h)
 
-	p, h = gohomev1alpha1connect.NewConfigServiceHandler(fakes.Config)
+	p, h = switchyardv1alpha1connect.NewConfigServiceHandler(fakes.Config)
 	mux.Handle(p, h)
 
 	// Register automation service for trace subscriptions (unimplemented is fine).
-	p, h = gohomev1alpha1connect.NewAutomationServiceHandler(
-		gohomev1alpha1connect.UnimplementedAutomationServiceHandler{},
+	p, h = switchyardv1alpha1connect.NewAutomationServiceHandler(
+		switchyardv1alpha1connect.UnimplementedAutomationServiceHandler{},
 	)
 	mux.Handle(p, h)
 
@@ -289,18 +289,18 @@ func TestFullStack_ListTools(t *testing.T) {
 	}
 
 	wantNames := []string{
-		"gohome__get_state",
-		"gohome__list_entities",
-		"gohome__call_capability",
-		"gohome__query_events",
-		"gohome__tail_events",
-		"gohome__apply_scene",
-		"gohome__run_script",
-		"gohome__eval_starlark",
-		"gohome__validate_config",
-		"gohome__apply_config",
-		"gohome__read_config_file",
-		"gohome__write_config_file",
+		"switchyard__get_state",
+		"switchyard__list_entities",
+		"switchyard__call_capability",
+		"switchyard__query_events",
+		"switchyard__tail_events",
+		"switchyard__apply_scene",
+		"switchyard__run_script",
+		"switchyard__eval_starlark",
+		"switchyard__validate_config",
+		"switchyard__apply_config",
+		"switchyard__read_config_file",
+		"switchyard__write_config_file",
 	}
 	assert.ElementsMatch(t, wantNames, gotNames, "tool names should match catalog")
 }
@@ -316,7 +316,7 @@ func TestFullStack_ListResources(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, resResult)
 	assert.Len(t, resResult.Resources, 1, "expected 1 concrete resource")
-	assert.Equal(t, "gohome://entities/", resResult.Resources[0].URI)
+	assert.Equal(t, "switchyard://entities/", resResult.Resources[0].URI)
 
 	tmplResult, err := cs.ListResourceTemplates(context.Background(), nil)
 	require.NoError(t, err)
@@ -329,8 +329,8 @@ func TestFullStack_ListResources(t *testing.T) {
 		gotTemplates[i] = tmpl.URITemplate
 	}
 	wantTemplates := []string{
-		"gohome://entities/{id}",
-		"gohome://automations/{automation_id}/runs/{run_id}/trace",
+		"switchyard://entities/{id}",
+		"switchyard://automations/{automation_id}/runs/{run_id}/trace",
 	}
 	assert.ElementsMatch(t, wantTemplates, gotTemplates, "resource template URIs should match")
 }
@@ -352,7 +352,7 @@ func TestFullStack_ToolCalls(t *testing.T) {
 		}
 
 		result, err := cs.CallTool(context.Background(), &sdk.CallToolParams{
-			Name:      "gohome__get_state",
+			Name:      "switchyard__get_state",
 			Arguments: map[string]any{"entity_id": "light.a"},
 		})
 		require.NoError(t, err)
@@ -377,7 +377,7 @@ func TestFullStack_ToolCalls(t *testing.T) {
 		}
 
 		result, err := cs.CallTool(context.Background(), &sdk.CallToolParams{
-			Name:      "gohome__list_entities",
+			Name:      "switchyard__list_entities",
 			Arguments: map[string]any{},
 		})
 		require.NoError(t, err)
@@ -400,7 +400,7 @@ func TestFullStack_ToolCalls(t *testing.T) {
 		}
 
 		result, err := cs.CallTool(context.Background(), &sdk.CallToolParams{
-			Name: "gohome__call_capability",
+			Name: "switchyard__call_capability",
 			Arguments: map[string]any{
 				"entity_id":  "light.a",
 				"capability": "turn_on",
@@ -426,7 +426,7 @@ func TestFullStack_ToolCalls(t *testing.T) {
 		}
 
 		result, err := cs.CallTool(context.Background(), &sdk.CallToolParams{
-			Name:      "gohome__query_events",
+			Name:      "switchyard__query_events",
 			Arguments: map[string]any{"limit": 10},
 		})
 		require.NoError(t, err)
@@ -451,7 +451,7 @@ func TestFullStack_ToolCalls(t *testing.T) {
 		}
 
 		result, err := cs.CallTool(context.Background(), &sdk.CallToolParams{
-			Name:      "gohome__tail_events",
+			Name:      "switchyard__tail_events",
 			Arguments: map[string]any{"max_events": 1, "wait_seconds": 1},
 		})
 		require.NoError(t, err)
@@ -469,7 +469,7 @@ func TestFullStack_ToolCalls(t *testing.T) {
 		cs, _ := newFullStack(t)
 		// Scene service returns unimplemented — no fake setup needed.
 		result, err := cs.CallTool(context.Background(), &sdk.CallToolParams{
-			Name:      "gohome__apply_scene",
+			Name:      "switchyard__apply_scene",
 			Arguments: map[string]any{"scene_id": "test-scene"},
 		})
 		require.NoError(t, err)
@@ -486,7 +486,7 @@ func TestFullStack_ToolCalls(t *testing.T) {
 		}
 
 		result, err := cs.CallTool(context.Background(), &sdk.CallToolParams{
-			Name:      "gohome__run_script",
+			Name:      "switchyard__run_script",
 			Arguments: map[string]any{"name": "my_script"},
 		})
 		require.NoError(t, err)
@@ -508,7 +508,7 @@ func TestFullStack_ToolCalls(t *testing.T) {
 		}
 
 		result, err := cs.CallTool(context.Background(), &sdk.CallToolParams{
-			Name:      "gohome__eval_starlark",
+			Name:      "switchyard__eval_starlark",
 			Arguments: map[string]any{"source": "print('hello')"},
 		})
 		require.NoError(t, err)
@@ -529,7 +529,7 @@ func TestFullStack_ToolCalls(t *testing.T) {
 		}
 
 		result, err := cs.CallTool(context.Background(), &sdk.CallToolParams{
-			Name:      "gohome__validate_config",
+			Name:      "switchyard__validate_config",
 			Arguments: map[string]any{"pkl_bundle": "amodule.Config {}"},
 		})
 		require.NoError(t, err)
@@ -550,7 +550,7 @@ func TestFullStack_ToolCalls(t *testing.T) {
 		}
 
 		result, err := cs.CallTool(context.Background(), &sdk.CallToolParams{
-			Name: "gohome__apply_config",
+			Name: "switchyard__apply_config",
 			Arguments: map[string]any{
 				"pkl_bundle": "amodule.Config {}",
 				"message":    "test",
@@ -572,7 +572,7 @@ func TestFullStack_ToolCalls(t *testing.T) {
 		cs, _ := newFullStack(t, configDir)
 
 		result, err := cs.CallTool(context.Background(), &sdk.CallToolParams{
-			Name:      "gohome__read_config_file",
+			Name:      "switchyard__read_config_file",
 			Arguments: map[string]any{"path": "hello.yaml"},
 		})
 		require.NoError(t, err)
@@ -589,7 +589,7 @@ func TestFullStack_ToolCalls(t *testing.T) {
 		cs, _ := newFullStack(t, configDir)
 
 		result, err := cs.CallTool(context.Background(), &sdk.CallToolParams{
-			Name:      "gohome__write_config_file",
+			Name:      "switchyard__write_config_file",
 			Arguments: map[string]any{"path": "out.pkl", "content": "amends \"example\"\n// ok\n"},
 		})
 		require.NoError(t, err)
@@ -630,19 +630,19 @@ func TestFullStack_EntitySubscribe(t *testing.T) {
 	}
 
 	mux := http.NewServeMux()
-	p, h := gohomev1alpha1connect.NewSystemServiceHandler(fakes.System)
+	p, h := switchyardv1alpha1connect.NewSystemServiceHandler(fakes.System)
 	mux.Handle(p, h)
-	p, h = gohomev1alpha1connect.NewEntityServiceHandler(fakes.Entity)
+	p, h = switchyardv1alpha1connect.NewEntityServiceHandler(fakes.Entity)
 	mux.Handle(p, h)
-	p, h = gohomev1alpha1connect.NewEventServiceHandler(fakes.Event)
+	p, h = switchyardv1alpha1connect.NewEventServiceHandler(fakes.Event)
 	mux.Handle(p, h)
-	p, h = gohomev1alpha1connect.NewSceneServiceHandler(fakes.Scene)
+	p, h = switchyardv1alpha1connect.NewSceneServiceHandler(fakes.Scene)
 	mux.Handle(p, h)
-	p, h = gohomev1alpha1connect.NewScriptServiceHandler(fakes.Script)
+	p, h = switchyardv1alpha1connect.NewScriptServiceHandler(fakes.Script)
 	mux.Handle(p, h)
-	p, h = gohomev1alpha1connect.NewConfigServiceHandler(fakes.Config)
+	p, h = switchyardv1alpha1connect.NewConfigServiceHandler(fakes.Config)
 	mux.Handle(p, h)
-	p, h = gohomev1alpha1connect.NewAutomationServiceHandler(gohomev1alpha1connect.UnimplementedAutomationServiceHandler{})
+	p, h = switchyardv1alpha1connect.NewAutomationServiceHandler(switchyardv1alpha1connect.UnimplementedAutomationServiceHandler{})
 	mux.Handle(p, h)
 
 	srv := httptest.NewServer(mux)
@@ -695,7 +695,7 @@ func TestFullStack_EntitySubscribe(t *testing.T) {
 	t.Cleanup(func() { cs.Close() })
 
 	// Subscribe to the entity resource.
-	err = cs.Subscribe(context.Background(), &sdk.SubscribeParams{URI: "gohome://entities/light.x"})
+	err = cs.Subscribe(context.Background(), &sdk.SubscribeParams{URI: "switchyard://entities/light.x"})
 	require.NoError(t, err)
 
 	// Wait for ResourceUpdated notification (5s timeout).
@@ -707,7 +707,7 @@ func TestFullStack_EntitySubscribe(t *testing.T) {
 	}
 
 	// Unsubscribe — subscription manager should clean up.
-	err = cs.Unsubscribe(context.Background(), &sdk.UnsubscribeParams{URI: "gohome://entities/light.x"})
+	err = cs.Unsubscribe(context.Background(), &sdk.UnsubscribeParams{URI: "switchyard://entities/light.x"})
 	require.NoError(t, err)
 }
 
@@ -724,7 +724,7 @@ func TestFullStack_ReadEntityResource(t *testing.T) {
 		}), nil
 	}
 
-	result, err := cs.ReadResource(context.Background(), &sdk.ReadResourceParams{URI: "gohome://entities/light.x"})
+	result, err := cs.ReadResource(context.Background(), &sdk.ReadResourceParams{URI: "switchyard://entities/light.x"})
 	require.NoError(t, err)
 	require.Len(t, result.Contents, 1)
 

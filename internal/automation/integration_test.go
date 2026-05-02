@@ -8,15 +8,15 @@ import (
 	"testing"
 	"time"
 
-	configpb "github.com/fdatoo/gohome/gen/gohome/config/v1"
-	eventv1 "github.com/fdatoo/gohome/gen/gohome/event/v1"
-	"github.com/fdatoo/gohome/internal/automation"
-	"github.com/fdatoo/gohome/internal/automation/action"
-	automTestutil "github.com/fdatoo/gohome/internal/automation/testutil"
-	"github.com/fdatoo/gohome/internal/eventstore"
-	"github.com/fdatoo/gohome/internal/script"
-	ghstarlark "github.com/fdatoo/gohome/internal/starlark"
-	sltestutil "github.com/fdatoo/gohome/internal/starlark/testutil"
+	configpb "github.com/fdatoo/switchyard/gen/switchyard/config/v1"
+	eventv1 "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
+	"github.com/fdatoo/switchyard/internal/automation"
+	"github.com/fdatoo/switchyard/internal/automation/action"
+	automTestutil "github.com/fdatoo/switchyard/internal/automation/testutil"
+	"github.com/fdatoo/switchyard/internal/eventstore"
+	"github.com/fdatoo/switchyard/internal/script"
+	ghstarlark "github.com/fdatoo/switchyard/internal/starlark"
+	sltestutil "github.com/fdatoo/switchyard/internal/starlark/testutil"
 )
 
 // TestIntegration_GoldenPath uses the in-process FakeEventStore to avoid

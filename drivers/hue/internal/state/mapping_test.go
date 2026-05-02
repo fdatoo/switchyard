@@ -4,8 +4,8 @@ import (
 	"math"
 	"testing"
 
-	"github.com/fdatoo/gohome/drivers/hue/internal/bridge"
-	entityv1 "github.com/fdatoo/gohome/gen/gohome/entity/v1"
+	"github.com/fdatoo/switchyard/drivers/hue/internal/bridge"
+	entityv1 "github.com/fdatoo/switchyard/gen/switchyard/entity/v1"
 )
 
 func TestEntityID(t *testing.T) {

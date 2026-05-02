@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package switchyard.carport.v1alpha1;
+
+// See docs/proto-hygiene.md.
+
+import "switchyard/carport/v1alpha1/envelope.proto";
+import "switchyard/carport/v1alpha1/manifest.proto";
+import "switchyard/event/v1/event.proto";
+
+service Driver {
+  // Initial negotiation. Called exactly once before Run.
+  rpc Handshake(HandshakeRequest) returns (HandshakeResponse);
+
+  // Lifetime bidi stream.
+  rpc Run(stream HostToDriver) returns (stream DriverToHost);
+
+  // Out-of-band liveness probe.
+  rpc Health(HealthRequest) returns (HealthResponse);
+
+  // Graceful shutdown request.
+  rpc Shutdown(ShutdownRequest) returns (ShutdownResponse);
+}
+
+message HandshakeRequest {
+  // 1-9: identity & version
+  string protocol_version = 1;
+  string instance_id      = 2;
+  string handshake_secret = 3;
+
+  // 10-19: instance-specific config (opaque to host)
+  bytes  instance_config  = 10;
+}
+
+message HandshakeResponse {
+  // 1-9: identity & version
+  string protocol_version = 1;
+
+  // 10-19: driver self-description
+  DriverManifest manifest = 10;
+
+  // 20-29: initial registry delta
+  repeated switchyard.event.v1.EntityRegistered initial_entities = 20;
+}
+
+message HealthRequest  {}
+message HealthResponse {
+  // 1-9: status
+  bool   ok     = 1;
+  string detail = 2;
+}
+
+message ShutdownRequest  {
+  // 1-9: grace window
+  int64 grace_ms = 1;
+}
+message ShutdownResponse {
+  // 1-9: outcome
+  bool acknowledged = 1;
+}

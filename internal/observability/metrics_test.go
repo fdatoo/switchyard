@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/fdatoo/gohome/internal/observability"
+	"github.com/fdatoo/switchyard/internal/observability"
 )
 
 func TestMetrics_AppendIncrementsCounter(t *testing.T) {
@@ -28,7 +28,7 @@ func TestMetrics_AppendIncrementsCounter(t *testing.T) {
 		t.Fatal(err)
 	}
 	bodyStr := string(bodyBytes)
-	if !strings.Contains(bodyStr, `gohome_events_appended_total{kind="state_changed"} 2`) {
+	if !strings.Contains(bodyStr, `switchyard_events_appended_total{kind="state_changed"} 2`) {
 		t.Fatalf("missing counter in /metrics output:\n%s", bodyStr)
 	}
 }

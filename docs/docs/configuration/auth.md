@@ -3,7 +3,7 @@
 !!! status-planned "Planned — not yet implemented"
     The auth system is fully designed but not yet shipped. The Pkl schema is in place; the runtime (passkeys, sessions, policy enforcement) lands in C9.
 
-gohome is a multi-user system from day one. Users and their permissions are declared in `auth.pkl` using the same Pkl config model as the rest of the system. Credentials (passwords, passkeys, tokens) are stored separately in the runtime database — never in Pkl source.
+switchyard is a multi-user system from day one. Users and their permissions are declared in `auth.pkl` using the same Pkl config model as the rest of the system. Credentials (passwords, passkeys, tokens) are stored separately in the runtime database — never in Pkl source.
 
 ## Users
 
@@ -11,7 +11,7 @@ Users are declared in `auth.pkl`:
 
 ```pkl
 // auth.pkl
-import "gohome:auth" as auth
+import "switchyard:auth" as auth
 
 users: Listing<auth.User> = new {
   new auth.User {
@@ -50,7 +50,7 @@ class User {
   passkey_allowed:  Boolean = true
   oidc_subject:     String? = null  // RESERVED for v1.x OIDC
 
-  // For headless bootstrap: pre-stage a hash via `gohome auth hash-password`.
+  // For headless bootstrap: pre-stage a hash via `switchyard auth hash-password`.
   // Used on first login, ignored on subsequent reloads.
   bootstrap_password_hash: String? = null
 }
@@ -60,7 +60,7 @@ User slugs are git-tracked and human-edited. Credentials (password hashes, passk
 
 ## Roles
 
-gohome has three built-in roles:
+switchyard has three built-in roles:
 
 | Role | What it can do |
 |---|---|
@@ -85,13 +85,13 @@ roles: Listing<auth.Role> = new {
 }
 ```
 
-A user's effective permission set is the transitive union across all inherited roles. Cycles in the `inherits` graph fail `gohome config validate`.
+A user's effective permission set is the transitive union across all inherited roles. Cycles in the `inherits` graph fail `switchyard config validate`.
 
 ## Auth methods
 
 ### Passkeys (primary)
 
-Passkeys (WebAuthn) are the primary auth method. They are phishing-resistant, multi-factor by design, and require no passwords to manage. The web UI drives the WebAuthn ceremony; the CLI can initiate enrollment via `gohome auth bootstrap`.
+Passkeys (WebAuthn) are the primary auth method. They are phishing-resistant, multi-factor by design, and require no passwords to manage. The web UI drives the WebAuthn ceremony; the CLI can initiate enrollment via `switchyard auth bootstrap`.
 
 ### Password (fallback)
 
@@ -99,15 +99,15 @@ Argon2id-hashed passwords are supported as a fallback — useful for headless se
 
 ### API tokens
 
-Scoped API tokens are issued via `gohome auth tokens create`. Tokens carry an explicit scope — which tools, services, and entity targets they can access. A token's effective permission is the intersection of the user's policy and the token's scope: a token can only narrow permissions, never widen them.
+Scoped API tokens are issued via `switchyard auth tokens create`. Tokens carry an explicit scope — which tools, services, and entity targets they can access. A token's effective permission is the intersection of the user's policy and the token's scope: a token can only narrow permissions, never widen them.
 
 ## Policies
 
 Policies declare what roles are allowed to do. They are declared alongside users in `auth.pkl`:
 
 ```pkl
-import "gohome:auth"   as auth
-import "gohome:policy" as policy
+import "switchyard:auth"   as auth
+import "switchyard:policy" as policy
 
 policies: Listing<policy.Policy> = new {
 
@@ -160,12 +160,12 @@ The evaluation rule is: **permitted if any allow rule matches AND no deny rule m
 
 Area selectors are hierarchical — a rule on `upstairs` matches all entities in any room nested under `upstairs`. Class selectors match by entity class name. Entity-id selectors match specific entity ids.
 
-### `gohome auth explain`
+### `switchyard auth explain`
 
 To debug a policy decision:
 
 ```
-$ gohome auth explain \
+$ switchyard auth explain \
     --user nora \
     --action EntityService.CallCapability \
     --target entity:lock.front_door
@@ -185,7 +185,7 @@ Policy is enforced at four points:
 
 | Point | How |
 |---|---|
-| CLI (`gohome`) | CLI authenticates via UDS (local → `system:local`, full access) or session cookie |
+| CLI (`switchyard`) | CLI authenticates via UDS (local → `system:local`, full access) or session cookie |
 | Connect-RPC | Every RPC goes through the auth interceptor chain; policy checked before the handler |
 | MCP server | Every tool call and resource subscription goes through the same policy runtime |
 | Subscriptions | `policy_mode = "filter"` (default): denied entities are silently excluded. `policy_mode = "strict"`: the call fails if any entity in the subscription set is denied |
@@ -203,7 +203,7 @@ Every auth action lands on the event log:
 | `TokenMinted` | API token issued |
 | `TokenRevoked` | Token revoked |
 | `PolicyDenied` | An authorization check failed |
-| `PolicyCompiled` | Policy compiler ran (on startup and on every `gohome config apply`) |
+| `PolicyCompiled` | Policy compiler ran (on startup and on every `switchyard config apply`) |
 
 These events sit in the same cursor-ordered timeline as `StateChanged` and `ConfigApplied` events, so you can trace a policy-denied at cursor 4821 back to the preceding config apply.
 
@@ -236,8 +236,8 @@ settings: auth.AuthSettings = new {
 
 A fresh install has Pkl-declared users but no credentials. To add the first credential:
 
-1. Run `gohome config apply` to project users into the runtime database.
-2. Run `gohome auth bootstrap <slug>` over the local Unix socket. This mints a one-time enrollment token and prints it once.
+1. Run `switchyard config apply` to project users into the runtime database.
+2. Run `switchyard auth bootstrap <slug>` over the local Unix socket. This mints a one-time enrollment token and prints it once.
 3. Open the web UI, paste the token, and complete the passkey registration or password setup.
 
-See `gohome auth --help` for the full CLI surface: `login`, `logout`, `whoami`, `tokens`, `users`, `passkeys`, `set-password`, `explain`, `policies`.
+See `switchyard auth --help` for the full CLI surface: `login`, `logout`, `whoami`, `tokens`, `users`, `passkeys`, `set-password`, `explain`, `policies`.

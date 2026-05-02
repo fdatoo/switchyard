@@ -7,8 +7,8 @@ import (
 	"connectrpc.com/connect"
 	"github.com/stretchr/testify/require"
 
-	"github.com/fdatoo/gohome/internal/api"
-	"github.com/fdatoo/gohome/internal/observability"
+	"github.com/fdatoo/switchyard/internal/api"
+	"github.com/fdatoo/switchyard/internal/observability"
 )
 
 func TestMCPInterceptor_TagsToolCall(t *testing.T) {
@@ -24,7 +24,7 @@ func TestMCPInterceptor_TagsToolCall(t *testing.T) {
 
 	ctx := api.WithSource(context.Background(), "mcp")
 	req := connect.NewRequest(&struct{}{})
-	req.Header().Set("x-gohome-mcp-tool", "eval_starlark")
+	req.Header().Set("x-switchyard-mcp-tool", "eval_starlark")
 
 	_, _ = h(ctx, req)
 	require.True(t, called)
@@ -35,7 +35,7 @@ func TestMCPInterceptor_TagsToolCall(t *testing.T) {
 
 	var found bool
 	for _, mf := range mfs {
-		if mf.GetName() == "gohome_mcp_tool_calls_total" {
+		if mf.GetName() == "switchyard_mcp_tool_calls_total" {
 			for _, metric := range mf.GetMetric() {
 				for _, lp := range metric.GetLabel() {
 					if lp.GetName() == "tool" && lp.GetValue() == "eval_starlark" {
@@ -45,7 +45,7 @@ func TestMCPInterceptor_TagsToolCall(t *testing.T) {
 			}
 		}
 	}
-	require.True(t, found, "expected gohome_mcp_tool_calls_total{tool=eval_starlark} to be present")
+	require.True(t, found, "expected switchyard_mcp_tool_calls_total{tool=eval_starlark} to be present")
 }
 
 func TestMCPInterceptor_NoMetricForCLISource(t *testing.T) {
@@ -62,7 +62,7 @@ func TestMCPInterceptor_NoMetricForCLISource(t *testing.T) {
 	// No source header → treated as cli by SourceInterceptor, but here we test
 	// the MCPInterceptor directly with a plain context (no source set = "cli" default).
 	req := connect.NewRequest(&struct{}{})
-	req.Header().Set("x-gohome-mcp-tool", "eval_starlark")
+	req.Header().Set("x-switchyard-mcp-tool", "eval_starlark")
 
 	_, _ = h(context.Background(), req)
 	require.True(t, called)
@@ -71,7 +71,7 @@ func TestMCPInterceptor_NoMetricForCLISource(t *testing.T) {
 	require.NoError(t, err)
 
 	for _, mf := range mfs {
-		if mf.GetName() == "gohome_mcp_tool_calls_total" {
+		if mf.GetName() == "switchyard_mcp_tool_calls_total" {
 			require.Empty(t, mf.GetMetric(), "expected no MCP tool call metrics for cli source")
 		}
 	}

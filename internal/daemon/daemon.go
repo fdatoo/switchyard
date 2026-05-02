@@ -17,32 +17,32 @@ import (
 	"connectrpc.com/connect"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	configpb "github.com/fdatoo/gohome/gen/gohome/config/v1"
-	entityv1 "github.com/fdatoo/gohome/gen/gohome/entity/v1"
-	eventv1 "github.com/fdatoo/gohome/gen/gohome/event/v1"
-	"github.com/fdatoo/gohome/internal/api"
-	"github.com/fdatoo/gohome/internal/api/listener"
-	"github.com/fdatoo/gohome/internal/auth"
-	"github.com/fdatoo/gohome/internal/auth/audit"
-	"github.com/fdatoo/gohome/internal/auth/credentials"
-	"github.com/fdatoo/gohome/internal/auth/identity"
-	"github.com/fdatoo/gohome/internal/auth/sessions"
-	"github.com/fdatoo/gohome/internal/auth/throttle"
-	"github.com/fdatoo/gohome/internal/automation"
-	"github.com/fdatoo/gohome/internal/automation/action"
-	"github.com/fdatoo/gohome/internal/carport"
-	"github.com/fdatoo/gohome/internal/config"
-	"github.com/fdatoo/gohome/internal/dashboard"
-	"github.com/fdatoo/gohome/internal/eventstore"
-	"github.com/fdatoo/gohome/internal/mcp"
-	"github.com/fdatoo/gohome/internal/observability"
-	"github.com/fdatoo/gohome/internal/policy"
-	"github.com/fdatoo/gohome/internal/registry"
-	"github.com/fdatoo/gohome/internal/script"
-	starlark "github.com/fdatoo/gohome/internal/starlark"
-	"github.com/fdatoo/gohome/internal/state"
-	"github.com/fdatoo/gohome/internal/storage"
-	"github.com/fdatoo/gohome/internal/web"
+	configpb "github.com/fdatoo/switchyard/gen/switchyard/config/v1"
+	entityv1 "github.com/fdatoo/switchyard/gen/switchyard/entity/v1"
+	eventv1 "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
+	"github.com/fdatoo/switchyard/internal/api"
+	"github.com/fdatoo/switchyard/internal/api/listener"
+	"github.com/fdatoo/switchyard/internal/auth"
+	"github.com/fdatoo/switchyard/internal/auth/audit"
+	"github.com/fdatoo/switchyard/internal/auth/credentials"
+	"github.com/fdatoo/switchyard/internal/auth/identity"
+	"github.com/fdatoo/switchyard/internal/auth/sessions"
+	"github.com/fdatoo/switchyard/internal/auth/throttle"
+	"github.com/fdatoo/switchyard/internal/automation"
+	"github.com/fdatoo/switchyard/internal/automation/action"
+	"github.com/fdatoo/switchyard/internal/carport"
+	"github.com/fdatoo/switchyard/internal/config"
+	"github.com/fdatoo/switchyard/internal/dashboard"
+	"github.com/fdatoo/switchyard/internal/eventstore"
+	"github.com/fdatoo/switchyard/internal/mcp"
+	"github.com/fdatoo/switchyard/internal/observability"
+	"github.com/fdatoo/switchyard/internal/policy"
+	"github.com/fdatoo/switchyard/internal/registry"
+	"github.com/fdatoo/switchyard/internal/script"
+	starlark "github.com/fdatoo/switchyard/internal/starlark"
+	"github.com/fdatoo/switchyard/internal/state"
+	"github.com/fdatoo/switchyard/internal/storage"
+	"github.com/fdatoo/switchyard/internal/web"
 )
 
 // Compile-time assertion: *carport.Host must satisfy config.CarportManager.
@@ -105,7 +105,7 @@ func (d *Daemon) Run(ctx context.Context) error {
 	d.lockfile = lf
 	defer func() { _ = d.lockfile.Release() }()
 
-	db, err := storage.Open(ctx, storage.Config{Path: filepath.Join(dataDir, "gohome.db")})
+	db, err := storage.Open(ctx, storage.Config{Path: filepath.Join(dataDir, "switchyard.db")})
 	if err != nil {
 		return fmt.Errorf("open db: %w", err)
 	}
@@ -142,8 +142,8 @@ func (d *Daemon) Run(ctx context.Context) error {
 		AccessTTL:   15 * time.Minute,
 		RefreshTTL:  7 * 24 * time.Hour,
 		RefreshIdle: 24 * time.Hour,
-		AccessName:  "gohome_access",
-		RefreshName: "gohome_refresh",
+		AccessName:  "switchyard_access",
+		RefreshName: "switchyard_refresh",
 	})
 	throttleStore := throttle.New(db, throttle.Config{
 		Window:    15 * time.Minute,
@@ -399,7 +399,7 @@ func (d *Daemon) Run(ctx context.Context) error {
 
 	udsPath := expandPath(listenerCfg.GetUds().GetPath(), dataDir)
 	if udsPath == "" {
-		udsPath = filepath.Join(dataDir, "gohomed.sock")
+		udsPath = filepath.Join(dataDir, "switchyardd.sock")
 	}
 	udsMode := os.FileMode(listenerCfg.GetUds().GetMode())
 	if udsMode == 0 {
@@ -469,7 +469,7 @@ func (d *Daemon) Run(ctx context.Context) error {
 
 	if _, err := store.Append(ctx, eventstore.Event{
 		Kind:      "system",
-		Source:    "gohomed",
+		Source:    "switchyardd",
 		Timestamp: time.Now(),
 		Payload: &eventv1.Payload{Kind: &eventv1.Payload_System{
 			System: &eventv1.SystemEvent{Kind: "startup", Data: map[string]string{
@@ -481,7 +481,7 @@ func (d *Daemon) Run(ctx context.Context) error {
 	}); err != nil {
 		d.logger.Error("failed to append startup event", "err", err)
 	}
-	d.logger.Info("gohomed ready", "version", Version, "data_dir", dataDir, "admin_port", d.cfg.AdminPort)
+	d.logger.Info("switchyardd ready", "version", Version, "data_dir", dataDir, "admin_port", d.cfg.AdminPort)
 
 	<-ctx.Done()
 	d.logger.Info("shutdown requested")

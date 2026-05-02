@@ -11,10 +11,10 @@ import (
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 
-	eventv1 "github.com/fdatoo/gohome/gen/gohome/event/v1"
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
-	"github.com/fdatoo/gohome/internal/api"
+	eventv1 "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
+	"github.com/fdatoo/switchyard/internal/api"
 )
 
 // liveEventSource is a test EventSource backed by a channel.
@@ -42,14 +42,14 @@ func TestEventService_Tail_StreamsEventAndHeartbeat(t *testing.T) {
 	svc := api.NewEventService(src)
 
 	mux := http.NewServeMux()
-	path, handler := gohomev1alpha1connect.NewEventServiceHandler(svc)
+	path, handler := switchyardv1alpha1connect.NewEventServiceHandler(svc)
 	mux.Handle(path, handler)
 
 	srv := httptest.NewUnstartedServer(h2c.NewHandler(mux, &http2.Server{}))
 	srv.Start()
 	defer srv.Close()
 
-	client := gohomev1alpha1connect.NewEventServiceClient(
+	client := switchyardv1alpha1connect.NewEventServiceClient(
 		srv.Client(),
 		srv.URL,
 		connect.WithGRPC(),

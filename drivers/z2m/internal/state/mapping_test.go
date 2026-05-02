@@ -9,10 +9,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/fdatoo/gohome-driverkit/driver"
-	entityv1 "github.com/fdatoo/gohome/gen/gohome/entity/v1"
+	"github.com/fdatoo/switchyard-driverkit/driver"
+	entityv1 "github.com/fdatoo/switchyard/gen/switchyard/entity/v1"
 
-	"github.com/fdatoo/gohome/drivers/z2m/internal/z2m"
+	"github.com/fdatoo/switchyard/drivers/z2m/internal/z2m"
 )
 
 // loadFixture is shared with reconcile_test; keep it in this file.

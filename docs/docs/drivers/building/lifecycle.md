@@ -2,7 +2,7 @@
 
 !!! status-alpha "Alpha — shipped, interface evolving"
 
-`gohomed` manages driver processes through a well-defined lifecycle state machine. Understanding the lifecycle helps you write drivers that handle reconnects correctly, diagnose quarantined instances, and design health checks that match your driver's behaviour.
+`switchyardd` manages driver processes through a well-defined lifecycle state machine. Understanding the lifecycle helps you write drivers that handle reconnects correctly, diagnose quarantined instances, and design health checks that match your driver's behaviour.
 
 ---
 
@@ -27,7 +27,7 @@ stateDiagram-v2
     backoff --> spawning : budget ok — retry
     backoff --> quarantined : restart budget exhausted
 
-    quarantined --> spawning : gohome driver restart (manual)
+    quarantined --> spawning : switchyard driver restart (manual)
 
     stopping --> stopped : grace period elapsed or Shutdown acknowledged
     stopped --> [*]
@@ -43,11 +43,11 @@ The instance exists in `drivers.toml` (or the Pkl config in C4+) but has not bee
 
 ### `spawning`
 
-`gohomed` is launching the driver binary: allocating a Unix socket path, generating a per-launch handshake secret, and calling `exec.Cmd.Start`. If the binary cannot be found or the OS rejects the spawn, the instance transitions to `failed` immediately.
+`switchyardd` is launching the driver binary: allocating a Unix socket path, generating a per-launch handshake secret, and calling `exec.Cmd.Start`. If the binary cannot be found or the OS rejects the spawn, the instance transitions to `failed` immediately.
 
 ### `awaiting_handshake`
 
-The subprocess is running. `gohomed` is dialling the Unix socket and waiting for the driver to call `Handshake`. The handshake must complete within `handshake_deadline_ms` (default 5000 ms). Failures at this stage:
+The subprocess is running. `switchyardd` is dialling the Unix socket and waiting for the driver to call `Handshake`. The handshake must complete within `handshake_deadline_ms` (default 5000 ms). Failures at this stage:
 
 - `handshake_deadline_ms` exceeded
 - Wrong protocol version (must be `v1alpha1`)
@@ -58,13 +58,13 @@ All produce a `DriverEvent{kind: "handshake_failed"}` and a transition to `faile
 
 ### `running`
 
-The handshake succeeded. `gohomed` holds the bidi Run stream open. The driver is receiving commands and emitting state changes. `gohomed` sends a `Heartbeat.ping` every 10 seconds; the driver must echo it as `Heartbeat.pong`. Three consecutive missed pings (30 s of silence) count as a health failure.
+The handshake succeeded. `switchyardd` holds the bidi Run stream open. The driver is receiving commands and emitting state changes. `switchyardd` sends a `Heartbeat.ping` every 10 seconds; the driver must echo it as `Heartbeat.pong`. Three consecutive missed pings (30 s of silence) count as a health failure.
 
-In addition, `gohomed` performs an explicit `Health` RPC every `health_probe_interval_ms` (default 15 000 ms). If the RPC times out or returns `ok: false`, the failure count increments. `health_failures_to_restart` consecutive failures (default 3) trigger a transition to `failed`.
+In addition, `switchyardd` performs an explicit `Health` RPC every `health_probe_interval_ms` (default 15 000 ms). If the RPC times out or returns `ok: false`, the failure count increments. `health_failures_to_restart` consecutive failures (default 3) trigger a transition to `failed`.
 
 ### `failed`
 
-The instance has stopped working. A `DriverEvent{kind: "failed", detail: "<cause>"}` is appended to the event log. `gohomed` computes the next backoff interval and transitions to `backoff`.
+The instance has stopped working. A `DriverEvent{kind: "failed", detail: "<cause>"}` is appended to the event log. `switchyardd` computes the next backoff interval and transitions to `backoff`.
 
 ### `backoff`
 
@@ -77,14 +77,14 @@ If the number of restarts in the last `restart_budget_window_minutes` (default 1
 The restart budget is exhausted. The instance will not be restarted automatically. A human must intervene:
 
 ```
-gohome driver restart <instance-id>
+switchyard driver restart <instance-id>
 ```
 
 This resets the restart budget and transitions the instance back to `spawning`.
 
 ### `stopping` / `stopped`
 
-On daemon `SIGTERM`, `gohomed` sends a `Shutdown{grace_ms: 10000}` RPC to every running driver. The driver should flush in-flight work, close the Run stream send direction, return `ShutdownResponse{acknowledged: true}`, and exit. If the driver does not exit within `shutdown_grace_ms`:
+On daemon `SIGTERM`, `switchyardd` sends a `Shutdown{grace_ms: 10000}` RPC to every running driver. The driver should flush in-flight work, close the Run stream send direction, return `ShutdownResponse{acknowledged: true}`, and exit. If the driver does not exit within `shutdown_grace_ms`:
 
 1. `SIGTERM` is sent to the process.
 2. After 3 more seconds, `SIGKILL`.
@@ -107,21 +107,21 @@ Every meaningful transition produces a `DriverEvent` in the event log with `sour
 | any → stopping | `stopping` | initiator |
 | stopping → stopped | `stopped` | exit code |
 
-These events are queryable via `gohome event list --source carport:host --instance <id>`.
+These events are queryable via `switchyard event list --source carport:host --instance <id>`.
 
 ---
 
-## Stateless from gohomed's perspective
+## Stateless from switchyardd's perspective
 
-`gohomed` considers drivers **stateless**: every time a driver reconnects, it is treated as a fresh start. The driver's job at handshake time is to present the current state of its entities via `HandshakeResponse.initial_entities`.
+`switchyardd` considers drivers **stateless**: every time a driver reconnects, it is treated as a fresh start. The driver's job at handshake time is to present the current state of its entities via `HandshakeResponse.initial_entities`.
 
 On reconnect, the driver re-registers its entities from scratch with empty initial attributes. The daemon rebuilds current entity state from the event log — not from the driver. Drivers do not need to track or restore state across reconnects.
 
 **What this means in practice:**
 
-- The driver must not rely on any state stored in `gohomed`. It must either query the device on startup, maintain its own in-memory state, or persist state to disk.
-- If the driver crashes, any in-flight command results are lost. `gohomed` appends `CommandAck{ok: false, error_message: "driver stream closed"}` for every in-flight command when the stream closes.
-- The event log is the durable record. On daemon restart, `gohomed` replays the event log to rebuild the state cache and registry — driver processes are not involved in this replay.
+- The driver must not rely on any state stored in `switchyardd`. It must either query the device on startup, maintain its own in-memory state, or persist state to disk.
+- If the driver crashes, any in-flight command results are lost. `switchyardd` appends `CommandAck{ok: false, error_message: "driver stream closed"}` for every in-flight command when the stream closes.
+- The event log is the durable record. On daemon restart, `switchyardd` replays the event log to rebuild the state cache and registry — driver processes are not involved in this replay.
 
 ---
 

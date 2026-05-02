@@ -10,9 +10,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/fdatoo/gohome/internal/auth/identity"
-	"github.com/fdatoo/gohome/internal/auth/sessions"
-	"github.com/fdatoo/gohome/internal/testutil"
+	"github.com/fdatoo/switchyard/internal/auth/identity"
+	"github.com/fdatoo/switchyard/internal/auth/sessions"
+	"github.com/fdatoo/switchyard/internal/testutil"
 )
 
 func setupSessionDB(t *testing.T) *sql.DB {
@@ -29,13 +29,13 @@ func newStore(t *testing.T) *sessions.Store {
 		AccessTTL:   15 * time.Minute,
 		RefreshTTL:  30 * 24 * time.Hour,
 		RefreshIdle: 14 * 24 * time.Hour,
-		AccessName:  "gohome_access",
-		RefreshName: "gohome_refresh",
+		AccessName:  "switchyard_access",
+		RefreshName: "switchyard_refresh",
 	})
 }
 
 func requestFromRecorder(rec *httptest.ResponseRecorder) *http.Request {
-	req := httptest.NewRequest("GET", "https://gohome.test/x", nil)
+	req := httptest.NewRequest("GET", "https://switchyard.test/x", nil)
 	for _, c := range rec.Result().Cookies() {
 		req.AddCookie(c)
 	}
@@ -72,14 +72,14 @@ func TestSessions_IssueProducesCookies(t *testing.T) {
 	var accessCookie, refreshCookie *http.Cookie
 	for _, c := range cookies {
 		switch c.Name {
-		case "gohome_access":
+		case "switchyard_access":
 			accessCookie = c
-		case "gohome_refresh":
+		case "switchyard_refresh":
 			refreshCookie = c
 		}
 	}
-	require.NotNil(t, accessCookie, "gohome_access cookie must be set")
-	require.NotNil(t, refreshCookie, "gohome_refresh cookie must be set")
+	require.NotNil(t, accessCookie, "switchyard_access cookie must be set")
+	require.NotNil(t, refreshCookie, "switchyard_refresh cookie must be set")
 
 	require.True(t, accessCookie.HttpOnly, "access cookie must be HttpOnly")
 	require.True(t, accessCookie.Secure, "access cookie must be Secure")
@@ -119,8 +119,8 @@ func TestSessions_VerifyAccess_TamperedRejected(t *testing.T) {
 	req := requestFromRecorder(rec)
 	cookies := req.Cookies()
 	for i, c := range cookies {
-		if c.Name == "gohome_access" {
-			req = httptest.NewRequest("GET", "https://gohome.test/x", nil)
+		if c.Name == "switchyard_access" {
+			req = httptest.NewRequest("GET", "https://switchyard.test/x", nil)
 			req.Header.Set("Cookie", c.Name+"=GARBAGE.GARBAGE; "+joinOther(cookies, i))
 			break
 		}

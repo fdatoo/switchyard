@@ -7,8 +7,8 @@ import (
 	"connectrpc.com/connect"
 	"github.com/spf13/cobra"
 
-	authpb "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
+	authpb "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
 )
 
 func newBootstrapCmd(gf *globalFlags) *cobra.Command {
@@ -24,7 +24,7 @@ func newBootstrapCmd(gf *globalFlags) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			svc := gohomev1alpha1connect.NewAuthServiceClient(httpClient, base)
+			svc := switchyardv1alpha1connect.NewAuthServiceClient(httpClient, base)
 			resp, err := svc.MintEnrollmentToken(cmd.Context(),
 				connect.NewRequest(&authpb.MintEnrollmentTokenRequest{
 					UserSlug:   args[0],

@@ -1,0 +1,343 @@
+// See docs/proto-hygiene.md for grouping conventions.
+
+syntax = "proto3";
+
+package switchyard.config.v1;
+
+message ConfigSnapshot {
+  // 1-9: meta
+  int64  evaluated_at_unix_ms = 1;
+  string config_dir           = 2;
+
+  // 10-19: contents
+  repeated DriverInstanceConfig driver_instances = 10;
+  repeated EntityConfig         entities         = 11;
+  repeated AutomationConfig     automations      = 12;
+  repeated DashboardConfig      dashboards       = 13;
+  repeated UserConfig           users            = 14;
+  repeated RoleConfig           roles            = 15;
+  repeated PolicyConfig         policies         = 16;
+  repeated ScriptConfig         scripts          = 17;
+
+  // 20-29: listener & MCP
+  ListenerConfig    listener      = 20;
+  MCPConfig         mcp           = 21;
+  AuthSettingsConfig auth_settings = 22;
+}
+
+message DriverInstanceConfig {
+  string id          = 1;
+  string driver_name = 2;
+  bytes  config_hash = 3;
+  bytes  params      = 4;
+  string binary      = 5;
+}
+
+message EntityConfig {
+  string id            = 1;
+  string friendly_name = 2;
+  string entity_type   = 3;
+  string area          = 4;
+}
+
+message AutomationConfig {
+  // 1-9: identity & flags
+  string id         = 1;
+  bool   enabled    = 2;
+  Mode   mode       = 3;
+  int32  max_queued = 4;
+
+  // 10-19: nested config
+  repeated TriggerConfig   triggers   = 10;
+  repeated ConditionConfig conditions = 11;
+  repeated ActionConfig    actions    = 12;
+
+  reserved 5, 6, 7, 8, 9;
+  reserved "content";
+
+  enum Mode {
+    MODE_UNSPECIFIED = 0;
+    MODE_SINGLE      = 1;
+    MODE_QUEUED      = 2;
+    MODE_RESTART     = 3;
+    MODE_PARALLEL    = 4;
+  }
+}
+
+message TriggerConfig {
+  oneof kind {
+    StateChangeTrigger state_change = 1;
+    EventTrigger       event        = 2;
+    TimeTrigger        time         = 3;
+    WebhookTrigger     webhook      = 4;
+  }
+}
+
+message StateChangeTrigger {
+  repeated string entities    = 1;
+  string          from        = 2;
+  string          to          = 3;
+  int64           for_dur_ns  = 4;   // 0 = no hold
+}
+
+message EventTrigger {
+  string              kind = 1;
+  map<string, string> data = 2;
+}
+
+message TimeTrigger {
+  string at       = 1;     // "HH:MM"
+  string cron     = 2;
+  int64  every_ns = 3;
+}
+
+message WebhookTrigger {
+  string          path    = 1;
+  repeated string methods = 2;
+}
+
+message ConditionConfig {
+  oneof kind {
+    StateCondition    state    = 1;
+    NumericCondition  numeric  = 2;
+    TimeCondition     time     = 3;
+    StarlarkCondition starlark = 4;
+    AndCondition      and      = 5;
+    OrCondition       or       = 6;
+    NotCondition      not      = 7;
+  }
+}
+
+message StateCondition {
+  string          entity = 1;
+  string          equals = 2;
+  repeated string one_of = 3;
+  string          not    = 4;
+  // Exactly one of equals/one_of/not populated; presence encoded by emptiness.
+}
+
+message NumericCondition {
+  string entity    = 1;
+  string attribute = 2;    // "value" default
+  string op        = 3;    // "lt"|"lte"|"eq"|"gte"|"gt"
+  double value     = 4;
+}
+
+message TimeCondition {
+  string          after    = 1;
+  string          before   = 2;
+  repeated string weekdays = 3;
+}
+
+message StarlarkCondition {
+  string expr = 1;
+}
+
+message AndCondition { repeated ConditionConfig all = 1; }
+message OrCondition  { repeated ConditionConfig any = 1; }
+message NotCondition { ConditionConfig not = 1; }
+
+message ActionConfig {
+  // 1-9: flags
+  bool continue_on_error = 1;
+  // 10-19: variant
+  oneof kind {
+    CallServiceAction call_service = 10;
+    SceneAction       scene        = 11;
+    ScriptAction      script       = 12;
+    StarlarkAction    starlark     = 13;
+    WaitAction        wait         = 14;
+    SequenceBlock     sequence     = 15;
+    ParallelBlock     parallel     = 16;
+  }
+}
+
+message CallServiceAction {
+  string              entity     = 1;
+  string              capability = 2;
+  map<string, string> args       = 3;
+}
+
+message SceneAction {
+  string slug = 1;
+}
+
+message ScriptAction {
+  string              name = 1;
+  map<string, string> args = 2;
+}
+
+message StarlarkAction {
+  string body = 1;
+}
+
+message WaitAction {
+  int64 duration_ns = 1;
+}
+
+message SequenceBlock { repeated ActionConfig actions = 1; }
+message ParallelBlock { repeated ActionConfig actions = 1; }
+
+message ScriptConfig {
+  string               name    = 1;
+  repeated ScriptParam params  = 2;
+  string               handler = 3;
+}
+
+message ScriptParam {
+  string name     = 1;
+  Type   type     = 2;
+  bool   required = 3;
+  string default  = 4;
+
+  enum Type {
+    TYPE_UNSPECIFIED = 0;
+    TYPE_STRING      = 1;
+    TYPE_INT         = 2;
+    TYPE_FLOAT       = 3;
+    TYPE_BOOL        = 4;
+    TYPE_ENTITY_ID   = 5;
+  }
+}
+
+message DashboardConfig {
+  string slug    = 1;
+  bytes  content = 2;
+}
+
+message UserConfig {
+  // 1-9: identity & flags
+  string slug         = 1;
+  string display_name = 2;
+  bool   active       = 4;
+
+  // 10-19: auth methods
+  bool   password_allowed          = 10;
+  bool   passkey_allowed           = 11;
+  string oidc_subject              = 12;
+  string bootstrap_password_hash   = 13;
+
+  // 20-29: role membership
+  repeated RoleConfig roles = 20;
+
+  reserved 3;  // was: repeated string roles (field 3); now repeated RoleConfig roles = 20
+}
+
+message RoleConfig {
+  // 1-9: identity
+  string slug         = 1;
+  string display_name = 3;
+
+  // 10-19: inheritance
+  repeated RoleConfig inherits = 10;
+
+  reserved 2;
+  reserved "permissions";
+}
+
+message PolicyConfig {
+  // 1-9: identity
+  string name = 1;
+
+  // 10-19: subjects & rules
+  repeated RoleConfig    subjects = 10;
+  repeated CapabilityRule allow   = 11;
+  repeated CapabilityRule deny    = 12;
+
+  reserved 2, 3;
+  reserved "role", "resource", "actions";
+}
+
+message CapabilityRule {
+  // 1-9: verbs & services
+  repeated string verbs    = 1;
+  repeated string services = 2;
+
+  // 10-19: targets
+  EntitySelector targets = 10;
+}
+
+message EntitySelector {
+  repeated string areas      = 1;
+  repeated string classes    = 2;
+  repeated string entity_ids = 3;
+}
+
+message AuthSettingsConfig {
+  // 1-9: feature flags
+  bool   password_login_enabled = 1;
+  bool   passkey_login_enabled  = 2;
+
+  // 10-19: WebAuthn / passkey
+  string rp_id                      = 10;
+  string rp_display_name            = 11;
+  repeated string rp_origins        = 12;
+  string webauthn_user_verification = 13;
+
+  // 20-29: Argon2id
+  uint32 argon2id_time        = 20;
+  uint32 argon2id_memory_kib  = 21;
+  uint32 argon2id_parallelism = 22;
+
+  // 30-39: cookie TTLs
+  int64 access_cookie_ttl_ms  = 30;
+  int64 refresh_cookie_ttl_ms = 31;
+  int64 refresh_idle_ttl_ms   = 32;
+
+  // 40-49: rate limiting
+  int64  failed_attempts_window_ms    = 40;
+  uint32 failed_attempts_threshold    = 41;
+  int64  failed_attempts_block_ms     = 42;
+
+  // 50-59: token policy
+  int64  token_default_ttl_ms  = 50;
+  int64  token_max_ttl_ms      = 51;
+  bool   token_label_required  = 52;
+
+  // 60-69: cookie names
+  string access_cookie_name  = 60;
+  string refresh_cookie_name = 61;
+
+  // 70-79: misc
+  bool reveal_denied_in_explain = 70;
+}
+
+message ListenerConfig {
+  // 1-9: UDS
+  UDSListenerConfig uds = 1;
+  // 10-19: TCP
+  TCPListenerConfig tcp = 10;
+  // 20-29: webhooks
+  WebhookListenerConfig webhooks = 20;
+  // 30-39: stream
+  int64 stream_heartbeat_interval_ms = 30;
+}
+
+message UDSListenerConfig {
+  string path = 1;
+  uint32 mode = 2;
+}
+
+message TCPListenerConfig {
+  string            bind = 1;
+  TLSListenerConfig tls  = 2;
+}
+
+message TLSListenerConfig {
+  string cert_file = 1;
+  string key_file  = 2;
+}
+
+message WebhookListenerConfig {
+  int64           max_body_bytes  = 1;
+  repeated string trusted_proxies = 2;
+}
+
+message MCPConfig {
+  uint32 eval_result_max_bytes       = 1;
+  uint32 read_file_max_bytes         = 2;
+  uint32 entity_subscription_buffer = 10;
+  uint32 trace_subscription_buffer  = 11;
+  uint32 tail_default_wait_seconds  = 20;
+  uint32 tail_max_wait_seconds      = 21;
+}

@@ -11,9 +11,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/fdatoo/gohome-driverkit/drivertest"
+	"github.com/fdatoo/switchyard-driverkit/drivertest"
 
-	"github.com/fdatoo/gohome/drivers/hue/internal/bridge"
+	"github.com/fdatoo/switchyard/drivers/hue/internal/bridge"
 )
 
 const fakeBridgeListLightsBody = `{

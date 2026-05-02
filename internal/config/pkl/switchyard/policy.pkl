@@ -1,0 +1,29 @@
+module switchyard.policy
+import "switchyard:auth" as auth
+
+typealias Verb = "read" | "call" | "write" | "admin"
+
+class EntitySelector {
+  areas:       List<String> = List()
+  classes:     List<String> = List()
+  entity_ids:  List<String> = List()
+}
+
+const AnyEntity: EntitySelector = new {
+  areas      = List("*")
+  classes    = List("*")
+  entity_ids = List("*")
+}
+
+class CapabilityRule {
+  verbs:    List<Verb>      = List()
+  targets:  EntitySelector  = new EntitySelector {}
+  services: List<String>    = List()
+}
+
+class Policy {
+  name:     String
+  subjects: List<auth.Role>
+  allow:    List<CapabilityRule> = List()
+  deny:     List<CapabilityRule> = List()
+}

@@ -1,5 +1,5 @@
 // Command hue-driver is a Carport driver for the Philips Hue bridge.
-// It mirrors all lights on one bridge into gohome as light.* entities
+// It mirrors all lights on one bridge into switchyard as light.* entities
 // over the CLIP v2 API (HTTPS + server-sent events).
 package main
 
@@ -16,11 +16,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/fdatoo/gohome-driverkit/driver"
-	entityv1 "github.com/fdatoo/gohome/gen/gohome/entity/v1"
+	"github.com/fdatoo/switchyard-driverkit/driver"
+	entityv1 "github.com/fdatoo/switchyard/gen/switchyard/entity/v1"
 
-	"github.com/fdatoo/gohome/drivers/hue/internal/bridge"
-	"github.com/fdatoo/gohome/drivers/hue/internal/state"
+	"github.com/fdatoo/switchyard/drivers/hue/internal/bridge"
+	"github.com/fdatoo/switchyard/drivers/hue/internal/state"
 )
 
 const driverName, driverVersion = "driver.hue", "0.1.0"
@@ -41,7 +41,7 @@ func main() {
 	logger := slog.New(slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{
 		Level: parseLogLevel(os.Getenv("HUE_LOG_LEVEL")),
 	})).With(
-		"instance_id", os.Getenv("GOHOME_CARPORT_INSTANCE_ID"),
+		"instance_id", os.Getenv("SWITCHYARD_CARPORT_INSTANCE_ID"),
 		"bridge_address", cfg.Address,
 	)
 	slog.SetDefault(logger)
@@ -92,7 +92,7 @@ func parseLogLevel(s string) slog.Level {
 	}
 }
 
-// config is the JSON shape carried in GOHOME_CARPORT_INSTANCE_CONFIG.
+// config is the JSON shape carried in SWITCHYARD_CARPORT_INSTANCE_CONFIG.
 // APIKey is resolved at load time from the env var named by APIKeyEnv;
 // it is never serialized. TLSSkipVerify uses a pointer so the JSON-omitted
 // case is distinguishable from an explicit false (default is true — the
@@ -106,9 +106,9 @@ type config struct {
 }
 
 func loadConfig() (config, error) {
-	raw := os.Getenv("GOHOME_CARPORT_INSTANCE_CONFIG")
+	raw := os.Getenv("SWITCHYARD_CARPORT_INSTANCE_CONFIG")
 	if raw == "" {
-		return config{}, errors.New("GOHOME_CARPORT_INSTANCE_CONFIG is required")
+		return config{}, errors.New("SWITCHYARD_CARPORT_INSTANCE_CONFIG is required")
 	}
 	var c config
 	if err := json.Unmarshal([]byte(raw), &c); err != nil {
@@ -164,11 +164,11 @@ func (t *reachabilityTracker) record(d *driver.Driver, err error) {
 // read+write it.
 type stateCache struct {
 	mu         sync.Mutex
-	byEntID    map[string]*entityv1.Light // last known state per gohome entity ID
-	available  map[string]bool            // last known reachability per gohome entity ID
-	hueToID    map[string]string          // Hue light resource UUID → gohome entity ID
-	deviceToID map[string]string          // Hue device UUID → gohome entity ID (for connectivity events)
-	gamuts     map[string]bridge.Gamut    // gohome entity ID → bulb colour gamut (populated by C-Task 8)
+	byEntID    map[string]*entityv1.Light // last known state per switchyard entity ID
+	available  map[string]bool            // last known reachability per switchyard entity ID
+	hueToID    map[string]string          // Hue light resource UUID → switchyard entity ID
+	deviceToID map[string]string          // Hue device UUID → switchyard entity ID (for connectivity events)
+	gamuts     map[string]bridge.Gamut    // switchyard entity ID → bulb colour gamut (populated by C-Task 8)
 	reach      reachabilityTracker
 }
 

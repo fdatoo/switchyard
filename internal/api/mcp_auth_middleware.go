@@ -3,8 +3,8 @@ package api
 import (
 	"net/http"
 
-	"github.com/fdatoo/gohome/internal/auth"
-	"github.com/fdatoo/gohome/internal/auth/authn"
+	"github.com/fdatoo/switchyard/internal/auth"
+	"github.com/fdatoo/switchyard/internal/auth/authn"
 )
 
 // MCPAuthMiddleware wraps an http.Handler with bearer-token authentication.

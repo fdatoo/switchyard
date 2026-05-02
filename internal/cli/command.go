@@ -8,8 +8,8 @@ import (
 	"github.com/spf13/cobra"
 	"google.golang.org/protobuf/types/known/structpb"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
 )
 
 func newCommandCmd(gf *globalFlags) *cobra.Command {
@@ -39,7 +39,7 @@ func newCommandSendCmd(gf *globalFlags) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			svc := gohomev1alpha1connect.NewEntityServiceClient(httpClient, base)
+			svc := switchyardv1alpha1connect.NewEntityServiceClient(httpClient, base)
 			resp, err := svc.CallCapability(cmd.Context(), connect.NewRequest(&v1.CallCapabilityRequest{
 				EntityId:   args[0],
 				Capability: args[1],

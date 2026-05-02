@@ -7,12 +7,12 @@ import (
 
 	"connectrpc.com/connect"
 
-	"github.com/fdatoo/gohome/internal/observability"
+	"github.com/fdatoo/switchyard/internal/observability"
 )
 
 type mcpInterceptor struct{ m *observability.Metrics }
 
-// MCPInterceptor emits gohome_mcp_* metrics for MCP-sourced requests.
+// MCPInterceptor emits switchyard_mcp_* metrics for MCP-sourced requests.
 func MCPInterceptor(m *observability.Metrics) connect.Interceptor { return &mcpInterceptor{m: m} }
 
 func (i *mcpInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc {
@@ -21,7 +21,7 @@ func (i *mcpInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc {
 		if source != "mcp" || i.m == nil {
 			return next(ctx, req)
 		}
-		tool := req.Header().Get("x-gohome-mcp-tool")
+		tool := req.Header().Get("x-switchyard-mcp-tool")
 		started := time.Now()
 		resp, err := next(ctx, req)
 		elapsed := time.Since(started).Seconds()

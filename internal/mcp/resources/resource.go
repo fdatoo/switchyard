@@ -1,4 +1,4 @@
-// Package resources registers gohome MCP resource handlers for entity state
+// Package resources registers switchyard MCP resource handlers for entity state
 // and automation traces, including live-subscription support.
 package resources
 
@@ -8,8 +8,8 @@ import (
 
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 
-	"github.com/fdatoo/gohome/internal/mcp"
-	"github.com/fdatoo/gohome/internal/observability"
+	"github.com/fdatoo/switchyard/internal/mcp"
+	"github.com/fdatoo/switchyard/internal/observability"
 )
 
 // Deps is the set of dependencies needed by resource handlers.

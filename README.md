@@ -3,14 +3,16 @@
   <img src="media/banner-light.png" alt="FBI" width="460" />
 </picture>
 
-GoHome is a self-hosted home automation platform. `gohomed` runs on your local network and connects to devices via a driver model; `gohome` is the CLI for managing it.
+Switchyard is a self-hosted home automation platform. `switchyardd` runs on your local network and connects to devices via a driver model; `switchyard` is the CLI for managing it.
+
+> **Warning**: This project is in early development. It's definitely not ready for production use, and the API is likely to change.
 
 ## Modules
 
 | Module | Path | Description |
 |--------|------|-------------|
-| `github.com/fdatoo/gohome` | `.` | Daemon (`gohomed`) + CLI (`gohome`) |
-| `github.com/fdatoo/gohome-driverkit` | `./gohome-driverkit` | SDK for building device drivers |
+| `github.com/fdatoo/switchyard` | `.` | Daemon (`switchyardd`) + CLI (`switchyard`) |
+| `github.com/fdatoo/switchyard-driverkit` | `./switchyard-driverkit` | SDK for building device drivers |
 
 Both modules are linked by a Go workspace (`go.work`), so `go build ./...` and `go test ./...` work across the full tree from the repo root.
 
@@ -25,7 +27,7 @@ Both modules are linked by a Go workspace (`go.work`), so `go build ./...` and `
 ## Building
 
 ```bash
-task build          # builds gohomed + gohome binaries into dist/
+task build          # builds switchyardd + switchyard binaries into dist/
 task web:build      # builds the web UI (required before task build)
 ```
 
@@ -39,10 +41,10 @@ task test:integration   # integration tests (real disk I/O)
 
 ## Drivers
 
-Drivers are out-of-process binaries that implement the driver gRPC protocol. Use the [gohome-driverkit](./gohome-driverkit) to build one:
+Drivers are out-of-process binaries that implement the driver gRPC protocol. Use the [switchyard-driverkit](./switchyard-driverkit) to build one:
 
 ```bash
-cd gohome-driverkit
+cd switchyard-driverkit
 go build ./...
 ```
 

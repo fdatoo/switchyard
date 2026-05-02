@@ -1,6 +1,6 @@
 # Auth & Policy Setup
 
-gohome ships passkey-first authentication, scoped API tokens, and Pkl-declared roles and policies. This guide walks through initial bootstrap, day-to-day token management, policy authoring, and MCP HTTP transport configuration.
+switchyard ships passkey-first authentication, scoped API tokens, and Pkl-declared roles and policies. This guide walks through initial bootstrap, day-to-day token management, policy authoring, and MCP HTTP transport configuration.
 
 ## Bootstrap walkthrough
 
@@ -8,9 +8,9 @@ gohome ships passkey-first authentication, scoped API tokens, and Pkl-declared r
 
 ```pkl
 // auth/users.pkl
-amends "gohome:config"
+amends "switchyard:config"
 
-import "gohome:auth" as auth
+import "switchyard:auth" as auth
 
 users {
   new auth.User {
@@ -27,7 +27,7 @@ users {
 ### 2. Apply the config
 
 ```sh
-gohome config apply
+switchyard config apply
 ```
 
 The daemon reloads policy immediately; no restart required.
@@ -35,7 +35,7 @@ The daemon reloads policy immediately; no restart required.
 ### 3. Issue an enrollment token
 
 ```sh
-gohome auth bootstrap alice
+switchyard auth bootstrap alice
 ```
 
 Sample output:
@@ -57,16 +57,16 @@ Open the web UI and redeem the enrollment token. The UI prompts for a passkey cr
 
 ## WebAuthn UX notes
 
-**Discoverable credentials (passkeys).** gohome uses `residentKey: required` so no username is needed at sign-in. The authenticator discovers the credential automatically.
+**Discoverable credentials (passkeys).** switchyard uses `residentKey: required` so no username is needed at sign-in. The authenticator discovers the credential automatically.
 
 **Multi-device sync.** Passkeys created on Apple devices sync via iCloud Keychain. On Android / Chrome, they sync via Google Password Manager. Hardware security keys (FIDO2) are also supported but are not synced — treat them as a single-device credential.
 
-**Sign-count discipline.** WebAuthn sign counts help detect cloned authenticators. gohome tracks the count per credential. On a mismatch the daemon logs a warning at `WARN` level but still completes authentication (cloning is possible but not proven). Check `gohomed` logs if you see repeated mismatch warnings.
+**Sign-count discipline.** WebAuthn sign counts help detect cloned authenticators. switchyard tracks the count per credential. On a mismatch the daemon logs a warning at `WARN` level but still completes authentication (cloning is possible but not proven). Check `switchyardd` logs if you see repeated mismatch warnings.
 
 **Lost passkey.** Issue a new enrollment token and re-register:
 
 ```sh
-gohome auth bootstrap alice
+switchyard auth bootstrap alice
 # follow the URL in a browser and register a new passkey
 ```
 
@@ -81,7 +81,7 @@ Tokens are always minted for the authenticated caller — there is no admin-on-b
 ### Create a token
 
 ```sh
-gohome auth tokens create --label "my-script"
+switchyard auth tokens create --label "my-script"
 ```
 
 Sample output:
@@ -106,14 +106,14 @@ curl -H "Authorization: Bearer ghp_v1.xxx..." http://localhost:8080/api/v1/entit
 ### Revoke a token
 
 ```sh
-gohome auth tokens revoke tok_01hx3q9vz2fgk8p7m4nj
+switchyard auth tokens revoke tok_01hx3q9vz2fgk8p7m4nj
 ```
 
 ---
 
 ## Policy authoring tutorial
 
-Policies are declared in Pkl and applied with `gohome config apply`. Changes take effect immediately with no daemon restart.
+Policies are declared in Pkl and applied with `switchyard config apply`. Changes take effect immediately with no daemon restart.
 
 ### Define roles in `auth/users.pkl`
 
@@ -121,9 +121,9 @@ Roles are defined inline on each `User`. Each `Role` has a `slug` and `display_n
 
 ```pkl
 // auth/users.pkl
-amends "gohome:config"
+amends "switchyard:config"
 
-import "gohome:auth" as auth
+import "switchyard:auth" as auth
 
 local admin_role = new auth.Role {
   slug         = "admin"
@@ -155,10 +155,10 @@ Policies map roles to `allow` / `deny` lists of `CapabilityRule`:
 
 ```pkl
 // auth/policy.pkl
-amends "gohome:config"
+amends "switchyard:config"
 
-import "gohome:auth"   as auth
-import "gohome:policy" as pol
+import "switchyard:auth"   as auth
+import "switchyard:policy" as pol
 
 local admin_role = new auth.Role {
   slug         = "admin"
@@ -199,13 +199,13 @@ policies {
 ### Apply and verify
 
 ```sh
-gohome config apply
+switchyard config apply
 ```
 
-Verify a specific permission with `gohome auth explain`. The `--action` flag takes a gRPC `Service.Method` and `--target` takes a `kind:id` pair:
+Verify a specific permission with `switchyard auth explain`. The `--action` flag takes a gRPC `Service.Method` and `--target` takes a `kind:id` pair:
 
 ```sh
-gohome auth explain \
+switchyard auth explain \
   --user alice \
   --action EntityService.CallCapability \
   --verb call \
@@ -221,7 +221,7 @@ Rule:     admin-full-access
 ```
 
 ```sh
-gohome auth explain \
+switchyard auth explain \
   --user bob \
   --action EntityService.CallCapability \
   --verb write \
@@ -239,7 +239,7 @@ Reason:   no allow rule grants write on EntityService for viewer
 
 ## MCP HTTP transport setup
 
-From C9, `gohomed` exposes `/mcp` as a [Streamable HTTP MCP](https://modelcontextprotocol.io/docs/concepts/transports) endpoint in addition to the Unix-socket stdio transport. Authentication uses Bearer tokens.
+From C9, `switchyardd` exposes `/mcp` as a [Streamable HTTP MCP](https://modelcontextprotocol.io/docs/concepts/transports) endpoint in addition to the Unix-socket stdio transport. Authentication uses Bearer tokens.
 
 ### Claude Desktop
 
@@ -248,7 +248,7 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS)
 ```json
 {
   "mcpServers": {
-    "gohome": {
+    "switchyard": {
       "type": "http",
       "url": "http://localhost:8080/mcp",
       "headers": {
@@ -264,7 +264,7 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS)
 ```json
 {
   "mcpServers": {
-    "gohome": {
+    "switchyard": {
       "type": "http",
       "url": "http://localhost:8080/mcp",
       "headers": {
@@ -280,8 +280,8 @@ Add this to your `~/.claude/claude_desktop_config.json` or project-level `.claud
 Create a dedicated token for each client (sign in first, then run):
 
 ```sh
-gohome auth tokens create --label "claude-desktop"
-gohome auth tokens create --label "claude-code"
+switchyard auth tokens create --label "claude-desktop"
+switchyard auth tokens create --label "claude-code"
 ```
 
 ---
@@ -290,10 +290,10 @@ gohome auth tokens create --label "claude-code"
 
 ### "Why was X denied?"
 
-Run `gohome auth explain` to trace the policy decision. The `--action` flag takes a `Service.Method` (gRPC-style), `--verb` one of `read`, `write`, `call`, or `admin`, and `--target` an optional `kind:id`:
+Run `switchyard auth explain` to trace the policy decision. The `--action` flag takes a `Service.Method` (gRPC-style), `--verb` one of `read`, `write`, `call`, or `admin`, and `--target` an optional `kind:id`:
 
 ```sh
-gohome auth explain \
+switchyard auth explain \
   --user <slug> \
   --action <Service>.<Method> \
   --verb <verb> \
@@ -303,7 +303,7 @@ gohome auth explain \
 Example:
 
 ```sh
-gohome auth explain \
+switchyard auth explain \
   --user bob \
   --action EntityService.ListEntities \
   --verb read
@@ -314,13 +314,13 @@ gohome auth explain \
 Issue a new enrollment token and re-register via the web UI:
 
 ```sh
-gohome auth bootstrap <slug>
+switchyard auth bootstrap <slug>
 ```
 
 ### Throttle tripped
 
-Authentication attempts are rate-limited (default: 10 failures per 10-minute window). After tripping the throttle, wait for the window to expire or restart `gohomed` (the throttle counter is in-memory and resets on restart).
+Authentication attempts are rate-limited (default: 10 failures per 10-minute window). After tripping the throttle, wait for the window to expire or restart `switchyardd` (the throttle counter is in-memory and resets on restart).
 
 ### "Invalid session" after server restart
 
-Sessions use signed cookies. If the cookie signing key changes between restarts, existing sessions are invalidated. Ensure `GOHOME_SESSION_KEY` (or the equivalent config field) is set to a stable value across restarts — do not let it default to a random value in production.
+Sessions use signed cookies. If the cookie signing key changes between restarts, existing sessions are invalidated. Ensure `SWITCHYARD_SESSION_KEY` (or the equivalent config field) is set to a stable value across restarts — do not let it default to a random value in production.

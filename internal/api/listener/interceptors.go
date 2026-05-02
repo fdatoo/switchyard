@@ -11,9 +11,9 @@ import (
 	"connectrpc.com/connect"
 	"github.com/oklog/ulid/v2"
 
-	errorv1 "github.com/fdatoo/gohome/gen/gohome/error/v1alpha1"
-	"github.com/fdatoo/gohome/internal/auth"
-	"github.com/fdatoo/gohome/internal/observability"
+	errorv1 "github.com/fdatoo/switchyard/gen/switchyard/error/v1alpha1"
+	"github.com/fdatoo/switchyard/internal/auth"
+	"github.com/fdatoo/switchyard/internal/observability"
 )
 
 // SchemeClassifier classifies a request into an auth scheme and whether it
@@ -74,7 +74,7 @@ func SlogInterceptor() connect.Interceptor {
 }
 
 // MetricsInterceptor records per-procedure request count and latency via the
-// gohome_api_* Prometheus metrics.
+// switchyard_api_* Prometheus metrics.
 func MetricsInterceptor(m *observability.Metrics) connect.Interceptor {
 	return connect.UnaryInterceptorFunc(func(next connect.UnaryFunc) connect.UnaryFunc {
 		return func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {

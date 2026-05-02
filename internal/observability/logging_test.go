@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/fdatoo/gohome/internal/observability"
+	"github.com/fdatoo/switchyard/internal/observability"
 )
 
 func TestInit_JSONFormatEmitsValidJSON(t *testing.T) {

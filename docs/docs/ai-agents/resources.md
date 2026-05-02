@@ -2,7 +2,7 @@
 
 !!! status-alpha "Alpha — shipped, API may evolve"
 
-MCP resources are URI-addressed data sources that agents can read once or subscribe to for live updates. gohome exposes two resource types:
+MCP resources are URI-addressed data sources that agents can read once or subscribe to for live updates. switchyard exposes two resource types:
 
 1. **Entity state** — the current state of one entity or a filtered set of entities.
 2. **Automation run traces** — the step-by-step trace of a single automation run.
@@ -13,19 +13,19 @@ Unlike tools, resources support the `resources/subscribe` flow: the agent subscr
 
 ## Resource catalog
 
-### `gohome://entities/{entity_id}`
+### `switchyard://entities/{entity_id}`
 
 Live state of a single entity.
 
-**URI pattern:** `gohome://entities/{entity_id}`
+**URI pattern:** `switchyard://entities/{entity_id}`
 
 **Examples:**
-- `gohome://entities/light.living_room`
-- `gohome://entities/binary_sensor.front_door_motion`
+- `switchyard://entities/light.living_room`
+- `switchyard://entities/binary_sensor.front_door_motion`
 
 **What it returns**
 
-A `resources/read` call returns the current entity state — the same shape as `gohome__get_state`:
+A `resources/read` call returns the current entity state — the same shape as `switchyard__get_state`:
 
 ```json
 {
@@ -41,7 +41,7 @@ A `resources/read` call returns the current entity state — the same shape as `
 
 **Discovering URIs**
 
-Entity resource URIs are returned in `gohome__list_entities` results as the `subscribe_uri` field on each entity entry. You can also construct them directly from a known entity ID.
+Entity resource URIs are returned in `switchyard__list_entities` results as the `subscribe_uri` field on each entity entry. You can also construct them directly from a known entity ID.
 
 **How to subscribe**
 
@@ -50,7 +50,7 @@ Send a `resources/subscribe` request for the URI:
 ```json
 {
   "method": "resources/subscribe",
-  "params": { "uri": "gohome://entities/light.living_room" }
+  "params": { "uri": "switchyard://entities/light.living_room" }
 }
 ```
 
@@ -61,7 +61,7 @@ When the entity's state changes, the server sends:
 ```json
 {
   "method": "notifications/resources/updated",
-  "params": { "uri": "gohome://entities/light.living_room" }
+  "params": { "uri": "switchyard://entities/light.living_room" }
 }
 ```
 
@@ -73,13 +73,13 @@ If the agent processes updates slowly, the server coalesces intermediate snapsho
 
 ---
 
-### `gohome://entities?selector={selector}`
+### `switchyard://entities?selector={selector}`
 
 Live state of a filtered set of entities.
 
-**URI pattern:** `gohome://entities?selector={selector}`
+**URI pattern:** `switchyard://entities?selector={selector}`
 
-The `{selector}` is a base64url-encoded JSON object with the same fields as `gohome__list_entities` filters:
+The `{selector}` is a base64url-encoded JSON object with the same fields as `switchyard__list_entities` filters:
 
 ```json
 {
@@ -121,7 +121,7 @@ Selector reads are bounded by a hard cap of 1000 entities. If your selector matc
 ```json
 {
   "method": "resources/subscribe",
-  "params": { "uri": "gohome://entities?selector=eyJhcmVhcyI6WyJsaXZpbmdfcm9vbSJdfQ" }
+  "params": { "uri": "switchyard://entities?selector=eyJhcmVhcyI6WyJsaXZpbmdfcm9vbSJdfQ" }
 }
 ```
 
@@ -134,19 +134,19 @@ Same pattern as single-entity resources — a `notifications/resources/updated` 
 `resources/list` enumerates one entry per known entity (for single-entity URIs) and includes a URI template for the selector form:
 
 ```
-uriTemplate: "gohome://entities?selector={selector}"
+uriTemplate: "switchyard://entities?selector={selector}"
 ```
 
 ---
 
-### `gohome://automations/{automation_id}/runs/{run_id}/trace`
+### `switchyard://automations/{automation_id}/runs/{run_id}/trace`
 
 Step-by-step trace of a single automation run.
 
-**URI pattern:** `gohome://automations/{automation_id}/runs/{run_id}/trace`
+**URI pattern:** `switchyard://automations/{automation_id}/runs/{run_id}/trace`
 
 **Example:**
-- `gohome://automations/motion_hall_light/runs/01JSZQ8KXWABCD1234567890AB/trace`
+- `switchyard://automations/motion_hall_light/runs/01JSZQ8KXWABCD1234567890AB/trace`
 
 **What it returns**
 
@@ -191,7 +191,7 @@ If the run is still in progress when you call `resources/read`, `complete` is `f
 
 Trace URIs are included in:
 
-- `gohome__run_script` results (the `run_id` field)
+- `switchyard__run_script` results (the `run_id` field)
 - `query_events` results for automation-triggered runs
 - Daemon event log entries for `AutomationTriggered` events
 
@@ -201,7 +201,7 @@ Trace URIs are included in:
 {
   "method": "resources/subscribe",
   "params": {
-    "uri": "gohome://automations/motion_hall_light/runs/01JSZQ8KXWABCD1234567890AB/trace"
+    "uri": "switchyard://automations/motion_hall_light/runs/01JSZQ8KXWABCD1234567890AB/trace"
   }
 }
 ```
@@ -212,7 +212,7 @@ Trace URIs are included in:
 {
   "method": "notifications/resources/updated",
   "params": {
-    "uri": "gohome://automations/motion_hall_light/runs/01JSZQ8KXWABCD1234567890AB/trace"
+    "uri": "switchyard://automations/motion_hall_light/runs/01JSZQ8KXWABCD1234567890AB/trace"
   }
 }
 ```
@@ -233,7 +233,7 @@ Trace subscriptions use a larger internal buffer (1024 pending updates). If the 
 
 ### Subscribing
 
-Send `resources/subscribe` with the URI. The server opens the underlying Connect stream from `gohomed` and starts forwarding notifications.
+Send `resources/subscribe` with the URI. The server opens the underlying Connect stream from `switchyardd` and starts forwarding notifications.
 
 ### Reading after a notification
 

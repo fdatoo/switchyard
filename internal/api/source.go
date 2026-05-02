@@ -23,12 +23,12 @@ func SourceFromContext(ctx context.Context) (string, bool) {
 
 type sourceInterceptor struct{}
 
-// SourceInterceptor reads x-gohome-source header and puts it on context.
+// SourceInterceptor reads x-switchyard-source header and puts it on context.
 func SourceInterceptor() connect.Interceptor { return &sourceInterceptor{} }
 
 func (i *sourceInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc {
 	return func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {
-		source := req.Header().Get("x-gohome-source")
+		source := req.Header().Get("x-switchyard-source")
 		if source == "" {
 			source = "cli"
 		}
@@ -42,7 +42,7 @@ func (i *sourceInterceptor) WrapStreamingClient(next connect.StreamingClientFunc
 
 func (i *sourceInterceptor) WrapStreamingHandler(next connect.StreamingHandlerFunc) connect.StreamingHandlerFunc {
 	return func(ctx context.Context, conn connect.StreamingHandlerConn) error {
-		source := conn.RequestHeader().Get("x-gohome-source")
+		source := conn.RequestHeader().Get("x-switchyard-source")
 		if source == "" {
 			source = "cli"
 		}

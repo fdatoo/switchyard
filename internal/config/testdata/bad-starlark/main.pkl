@@ -1,6 +1,6 @@
-amends "gohome:config"
+amends "switchyard:config"
 
-import "gohome:automations" as auto
+import "switchyard:automations" as auto
 
 automations {
   new auto.Automation {

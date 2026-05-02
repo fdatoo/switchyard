@@ -9,11 +9,11 @@ import (
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/internal/mcp"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/internal/mcp"
 )
 
-// QueryEventsInput is the input schema for gohome__query_events.
+// QueryEventsInput is the input schema for switchyard__query_events.
 type QueryEventsInput struct {
 	Kinds        []string `json:"kinds,omitempty"`
 	EntityPrefix string   `json:"entity_prefix,omitempty"`
@@ -24,7 +24,7 @@ type QueryEventsInput struct {
 	Cursor       string   `json:"cursor,omitempty"`
 }
 
-// TailEventsInput is the input schema for gohome__tail_events.
+// TailEventsInput is the input schema for switchyard__tail_events.
 type TailEventsInput struct {
 	Kinds        []string `json:"kinds,omitempty"`
 	EntityPrefix string   `json:"entity_prefix,omitempty"`
@@ -36,7 +36,7 @@ type TailEventsInput struct {
 
 func registerEvents(d Deps) {
 	sdk.AddTool(d.Server, &sdk.Tool{
-		Name:        "gohome__query_events",
+		Name:        "switchyard__query_events",
 		Description: "Query historical events from the event log.",
 	}, func(ctx context.Context, _ *sdk.CallToolRequest, in QueryEventsInput) (*sdk.CallToolResult, any, error) {
 		var pageSize uint32
@@ -53,7 +53,7 @@ func registerEvents(d Deps) {
 				ToCursor:     in.ToCursor,
 			},
 		})
-		mcp.SetToolHeader("gohome__query_events").Apply(req)
+		mcp.SetToolHeader("switchyard__query_events").Apply(req)
 		resp, err := d.Client.Event.Query(ctx, req)
 		if err != nil {
 			return nil, nil, toToolError(err)
@@ -80,7 +80,7 @@ func registerEvents(d Deps) {
 	})
 
 	sdk.AddTool(d.Server, &sdk.Tool{
-		Name:        "gohome__tail_events",
+		Name:        "switchyard__tail_events",
 		Description: "Stream live events from the event bus, collecting until MaxEvents or WaitSeconds is reached.",
 	}, func(ctx context.Context, _ *sdk.CallToolRequest, in TailEventsInput) (*sdk.CallToolResult, any, error) {
 		maxEvents := in.MaxEvents
@@ -104,7 +104,7 @@ func registerEvents(d Deps) {
 				FromCursor:   in.FromCursor,
 			},
 		})
-		mcp.SetToolHeader("gohome__tail_events").Apply(req)
+		mcp.SetToolHeader("switchyard__tail_events").Apply(req)
 		stream, err := d.Client.Event.Tail(ctx, req)
 		if err != nil {
 			return nil, nil, toToolError(err)

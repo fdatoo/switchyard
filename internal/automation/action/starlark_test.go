@@ -5,8 +5,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/fdatoo/gohome/internal/automation/action"
-	sltestutil "github.com/fdatoo/gohome/internal/starlark/testutil"
+	"github.com/fdatoo/switchyard/internal/automation/action"
+	sltestutil "github.com/fdatoo/switchyard/internal/starlark/testutil"
 )
 
 func TestStarlark_Executes(t *testing.T) {

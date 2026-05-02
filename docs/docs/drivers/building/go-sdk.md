@@ -2,10 +2,10 @@
 
 !!! status-alpha "Alpha — shipped, interface evolving"
 
-The [`github.com/fynn-labs/gohome-driverkit`](https://github.com/fynn-labs/gohome-driverkit) Go module is the primary SDK for building gohome drivers. This page walks through the complete API using a realistic dimmable-light driver as the running example.
+The [`github.com/fynn-labs/switchyard-driverkit`](https://github.com/fynn-labs/switchyard-driverkit) Go module is the primary SDK for building switchyard drivers. This page walks through the complete API using a realistic dimmable-light driver as the running example.
 
 ```
-go get github.com/fynn-labs/gohome-driverkit
+go get github.com/fynn-labs/switchyard-driverkit
 ```
 
 ---
@@ -13,7 +13,7 @@ go get github.com/fynn-labs/gohome-driverkit
 ## Package overview
 
 ```
-github.com/fynn-labs/gohome-driverkit
+github.com/fynn-labs/switchyard-driverkit
 ├── driver/       # High-level entry point — start here
 ├── protocol/     # Low-level Carport implementation (advanced use only)
 └── drivertest/   # Test harness
@@ -162,7 +162,7 @@ emit.Send(&carportv1alpha1.DriverToHost{
 })
 ```
 
-`DriverEvent` kinds should be declared in the driver manifest's `driverEventTypes` list so `gohomed` can route and display them correctly.
+`DriverEvent` kinds should be declared in the driver manifest's `driverEventTypes` list so `switchyardd` can route and display them correctly.
 
 ---
 
@@ -172,14 +172,14 @@ emit.Send(&carportv1alpha1.DriverToHost{
 log.Fatal(d.Run(context.Background()))
 ```
 
-`Run` reads the Carport environment variables injected by `gohomed`:
+`Run` reads the Carport environment variables injected by `switchyardd`:
 
 | Variable | Description |
 |---|---|
-| `GOHOME_CARPORT_SOCKET` | Unix domain socket path to listen on |
-| `GOHOME_CARPORT_SECRET` | Per-launch handshake secret |
-| `GOHOME_CARPORT_INSTANCE_ID` | Instance ID from `drivers.toml` |
-| `GOHOME_CARPORT_INSTANCE_CONFIG` | Raw instance config bytes (JSON in v0.x) |
+| `SWITCHYARD_CARPORT_SOCKET` | Unix domain socket path to listen on |
+| `SWITCHYARD_CARPORT_SECRET` | Per-launch handshake secret |
+| `SWITCHYARD_CARPORT_INSTANCE_ID` | Instance ID from `drivers.toml` |
+| `SWITCHYARD_CARPORT_INSTANCE_CONFIG` | Raw instance config bytes (JSON in v0.x) |
 
 `Run` enters a reconnect loop: if the stream closes (host restart, network glitch), it waits with exponential backoff (1s initial, 30s max) and reconnects. The backoff resets to 1s after a session longer than 5s (healthy session, not a crash loop).
 
@@ -197,8 +197,8 @@ import (
     "strconv"
     "sync"
 
-    entityv1 "github.com/fynn-labs/gohome/gen/gohome/entity/v1"
-    "github.com/fynn-labs/gohome-driverkit/driver"
+    entityv1 "github.com/fynn-labs/switchyard/gen/switchyard/entity/v1"
+    "github.com/fynn-labs/switchyard-driverkit/driver"
 )
 
 const entityID = "light.fake_light"
@@ -288,4 +288,4 @@ var (
 ## Next steps
 
 - [Testing drivers](testing.md) — using `drivertest.New` for fast in-process tests
-- [Driver lifecycle](lifecycle.md) — how `gohomed` manages driver processes
+- [Driver lifecycle](lifecycle.md) — how `switchyardd` manages driver processes

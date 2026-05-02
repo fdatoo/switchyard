@@ -6,7 +6,7 @@ import (
 	"bytes"
 	"log/slog"
 
-	"github.com/fdatoo/gohome/internal/observability"
+	"github.com/fdatoo/switchyard/internal/observability"
 )
 
 func newTestLogger() *slog.Logger {

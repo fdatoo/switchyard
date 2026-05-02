@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/fdatoo/gohome/internal/automation/action"
+	"github.com/fdatoo/switchyard/internal/automation/action"
 )
 
 type recExec struct {

@@ -4,7 +4,7 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/fdatoo/gohome/drivers/z2m/internal/z2m"
+	"github.com/fdatoo/switchyard/drivers/z2m/internal/z2m"
 )
 
 func actionTypes(actions []Action) []string {

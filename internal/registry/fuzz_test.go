@@ -8,10 +8,10 @@ import (
 
 	"google.golang.org/protobuf/proto"
 
-	eventv1 "github.com/fdatoo/gohome/gen/gohome/event/v1"
-	"github.com/fdatoo/gohome/internal/eventstore"
-	"github.com/fdatoo/gohome/internal/registry"
-	"github.com/fdatoo/gohome/internal/storage"
+	eventv1 "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
+	"github.com/fdatoo/switchyard/internal/eventstore"
+	"github.com/fdatoo/switchyard/internal/registry"
+	"github.com/fdatoo/switchyard/internal/storage"
 )
 
 // FuzzRegistryApply feeds arbitrary bytes as a serialized event payload into

@@ -16,10 +16,10 @@ import (
 	"github.com/klauspost/compress/zstd"
 	"google.golang.org/protobuf/proto"
 
-	entityv1 "github.com/fdatoo/gohome/gen/gohome/entity/v1"
-	eventv1 "github.com/fdatoo/gohome/gen/gohome/event/v1"
-	"github.com/fdatoo/gohome/internal/eventstore"
-	"github.com/fdatoo/gohome/internal/storage"
+	entityv1 "github.com/fdatoo/switchyard/gen/switchyard/entity/v1"
+	eventv1 "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
+	"github.com/fdatoo/switchyard/internal/eventstore"
+	"github.com/fdatoo/switchyard/internal/storage"
 )
 
 type EntityID = string

@@ -6,10 +6,10 @@ Driver instances are declared in `drivers.pkl`. Each instance binds a driver bin
 
 ## Declaring driver instances
 
-All driver instances live under the `drivers` listing in your config. The `gohome:carport` module provides the base `DriverInstance` class that every driver extends:
+All driver instances live under the `drivers` listing in your config. The `switchyard:carport` module provides the base `DriverInstance` class that every driver extends:
 
 ```pkl
-module gohome.carport
+module switchyard.carport
 
 abstract class DriverInstance {
   driverName: String   // must match an installed driver binary
@@ -23,8 +23,8 @@ Drivers extend this with their own typed fields. The driver's Pkl class is publi
 
 ```pkl
 // drivers.pkl
-import "gohome:base"    as base
-import "gohome:carport" as carport
+import "switchyard:base"    as base
+import "switchyard:carport" as carport
 
 // Import the Hue driver's typed config class.
 // This comes from the driver's installed manifest.
@@ -41,7 +41,7 @@ drivers: Listing<carport.DriverInstance> = new {
 }
 ```
 
-The Pkl evaluator will type-check every field. If `bridgeHost` is missing or not a `String`, `gohome config validate` fails with a clear error pointing at the line.
+The Pkl evaluator will type-check every field. If `bridgeHost` is missing or not a `String`, `switchyard config validate` fails with a clear error pointing at the line.
 
 ## Zigbee2MQTT example
 
@@ -53,7 +53,7 @@ new z2m.Zigbee2MQTTInstance {
   driverName     = "zigbee2mqtt"
   mqttHost       = "10.0.0.10"
   mqttPort       = 1883
-  mqttUsername   = "gohome"
+  mqttUsername   = "switchyard"
   mqttPassword   = "env:Z2M_MQTT_PASSWORD"
   baseTopic      = "zigbee2mqtt"
   permitJoinOnStart = false
@@ -87,7 +87,7 @@ Each instance gets its own supervisor slot. Restarting one does not affect the o
 
 ## Secret references in driver config
 
-Never put secrets directly in Pkl source. Use one of the three secret reference types from `gohome:base`:
+Never put secrets directly in Pkl source. Use one of the three secret reference types from `switchyard:base`:
 
 ```pkl
 // From an environment variable
@@ -97,7 +97,7 @@ apiToken = "env:HUE_TOKEN"
 apiToken = "file:/run/secrets/hue_token"
 
 // From the system keyring (macOS Keychain, Linux Secret Service)
-apiToken = "keyring:gohome/hue_token"
+apiToken = "keyring:switchyard/hue_token"
 ```
 
 Secret references are opaque to Pkl — the evaluator serializes them as tagged strings. The Go runtime resolves them to plaintext at apply time, immediately before handing config to the carport supervisor. Resolved secret values are never written to the event store or printed in diff output.
@@ -106,6 +106,6 @@ See [Secrets](secrets.md) for the full reference on all secret source types.
 
 ## Diff-based restart
 
-When you run `gohome config apply`, only driver instances whose configuration hash has changed are restarted. The hash covers the entire serialized config of the instance, including resolved secret values (but the hash is computed before any secret resolution, on the tagged-string form — so a secret rotation that keeps the same `env:VAR_NAME` reference does not trigger a restart).
+When you run `switchyard config apply`, only driver instances whose configuration hash has changed are restarted. The hash covers the entire serialized config of the instance, including resolved secret values (but the hash is computed before any secret resolution, on the tagged-string form — so a secret rotation that keeps the same `env:VAR_NAME` reference does not trigger a restart).
 
 If you add a new driver instance, only the new instance is started. If you remove one, only that one is stopped. Unchanged instances are untouched.

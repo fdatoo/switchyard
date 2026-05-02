@@ -1,19 +1,19 @@
-// minimal-main.pkl: Bare minimum gohome configuration
+// minimal-main.pkl: Bare minimum switchyard configuration
 // 
-// This is the smallest functional configuration you can run gohome with.
+// This is the smallest functional configuration you can run switchyard with.
 // Copy this file and customize it for your setup.
 // 
 // See full-main.pkl for examples of all available features.
 
-module gohome.config
+module switchyard.config
 
-import "gohome:entities" as ent
-import "gohome:carport" as cp
-import "gohome:automations" as auto
-import "gohome:scripts" as scr
-import "gohome:dashboards" as dash
-import "gohome:auth" as authmod
-import "gohome:mcp" as mcpmod
+import "switchyard:entities" as ent
+import "switchyard:carport" as cp
+import "switchyard:automations" as auto
+import "switchyard:scripts" as scr
+import "switchyard:dashboards" as dash
+import "switchyard:auth" as authmod
+import "switchyard:mcp" as mcpmod
 
 // ENTITIES: Define your devices (lights, sensors, switches, etc.)
 // Format: id must be "type.name" (e.g., "light.living_room")
@@ -52,7 +52,7 @@ policies: Listing<authmod.Policy> = new {}
 // Leave at defaults for now; configure later if needed.
 mcp: mcpmod.MCPConfig = new mcpmod.MCPConfig {}
 
-// LISTENERS: How gohome listens for connections (gRPC over Unix socket and TCP)
+// LISTENERS: How switchyard listens for connections (gRPC over Unix socket and TCP)
 class Listener {
   uds:                     UDSListener   = new UDSListener {}
   tcp:                     TCPListener   = new TCPListener {}
@@ -62,7 +62,7 @@ class Listener {
 
 class UDSListener {
   // Unix Domain Socket for local connections (most secure, local only)
-  path: String = "@data/gohomed.sock"
+  path: String = "@data/switchyardd.sock"
   mode: UInt   = 0o600
 }
 

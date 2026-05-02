@@ -10,8 +10,8 @@ import (
 	lgtable "github.com/charmbracelet/lipgloss/table"
 	"github.com/spf13/cobra"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
 )
 
 func newSnapshotCmd(gf *globalFlags) *cobra.Command {
@@ -32,7 +32,7 @@ func newSnapshotCreateCmd(gf *globalFlags) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			svc := gohomev1alpha1connect.NewSystemServiceClient(httpClient, base)
+			svc := switchyardv1alpha1connect.NewSystemServiceClient(httpClient, base)
 			resp, err := svc.CreateSnapshot(cmd.Context(), connect.NewRequest(&v1.CreateSnapshotRequest{
 				Owner:  owner,
 				Reason: reason,

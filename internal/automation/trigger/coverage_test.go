@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	eventv1 "github.com/fdatoo/gohome/gen/gohome/event/v1"
-	"github.com/fdatoo/gohome/internal/automation/trigger"
-	"github.com/fdatoo/gohome/internal/eventstore"
+	eventv1 "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
+	"github.com/fdatoo/switchyard/internal/automation/trigger"
+	"github.com/fdatoo/switchyard/internal/eventstore"
 )
 
 // --- Registry: covers RegisterState/Event, Unregister branches, Dispatch default + state branches ---

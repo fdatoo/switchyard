@@ -6,7 +6,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/fdatoo/gohome/internal/auth"
+	"github.com/fdatoo/switchyard/internal/auth"
 )
 
 // Roles is the abstraction the runtime uses to translate Principal → role set.

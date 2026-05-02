@@ -1,4 +1,4 @@
-module github.com/fdatoo/gohome
+module github.com/fdatoo/switchyard
 
 go 1.25.9
 
@@ -9,7 +9,7 @@ require (
 	github.com/charmbracelet/lipgloss v1.1.0
 	github.com/charmbracelet/log v1.0.0
 	github.com/eclipse/paho.mqtt.golang v1.5.1
-	github.com/fdatoo/gohome-driverkit v0.0.0-00010101000000-000000000000
+	github.com/fdatoo/switchyard-driverkit v0.0.0-00010101000000-000000000000
 	github.com/fxamacker/cbor/v2 v2.9.1
 	github.com/go-webauthn/webauthn v0.17.0
 	github.com/google/uuid v1.6.0
@@ -96,4 +96,4 @@ require (
 
 tool google.golang.org/grpc/cmd/protoc-gen-go-grpc
 
-replace github.com/fdatoo/gohome-driverkit => ./gohome-driverkit
+replace github.com/fdatoo/switchyard-driverkit => ./switchyard-driverkit

@@ -2,13 +2,13 @@
 
 !!! status-alpha "Alpha — shipped, interface evolving"
 
-A scene is a named snapshot of desired entity states. Applying a scene sets all of its target entities to the declared state in a single operation. Scenes are declared in `scenes.pkl` and applied via `gohome scene apply <scene-id>` or through the web UI.
+A scene is a named snapshot of desired entity states. Applying a scene sets all of its target entities to the declared state in a single operation. Scenes are declared in `scenes.pkl` and applied via `switchyard scene apply <scene-id>` or through the web UI.
 
 ## Declaring scenes
 
 ```pkl
 // scenes.pkl
-import "gohome:scenes" as scenes
+import "switchyard:scenes" as scenes
 
 scenes: Listing<scenes.Scene> = new {
   new scenes.Scene {
@@ -69,7 +69,7 @@ scenes = import("scenes.pkl").scenes
 ## Applying a scene from the CLI
 
 ```
-$ gohome scene apply night_mode
+$ switchyard scene apply night_mode
 ✓ Scene "Night Mode" applied (3 entities updated)
 ```
 
@@ -77,7 +77,7 @@ The command sets each entity in the scene to the declared state. Entities not li
 
 ## The `SceneApplied` event
 
-Every successful `gohome scene apply` appends a `SceneApplied` event to the event store:
+Every successful `switchyard scene apply` appends a `SceneApplied` event to the event store:
 
 ```
 cursor: 5102

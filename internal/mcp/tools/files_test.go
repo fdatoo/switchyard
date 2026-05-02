@@ -10,9 +10,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/fdatoo/gohome/internal/auth"
-	"github.com/fdatoo/gohome/internal/mcp"
-	"github.com/fdatoo/gohome/internal/mcp/tools"
+	"github.com/fdatoo/switchyard/internal/auth"
+	"github.com/fdatoo/switchyard/internal/mcp"
+	"github.com/fdatoo/switchyard/internal/mcp/tools"
 )
 
 // Since tools.Deps.Audit is *audit.Recorder (concrete type), and we need to test
@@ -37,7 +37,7 @@ func TestWriteConfigFile_HappyPath(t *testing.T) {
 	tools.Register(d)
 
 	content := "amends \"example\"\nfoo = 1\n"
-	result, err := callTool(t, s, "gohome__write_config_file", map[string]any{
+	result, err := callTool(t, s, "switchyard__write_config_file", map[string]any{
 		"path":    "config.pkl",
 		"content": content,
 	})
@@ -61,7 +61,7 @@ func TestWriteConfigFile_PathEscape(t *testing.T) {
 	d, s := newFilesTestDeps(t, dir)
 	tools.Register(d)
 
-	result, err := callTool(t, s, "gohome__write_config_file", map[string]any{
+	result, err := callTool(t, s, "switchyard__write_config_file", map[string]any{
 		"path":    "../escape.pkl",
 		"content": "amends \"x\"\n",
 	})
@@ -74,7 +74,7 @@ func TestWriteConfigFile_BadExtension(t *testing.T) {
 	d, s := newFilesTestDeps(t, dir)
 	tools.Register(d)
 
-	result, err := callTool(t, s, "gohome__write_config_file", map[string]any{
+	result, err := callTool(t, s, "switchyard__write_config_file", map[string]any{
 		"path":    "config.json",
 		"content": `{"foo": 1}`,
 	})
@@ -87,7 +87,7 @@ func TestWriteConfigFile_BadPklSyntax(t *testing.T) {
 	d, s := newFilesTestDeps(t, dir)
 	tools.Register(d)
 
-	result, err := callTool(t, s, "gohome__write_config_file", map[string]any{
+	result, err := callTool(t, s, "switchyard__write_config_file", map[string]any{
 		"path":    "config.pkl",
 		"content": "{ unclosed",
 	})
@@ -113,7 +113,7 @@ func TestReadConfigFile_HappyPath(t *testing.T) {
 	d, s := newFilesTestDeps(t, dir)
 	tools.Register(d)
 
-	result, err := callTool(t, s, "gohome__read_config_file", map[string]any{
+	result, err := callTool(t, s, "switchyard__read_config_file", map[string]any{
 		"path": "test.pkl",
 	})
 	require.NoError(t, err)
@@ -131,7 +131,7 @@ func TestReadConfigFile_PathEscape(t *testing.T) {
 	d, s := newFilesTestDeps(t, dir)
 	tools.Register(d)
 
-	result, err := callTool(t, s, "gohome__read_config_file", map[string]any{
+	result, err := callTool(t, s, "switchyard__read_config_file", map[string]any{
 		"path": "../../etc/passwd",
 	})
 	require.NoError(t, err)

@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/fdatoo/gohome/internal/script"
-	scripttestutil "github.com/fdatoo/gohome/internal/script/testutil"
+	"github.com/fdatoo/switchyard/internal/script"
+	scripttestutil "github.com/fdatoo/switchyard/internal/script/testutil"
 )
 
 func TestSyntheticScript(t *testing.T) {

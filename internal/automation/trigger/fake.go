@@ -3,7 +3,7 @@ package trigger
 import (
 	"sync"
 
-	"github.com/fdatoo/gohome/internal/eventstore"
+	"github.com/fdatoo/switchyard/internal/eventstore"
 )
 
 // FakeMatcher is a programmable Matcher for unit tests. It implements both

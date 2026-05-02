@@ -6,13 +6,13 @@
 
 ## Areas — hierarchical rooms
 
-gohome's area model is hierarchical: rooms live inside floors, floors live inside the home. This matters for policies and automations — a rule that applies to `upstairs` automatically covers `nora_room`, `milo_room`, and any other room nested under it.
+switchyard's area model is hierarchical: rooms live inside floors, floors live inside the home. This matters for policies and automations — a rule that applies to `upstairs` automatically covers `nora_room`, `milo_room`, and any other room nested under it.
 
 A simple three-bedroom home:
 
 ```pkl
 // areas.pkl
-import "gohome:base" as base
+import "switchyard:base" as base
 
 areas: Listing<base.Area> = new {
   new base.Area {
@@ -80,7 +80,7 @@ new hue.HueInstance {
 
 ```pkl
 // In entities/overrides.pkl — override a specific entity into a different area
-import "gohome:entities" as entities
+import "switchyard:entities" as entities
 
 new entities.Light {
   id   = "light.hue_kitchen_1"
@@ -102,7 +102,7 @@ Zones are geographic regions used for presence detection. A zone is a circle def
 
 ```pkl
 // zones.pkl
-import "gohome:base" as base
+import "switchyard:base" as base
 
 zones: Listing<base.Zone> = new {
   new base.Zone {

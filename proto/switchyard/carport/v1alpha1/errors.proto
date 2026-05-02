@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package switchyard.carport.v1alpha1;
+
+// See docs/proto-hygiene.md.
+
+enum CarportErrorCode {
+  // 0: success sentinel / unspecified
+  CARPORT_OK = 0;
+
+  // 1-9: caller / request errors
+  CARPORT_UNSUPPORTED_CAPABILITY = 1;
+  CARPORT_BAD_ARGS               = 2;
+
+  // 10-19: device / downstream errors
+  CARPORT_DEVICE_OFFLINE = 10;
+  CARPORT_DEVICE_ERROR   = 11;
+
+  // 20-29: lifecycle / transport errors
+  CARPORT_TIMEOUT              = 20;
+  CARPORT_DRIVER_SHUTTING_DOWN = 21;
+
+  // 99: opaque fallback
+  CARPORT_INTERNAL = 99;
+}

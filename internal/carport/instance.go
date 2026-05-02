@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	carportpb "github.com/fdatoo/gohome/gen/gohome/carport/v1alpha1"
+	carportpb "github.com/fdatoo/switchyard/gen/switchyard/carport/v1alpha1"
 )
 
 // instanceConn is the per-instance live runtime: the gRPC client, the open

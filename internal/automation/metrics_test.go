@@ -7,12 +7,12 @@ import (
 
 	dto "github.com/prometheus/client_model/go"
 
-	configpb "github.com/fdatoo/gohome/gen/gohome/config/v1"
-	"github.com/fdatoo/gohome/internal/automation"
-	automTestutil "github.com/fdatoo/gohome/internal/automation/testutil"
-	"github.com/fdatoo/gohome/internal/observability"
-	"github.com/fdatoo/gohome/internal/script"
-	sltestutil "github.com/fdatoo/gohome/internal/starlark/testutil"
+	configpb "github.com/fdatoo/switchyard/gen/switchyard/config/v1"
+	"github.com/fdatoo/switchyard/internal/automation"
+	automTestutil "github.com/fdatoo/switchyard/internal/automation/testutil"
+	"github.com/fdatoo/switchyard/internal/observability"
+	"github.com/fdatoo/switchyard/internal/script"
+	sltestutil "github.com/fdatoo/switchyard/internal/starlark/testutil"
 )
 
 // gatherMetric finds the MetricFamily by name from the registry.
@@ -77,11 +77,11 @@ func labelsMatch(pairs []*dto.LabelPair, want map[string]string) bool {
 // TestMetrics_AutomationFire constructs an engine with fresh Metrics, fires one
 // automation with a successful CallService action, then asserts:
 //
-//   - gohome_automation_triggers_total{automation_id, trigger_kind} == 1
-//   - gohome_automation_runs_total{automation_id, outcome="ok"} == 1
-//   - gohome_automation_actions_total{automation_id, action_kind="call_service", result="ok"} == 1
-//   - gohome_automation_run_duration_seconds sample count > 0
-//   - gohome_automation_starlark_steps sample count > 0
+//   - switchyard_automation_triggers_total{automation_id, trigger_kind} == 1
+//   - switchyard_automation_runs_total{automation_id, outcome="ok"} == 1
+//   - switchyard_automation_actions_total{automation_id, action_kind="call_service", result="ok"} == 1
+//   - switchyard_automation_run_duration_seconds sample count > 0
+//   - switchyard_automation_starlark_steps sample count > 0
 func TestMetrics_AutomationFire(t *testing.T) {
 	const autoID = "test_auto"
 
@@ -146,42 +146,42 @@ func TestMetrics_AutomationFire(t *testing.T) {
 	time.Sleep(20 * time.Millisecond)
 
 	// --- assert triggers_total ---
-	trigMF := gatherMetric(t, metrics, "gohome_automation_triggers_total")
+	trigMF := gatherMetric(t, metrics, "switchyard_automation_triggers_total")
 	trigV := counterValue(t, trigMF, map[string]string{"automation_id": autoID, "trigger_kind": "manual"})
 	if trigV != 1 {
 		t.Errorf("triggers_total{manual} = %.0f, want 1", trigV)
 	}
 
 	// --- assert runs_total{ok} ---
-	runsMF := gatherMetric(t, metrics, "gohome_automation_runs_total")
+	runsMF := gatherMetric(t, metrics, "switchyard_automation_runs_total")
 	runsV := counterValue(t, runsMF, map[string]string{"automation_id": autoID, "outcome": "ok"})
 	if runsV != 1 {
 		t.Errorf("runs_total{ok} = %.0f, want 1", runsV)
 	}
 
 	// --- assert actions_total{call_service, ok} ---
-	actMF := gatherMetric(t, metrics, "gohome_automation_actions_total")
+	actMF := gatherMetric(t, metrics, "switchyard_automation_actions_total")
 	actV := counterValue(t, actMF, map[string]string{"automation_id": autoID, "action_kind": "call_service", "result": "ok"})
 	if actV != 1 {
 		t.Errorf("actions_total{call_service,ok} = %.0f, want 1", actV)
 	}
 
 	// --- assert run_duration_seconds observed ---
-	durMF := gatherMetric(t, metrics, "gohome_automation_run_duration_seconds")
+	durMF := gatherMetric(t, metrics, "switchyard_automation_run_duration_seconds")
 	durCount := histogramCount(t, durMF, map[string]string{"automation_id": autoID})
 	if durCount == 0 {
 		t.Error("run_duration_seconds: no observations")
 	}
 
 	// --- assert starlark_steps observed ---
-	stepsMF := gatherMetric(t, metrics, "gohome_automation_starlark_steps")
+	stepsMF := gatherMetric(t, metrics, "switchyard_automation_starlark_steps")
 	stepsCount := histogramCount(t, stepsMF, map[string]string{"automation_id": autoID})
 	if stepsCount == 0 {
 		t.Error("starlark_steps: no observations")
 	}
 
 	// --- assert automation_registered gauge ---
-	regMF := gatherMetric(t, metrics, "gohome_automation_registered")
+	regMF := gatherMetric(t, metrics, "switchyard_automation_registered")
 	if regMF == nil || len(regMF.GetMetric()) == 0 {
 		t.Error("automation_registered: metric not found")
 	} else if v := regMF.GetMetric()[0].GetGauge().GetValue(); v != 1 {
@@ -190,7 +190,7 @@ func TestMetrics_AutomationFire(t *testing.T) {
 }
 
 // TestMetrics_AutomationSkipped checks that emitSkipped records
-// gohome_automation_runs_total{outcome="skipped"}.
+// switchyard_automation_runs_total{outcome="skipped"}.
 func TestMetrics_AutomationSkipped(t *testing.T) {
 	const autoID = "single_auto"
 
@@ -248,7 +248,7 @@ func TestMetrics_AutomationSkipped(t *testing.T) {
 	cancel()
 	eng.Stop(context.Background())
 
-	runsMF := gatherMetric(t, metrics, "gohome_automation_runs_total")
+	runsMF := gatherMetric(t, metrics, "switchyard_automation_runs_total")
 	skippedV := counterValue(t, runsMF, map[string]string{"automation_id": autoID, "outcome": "skipped"})
 	if skippedV < 1 {
 		t.Errorf("runs_total{skipped} = %.0f, want >= 1", skippedV)

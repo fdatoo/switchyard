@@ -1,5 +1,5 @@
 // Package daemon wires the eventstore, state cache, registry, CLI socket,
-// and observability into a single runnable gohomed.
+// and observability into a single runnable switchyardd.
 package daemon
 
 import (
@@ -21,7 +21,7 @@ type Config struct {
 
 func (c *Config) WithDefaults() {
 	if c.DataDir == "" {
-		c.DataDir = "~/.local/share/gohome"
+		c.DataDir = "~/.local/share/switchyard"
 	}
 	if c.LogFormat == "" {
 		c.LogFormat = "auto"
@@ -30,7 +30,7 @@ func (c *Config) WithDefaults() {
 		c.AdminPort = 9190
 	}
 	if c.SocketPath == "" {
-		c.SocketPath = "gohomed.sock"
+		c.SocketPath = "switchyardd.sock"
 	}
 	if c.SnapshotEveryEvents == 0 {
 		c.SnapshotEveryEvents = 10_000

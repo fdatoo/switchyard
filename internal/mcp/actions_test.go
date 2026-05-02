@@ -5,15 +5,15 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/fdatoo/gohome/internal/mcp"
+	"github.com/fdatoo/switchyard/internal/mcp"
 )
 
 func TestToolActions_AllPresent(t *testing.T) {
 	expected := []string{
-		"gohome__get_state", "gohome__list_entities", "gohome__call_capability",
-		"gohome__query_events", "gohome__tail_events", "gohome__apply_scene",
-		"gohome__run_script", "gohome__validate_config", "gohome__apply_config",
-		"gohome__eval_starlark", "gohome__read_config_file", "gohome__write_config_file",
+		"switchyard__get_state", "switchyard__list_entities", "switchyard__call_capability",
+		"switchyard__query_events", "switchyard__tail_events", "switchyard__apply_scene",
+		"switchyard__run_script", "switchyard__validate_config", "switchyard__apply_config",
+		"switchyard__eval_starlark", "switchyard__read_config_file", "switchyard__write_config_file",
 	}
 	for _, name := range expected {
 		a, ok := mcp.ToolActions[name]

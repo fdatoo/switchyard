@@ -3,12 +3,12 @@ package automation
 import (
 	"context"
 
-	"github.com/fdatoo/gohome/internal/automation/action"
-	"github.com/fdatoo/gohome/internal/observability"
+	"github.com/fdatoo/switchyard/internal/automation/action"
+	"github.com/fdatoo/switchyard/internal/observability"
 )
 
 // metricExecutor wraps a leaf action.Executor to record
-// gohome_automation_actions_total{automation_id, action_kind, result}.
+// switchyard_automation_actions_total{automation_id, action_kind, result}.
 // Block executors (SequenceBlock, ParallelBlock) are NOT wrapped here —
 // their children each get their own wrapper so nested actions are counted
 // individually. The continueOnError flag is the same flag the parent block

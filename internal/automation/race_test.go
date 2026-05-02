@@ -11,12 +11,12 @@ import (
 	"testing"
 	"time"
 
-	configpb "github.com/fdatoo/gohome/gen/gohome/config/v1"
-	eventv1 "github.com/fdatoo/gohome/gen/gohome/event/v1"
-	"github.com/fdatoo/gohome/internal/automation"
-	automTestutil "github.com/fdatoo/gohome/internal/automation/testutil"
-	"github.com/fdatoo/gohome/internal/script"
-	sltestutil "github.com/fdatoo/gohome/internal/starlark/testutil"
+	configpb "github.com/fdatoo/switchyard/gen/switchyard/config/v1"
+	eventv1 "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
+	"github.com/fdatoo/switchyard/internal/automation"
+	automTestutil "github.com/fdatoo/switchyard/internal/automation/testutil"
+	"github.com/fdatoo/switchyard/internal/script"
+	sltestutil "github.com/fdatoo/switchyard/internal/starlark/testutil"
 )
 
 // buildRaceEng builds an engine ready for race tests with the given mode.

@@ -5,13 +5,13 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/fdatoo/gohome/internal/storage"
+	"github.com/fdatoo/switchyard/internal/storage"
 )
 
 func TestOpen_MigrationsCreateEventsTable(t *testing.T) {
 	ctx := context.Background()
 	dir := t.TempDir()
-	db, err := storage.Open(ctx, storage.Config{Path: filepath.Join(dir, "gohome.db")})
+	db, err := storage.Open(ctx, storage.Config{Path: filepath.Join(dir, "switchyard.db")})
 	if err != nil {
 		t.Fatalf("Open: %v", err)
 	}
@@ -32,7 +32,7 @@ func TestOpen_MigrationsCreateEventsTable(t *testing.T) {
 func TestOpen_PragmasApplied(t *testing.T) {
 	ctx := context.Background()
 	dir := t.TempDir()
-	db, err := storage.Open(ctx, storage.Config{Path: filepath.Join(dir, "gohome.db")})
+	db, err := storage.Open(ctx, storage.Config{Path: filepath.Join(dir, "switchyard.db")})
 	if err != nil {
 		t.Fatal(err)
 	}

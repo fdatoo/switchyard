@@ -16,12 +16,12 @@ import (
 
 	"google.golang.org/protobuf/proto"
 
-	"github.com/fdatoo/gohome-driverkit/driver"
-	entityv1 "github.com/fdatoo/gohome/gen/gohome/entity/v1"
+	"github.com/fdatoo/switchyard-driverkit/driver"
+	entityv1 "github.com/fdatoo/switchyard/gen/switchyard/entity/v1"
 
-	"github.com/fdatoo/gohome/drivers/z2m/internal/mqtt"
-	"github.com/fdatoo/gohome/drivers/z2m/internal/state"
-	"github.com/fdatoo/gohome/drivers/z2m/internal/z2m"
+	"github.com/fdatoo/switchyard/drivers/z2m/internal/mqtt"
+	"github.com/fdatoo/switchyard/drivers/z2m/internal/state"
+	"github.com/fdatoo/switchyard/drivers/z2m/internal/z2m"
 )
 
 const driverName, driverVersion = "driver.z2m", "0.1.0"
@@ -42,7 +42,7 @@ func run() error {
 	logger := slog.New(slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{
 		Level: parseLogLevel(os.Getenv("Z2M_LOG_LEVEL")),
 	})).With(
-		"instance_id", os.Getenv("GOHOME_CARPORT_INSTANCE_ID"),
+		"instance_id", os.Getenv("SWITCHYARD_CARPORT_INSTANCE_ID"),
 		"broker_url", cfg.BrokerURL,
 		"base_topic", cfg.BaseTopic,
 	)
@@ -86,7 +86,7 @@ func run() error {
 	return nil
 }
 
-// config is the JSON shape carried in GOHOME_CARPORT_INSTANCE_CONFIG.
+// config is the JSON shape carried in SWITCHYARD_CARPORT_INSTANCE_CONFIG.
 // Password is resolved at load time from the env var named by PasswordEnv;
 // it is never serialized.
 type config struct {
@@ -101,9 +101,9 @@ type config struct {
 }
 
 func loadConfig() (config, error) {
-	raw := os.Getenv("GOHOME_CARPORT_INSTANCE_CONFIG")
+	raw := os.Getenv("SWITCHYARD_CARPORT_INSTANCE_CONFIG")
 	if raw == "" {
-		return config{}, errors.New("GOHOME_CARPORT_INSTANCE_CONFIG is required")
+		return config{}, errors.New("SWITCHYARD_CARPORT_INSTANCE_CONFIG is required")
 	}
 	c := config{BaseTopic: "zigbee2mqtt"}
 	if err := json.Unmarshal([]byte(raw), &c); err != nil {
@@ -118,7 +118,7 @@ func loadConfig() (config, error) {
 	if c.ClientID == "" {
 		var b [4]byte
 		_, _ = rand.Read(b[:])
-		c.ClientID = "gohome-z2m-" + hex.EncodeToString(b[:])
+		c.ClientID = "switchyard-z2m-" + hex.EncodeToString(b[:])
 	}
 	return c, nil
 }

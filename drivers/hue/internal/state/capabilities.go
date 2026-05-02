@@ -1,10 +1,10 @@
 package state
 
 import (
-	"github.com/fdatoo/gohome/drivers/hue/internal/bridge"
+	"github.com/fdatoo/switchyard/drivers/hue/internal/bridge"
 )
 
-// Capabilities returns the gohome capability strings the bulb supports,
+// Capabilities returns the switchyard capability strings the bulb supports,
 // inferred from the presence of optional fields in the Hue v2 light
 // resource. Every Hue light supports turn_on/turn_off; set_brightness
 // requires the dimming block; set_color_temp requires the

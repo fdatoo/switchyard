@@ -8,10 +8,10 @@ import (
 
 	"connectrpc.com/connect"
 
-	commonv1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/internal/api/listener"
-	"github.com/fdatoo/gohome/internal/auth"
-	"github.com/fdatoo/gohome/internal/observability"
+	commonv1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/internal/api/listener"
+	"github.com/fdatoo/switchyard/internal/auth"
+	"github.com/fdatoo/switchyard/internal/observability"
 )
 
 // newReq returns a real connect.AnyRequest (backed by connect.Request[T]) so

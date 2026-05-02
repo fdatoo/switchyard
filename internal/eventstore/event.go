@@ -7,7 +7,7 @@ import (
 
 	"github.com/google/uuid"
 
-	eventv1 "github.com/fdatoo/gohome/gen/gohome/event/v1"
+	eventv1 "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
 )
 
 // Event is the in-memory Go representation of a row in the events table.

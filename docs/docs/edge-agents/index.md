@@ -3,20 +3,20 @@
 !!! status-wip "In development"
     The edge agent is designed but partially implemented. The API may change.
 
-An **edge agent** is an optional supervisor binary — `gohome-edge` — that runs on a remote host and connects back to your primary `gohomed` daemon over mTLS. It lets you co-locate drivers with the hardware they need to reach, while keeping all automation logic, event storage, and configuration on the primary.
+An **edge agent** is an optional supervisor binary — `switchyard-edge` — that runs on a remote host and connects back to your primary `switchyardd` daemon over mTLS. It lets you co-locate drivers with the hardware they need to reach, while keeping all automation logic, event storage, and configuration on the primary.
 
 ```
-gohome-edge  ←——(mTLS, Carport v1alpha2)——→  gohomed
+switchyard-edge  ←——(mTLS, Carport v1alpha2)——→  switchyardd
 (e.g. Raspberry Pi)                           (your primary host)
 ```
 
 ---
 
-## What gohome-edge is
+## What switchyard-edge is
 
-`gohome-edge` is a **slim relay**. It does three things:
+`switchyard-edge` is a **slim relay**. It does three things:
 
-1. **Spawns and supervises driver subprocesses** on the remote host — exactly as `gohomed` does for local drivers.
+1. **Spawns and supervises driver subprocesses** on the remote host — exactly as `switchyardd` does for local drivers.
 2. **Bridges each driver's Carport stream** over an mTLS connection to the primary daemon. Drivers are completely unaware they are running on an edge host; they speak the same Carport gRPC protocol over a local Unix socket.
 3. **Buffers state events to disk** when the connection to the primary is lost, then replays them in order on reconnect.
 
@@ -51,10 +51,10 @@ You do **not** need an edge agent for drivers that communicate over IP (most clo
 
 ```
 ┌─────────────────────────────────────────┐
-│  Primary host (runs gohomed)            │
+│  Primary host (runs switchyardd)            │
 │                                         │
 │  ┌────────────────────────────────────┐ │
-│  │ gohomed                            │ │
+│  │ switchyardd                            │ │
 │  │  Carport host (UDS + TLS :7443)    │ │
 │  │  Internal CA                       │ │
 │  │  EventStore                        │ │
@@ -71,7 +71,7 @@ You do **not** need an edge agent for drivers that communicate over IP (most clo
 │  Edge host (e.g. Raspberry Pi)          │
 │                                         │
 │  ┌────────────────────────────────────┐ │
-│  │ gohome-edge                        │ │
+│  │ switchyard-edge                        │ │
 │  │  Driver supervisor                 │ │
 │  │  Per-driver TLS bridge             │ │
 │  │  On-disk ring buffer               │ │
@@ -92,10 +92,10 @@ Key properties:
 
 ---
 
-## What gohome-edge is not
+## What switchyard-edge is not
 
 - Not a backup daemon. When the WAN drops, automations stop running — events are buffered, but no commands are dispatched from the edge.
-- Not a clustering mechanism. gohome is deliberately single-primary; edge agents are remote driver hosts, not peers.
+- Not a clustering mechanism. switchyard is deliberately single-primary; edge agents are remote driver hosts, not peers.
 - Not required for IP-based drivers. If your driver communicates over the network, it can run on the primary host.
 
 ---

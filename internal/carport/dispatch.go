@@ -8,10 +8,10 @@ import (
 
 	"github.com/google/uuid"
 
-	carportpb "github.com/fdatoo/gohome/gen/gohome/carport/v1alpha1"
-	eventpb "github.com/fdatoo/gohome/gen/gohome/event/v1"
-	"github.com/fdatoo/gohome/internal/cause"
-	"github.com/fdatoo/gohome/internal/eventstore"
+	carportpb "github.com/fdatoo/switchyard/gen/switchyard/carport/v1alpha1"
+	eventpb "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
+	"github.com/fdatoo/switchyard/internal/cause"
+	"github.com/fdatoo/switchyard/internal/eventstore"
 )
 
 const defaultDispatchTimeout = 30 * time.Second

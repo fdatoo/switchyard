@@ -2,15 +2,15 @@
 
 !!! status-alpha "Alpha — shipped, interface evolving"
 
-A gohome driver is a **standalone binary** that speaks the Carport protocol — gohome's gRPC-based driver IPC contract. The binary connects to `gohomed` over a Unix domain socket, performs a handshake, and then enters a long-lived bidirectional stream where it receives commands and emits state changes.
+A switchyard driver is a **standalone binary** that speaks the Carport protocol — switchyard's gRPC-based driver IPC contract. The binary connects to `switchyardd` over a Unix domain socket, performs a handshake, and then enters a long-lived bidirectional stream where it receives commands and emits state changes.
 
-Drivers run as supervised subprocesses. `gohomed` spawns them, monitors their health, and restarts them on failure. A crashing driver does not affect the daemon or other drivers.
+Drivers run as supervised subprocesses. `switchyardd` spawns them, monitors their health, and restarts them on failure. A crashing driver does not affect the daemon or other drivers.
 
 ---
 
 ## The Carport protocol
 
-Carport (`gohome.carport.v1alpha1`) is the wire contract between `gohomed` and every driver. It defines four RPCs:
+Carport (`switchyard.carport.v1alpha1`) is the wire contract between `switchyardd` and every driver. It defines four RPCs:
 
 | RPC | Direction | Purpose |
 |---|---|---|
@@ -27,7 +27,7 @@ You do not need to implement this protocol from scratch. The Go SDK handles it.
 
 ## The Go SDK
 
-The [`github.com/fynn-labs/gohome-driverkit`](https://github.com/fynn-labs/gohome-driverkit) module provides everything you need:
+The [`github.com/fynn-labs/switchyard-driverkit`](https://github.com/fynn-labs/switchyard-driverkit) module provides everything you need:
 
 | Package | Purpose |
 |---|---|
@@ -40,16 +40,16 @@ Most driver authors use only the `driver` package. The `protocol` package is ava
 Install:
 
 ```
-go get github.com/fynn-labs/gohome-driverkit
+go get github.com/fynn-labs/switchyard-driverkit
 ```
 
 ---
 
 ## Local subprocess vs. edge transport
 
-**Local subprocess** (the default) is for drivers running on the same host as `gohomed`. The daemon spawns the binary, passes a Unix socket path and a per-launch secret via environment variables, and connects over that socket. This is the standard deployment for most drivers.
+**Local subprocess** (the default) is for drivers running on the same host as `switchyardd`. The daemon spawns the binary, passes a Unix socket path and a per-launch secret via environment variables, and connects over that socket. This is the standard deployment for most drivers.
 
-**Edge transport** (C12, planned) is for drivers running on a separate host — for example, a Raspberry Pi with a Z-Wave USB stick in a detached garage, or a Zigbee coordinator on a different subnet. In this case, the driver connects to a `gohome-edge` agent running on the remote host, which forwards the Carport stream over TLS to the primary daemon. Edge transport requires the same driver binary structure; only the connection path changes.
+**Edge transport** (C12, planned) is for drivers running on a separate host — for example, a Raspberry Pi with a Z-Wave USB stick in a detached garage, or a Zigbee coordinator on a different subnet. In this case, the driver connects to a `switchyard-edge` agent running on the remote host, which forwards the Carport stream over TLS to the primary daemon. Edge transport requires the same driver binary structure; only the connection path changes.
 
 For v0.x, all drivers use the local subprocess transport. The edge transport is additive and will not require changes to driver code.
 
@@ -57,7 +57,7 @@ For v0.x, all drivers use the local subprocess transport. The edge transport is 
 
 ## Basic driver structure
 
-A minimal gohome driver in Go:
+A minimal switchyard driver in Go:
 
 ```go
 package main
@@ -66,8 +66,8 @@ import (
     "context"
     "log"
 
-    entityv1 "github.com/fynn-labs/gohome/gen/gohome/entity/v1"
-    "github.com/fynn-labs/gohome-driverkit/driver"
+    entityv1 "github.com/fynn-labs/switchyard/gen/switchyard/entity/v1"
+    "github.com/fynn-labs/switchyard-driverkit/driver"
 )
 
 func main() {
@@ -101,7 +101,7 @@ func main() {
 }
 ```
 
-`d.Run` reads the Carport environment variables injected by `gohomed`, starts the gRPC server, and enters the reconnect loop. It blocks until the context is cancelled.
+`d.Run` reads the Carport environment variables injected by `switchyardd`, starts the gRPC server, and enters the reconnect loop. It blocks until the context is cancelled.
 
 ---
 
@@ -109,5 +109,5 @@ func main() {
 
 - [Driver manifest](manifest.md) — declaring entities and config schema in Pkl
 - [Go SDK walkthrough](go-sdk.md) — detailed API reference with a complete example
-- [Lifecycle](lifecycle.md) — how `gohomed` spawns, supervises, and restarts drivers
+- [Lifecycle](lifecycle.md) — how `switchyardd` spawns, supervises, and restarts drivers
 - [Testing](testing.md) — using `drivertest` to write fast, reliable driver tests

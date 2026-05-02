@@ -5,9 +5,9 @@ import (
 
 	"github.com/google/uuid"
 
-	entityv1 "github.com/fdatoo/gohome/gen/gohome/entity/v1"
-	eventv1 "github.com/fdatoo/gohome/gen/gohome/event/v1"
-	"github.com/fdatoo/gohome/internal/eventstore"
+	entityv1 "github.com/fdatoo/switchyard/gen/switchyard/entity/v1"
+	eventv1 "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
+	"github.com/fdatoo/switchyard/internal/eventstore"
 )
 
 type EventOption func(*eventstore.Event)
@@ -44,7 +44,7 @@ func StateChanged(entity string, brightness uint32, opts ...EventOption) eventst
 func SystemStartup(opts ...EventOption) eventstore.Event {
 	e := eventstore.Event{
 		Kind:      "system",
-		Source:    "gohomed",
+		Source:    "switchyardd",
 		Timestamp: time.Now(),
 		Payload: &eventv1.Payload{Kind: &eventv1.Payload_System{
 			System: &eventv1.SystemEvent{Kind: "startup"},

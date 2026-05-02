@@ -6,9 +6,9 @@ import (
 
 	starlarkgo "go.starlark.net/starlark"
 
-	eventv1 "github.com/fdatoo/gohome/gen/gohome/event/v1"
-	"github.com/fdatoo/gohome/internal/eventstore"
-	ghs "github.com/fdatoo/gohome/internal/starlark"
+	eventv1 "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
+	"github.com/fdatoo/switchyard/internal/eventstore"
+	ghs "github.com/fdatoo/switchyard/internal/starlark"
 )
 
 // fakeState implements StateReader for tests.

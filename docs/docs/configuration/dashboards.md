@@ -11,8 +11,8 @@ A dashboard is a slug-addressed collection of pages. Each page has a title and a
 
 ```pkl
 // dashboards.pkl
-import "gohome:dashboards" as dashboards
-import "gohome:widgets"    as widgets
+import "switchyard:dashboards" as dashboards
+import "switchyard:widgets"    as widgets
 
 dashboards: Listing<dashboards.Dashboard> = new {
   new dashboards.Dashboard {
@@ -85,13 +85,13 @@ dashboards: Listing<dashboards.Dashboard> = new {
 
 ## Pkl data types
 
-The `gohome:dashboards` module:
+The `switchyard:dashboards` module:
 
 ```pkl
-module gohome.dashboards
+module switchyard.dashboards
 
 class WidgetInstance {
-  widgetClass: String              // widget type constant from gohome:widgets
+  widgetClass: String              // widget type constant from switchyard:widgets
   props: Mapping<String, Any>      // widget-specific props (typed by the widget)
   col: Int; row: Int               // grid position (0-indexed)
   w: Int;   h: Int                 // grid span
@@ -102,10 +102,10 @@ class Page   { title: String; grid: Grid }
 class Dashboard { slug: String; pages: Listing<Page> }
 ```
 
-The `gohome:widgets` module provides string constants for the standard widget class names:
+The `switchyard:widgets` module provides string constants for the standard widget class names:
 
 ```pkl
-module gohome.widgets
+module switchyard.widgets
 
 const gauge:        String = "Gauge"
 const lineChart:    String = "LineChart"
@@ -118,7 +118,7 @@ Using these constants reduces typo risk — the string values are well-known nam
 
 ## Standard widget pack
 
-gohome ships a set of standard widgets:
+switchyard ships a set of standard widgets:
 
 | Widget | `widgetClass` | Key props |
 |---|---|---|
@@ -132,4 +132,4 @@ gohome ships a set of standard widgets:
 
 The goal is for the web UI's drag-and-drop dashboard editor to write changes back to `dashboards.pkl` on disk. When you move a widget or change its props in the UI, the daemon serializes the updated dashboard Pkl and writes it to your config directory, so the change is immediately git-trackable.
 
-This requires the daemon to hold a write lock on the config directory and to understand the Pkl formatting conventions for dashboard files. It is in active development. Until it ships, dashboards are edited by hand in Pkl and re-applied with `gohome config apply`.
+This requires the daemon to hold a write lock on the config directory and to understand the Pkl formatting conventions for dashboard files. It is in active development. Until it ships, dashboards are edited by hand in Pkl and re-applied with `switchyard config apply`.

@@ -12,13 +12,13 @@ import (
 	"connectrpc.com/connect"
 	"github.com/stretchr/testify/require"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
-	"github.com/fdatoo/gohome/internal/cli"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
+	"github.com/fdatoo/switchyard/internal/cli"
 )
 
 type fakeEntityService struct {
-	gohomev1alpha1connect.UnimplementedEntityServiceHandler
+	switchyardv1alpha1connect.UnimplementedEntityServiceHandler
 	called      atomic.Bool
 	gotEntity   string
 	gotCapab    string
@@ -42,7 +42,7 @@ func (f *fakeEntityService) CallCapability(_ context.Context, req *connect.Reque
 func TestCommandSend_RoundTripsViaConnect(t *testing.T) {
 	svc := &fakeEntityService{}
 	mux := http.NewServeMux()
-	path, h := gohomev1alpha1connect.NewEntityServiceHandler(svc)
+	path, h := switchyardv1alpha1connect.NewEntityServiceHandler(svc)
 	mux.Handle(path, h)
 	srv := httptest.NewServer(mux)
 	defer srv.Close()

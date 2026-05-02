@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/fdatoo/gohome/internal/automation/condition"
-	sltestutil "github.com/fdatoo/gohome/internal/starlark/testutil"
+	"github.com/fdatoo/switchyard/internal/automation/condition"
+	sltestutil "github.com/fdatoo/switchyard/internal/starlark/testutil"
 )
 
 func TestStarlarkCond_True(t *testing.T) {

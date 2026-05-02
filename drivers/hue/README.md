@@ -1,6 +1,6 @@
 # driver-hue
 
-GoHome Carport driver for the [Philips Hue](https://www.philips-hue.com/) bridge.
+Switchyard Carport driver for the [Philips Hue](https://www.philips-hue.com/) bridge.
 
 - CLIP v2 only (Hue bridge firmware 1.48+, shipped 2021).
 - One driver instance = one bridge.
@@ -26,7 +26,7 @@ Press the round button on top of the bridge, then within 30 seconds:
 ```bash
 curl -k -X POST https://192.168.1.10/api \
   -H 'Content-Type: application/json' \
-  -d '{"devicetype":"gohome#hue-driver","generateclientkey":true}'
+  -d '{"devicetype":"switchyard#hue-driver","generateclientkey":true}'
 # [{"success":{"username":"<your-api-key>","clientkey":"..."}}]
 ```
 
@@ -34,7 +34,7 @@ The `username` field is your API key. Store it in your secret manager and refere
 
 ### 3. Configure the driver
 
-The driver receives its instance config as a JSON blob in the `GOHOME_CARPORT_INSTANCE_CONFIG` environment variable, which `gohomed` populates from the carport instance's `config_json` TOML field.
+The driver receives its instance config as a JSON blob in the `SWITCHYARD_CARPORT_INSTANCE_CONFIG` environment variable, which `switchyardd` populates from the carport instance's `config_json` TOML field.
 
 | Field | Type | Required | Default | Purpose |
 |---|---|---|---|---|
@@ -65,5 +65,5 @@ Operational env vars (independent of the JSON config):
 ## Known caveats
 
 - New bulbs paired after the driver starts are not picked up until the driver restarts.
-- Color bulbs (RGB/XY) are listed and can be turned on/off, but color isn't controllable yet — the gohome `Light` proto doesn't carry color fields.
+- Color bulbs (RGB/XY) are listed and can be turned on/off, but color isn't controllable yet — the switchyard `Light` proto doesn't carry color fields.
 - Groups, scenes, motion sensors, and dimmer switches are out of scope for v0.1.

@@ -13,10 +13,10 @@ import (
 	"github.com/google/uuid"
 	starlarkgo "go.starlark.net/starlark"
 
-	eventv1 "github.com/fdatoo/gohome/gen/gohome/event/v1"
-	"github.com/fdatoo/gohome/internal/eventstore"
-	"github.com/fdatoo/gohome/internal/observability"
-	ghstarlark "github.com/fdatoo/gohome/internal/starlark"
+	eventv1 "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
+	"github.com/fdatoo/switchyard/internal/eventstore"
+	"github.com/fdatoo/switchyard/internal/observability"
+	ghstarlark "github.com/fdatoo/switchyard/internal/starlark"
 )
 
 // Deps is the set of external dependencies the script engine needs.
@@ -213,7 +213,7 @@ func (e *Engine) Call(
 }
 
 // scriptOutcomeLabel converts a RunOutcome to the lower-snake label string
-// for gohome_script_invocations_total{outcome}. Strips "OUTCOME_" prefix.
+// for switchyard_script_invocations_total{outcome}. Strips "OUTCOME_" prefix.
 func scriptOutcomeLabel(o eventv1.RunOutcome) string {
 	s := o.String()
 	const prefix = "OUTCOME_"

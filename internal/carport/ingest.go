@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	carportpb "github.com/fdatoo/gohome/gen/gohome/carport/v1alpha1"
-	eventpb "github.com/fdatoo/gohome/gen/gohome/event/v1"
-	"github.com/fdatoo/gohome/internal/eventstore"
+	carportpb "github.com/fdatoo/switchyard/gen/switchyard/carport/v1alpha1"
+	eventpb "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
+	"github.com/fdatoo/switchyard/internal/eventstore"
 )
 
 // IngestMessage translates a non-Result DriverToHost message to an eventstore

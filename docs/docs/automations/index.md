@@ -12,7 +12,7 @@ Every automation follows the same structure in Pkl:
 
 ```pkl
 // automations/lights.pkl
-import "gohome:automations" as automations
+import "switchyard:automations" as automations
 
 automations: Listing<automations.Automation> = new {
   new automations.Automation {
@@ -112,7 +112,7 @@ The convention: if a Starlark block fits on a few lines, keep it inline. If it n
 
 ## How automations are compiled and registered
 
-When you run `gohome config apply`, the daemon:
+When you run `switchyard config apply`, the daemon:
 
 1. Evaluates your Pkl files, producing a typed `ConfigSnapshot`.
 2. Compiles the snapshot into runtime automations: each trigger becomes a `Matcher`, each condition an `Evaluator`, each action an `Executor`.
@@ -121,10 +121,10 @@ When you run `gohome config apply`, the daemon:
 
 Reload is surgical: unchanged automations keep their in-flight runs; changed or removed automations are re-registered or cancelled.
 
-**Validation** happens at `gohome config validate` time. All compile errors — unresolved script names, invalid cron expressions, missing required fields — are reported together:
+**Validation** happens at `switchyard config validate` time. All compile errors — unresolved script names, invalid cron expressions, missing required fields — are reported together:
 
 ```
-$ gohome config validate
+$ switchyard config validate
 
   automations/lights.pkl:14  automation "motion_hall_light"
     actions[2].script.name "adaptive_brightness" not found in scripts registry
@@ -148,7 +148,7 @@ $ gohome config validate
 This automation turns the hall light on when motion is detected at night, dims it after 2 minutes, and turns it off after another 3 minutes:
 
 ```pkl
-import "gohome:automations" as automations
+import "switchyard:automations" as automations
 
 automations: Listing<automations.Automation> = new {
   new automations.Automation {
@@ -200,10 +200,10 @@ automations: Listing<automations.Automation> = new {
 ## CLI commands
 
 ```
-gohome automation list                    # all registered automations
-gohome automation get hall_motion_night   # detail + last 10 runs
-gohome automation trigger hall_motion_night  # fire manually
-gohome automation watch                   # live stream of runs
-gohome automation trace <correlation-id>  # full causal chain for one run
-gohome automation enable|disable <id>     # runtime toggle (in-memory; edit Pkl for durable change)
+switchyard automation list                    # all registered automations
+switchyard automation get hall_motion_night   # detail + last 10 runs
+switchyard automation trigger hall_motion_night  # fire manually
+switchyard automation watch                   # live stream of runs
+switchyard automation trace <correlation-id>  # full causal chain for one run
+switchyard automation enable|disable <id>     # runtime toggle (in-memory; edit Pkl for durable change)
 ```

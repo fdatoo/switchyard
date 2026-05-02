@@ -33,4 +33,4 @@ formatters:
   settings:
     goimports:
       local-prefixes:
-        - github.com/fdatoo/gohome
+        - github.com/fdatoo/switchyard

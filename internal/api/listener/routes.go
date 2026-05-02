@@ -3,24 +3,24 @@ package listener
 import (
 	"connectrpc.com/connect"
 
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
 )
 
 // Services is the set of handler implementations the listener needs.
 type Services struct {
-	System     gohomev1alpha1connect.SystemServiceHandler
-	Area       gohomev1alpha1connect.AreaServiceHandler
-	Zone       gohomev1alpha1connect.ZoneServiceHandler
-	Device     gohomev1alpha1connect.DeviceServiceHandler
-	Entity     gohomev1alpha1connect.EntityServiceHandler
-	Driver     gohomev1alpha1connect.DriverServiceHandler
-	Event      gohomev1alpha1connect.EventServiceHandler
-	Config     gohomev1alpha1connect.ConfigServiceHandler
-	Automation gohomev1alpha1connect.AutomationServiceHandler
-	Script     gohomev1alpha1connect.ScriptServiceHandler
-	Scene      gohomev1alpha1connect.SceneServiceHandler
-	Dashboard  gohomev1alpha1connect.DashboardServiceHandler
-	Auth       gohomev1alpha1connect.AuthServiceHandler
+	System     switchyardv1alpha1connect.SystemServiceHandler
+	Area       switchyardv1alpha1connect.AreaServiceHandler
+	Zone       switchyardv1alpha1connect.ZoneServiceHandler
+	Device     switchyardv1alpha1connect.DeviceServiceHandler
+	Entity     switchyardv1alpha1connect.EntityServiceHandler
+	Driver     switchyardv1alpha1connect.DriverServiceHandler
+	Event      switchyardv1alpha1connect.EventServiceHandler
+	Config     switchyardv1alpha1connect.ConfigServiceHandler
+	Automation switchyardv1alpha1connect.AutomationServiceHandler
+	Script     switchyardv1alpha1connect.ScriptServiceHandler
+	Scene      switchyardv1alpha1connect.SceneServiceHandler
+	Dashboard  switchyardv1alpha1connect.DashboardServiceHandler
+	Auth       switchyardv1alpha1connect.AuthServiceHandler
 }
 
 // BuildRoutes returns the (path, handler) pairs to mount on the listener mux.
@@ -29,43 +29,43 @@ func BuildRoutes(svc Services, interceptors ...connect.Interceptor) []Route {
 	opts := connect.WithInterceptors(interceptors...)
 	routes := make([]Route, 0, 13)
 
-	p, h := gohomev1alpha1connect.NewSystemServiceHandler(svc.System, opts)
+	p, h := switchyardv1alpha1connect.NewSystemServiceHandler(svc.System, opts)
 	routes = append(routes, Route{Path: p, Handler: h})
 
-	p, h = gohomev1alpha1connect.NewAreaServiceHandler(svc.Area, opts)
+	p, h = switchyardv1alpha1connect.NewAreaServiceHandler(svc.Area, opts)
 	routes = append(routes, Route{Path: p, Handler: h})
 
-	p, h = gohomev1alpha1connect.NewZoneServiceHandler(svc.Zone, opts)
+	p, h = switchyardv1alpha1connect.NewZoneServiceHandler(svc.Zone, opts)
 	routes = append(routes, Route{Path: p, Handler: h})
 
-	p, h = gohomev1alpha1connect.NewDeviceServiceHandler(svc.Device, opts)
+	p, h = switchyardv1alpha1connect.NewDeviceServiceHandler(svc.Device, opts)
 	routes = append(routes, Route{Path: p, Handler: h})
 
-	p, h = gohomev1alpha1connect.NewEntityServiceHandler(svc.Entity, opts)
+	p, h = switchyardv1alpha1connect.NewEntityServiceHandler(svc.Entity, opts)
 	routes = append(routes, Route{Path: p, Handler: h})
 
-	p, h = gohomev1alpha1connect.NewDriverServiceHandler(svc.Driver, opts)
+	p, h = switchyardv1alpha1connect.NewDriverServiceHandler(svc.Driver, opts)
 	routes = append(routes, Route{Path: p, Handler: h})
 
-	p, h = gohomev1alpha1connect.NewEventServiceHandler(svc.Event, opts)
+	p, h = switchyardv1alpha1connect.NewEventServiceHandler(svc.Event, opts)
 	routes = append(routes, Route{Path: p, Handler: h})
 
-	p, h = gohomev1alpha1connect.NewConfigServiceHandler(svc.Config, opts)
+	p, h = switchyardv1alpha1connect.NewConfigServiceHandler(svc.Config, opts)
 	routes = append(routes, Route{Path: p, Handler: h})
 
-	p, h = gohomev1alpha1connect.NewAutomationServiceHandler(svc.Automation, opts)
+	p, h = switchyardv1alpha1connect.NewAutomationServiceHandler(svc.Automation, opts)
 	routes = append(routes, Route{Path: p, Handler: h})
 
-	p, h = gohomev1alpha1connect.NewScriptServiceHandler(svc.Script, opts)
+	p, h = switchyardv1alpha1connect.NewScriptServiceHandler(svc.Script, opts)
 	routes = append(routes, Route{Path: p, Handler: h})
 
-	p, h = gohomev1alpha1connect.NewSceneServiceHandler(svc.Scene, opts)
+	p, h = switchyardv1alpha1connect.NewSceneServiceHandler(svc.Scene, opts)
 	routes = append(routes, Route{Path: p, Handler: h})
 
-	p, h = gohomev1alpha1connect.NewDashboardServiceHandler(svc.Dashboard, opts)
+	p, h = switchyardv1alpha1connect.NewDashboardServiceHandler(svc.Dashboard, opts)
 	routes = append(routes, Route{Path: p, Handler: h})
 
-	p, h = gohomev1alpha1connect.NewAuthServiceHandler(svc.Auth, opts)
+	p, h = switchyardv1alpha1connect.NewAuthServiceHandler(svc.Auth, opts)
 	routes = append(routes, Route{Path: p, Handler: h})
 
 	return routes

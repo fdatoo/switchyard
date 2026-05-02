@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/fdatoo/gohome-driverkit/colorconv"
-	entityv1 "github.com/fdatoo/gohome/gen/gohome/entity/v1"
+	"github.com/fdatoo/switchyard-driverkit/colorconv"
+	entityv1 "github.com/fdatoo/switchyard/gen/switchyard/entity/v1"
 )
 
 // MergeState applies one (property, raw-value) update from a Z2M

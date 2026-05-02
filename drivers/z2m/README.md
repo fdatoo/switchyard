@@ -1,6 +1,6 @@
 # driver-z2m
 
-GoHome Carport driver for [Zigbee2MQTT](https://www.zigbee2mqtt.io/).
+Switchyard Carport driver for [Zigbee2MQTT](https://www.zigbee2mqtt.io/).
 
 - One driver instance = one Z2M deployment (= one MQTT broker hosting it).
 - Discovers all paired devices automatically; hot add/remove is live.
@@ -18,7 +18,7 @@ The driver does not talk to Z2M directly — it talks to whatever MQTT broker Z2
 
 ### 2. Configure the driver
 
-The driver receives its instance config as a JSON blob in the `GOHOME_CARPORT_INSTANCE_CONFIG` environment variable, which `gohomed` populates from the carport instance's `config_json` TOML field.
+The driver receives its instance config as a JSON blob in the `SWITCHYARD_CARPORT_INSTANCE_CONFIG` environment variable, which `switchyardd` populates from the carport instance's `config_json` TOML field.
 
 | Field | Type | Required | Default | Purpose |
 |---|---|---|---|---|
@@ -26,7 +26,7 @@ The driver receives its instance config as a JSON blob in the `GOHOME_CARPORT_IN
 | `username` | string | no | — | MQTT broker username |
 | `password_env` | string | no | — | Name of an env var holding the MQTT password (referenced indirectly so secrets stay out of config files) |
 | `base_topic` | string | no | `zigbee2mqtt` | Z2M's `mqtt.base_topic` setting |
-| `client_id` | string | no | `gohome-z2m-<random8>` | MQTT client identifier |
+| `client_id` | string | no | `switchyard-z2m-<random8>` | MQTT client identifier |
 | `tls_skip_verify` | bool | no | `false` | Skip TLS verification (self-signed brokers) |
 
 Example carport instance TOML:
@@ -38,7 +38,7 @@ binary = "/usr/local/bin/z2m-driver"
 config_json = '''
 {
   "broker_url": "tcp://10.0.0.5:1883",
-  "username": "gohome",
+  "username": "switchyard",
   "password_env": "Z2M_PASSWORD"
 }
 '''
@@ -59,7 +59,7 @@ Operational env vars (independent of the JSON config):
 
 ## Out of scope (v0.1)
 
-- Z2M network management (pairing, removal, OTA updates, name changes from gohome). Use the Z2M dashboard or its own MQTT API directly.
+- Z2M network management (pairing, removal, OTA updates, name changes from switchyard). Use the Z2M dashboard or its own MQTT API directly.
 - Action sensors (`action: "single"`, etc.) — these are events, not state.
 - Climate, cover, lock, fan device classes (no proto support yet).
 - Switch / smart-plug actuators (writable `state` properties). Smart plugs that also expose `power`/`energy` will surface those read-only entities; the writable `state` is logged once at INFO and skipped.
@@ -69,9 +69,9 @@ Operational env vars (independent of the JSON config):
 - New devices paired in Z2M show up automatically — no driver restart needed.
 - If Z2M is configured to publish state non-retained (recent default), entity state stays at the mapper-assigned defaults until the device's next state change. Toggling the device once seeds it; subsequent state is live.
 - Per-device `availability` requires Z2M's availability feature to be enabled server-side. Without it, entities default to `Available=true` and can drift if a battery device dies — Z2M's `bridge/devices` topic doesn't carry liveness on its own.
-- A successful publish to `<base>/<friendly>/set` is reported as `ok=true`. If Z2M silently ignores the command (invalid friendly_name, device unreachable, etc.), gohome won't know — there's no MQTT 5 request/response in v0.1.
+- A successful publish to `<base>/<friendly>/set` is reported as `ok=true`. If Z2M silently ignores the command (invalid friendly_name, device unreachable, etc.), switchyard won't know — there's no MQTT 5 request/response in v0.1.
 - A device that adds a property after pairing (firmware update) is not picked up until the driver restarts.
 
 ## Source
 
-[`drivers/z2m/`](.) in the gohome monorepo.
+[`drivers/z2m/`](.) in the switchyard monorepo.

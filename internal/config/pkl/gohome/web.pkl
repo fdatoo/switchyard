@@ -1,7 +1,0 @@
-module gohome.web
-
-class Web {
-  enabled:    Boolean = true
-  bind:       String  = "127.0.0.1:8080"
-  publicBase: String  = ""
-}

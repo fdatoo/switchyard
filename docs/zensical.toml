@@ -11,7 +11,7 @@
 # The site_name is shown in the page header and the browser window title
 #
 # Read more: https://zensical.org/docs/setup/basics/#site_name
-site_name = "gohome"
+site_name = "switchyard"
 
 # The site_description is included in the HTML head and should contain a
 # meaningful description of the site content for use by search engines.
@@ -45,7 +45,7 @@ copyright = "Copyright &copy; 2026 Fynn Datoo"
 nav = [
   { "Home" = "index.md" },
   { "Introduction" = [
-    { "What is gohome" = "introduction/index.md" },
+    { "What is Switchyard" = "introduction/index.md" },
     { "Architecture" = "introduction/architecture.md" },
     { "vs. Home Assistant" = "introduction/vs-home-assistant.md" },
     { "Changelog" = "introduction/changelog.md" },

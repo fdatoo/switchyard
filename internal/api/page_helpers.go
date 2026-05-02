@@ -1,6 +1,6 @@
 package api
 
-import v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
+import v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
 
 // pageToken extracts the page token from a PageRequest, returning "" if nil.
 func pageToken(p *v1.PageRequest) string {

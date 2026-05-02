@@ -27,7 +27,7 @@ func newVersionCmd() *cobra.Command {
 					}
 				}
 			}
-			fmt.Printf("gohome %s (%s)\n", Version, commit)
+			fmt.Printf("switchyard %s (%s)\n", Version, commit)
 		},
 	}
 }

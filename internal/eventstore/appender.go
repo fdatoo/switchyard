@@ -3,7 +3,7 @@ package eventstore
 import (
 	"context"
 
-	eventv1 "github.com/fdatoo/gohome/gen/gohome/event/v1"
+	eventv1 "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
 )
 
 // Appender is the narrow write interface used by packages that need to append

@@ -4,8 +4,8 @@ import (
 	"sync"
 	"time"
 
-	entityv1 "github.com/fdatoo/gohome/gen/gohome/entity/v1"
-	"github.com/fdatoo/gohome/internal/eventstore"
+	entityv1 "github.com/fdatoo/switchyard/gen/switchyard/entity/v1"
+	"github.com/fdatoo/switchyard/internal/eventstore"
 )
 
 // StateChangeMatcher fires on state-changed events matching (entities, from, to).

@@ -9,7 +9,7 @@ import (
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
 )
 
 // isTraceURI returns true when the URI looks like an automation trace resource.
@@ -18,12 +18,12 @@ func isTraceURI(uri string) bool {
 }
 
 // parseTraceURI extracts automationID and runID from a trace URI.
-// "gohome://automations/lights-auto/runs/01HZ.../trace" →
+// "switchyard://automations/lights-auto/runs/01HZ.../trace" →
 //
 //	automationID = "lights-auto", runID = "01HZ..."
 func parseTraceURI(uri string) (automationID, runID string) {
 	// Find the segment between /automations/ and /runs/
-	const autoPrefix = "gohome://automations/"
+	const autoPrefix = "switchyard://automations/"
 	trimmed := strings.TrimPrefix(uri, autoPrefix)
 	idx := strings.Index(trimmed, "/runs/")
 	if idx < 0 {
@@ -153,8 +153,8 @@ func watchTrace(ctx context.Context, mgr *Manager, uri, automationID, runID stri
 // RegisterTraces adds automation trace resource template handlers to server.
 func RegisterTraces(server *sdk.Server, d Deps) {
 	server.AddResourceTemplate(&sdk.ResourceTemplate{
-		URITemplate: "gohome://automations/{automation_id}/runs/{run_id}/trace",
-		Name:        "gohome-automation-trace",
+		URITemplate: "switchyard://automations/{automation_id}/runs/{run_id}/trace",
+		Name:        "switchyard-automation-trace",
 		Description: "Read trace events for an automation run",
 	}, traceReadHandler(d))
 }

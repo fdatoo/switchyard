@@ -2,7 +2,7 @@
 
 !!! status-alpha "Alpha — shipped, interface evolving"
 
-These three end-to-end examples show Claude working with gohome tools to complete real home-automation tasks. Each example shows the conversation between the user and Claude, the tool calls Claude makes, and the results returned — not just the final answer.
+These three end-to-end examples show Claude working with switchyard tools to complete real home-automation tasks. Each example shows the conversation between the user and Claude, the tool calls Claude makes, and the results returned — not just the final answer.
 
 ---
 
@@ -14,10 +14,10 @@ These three end-to-end examples show Claude working with gohome tools to complet
 
 Claude starts by discovering what entities are available.
 
-**Tool call — `gohome__list_entities`**
+**Tool call — `switchyard__list_entities`**
 ```json
 {
-  "name": "gohome__list_entities",
+  "name": "switchyard__list_entities",
   "arguments": {
     "areas": ["garage"],
     "limit": 50
@@ -35,7 +35,7 @@ Claude starts by discovering what entities are available.
       "class": "binary_sensor",
       "state": "off",
       "area": "garage",
-      "subscribe_uri": "gohome://entities/binary_sensor.garage_motion"
+      "subscribe_uri": "switchyard://entities/binary_sensor.garage_motion"
     },
     {
       "entity_id": "light.garage",
@@ -43,7 +43,7 @@ Claude starts by discovering what entities are available.
       "class": "light",
       "state": "off",
       "area": "garage",
-      "subscribe_uri": "gohome://entities/light.garage"
+      "subscribe_uri": "switchyard://entities/light.garage"
     }
   ],
   "next_cursor": null
@@ -52,10 +52,10 @@ Claude starts by discovering what entities are available.
 
 Claude has found `binary_sensor.garage_motion` and `light.garage`. Now it reads the existing automations file to understand the current structure before adding to it.
 
-**Tool call — `gohome__read_config_file`**
+**Tool call — `switchyard__read_config_file`**
 ```json
 {
-  "name": "gohome__read_config_file",
+  "name": "switchyard__read_config_file",
   "arguments": {
     "path": "automations/lights.pkl"
   }
@@ -66,7 +66,7 @@ Claude has found `binary_sensor.garage_motion` and `light.garage`. Now it reads 
 ```json
 {
   "path": "automations/lights.pkl",
-  "content": "// automations/lights.pkl\nimport \"gohome:automations\" as automations\n\nautomations: Listing<automations.Automation> = new {\n  new automations.Automation {\n    id = \"hall_motion_light\"\n    ...\n  }\n}\n",
+  "content": "// automations/lights.pkl\nimport \"switchyard:automations\" as automations\n\nautomations: Listing<automations.Automation> = new {\n  new automations.Automation {\n    id = \"hall_motion_light\"\n    ...\n  }\n}\n",
   "size_bytes": 612,
   "sha256_hex": "a3f2c1d4..."
 }
@@ -74,13 +74,13 @@ Claude has found `binary_sensor.garage_motion` and `light.garage`. Now it reads 
 
 Claude writes the updated file with the new automation appended.
 
-**Tool call — `gohome__write_config_file`**
+**Tool call — `switchyard__write_config_file`**
 ```json
 {
-  "name": "gohome__write_config_file",
+  "name": "switchyard__write_config_file",
   "arguments": {
     "path": "automations/lights.pkl",
-    "content": "// automations/lights.pkl\nimport \"gohome:automations\" as automations\n\nautomations: Listing<automations.Automation> = new {\n  new automations.Automation {\n    id = \"hall_motion_light\"\n    triggers = new {\n      new automations.StateChangeTrigger {\n        entities = new { \"binary_sensor.hall_motion\" }\n        to = \"on\"\n      }\n    }\n    actions = new {\n      new automations.CallServiceAction {\n        entity     = \"light.hall\"\n        capability = \"turn_on\"\n      }\n    }\n  }\n  new automations.Automation {\n    id = \"garage_motion_lights_night\"\n    triggers = new {\n      new automations.StateChangeTrigger {\n        entities = new { \"binary_sensor.garage_motion\" }\n        to = \"on\"\n      }\n    }\n    conditions = new {\n      new automations.TimeCondition {\n        after  = \"22:00\"\n        before = \"06:00\"\n      }\n    }\n    actions = new {\n      new automations.CallServiceAction {\n        entity     = \"light.garage\"\n        capability = \"turn_on\"\n      }\n    }\n  }\n}\n"
+    "content": "// automations/lights.pkl\nimport \"switchyard:automations\" as automations\n\nautomations: Listing<automations.Automation> = new {\n  new automations.Automation {\n    id = \"hall_motion_light\"\n    triggers = new {\n      new automations.StateChangeTrigger {\n        entities = new { \"binary_sensor.hall_motion\" }\n        to = \"on\"\n      }\n    }\n    actions = new {\n      new automations.CallServiceAction {\n        entity     = \"light.hall\"\n        capability = \"turn_on\"\n      }\n    }\n  }\n  new automations.Automation {\n    id = \"garage_motion_lights_night\"\n    triggers = new {\n      new automations.StateChangeTrigger {\n        entities = new { \"binary_sensor.garage_motion\" }\n        to = \"on\"\n      }\n    }\n    conditions = new {\n      new automations.TimeCondition {\n        after  = \"22:00\"\n        before = \"06:00\"\n      }\n    }\n    actions = new {\n      new automations.CallServiceAction {\n        entity     = \"light.garage\"\n        capability = \"turn_on\"\n      }\n    }\n  }\n}\n"
   }
 }
 ```
@@ -96,10 +96,10 @@ Claude writes the updated file with the new automation appended.
 
 Claude validates the updated file before applying.
 
-**Tool call — `gohome__validate_config`**
+**Tool call — `switchyard__validate_config`**
 ```json
 {
-  "name": "gohome__validate_config",
+  "name": "switchyard__validate_config",
   "arguments": {
     "pkl_bundle": "<base64-encoded tarball of the config directory>"
   }
@@ -119,10 +119,10 @@ Claude validates the updated file before applying.
 
 Validation passed. Claude applies the config.
 
-**Tool call — `gohome__apply_config`**
+**Tool call — `switchyard__apply_config`**
 ```json
 {
-  "name": "gohome__apply_config",
+  "name": "switchyard__apply_config",
   "arguments": {
     "pkl_bundle": "<base64-encoded tarball of the config directory>",
     "message": "Add garage motion lights automation (night only)"
@@ -153,10 +153,10 @@ Validation passed. Claude applies the config.
 
 Claude searches the event log for state changes around that time.
 
-**Tool call — `gohome__query_events`**
+**Tool call — `switchyard__query_events`**
 ```json
 {
-  "name": "gohome__query_events",
+  "name": "switchyard__query_events",
   "arguments": {
     "entity_prefix": "light.living_room",
     "kinds": ["state_changed"],
@@ -177,10 +177,10 @@ Claude searches the event log for state changes around that time.
 
 No state changes on `light.living_room` in that window. Claude looks at what was happening with the trigger entity.
 
-**Tool call — `gohome__query_events`**
+**Tool call — `switchyard__query_events`**
 ```json
 {
-  "name": "gohome__query_events",
+  "name": "switchyard__query_events",
   "arguments": {
     "entity_prefix": "binary_sensor.front_door",
     "from_time": "2026-04-27T17:45:00Z",
@@ -215,10 +215,10 @@ No state changes on `light.living_room` in that window. Claude looks at what was
 
 The door contact sensor did fire. Claude checks whether the automation ran.
 
-**Tool call — `gohome__query_events`**
+**Tool call — `switchyard__query_events`**
 ```json
 {
-  "name": "gohome__query_events",
+  "name": "switchyard__query_events",
   "arguments": {
     "kinds": ["automation_triggered", "automation_skipped"],
     "from_time": "2026-04-27T17:45:00Z",
@@ -250,10 +250,10 @@ The door contact sensor did fire. Claude checks whether the automation ran.
 
 Found it. Claude confirms by reading the automation definition.
 
-**Tool call — `gohome__read_config_file`**
+**Tool call — `switchyard__read_config_file`**
 ```json
 {
-  "name": "gohome__read_config_file",
+  "name": "switchyard__read_config_file",
   "arguments": {
     "path": "automations/arrival.pkl"
   }
@@ -284,10 +284,10 @@ If you'd like to adjust the condition start time to, say, 17:30, I can update th
 
 Claude reads the current driver config to understand the existing Hue setup.
 
-**Tool call — `gohome__read_config_file`**
+**Tool call — `switchyard__read_config_file`**
 ```json
 {
-  "name": "gohome__read_config_file",
+  "name": "switchyard__read_config_file",
   "arguments": {
     "path": "drivers.pkl"
   }
@@ -298,7 +298,7 @@ Claude reads the current driver config to understand the existing Hue setup.
 ```json
 {
   "path": "drivers.pkl",
-  "content": "// drivers.pkl\nimport \"gohome:drivers\" as drivers\nimport \"gohome:drivers/hue\" as hue\n\ndrivers: Listing<drivers.DriverInstance> = new {\n  new hue.HueInstance {\n    id          = \"hue_main\"\n    bridge_host = \"192.168.1.50\"\n    api_key     = read(\"env:HUE_API_KEY\")\n  }\n}\n",
+  "content": "// drivers.pkl\nimport \"switchyard:drivers\" as drivers\nimport \"switchyard:drivers/hue\" as hue\n\ndrivers: Listing<drivers.DriverInstance> = new {\n  new hue.HueInstance {\n    id          = \"hue_main\"\n    bridge_host = \"192.168.1.50\"\n    api_key     = read(\"env:HUE_API_KEY\")\n  }\n}\n",
   "size_bytes": 319,
   "sha256_hex": "d4e5f6..."
 }
@@ -306,13 +306,13 @@ Claude reads the current driver config to understand the existing Hue setup.
 
 Claude writes the updated file with the second bridge added.
 
-**Tool call — `gohome__write_config_file`**
+**Tool call — `switchyard__write_config_file`**
 ```json
 {
-  "name": "gohome__write_config_file",
+  "name": "switchyard__write_config_file",
   "arguments": {
     "path": "drivers.pkl",
-    "content": "// drivers.pkl\nimport \"gohome:drivers\" as drivers\nimport \"gohome:drivers/hue\" as hue\n\ndrivers: Listing<drivers.DriverInstance> = new {\n  new hue.HueInstance {\n    id          = \"hue_main\"\n    bridge_host = \"192.168.1.50\"\n    api_key     = read(\"env:HUE_API_KEY\")\n  }\n  new hue.HueInstance {\n    id          = \"hue_garage\"\n    bridge_host = \"192.168.1.51\"\n    api_key     = read(\"env:HUE_GARAGE_API_KEY\")\n  }\n}\n"
+    "content": "// drivers.pkl\nimport \"switchyard:drivers\" as drivers\nimport \"switchyard:drivers/hue\" as hue\n\ndrivers: Listing<drivers.DriverInstance> = new {\n  new hue.HueInstance {\n    id          = \"hue_main\"\n    bridge_host = \"192.168.1.50\"\n    api_key     = read(\"env:HUE_API_KEY\")\n  }\n  new hue.HueInstance {\n    id          = \"hue_garage\"\n    bridge_host = \"192.168.1.51\"\n    api_key     = read(\"env:HUE_GARAGE_API_KEY\")\n  }\n}\n"
   }
 }
 ```
@@ -328,10 +328,10 @@ Claude writes the updated file with the second bridge added.
 
 Claude validates first.
 
-**Tool call — `gohome__validate_config`**
+**Tool call — `switchyard__validate_config`**
 ```json
 {
-  "name": "gohome__validate_config",
+  "name": "switchyard__validate_config",
   "arguments": {
     "pkl_bundle": "<base64-encoded tarball>"
   }
@@ -349,10 +349,10 @@ Claude validates first.
 }
 ```
 
-**Tool call — `gohome__apply_config`**
+**Tool call — `switchyard__apply_config`**
 ```json
 {
-  "name": "gohome__apply_config",
+  "name": "switchyard__apply_config",
   "arguments": {
     "pkl_bundle": "<base64-encoded tarball>",
     "message": "Add hue_garage bridge at 192.168.1.51"
@@ -375,9 +375,9 @@ Claude validates first.
 
 You can check the connection status with:
 ```sh
-gohome status
+switchyard status
 ```
 or tail the event log to see the driver lifecycle events:
 ```sh
-gohome events tail
+switchyard events tail
 ```"

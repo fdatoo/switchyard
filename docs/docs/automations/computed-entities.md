@@ -12,14 +12,14 @@ Computed entities are declared in your entities config using `ComputedEntity`:
 
 ```pkl
 class ComputedEntity extends Entity {
-  entityClass: String?   // fully-qualified entity class, e.g. "gohome.entities.Temperature"
+  entityClass: String?   // fully-qualified entity class, e.g. "switchyard.entities.Temperature"
   handler:     String    // Starlark expression evaluated in the `computed` context
 }
 ```
 
 ```pkl
 // entities/computed.pkl
-import "gohome:entities" as entities
+import "switchyard:entities" as entities
 
 computed: Listing<entities.ComputedEntity> = new {
   new entities.ComputedEntity {

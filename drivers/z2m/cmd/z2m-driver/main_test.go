@@ -16,10 +16,10 @@ import (
 	mqttlisteners "github.com/mochi-mqtt/server/v2/listeners"
 	"github.com/mochi-mqtt/server/v2/packets"
 
-	"github.com/fdatoo/gohome-driverkit/driver"
-	"github.com/fdatoo/gohome-driverkit/drivertest"
+	"github.com/fdatoo/switchyard-driverkit/driver"
+	"github.com/fdatoo/switchyard-driverkit/drivertest"
 
-	"github.com/fdatoo/gohome/drivers/z2m/internal/mqtt"
+	"github.com/fdatoo/switchyard/drivers/z2m/internal/mqtt"
 )
 
 const baseTopic = "zigbee2mqtt"

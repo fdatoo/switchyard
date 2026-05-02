@@ -10,7 +10,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/fdatoo/gohome/internal/api"
+	"github.com/fdatoo/switchyard/internal/api"
 )
 
 type fakeWebhookRouter struct {
@@ -44,7 +44,7 @@ func TestWebhook_Accepts_ValidSignature(t *testing.T) {
 
 	body := `{"x":1}`
 	req := httptest.NewRequest(http.MethodPost, "/webhooks/foo", bytes.NewBufferString(body))
-	req.Header.Set("X-GoHome-Signature", sign("shh", body))
+	req.Header.Set("X-Switchyard-Signature", sign("shh", body))
 	rr := httptest.NewRecorder()
 	h.ServeHTTP(rr, req)
 
@@ -62,7 +62,7 @@ func TestWebhook_Rejects_BadSignature(t *testing.T) {
 	h := api.NewWebhookHandler(r, app, nil)
 
 	req := httptest.NewRequest(http.MethodPost, "/webhooks/foo", bytes.NewBufferString("body"))
-	req.Header.Set("X-GoHome-Signature", "v1=deadbeef")
+	req.Header.Set("X-Switchyard-Signature", "v1=deadbeef")
 	rr := httptest.NewRecorder()
 	h.ServeHTTP(rr, req)
 
@@ -93,7 +93,7 @@ func TestWebhook_Rejects_BodyTooLarge(t *testing.T) {
 
 	body := "more than four bytes"
 	req := httptest.NewRequest(http.MethodPost, "/webhooks/foo", bytes.NewBufferString(body))
-	req.Header.Set("X-GoHome-Signature", sign("shh", body))
+	req.Header.Set("X-Switchyard-Signature", sign("shh", body))
 	rr := httptest.NewRecorder()
 	h.ServeHTTP(rr, req)
 	if rr.Code != http.StatusRequestEntityTooLarge && rr.Code != http.StatusBadRequest {

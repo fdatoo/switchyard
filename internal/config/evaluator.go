@@ -12,8 +12,8 @@ import (
 
 	"github.com/apple/pkl-go/pkl"
 
-	configpb "github.com/fdatoo/gohome/gen/gohome/config/v1"
-	ghstarlark "github.com/fdatoo/gohome/internal/starlark"
+	configpb "github.com/fdatoo/switchyard/gen/switchyard/config/v1"
+	ghstarlark "github.com/fdatoo/switchyard/internal/starlark"
 )
 
 //go:embed pkl
@@ -25,7 +25,7 @@ type pklEvaluator struct {
 
 func newPklEvaluator(ctx context.Context) (*pklEvaluator, error) {
 	ev, err := pkl.NewEvaluator(ctx, pkl.PreconfiguredOptions,
-		pkl.WithModuleReader(&gohomeModuleReader{}),
+		pkl.WithModuleReader(&switchyardModuleReader{}),
 		pkl.WithResourceReader(&starlarkValidatorReader{}),
 	)
 	if err != nil {
@@ -38,32 +38,32 @@ type configEvaluator interface {
 	Evaluate(ctx context.Context, configDir string) (*configpb.ConfigSnapshot, error)
 }
 
-// gohomeModuleReader serves gohome:* modules from the embedded FS.
-type gohomeModuleReader struct{}
+// switchyardModuleReader serves switchyard:* modules from the embedded FS.
+type switchyardModuleReader struct{}
 
-func (r *gohomeModuleReader) Scheme() string            { return "gohome" }
-func (r *gohomeModuleReader) IsGlobbable() bool         { return false }
-func (r *gohomeModuleReader) HasHierarchicalUris() bool { return false }
-func (r *gohomeModuleReader) IsLocal() bool             { return true }
-func (r *gohomeModuleReader) ListElements(_ url.URL) ([]pkl.PathElement, error) {
+func (r *switchyardModuleReader) Scheme() string            { return "switchyard" }
+func (r *switchyardModuleReader) IsGlobbable() bool         { return false }
+func (r *switchyardModuleReader) HasHierarchicalUris() bool { return false }
+func (r *switchyardModuleReader) IsLocal() bool             { return true }
+func (r *switchyardModuleReader) ListElements(_ url.URL) ([]pkl.PathElement, error) {
 	return nil, nil
 }
 
-func (r *gohomeModuleReader) Read(u url.URL) (string, error) {
+func (r *switchyardModuleReader) Read(u url.URL) (string, error) {
 	name := u.Opaque
-	path := "pkl/gohome/" + name + ".pkl"
+	path := "pkl/switchyard/" + name + ".pkl"
 	data, err := pklFS.ReadFile(path)
 	if err != nil {
-		return "", fmt.Errorf("gohome module %q not found", name)
+		return "", fmt.Errorf("switchyard module %q not found", name)
 	}
 	return string(data), nil
 }
 
 // starlarkValidatorReader is a Pkl ResourceReader that validates Starlark
 // snippets embedded in config. It is invoked from typealias constraints in
-// pkl/gohome/starlark.pkl via `read("gohome-validator:<fn>?<src>")`.
+// pkl/switchyard/starlark.pkl via `read("switchyard-validator:<fn>?<src>")`.
 //
-// The URI takes the form `gohome-validator:<fn>?<url-encoded-source>`, where
+// The URI takes the form `switchyard-validator:<fn>?<url-encoded-source>`, where
 // <fn> is one of "expr", "script", or "condition". The reader's body is the
 // ASCII bytes "true" if the source parses, or "false" if it does not. Pkl's
 // typealias constraint then fails evaluation for "false".
@@ -73,7 +73,7 @@ func (r *gohomeModuleReader) Read(u url.URL) (string, error) {
 // low-level reader error.
 type starlarkValidatorReader struct{}
 
-func (r *starlarkValidatorReader) Scheme() string            { return "gohome-validator" }
+func (r *starlarkValidatorReader) Scheme() string            { return "switchyard-validator" }
 func (r *starlarkValidatorReader) IsGlobbable() bool         { return false }
 func (r *starlarkValidatorReader) HasHierarchicalUris() bool { return false }
 func (r *starlarkValidatorReader) ListElements(_ url.URL) ([]pkl.PathElement, error) {
@@ -81,7 +81,7 @@ func (r *starlarkValidatorReader) ListElements(_ url.URL) ([]pkl.PathElement, er
 }
 
 func (r *starlarkValidatorReader) Read(u url.URL) ([]byte, error) {
-	// The URI is gohome-validator:<fn>?<encoded-src>. With a non-hierarchical
+	// The URI is switchyard-validator:<fn>?<encoded-src>. With a non-hierarchical
 	// URI, the "<fn>?<encoded-src>" portion lands in u.Opaque, and the raw
 	// query may be empty (url.URL parses opaque URIs without splitting query).
 	opaque := u.Opaque

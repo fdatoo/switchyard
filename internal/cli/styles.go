@@ -1,4 +1,4 @@
-// Package cli owns the gohome CLI command tree, styling, and output helpers.
+// Package cli owns the switchyard CLI command tree, styling, and output helpers.
 package cli
 
 import "github.com/charmbracelet/lipgloss"

@@ -3,7 +3,7 @@ package storage_test
 import (
 	"testing"
 
-	"github.com/fdatoo/gohome/internal/storage"
+	"github.com/fdatoo/switchyard/internal/storage"
 )
 
 func TestLockfile_SecondAcquireFailsWhileHeld(t *testing.T) {

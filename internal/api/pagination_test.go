@@ -3,7 +3,7 @@ package api_test
 import (
 	"testing"
 
-	"github.com/fdatoo/gohome/internal/api"
+	"github.com/fdatoo/switchyard/internal/api"
 )
 
 func TestCursor_Roundtrip(t *testing.T) {

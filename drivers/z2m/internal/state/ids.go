@@ -2,7 +2,7 @@ package state
 
 import "strings"
 
-// EntityID returns the gohome entity ID for a Z2M (device, property)
+// EntityID returns the switchyard entity ID for a Z2M (device, property)
 // pair. The last 8 hex chars of the IEEE address are used as the
 // stable identifier — short enough to scan in logs, immune to
 // friendly_name changes, and unambiguous within one Z2M instance.

@@ -15,8 +15,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	carportpb "github.com/fdatoo/gohome/gen/gohome/carport/v1alpha1"
-	eventpb "github.com/fdatoo/gohome/gen/gohome/event/v1"
+	carportpb "github.com/fdatoo/switchyard/gen/switchyard/carport/v1alpha1"
+	eventpb "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
 )
 
 // Double implements carportpb.DriverServer for tests.

@@ -3,7 +3,7 @@
 !!! status-wip "In development"
     The edge agent is designed but partially implemented. The API may change.
 
-`gohome-edge` is designed to survive the conditions common in home networks: flaky WAN links, reboots in the wrong order, power cuts that take down the primary before the edge (or vice versa). This page describes how the edge handles each of those situations.
+`switchyard-edge` is designed to survive the conditions common in home networks: flaky WAN links, reboots in the wrong order, power cuts that take down the primary before the edge (or vice versa). This page describes how the edge handles each of those situations.
 
 ---
 
@@ -82,7 +82,7 @@ Fresh events emitted by the driver during a drain continue to accumulate behind 
 
 If a driver subprocess on the edge crashes, the edge agent handles it **independently**, without coordinating with the primary:
 
-- The edge restarts the driver using the same supervisor policy `gohomed` uses for local drivers (exponential backoff, same states: `spawning`, `awaiting_handshake`, `running`, `backoff`, `quarantined`).
+- The edge restarts the driver using the same supervisor policy `switchyardd` uses for local drivers (exponential backoff, same states: `spawning`, `awaiting_handshake`, `running`, `backoff`, `quarantined`).
 - The per-driver buffer is preserved across the driver restart. Any events emitted before the crash and not yet drained to the primary remain in the buffer.
 - The primary's view: the driver's health probe times out, marking it unhealthy. When the driver restarts on the edge and the connection re-establishes, the primary sees it come back healthy — identical to a local driver restart.
 
@@ -90,10 +90,10 @@ If a driver subprocess on the edge crashes, the edge agent handles it **independ
 
 ## Boot-offline operation
 
-The edge caches the last-known driver assignment from the primary in an encrypted file (`/var/lib/gohome-edge/cache/assignment.bin`). On boot:
+The edge caches the last-known driver assignment from the primary in an encrypted file (`/var/lib/switchyard-edge/cache/assignment.bin`). On boot:
 
 ```
-gohome-edge starts
+switchyard-edge starts
   │
   ├─ Try connecting to the primary
   │     ├─ Success → fetch fresh assignment, spawn drivers, enter steady state
@@ -141,7 +141,7 @@ A driver instance can only be assigned to **one** edge at a time. The Pkl valida
 ### On the primary
 
 ```
-$ gohome edge ls
+$ switchyard edge ls
 
 SLUG          STATE              DRIVERS   BUFFER
 garage-pi     connected          1/1       0 B
@@ -150,7 +150,7 @@ vacation-hub  never-connected    3         —
 ```
 
 ```
-$ gohome edge show garage-pi
+$ switchyard edge show garage-pi
 
 Edge:       garage-pi
 State:      connected (since 2026-04-27 08:12:31)
@@ -168,9 +168,9 @@ Color coding: green = healthy, amber = degraded (offline-buffering, cert expiry 
 ### On the edge host
 
 ```
-$ gohome-edge status
+$ switchyard-edge status
 
-Edge:    garage-pi  →  tls://gohomed.lan:7443
+Edge:    garage-pi  →  tls://switchyardd.lan:7443
 State:   connected
 
 Drivers:
@@ -184,7 +184,7 @@ Cert expires: 2026-07-26 (89 days)
 
 ## Metrics
 
-Edge-side metrics are exposed on an optional `:9090` Prometheus endpoint (`gohome-edge run --metrics-addr :9090`):
+Edge-side metrics are exposed on an optional `:9090` Prometheus endpoint (`switchyard-edge run --metrics-addr :9090`):
 
 | Metric | Type | Description |
 |---|---|---|
@@ -196,7 +196,7 @@ Edge-side metrics are exposed on an optional `:9090` Prometheus endpoint (`gohom
 | `edge_reconnect_attempts_total{driver_slug, result}` | counter | Reconnect attempt outcomes |
 | `edge_cert_expires_in_seconds` | gauge | Time until the edge certificate expires |
 
-Primary-side metrics (in `gohomed`'s `/metrics` endpoint):
+Primary-side metrics (in `switchyardd`'s `/metrics` endpoint):
 
 | Metric | Type | Description |
 |---|---|---|

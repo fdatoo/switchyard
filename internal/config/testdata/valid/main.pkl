@@ -1,7 +1,7 @@
-amends "gohome:config"
+amends "switchyard:config"
 
-import "gohome:entities" as ent
-import "gohome:carport" as carport
+import "switchyard:entities" as ent
+import "switchyard:carport" as carport
 
 local class FakeDriverInstance extends carport.DriverInstance {}
 

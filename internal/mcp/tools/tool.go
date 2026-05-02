@@ -1,12 +1,12 @@
-// Package tools registers all gohome MCP tools.
+// Package tools registers all switchyard MCP tools.
 package tools
 
 import (
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 
-	"github.com/fdatoo/gohome/internal/auth"
-	"github.com/fdatoo/gohome/internal/mcp"
-	"github.com/fdatoo/gohome/internal/mcp/audit"
+	"github.com/fdatoo/switchyard/internal/auth"
+	"github.com/fdatoo/switchyard/internal/mcp"
+	"github.com/fdatoo/switchyard/internal/mcp/audit"
 )
 
 // Deps is the set of dependencies the tool registry needs.

@@ -1,6 +1,6 @@
-amends "gohome:config"
+amends "switchyard:config"
 
-import "gohome:entities" as ent
+import "switchyard:entities" as ent
 
 entities {
   new ent.Light {

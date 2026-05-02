@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/fdatoo/gohome/internal/auth"
+	"github.com/fdatoo/switchyard/internal/auth"
 )
 
 func TestLocalPeerCred_GrantsSystemLocalOnUDS(t *testing.T) {

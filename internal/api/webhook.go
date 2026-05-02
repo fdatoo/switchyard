@@ -11,7 +11,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/fdatoo/gohome/internal/observability"
+	"github.com/fdatoo/switchyard/internal/observability"
 )
 
 // WebhookRouter knows which slugs are registered and their HMAC secret.
@@ -73,7 +73,7 @@ func NewWebhookHandler(router WebhookRouter, app WebhookAppender, m WebhookMetri
 			return
 		}
 
-		sig := r.Header.Get("X-GoHome-Signature")
+		sig := r.Header.Get("X-Switchyard-Signature")
 		if !verifySignature(secret, body, sig) {
 			incWebhook(m, slug, "bad_signature")
 			http.Error(w, "bad signature", http.StatusUnauthorized)

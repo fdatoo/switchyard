@@ -3,7 +3,7 @@
 !!! status-wip "In development"
     The edge agent is designed but partially implemented. The API may change.
 
-Before `gohome-edge` can connect to your primary daemon, you pair them. Pairing establishes a mutual TLS identity: the primary mints a certificate for the edge, and both sides verify each other on every subsequent connection. There is no external certificate authority — `gohomed` runs its own internal CA.
+Before `switchyard-edge` can connect to your primary daemon, you pair them. Pairing establishes a mutual TLS identity: the primary mints a certificate for the edge, and both sides verify each other on every subsequent connection. There is no external certificate authority — `switchyardd` runs its own internal CA.
 
 The pairing token is **single-use** with a default TTL of 1 hour (configurable up to 24 hours with `--ttl`). Once used or expired, the token cannot be reused.
 
@@ -15,7 +15,7 @@ Edge agents are first-class Pkl objects. Before minting a pairing token, declare
 
 ```pkl
 // edges.pkl
-import "@gohome/edge.pkl"
+import "@switchyard/edge.pkl"
 
 new edge.EdgeAgent {
   slug        = "garage-pi"
@@ -27,7 +27,7 @@ new edge.EdgeAgent {
 Apply the config:
 
 ```
-gohome config apply
+switchyard config apply
 ```
 
 The Pkl validator enforces that each `EdgeAgent.slug` is unique and that no driver instance appears in more than one edge's `drivers` list (a driver can only run in one place).
@@ -39,15 +39,15 @@ The Pkl validator enforces that each `EdgeAgent.slug` is unique and that no driv
 Run this on the **primary host**, over the local Unix socket (`system:local` access only — it cannot be called remotely):
 
 ```
-$ gohome edge mint-enrollment garage-pi --ttl 1h
+$ switchyard edge mint-enrollment garage-pi --ttl 1h
 
 Enrollment token (single use, expires 2026-04-27T16:13:00Z):
 
-   gohome-edge-tok_a3f9b2c1d8e5f6a7...
+   switchyard-edge-tok_a3f9b2c1d8e5f6a7...
 
 Pair the edge with:
 
-   gohome-edge pair --primary tls://gohomed.lan:7443 --token <above>
+   switchyard-edge pair --primary tls://switchyardd.lan:7443 --token <above>
 ```
 
 The token carries a fingerprint of the primary's CA certificate embedded as a checksum suffix. This lets the edge verify it is talking to the right primary on first connect — no trust-on-first-use.
@@ -61,19 +61,19 @@ The plaintext token is **never logged or stored on the primary** — only its SH
 Copy the token to the edge host (SSH, secure paste, or similar — your choice of channel). Then run:
 
 ```
-$ gohome-edge pair \
-    --primary tls://gohomed.lan:7443 \
-    --token gohome-edge-tok_a3f9b2c1...
+$ switchyard-edge pair \
+    --primary tls://switchyardd.lan:7443 \
+    --token switchyard-edge-tok_a3f9b2c1...
 ```
 
 What happens under the hood:
 
-1. The edge dials TCP to `gohomed.lan:7443`.
+1. The edge dials TCP to `switchyardd.lan:7443`.
 2. The edge performs a TLS handshake (without a client cert at this stage). It verifies the primary's server certificate against the CA fingerprint embedded in the token. A fingerprint mismatch aborts immediately.
 3. The edge sends `EdgeService.RedeemEnrollmentToken` over that TLS connection, providing the token and a Certificate Signing Request for a freshly generated Ed25519 keypair.
 4. The primary validates the token (hash, expiry, intent), signs the CSR with its internal CA (90-day certificate lifetime), marks the token consumed, and records an `EdgeAgentEnrolled` event in the audit log.
 5. The primary returns the signed certificate, the CA certificate, and the primary endpoint.
-6. The edge stores `cert + key + ca_cert + endpoint` in `/var/lib/gohome-edge/` (directory `0700`, private key `0600`). The edge's private key never leaves the edge host — the pairing flow uses a CSR.
+6. The edge stores `cert + key + ca_cert + endpoint` in `/var/lib/switchyard-edge/` (directory `0700`, private key `0600`). The edge's private key never leaves the edge host — the pairing flow uses a CSR.
 7. The command exits 0 and prints a confirmation.
 
 ---
@@ -83,7 +83,7 @@ What happens under the hood:
 Back on the primary:
 
 ```
-$ gohome edge ls
+$ switchyard edge ls
 
 SLUG        STATE          CERT EXPIRY         DRIVERS
 garage-pi   never-connected  2026-07-26        zwave-garage
@@ -96,23 +96,23 @@ garage-pi   never-connected  2026-07-26        zwave-garage
 On the edge host:
 
 ```
-gohome-edge run
+switchyard-edge run
 ```
 
 For production deployments, run it under systemd. A ready-made unit file is provided in the release package:
 
 ```ini
 [Unit]
-Description=gohome Edge Agent
+Description=switchyard Edge Agent
 After=network-online.target
 Wants=network-online.target
 
 [Service]
-ExecStart=/usr/local/bin/gohome-edge run
+ExecStart=/usr/local/bin/switchyard-edge run
 Restart=always
 RestartSec=5
-StateDirectory=gohome-edge
-User=gohome-edge
+StateDirectory=switchyard-edge
+User=switchyard-edge
 
 [Install]
 WantedBy=multi-user.target
@@ -121,14 +121,14 @@ WantedBy=multi-user.target
 Enable and start:
 
 ```
-sudo systemctl enable --now gohome-edge
+sudo systemctl enable --now switchyard-edge
 ```
 
 ---
 
 ## Certificate lifecycle
 
-The CA is generated once by `gohomed` on first boot and persisted in the auth registry, encrypted with the daemon's at-rest key. It has a 10-year lifetime.
+The CA is generated once by `switchyardd` on first boot and persisted in the auth registry, encrypted with the daemon's at-rest key. It has a 10-year lifetime.
 
 Edge certificates have a **90-day lifetime** and renew automatically:
 
@@ -140,7 +140,7 @@ Edge certificates have a **90-day lifetime** and renew automatically:
 ```
 Pair  ──→  90-day cert  ──→  (≤30d to expiry)  RenewCert  ──→  90-day cert
                          ──→  (Revoked)          CRL hit; reconnect blocked
-                         ──→  (Manual rotate)    gohome edge rotate → re-pair
+                         ──→  (Manual rotate)    switchyard edge rotate → re-pair
 ```
 
 ---
@@ -150,7 +150,7 @@ Pair  ──→  90-day cert  ──→  (≤30d to expiry)  RenewCert  ──�
 To decommission an edge or recover from a compromised host:
 
 ```
-gohome edge revoke garage-pi
+switchyard edge revoke garage-pi
 ```
 
 This adds the certificate serial to the CRL, immediately drops any active connections from that slug, and rejects future connections. The edge cannot reconnect without a fresh pairing. An `EdgeAgentRevoked` event is audited.
@@ -158,7 +158,7 @@ This adds the certificate serial to the CRL, immediately drops any active connec
 To rotate credentials while keeping the edge in service (forces a re-pair):
 
 ```
-gohome edge rotate garage-pi
+switchyard edge rotate garage-pi
 ```
 
 This revokes the current certificate and mints a fresh enrollment token for you to copy to the edge host.
@@ -167,21 +167,21 @@ This revokes the current certificate and mints a fresh enrollment token for you 
 
 ## CLI reference
 
-### Primary (`gohome` CLI)
+### Primary (`switchyard` CLI)
 
 | Command | Description |
 |---|---|
-| `gohome edge mint-enrollment <slug> [--ttl 1h]` | Mint a one-time pairing token for a Pkl-declared edge |
-| `gohome edge ls` | List all declared edges and their connection state |
-| `gohome edge show <slug>` | Detailed status: cert expiry, drivers, buffer telemetry |
-| `gohome edge rotate <slug>` | Revoke current cert and mint a fresh enrollment token |
-| `gohome edge revoke <slug>` | Permanently revoke; edge cannot reconnect without re-pair |
+| `switchyard edge mint-enrollment <slug> [--ttl 1h]` | Mint a one-time pairing token for a Pkl-declared edge |
+| `switchyard edge ls` | List all declared edges and their connection state |
+| `switchyard edge show <slug>` | Detailed status: cert expiry, drivers, buffer telemetry |
+| `switchyard edge rotate <slug>` | Revoke current cert and mint a fresh enrollment token |
+| `switchyard edge revoke <slug>` | Permanently revoke; edge cannot reconnect without re-pair |
 
-### Edge host (`gohome-edge` CLI)
+### Edge host (`switchyard-edge` CLI)
 
 | Command | Description |
 |---|---|
-| `gohome-edge pair --primary <addr> --token <tok>` | Initial pairing |
-| `gohome-edge run` | Start the supervisor (default subcommand) |
-| `gohome-edge status` | Show local connection state, drivers, buffer summary |
-| `gohome-edge rotate-cert` | Force an immediate certificate renewal round-trip |
+| `switchyard-edge pair --primary <addr> --token <tok>` | Initial pairing |
+| `switchyard-edge run` | Start the supervisor (default subcommand) |
+| `switchyard-edge status` | Show local connection state, drivers, buffer summary |
+| `switchyard-edge rotate-cert` | Force an immediate certificate renewal round-trip |

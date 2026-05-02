@@ -1,12 +1,12 @@
 # Config directory
 
-All of gohome's user-editable configuration lives under a single directory — by default `~/.config/gohome/`. Everything in that directory is Pkl source. The daemon evaluates the entire tree on startup and on `gohome config apply`, producing a typed `ConfigSnapshot` that feeds every subsystem.
+All of switchyard's user-editable configuration lives under a single directory — by default `~/.config/switchyard/`. Everything in that directory is Pkl source. The daemon evaluates the entire tree on startup and on `switchyard config apply`, producing a typed `ConfigSnapshot` that feeds every subsystem.
 
 ## Directory layout
 
 ```
-~/.config/gohome/
-├── main.pkl           # root import — gohome reads this file first
+~/.config/switchyard/
+├── main.pkl           # root import — switchyard reads this file first
 ├── drivers.pkl        # driver instances
 ├── areas.pkl          # area hierarchy (rooms, floors, home)
 ├── zones.pkl          # geographic zones for presence detection
@@ -28,13 +28,13 @@ The `secrets/` directory is a convention for file-backed secrets (e.g. tokens wr
 Every other file is reachable from `main.pkl`. A minimal working example:
 
 ```pkl
-import "gohome:base"        as base
-import "gohome:entities"    as entities
-import "gohome:automations" as automations
-import "gohome:dashboards"  as dashboards
-import "gohome:auth"        as auth
+import "switchyard:base"        as base
+import "switchyard:entities"    as entities
+import "switchyard:automations" as automations
+import "switchyard:dashboards"  as dashboards
+import "switchyard:auth"        as auth
 
-amends "gohome:config"
+amends "switchyard:config"
 
 drivers     = import("drivers.pkl").drivers
 areas       = import("areas.pkl").areas
@@ -48,14 +48,14 @@ roles       = import("auth.pkl").roles
 policies    = import("auth.pkl").policies
 ```
 
-You are free to split files however you like — gohome only cares about `main.pkl` as the entry point. Large installs often have one `.pkl` file per area, or separate files for lights, climate, and security.
+You are free to split files however you like — switchyard only cares about `main.pkl` as the entry point. Large installs often have one `.pkl` file per area, or separate files for lights, climate, and security.
 
 ## Validating config
 
-Run `gohome config validate` to evaluate and cross-reference-check your config without touching any running driver instances. This is safe to run at any time — it has no side-effects.
+Run `switchyard config validate` to evaluate and cross-reference-check your config without touching any running driver instances. This is safe to run at any time — it has no side-effects.
 
 ```
-$ gohome config validate
+$ switchyard config validate
 
 ✓ Config valid
   Driver instances : 2
@@ -73,12 +73,12 @@ On failure each error is printed with the file path and line number:
   entities/overrides.pkl:8  entity id "light.kitchen" not found in registry
 ```
 
-Exit code 1 on any validation error. This makes `gohome config validate` safe to run in CI.
+Exit code 1 on any validation error. This makes `switchyard config validate` safe to run in CI.
 
 ## Applying config
 
 ```
-$ gohome config apply
+$ switchyard config apply
 ```
 
 Validate → resolve secrets → diff against the currently-running snapshot → apply the diff → append a `ConfigApplied` event to the event store.
@@ -92,14 +92,14 @@ Dashboards         +1  -0  ~0
 ### Dry run
 
 ```
-$ gohome config apply --dry-run
+$ switchyard config apply --dry-run
 ```
 
 Produces the diff table and exits. No secrets are resolved, no driver instances are restarted, no events are appended.
 
 ## Diff-based reload
 
-gohome compares the new `ConfigSnapshot` against the currently-running one using a content hash per driver instance. Only driver instances whose config hash changed are restarted. A driver instance that appears identically in the old and new snapshot is not touched.
+switchyard compares the new `ConfigSnapshot` against the currently-running one using a content hash per driver instance. Only driver instances whose config hash changed are restarted. A driver instance that appears identically in the old and new snapshot is not touched.
 
 This means:
 
@@ -121,4 +121,4 @@ message ConfigApplied {
 
 ## LSP support
 
-The `gohome:*` Pkl modules are embedded in the daemon binary and also shipped as a `PklProject.pkl` in the source repo. Point your editor's `pkl.projectDir` setting at the `pkl/` directory in the gohome source tree. The Pkl LSP then resolves `gohome:entities`, `gohome:auth`, etc. and provides autocomplete and type checking while you edit your config files.
+The `switchyard:*` Pkl modules are embedded in the daemon binary and also shipped as a `PklProject.pkl` in the source repo. Point your editor's `pkl.projectDir` setting at the `pkl/` directory in the switchyard source tree. The Pkl LSP then resolves `switchyard:entities`, `switchyard:auth`, etc. and provides autocomplete and type checking while you edit your config files.

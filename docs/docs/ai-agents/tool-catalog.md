@@ -2,7 +2,7 @@
 
 !!! status-alpha "Alpha — shipped, interface evolving"
 
-gohome exposes 12 MCP tools. Every tool name is prefixed with `gohome__` to avoid collisions with tools from other servers. Each tool carries a **verb** that indicates the category of operation:
+switchyard exposes 12 MCP tools. Every tool name is prefixed with `switchyard__` to avoid collisions with tools from other servers. Each tool carries a **verb** that indicates the category of operation:
 
 | Verb | Meaning |
 |------|---------|
@@ -10,16 +10,16 @@ gohome exposes 12 MCP tools. Every tool name is prefixed with `gohome__` to avoi
 | `CALL` | Invokes an action or script — modifies runtime state |
 | `ADMIN` | Mutates persistent configuration or applies config bundles |
 
-List the tools exposed by your installed version of gohome:
+List the tools exposed by your installed version of switchyard:
 
 ```sh
-gohome mcp tools
-gohome mcp tools --json  # machine-readable
+switchyard mcp tools
+switchyard mcp tools --json  # machine-readable
 ```
 
 ---
 
-### `gohome__get_state`
+### `switchyard__get_state`
 
 **Verb:** READ
 
@@ -51,7 +51,7 @@ Protojson of the `Entity` message, including `entity_id`, `friendly_name` (retur
 
 ```json
 {
-  "name": "gohome__get_state",
+  "name": "switchyard__get_state",
   "arguments": {
     "entity_id": "light.living_room"
   }
@@ -60,7 +60,7 @@ Protojson of the `Entity` message, including `entity_id`, `friendly_name` (retur
 
 ---
 
-### `gohome__list_entities`
+### `switchyard__list_entities`
 
 **Verb:** READ
 
@@ -88,7 +88,7 @@ Browse all entities with optional filters. Returns a paginated list.
       "class": "light",
       "state": "on",
       "area": "living_room",
-      "subscribe_uri": "gohome://entities/light.living_room"
+      "subscribe_uri": "switchyard://entities/light.living_room"
     }
   ],
   "next_cursor": "eyJvZmZzZXQiOjEwMH0"
@@ -101,7 +101,7 @@ Each entity entry includes a `subscribe_uri` pointing at the corresponding MCP r
 
 ```json
 {
-  "name": "gohome__list_entities",
+  "name": "switchyard__list_entities",
   "arguments": {
     "classes": ["light"],
     "areas": ["living_room"],
@@ -112,7 +112,7 @@ Each entity entry includes a `subscribe_uri` pointing at the corresponding MCP r
 
 ---
 
-### `gohome__call_capability`
+### `switchyard__call_capability`
 
 **Verb:** CALL
 
@@ -139,7 +139,7 @@ Invoke a named capability on an entity. Capabilities are class-specific (e.g. `t
 
 ```json
 {
-  "name": "gohome__call_capability",
+  "name": "switchyard__call_capability",
   "arguments": {
     "entity_id": "light.living_room",
     "capability": "set_brightness",
@@ -150,7 +150,7 @@ Invoke a named capability on an entity. Capabilities are class-specific (e.g. `t
 
 ---
 
-### `gohome__query_events`
+### `switchyard__query_events`
 
 **Verb:** READ
 
@@ -191,7 +191,7 @@ Query the historical event log with filters and cursor-based pagination. Returns
 
 ```json
 {
-  "name": "gohome__query_events",
+  "name": "switchyard__query_events",
   "arguments": {
     "entity_prefix": "light.",
     "kinds": ["state_changed"],
@@ -204,7 +204,7 @@ Query the historical event log with filters and cursor-based pagination. Returns
 
 ---
 
-### `gohome__tail_events`
+### `switchyard__tail_events`
 
 **Verb:** READ
 
@@ -236,7 +236,7 @@ Use the returned `next_cursor` in a subsequent `tail_events` call to continue fr
 
 ```json
 {
-  "name": "gohome__tail_events",
+  "name": "switchyard__tail_events",
   "arguments": {
     "from_cursor": 0,
     "max_events": 20,
@@ -247,14 +247,14 @@ Use the returned `next_cursor` in a subsequent `tail_events` call to continue fr
 
 ---
 
-### `gohome__apply_scene`
+### `switchyard__apply_scene`
 
 **Verb:** CALL
 
 Apply a named scene by ID. All entities in the scene are set to their recorded state simultaneously.
 
 !!! note "Not yet implemented"
-    `gohome__apply_scene` is registered in the tool catalog so the schema is discoverable, but it currently returns `UNIMPLEMENTED`. It will become functional when the Scene spec ships.
+    `switchyard__apply_scene` is registered in the tool catalog so the schema is discoverable, but it currently returns `UNIMPLEMENTED`. It will become functional when the Scene spec ships.
 
 **Parameters**
 
@@ -276,7 +276,7 @@ Apply a named scene by ID. All entities in the scene are set to their recorded s
 
 ```json
 {
-  "name": "gohome__apply_scene",
+  "name": "switchyard__apply_scene",
   "arguments": {
     "scene_id": "evening_movie"
   }
@@ -285,7 +285,7 @@ Apply a named scene by ID. All entities in the scene are set to their recorded s
 
 ---
 
-### `gohome__run_script`
+### `switchyard__run_script`
 
 **Verb:** CALL
 
@@ -313,7 +313,7 @@ Invoke a named Starlark script declared in config. The call is synchronous — i
 
 ```json
 {
-  "name": "gohome__run_script",
+  "name": "switchyard__run_script",
   "arguments": {
     "name": "notify_residents",
     "args": {
@@ -326,7 +326,7 @@ Invoke a named Starlark script declared in config. The call is synchronous — i
 
 ---
 
-### `gohome__eval_starlark`
+### `switchyard__eval_starlark`
 
 **Verb:** CALL
 
@@ -359,7 +359,7 @@ Evaluate an ad-hoc Starlark expression or short script body. The result is retur
 
 ```json
 {
-  "name": "gohome__eval_starlark",
+  "name": "switchyard__eval_starlark",
   "arguments": {
     "source": "state('light.living_room')"
   }
@@ -368,7 +368,7 @@ Evaluate an ad-hoc Starlark expression or short script body. The result is retur
 
 ---
 
-### `gohome__validate_config`
+### `switchyard__validate_config`
 
 **Verb:** READ
 
@@ -396,7 +396,7 @@ Validate a gzipped tarball of Pkl config files without applying it. Returns a di
 
 ```json
 {
-  "name": "gohome__validate_config",
+  "name": "switchyard__validate_config",
   "arguments": {
     "pkl_bundle": "<base64-encoded gzipped tarball>"
   }
@@ -405,7 +405,7 @@ Validate a gzipped tarball of Pkl config files without applying it. Returns a di
 
 ---
 
-### `gohome__apply_config`
+### `switchyard__apply_config`
 
 **Verb:** ADMIN
 
@@ -436,7 +436,7 @@ Apply a gzipped tarball of Pkl config files to the running daemon. The daemon va
 
 ```json
 {
-  "name": "gohome__apply_config",
+  "name": "switchyard__apply_config",
   "arguments": {
     "pkl_bundle": "<base64-encoded gzipped tarball>",
     "message": "Add garage motion automation",
@@ -447,24 +447,24 @@ Apply a gzipped tarball of Pkl config files to the running daemon. The daemon va
 
 ---
 
-### `gohome__read_config_file`
+### `switchyard__read_config_file`
 
 **Verb:** READ
 
-Read a single UTF-8 file from the gohome config directory. The path is relative to the config root. Files up to 1 MiB are supported.
+Read a single UTF-8 file from the switchyard config directory. The path is relative to the config root. Files up to 1 MiB are supported.
 
 **Parameters**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `path` | string | yes | Path relative to the gohome config directory, e.g. `automations/lights.pkl` |
+| `path` | string | yes | Path relative to the switchyard config directory, e.g. `automations/lights.pkl` |
 
 **Output**
 
 ```json
 {
   "path": "automations/lights.pkl",
-  "content": "// automations/lights.pkl\nimport \"gohome:automations\" ...",
+  "content": "// automations/lights.pkl\nimport \"switchyard:automations\" ...",
   "size_bytes": 1024,
   "sha256_hex": "a3f2c1..."
 }
@@ -482,7 +482,7 @@ Errors:
 
 ```json
 {
-  "name": "gohome__read_config_file",
+  "name": "switchyard__read_config_file",
   "arguments": {
     "path": "automations/lights.pkl"
   }
@@ -491,11 +491,11 @@ Errors:
 
 ---
 
-### `gohome__write_config_file`
+### `switchyard__write_config_file`
 
 **Verb:** ADMIN
 
-Write a UTF-8 file to the gohome config directory. Only `.pkl` and `.star` files may be written. The file is syntax-checked before being committed to disk. Writing does **not** trigger a config reload — call `apply_config` separately when ready to deploy.
+Write a UTF-8 file to the switchyard config directory. Only `.pkl` and `.star` files may be written. The file is syntax-checked before being committed to disk. Writing does **not** trigger a config reload — call `apply_config` separately when ready to deploy.
 
 **Parameters**
 
@@ -530,10 +530,10 @@ Every successful write emits a `ConfigFileEdited` audit event in the daemon even
 
 ```json
 {
-  "name": "gohome__write_config_file",
+  "name": "switchyard__write_config_file",
   "arguments": {
     "path": "automations/garage.pkl",
-    "content": "// automations/garage.pkl\nimport \"gohome:automations\" as automations\n\nautomations: Listing<automations.Automation> = new {\n  new automations.Automation {\n    id = \"garage_motion_lights\"\n    // ...\n  }\n}\n"
+    "content": "// automations/garage.pkl\nimport \"switchyard:automations\" as automations\n\nautomations: Listing<automations.Automation> = new {\n  new automations.Automation {\n    id = \"garage_motion_lights\"\n    // ...\n  }\n}\n"
   }
 }
 ```

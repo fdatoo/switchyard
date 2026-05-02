@@ -1,6 +1,6 @@
 # First-Party Driver Catalog
 
-This page documents the first-party drivers shipped with gohome v1.0. All drivers are open-source and hosted under the `fynn-labs` GitHub organisation.
+This page documents the first-party drivers shipped with switchyard v1.0. All drivers are open-source and hosted under the `fynn-labs` GitHub organisation.
 
 For driver installation instructions see [Using drivers](index.md).
 
@@ -10,14 +10,14 @@ For driver installation instructions see [Using drivers](index.md).
 
 !!! status-alpha "Alpha — shipped, interface evolving"
 
-A general-purpose MQTT publish/subscribe driver. Register any topic as an entity; the driver maps incoming payloads to state changes and outgoing commands to MQTT publishes. Useful for devices that speak MQTT natively but don't have a dedicated gohome driver.
+A general-purpose MQTT publish/subscribe driver. Register any topic as an entity; the driver maps incoming payloads to state changes and outgoing commands to MQTT publishes. Useful for devices that speak MQTT natively but don't have a dedicated switchyard driver.
 
 **Config fields**
 
 | Field | Type | Required | Description |
 |---|---|---|---|
 | `broker_url` | `string` | yes | MQTT broker URL, e.g. `mqtt://192.168.1.10:1883` |
-| `client_id` | `string` | no | Client ID sent to broker. Defaults to `gohome-<instance>` |
+| `client_id` | `string` | no | Client ID sent to broker. Defaults to `switchyard-<instance>` |
 | `username` | `string` | no | MQTT username |
 | `password_env` | `string` | no | Name of an env var containing the MQTT password |
 | `tls_ca_cert` | `string` | no | Path to CA certificate for TLS brokers |
@@ -38,7 +38,7 @@ A general-purpose MQTT publish/subscribe driver. Register any topic as an entity
 
 !!! status-alpha "Alpha — shipped, interface evolving"
 
-Mirrors a [Zigbee2MQTT](https://www.zigbee2mqtt.io/) deployment into gohome over the MQTT broker that Z2M publishes to. Discovers all paired devices on startup, then reconciles live via the retained `bridge/devices` topic. v0.1 surfaces three device classes: lights (`light.*`), numeric sensors (`numeric_sensor.*`), and binary sensors (`binary_sensor.*`).
+Mirrors a [Zigbee2MQTT](https://www.zigbee2mqtt.io/) deployment into switchyard over the MQTT broker that Z2M publishes to. Discovers all paired devices on startup, then reconciles live via the retained `bridge/devices` topic. v0.1 surfaces three device classes: lights (`light.*`), numeric sensors (`numeric_sensor.*`), and binary sensors (`binary_sensor.*`).
 
 **Config fields**
 
@@ -48,7 +48,7 @@ Mirrors a [Zigbee2MQTT](https://www.zigbee2mqtt.io/) deployment into gohome over
 | `username` | `string` | no | MQTT broker username |
 | `password_env` | `string` | no | Env var containing the MQTT password |
 | `base_topic` | `string` | no | Z2M's `mqtt.base_topic` setting (default `zigbee2mqtt`) |
-| `client_id` | `string` | no | MQTT client identifier (default `gohome-z2m-<random8>`) |
+| `client_id` | `string` | no | MQTT client identifier (default `switchyard-z2m-<random8>`) |
 | `tls_skip_verify` | `bool` | no | Skip TLS verification (default `false`) |
 
 **Known caveats**
@@ -58,7 +58,7 @@ Mirrors a [Zigbee2MQTT](https://www.zigbee2mqtt.io/) deployment into gohome over
 - Per-device availability depends on Z2M's availability feature being enabled server-side; otherwise entities default to `Available=true`.
 - `/set` publishes are best-effort: a successful publish is reported as `ok=true` even if Z2M silently ignores the command (no MQTT 5 request/response in v0.1).
 
-[Source repo](https://github.com/fdatoo/gohome/tree/main/drivers/z2m)
+[Source repo](https://github.com/fdatoo/switchyard/tree/main/drivers/z2m)
 
 ---
 
@@ -73,7 +73,7 @@ Native Matter/Thread protocol integration. Commissions Matter devices directly w
 
 | Field | Type | Required | Description |
 |---|---|---|---|
-| `fabric_id` | `string` | yes | Matter fabric identifier for this gohome instance |
+| `fabric_id` | `string` | yes | Matter fabric identifier for this switchyard instance |
 | `storage_path` | `string` | yes | Path to Matter credential/fabric storage directory |
 | `interface` | `string` | no | Network interface to use for mDNS discovery. Defaults to auto-detect |
 | `thread_dataset` | `string` | no | Thread active operational dataset (hex-encoded) for Thread-over-Thread devices |
@@ -81,7 +81,7 @@ Native Matter/Thread protocol integration. Commissions Matter devices directly w
 **Known caveats**
 
 - Thread border router must be running separately (e.g. Apple HomePod, Google Home Hub, or an open-source BR).
-- Matter commissioning is initiated via `gohome command send` — a dedicated commissioning UI is planned for v1.1.
+- Matter commissioning is initiated via `switchyard command send` — a dedicated commissioning UI is planned for v1.1.
 
 [Source repo](https://github.com/fynn-labs/driver-matter)
 
@@ -92,7 +92,7 @@ Native Matter/Thread protocol integration. Commissions Matter devices directly w
 !!! status-wip "In development"
     This driver is in active development and not yet available.
 
-Exposes gohome entities to Apple HomeKit. Appears as an accessory bridge in the Home app; individual gohome entities are mapped to HomeKit accessory types. Supports lights, switches, sensors, thermostats, locks, and covers.
+Exposes switchyard entities to Apple HomeKit. Appears as an accessory bridge in the Home app; individual switchyard entities are mapped to HomeKit accessory types. Supports lights, switches, sensors, thermostats, locks, and covers.
 
 **Config fields**
 
@@ -106,7 +106,7 @@ Exposes gohome entities to Apple HomeKit. Appears as an accessory bridge in the 
 **Known caveats**
 
 - HomeKit requires mDNS on the local network; does not work across VLANs without mDNS reflection.
-- Entity updates from HomeKit are authoritative — commands from Apple Home will override gohome state.
+- Entity updates from HomeKit are authoritative — commands from Apple Home will override switchyard state.
 
 [Source repo](https://github.com/fynn-labs/driver-homekit)
 
@@ -116,7 +116,7 @@ Exposes gohome entities to Apple HomeKit. Appears as an accessory bridge in the 
 
 !!! status-alpha "Alpha — shipped, interface evolving"
 
-Connects to [ESPHome](https://esphome.io/) devices using the ESPHome native API. No MQTT broker required — the driver communicates directly with device firmware over TCP. Auto-discovers entities from the device's API and maps them to gohome entity types.
+Connects to [ESPHome](https://esphome.io/) devices using the ESPHome native API. No MQTT broker required — the driver communicates directly with device firmware over TCP. Auto-discovers entities from the device's API and maps them to switchyard entity types.
 
 **Config fields**
 
@@ -181,7 +181,7 @@ Each entity in `entities` supports:
 
 | Field | Type | Required | Description |
 |---|---|---|---|
-| `id` | `string` | yes | Entity ID in gohome (e.g. `sensor.weather_temp`) |
+| `id` | `string` | yes | Entity ID in switchyard (e.g. `sensor.weather_temp`) |
 | `poll_url` | `string` | no | URL to poll. Omit if using webhook mode only |
 | `poll_interval_s` | `int` | no | Poll interval in seconds. Required if `poll_url` is set |
 | `method` | `string` | no | HTTP method for poll requests. Defaults to `GET` |
@@ -200,7 +200,7 @@ Each entity in `entities` supports:
 
 !!! status-alpha "Alpha — shipped, interface evolving"
 
-Receives HTTP webhooks from external services and maps incoming payloads to gohome state changes or events. Acts as a passive inbound endpoint — no polling. Useful for services that push events (cloud APIs, IFTTT, custom hardware).
+Receives HTTP webhooks from external services and maps incoming payloads to switchyard state changes or events. Acts as a passive inbound endpoint — no polling. Useful for services that push events (cloud APIs, IFTTT, custom hardware).
 
 **Config fields**
 
@@ -252,7 +252,7 @@ Integrates Google Nest thermostats and cameras via the Google Nest Device Access
 
 !!! status-alpha "Alpha — shipped, interface evolving"
 
-Mirrors all lights on a Philips Hue bridge into gohome as `light.*` entities using the local CLIP v2 API — no cloud, no Philips account required. Supports `turn_on`, `turn_off`, `set_brightness`, and `set_color_temp` for white and tunable-white control. Color (RGB/XY), groups, scenes, and sensors are out of scope for v0.1.
+Mirrors all lights on a Philips Hue bridge into switchyard as `light.*` entities using the local CLIP v2 API — no cloud, no Philips account required. Supports `turn_on`, `turn_off`, `set_brightness`, and `set_color_temp` for white and tunable-white control. Color (RGB/XY), groups, scenes, and sensors are out of scope for v0.1.
 
 **Config fields**
 
@@ -265,7 +265,7 @@ Mirrors all lights on a Philips Hue bridge into gohome as `light.*` entities usi
 **Known caveats**
 
 - CLIP v2 only — bridges on firmware older than 1.48 (pre-2021) are not supported.
-- Server-sent events deliver state changes from wall switches and the Hue app to gohome with sub-second latency.
+- Server-sent events deliver state changes from wall switches and the Hue app to switchyard with sub-second latency.
 - The Hue bridge API key is per-application; store it in a secret and reference via `api_key_env`.
 
 [Source repo](https://github.com/fynn-labs/driver-hue)

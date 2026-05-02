@@ -3,8 +3,8 @@ package script_test
 import (
 	"testing"
 
-	configpb "github.com/fdatoo/gohome/gen/gohome/config/v1"
-	"github.com/fdatoo/gohome/internal/script"
+	configpb "github.com/fdatoo/switchyard/gen/switchyard/config/v1"
+	"github.com/fdatoo/switchyard/internal/script"
 )
 
 func minimalScripts(t *testing.T, scripts []*configpb.ScriptConfig) *configpb.ConfigSnapshot {

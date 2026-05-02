@@ -5,15 +5,15 @@ import (
 
 	"connectrpc.com/connect"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
 )
 
 type AreaService struct{ be AreaReader }
 
 func NewAreaService(be AreaReader) *AreaService { return &AreaService{be: be} }
 
-var _ gohomev1alpha1connect.AreaServiceHandler = (*AreaService)(nil)
+var _ switchyardv1alpha1connect.AreaServiceHandler = (*AreaService)(nil)
 
 func (s *AreaService) List(ctx context.Context, req *connect.Request[v1.ListAreasRequest]) (*connect.Response[v1.ListAreasResponse], error) {
 	var tok string

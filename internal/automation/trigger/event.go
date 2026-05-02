@@ -3,7 +3,7 @@ package trigger
 import (
 	"fmt"
 
-	"github.com/fdatoo/gohome/internal/eventstore"
+	"github.com/fdatoo/switchyard/internal/eventstore"
 )
 
 // EventMatcher matches non-state events by exact kind and optional data

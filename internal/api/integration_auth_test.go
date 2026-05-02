@@ -18,10 +18,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	authpb "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
-	"github.com/fdatoo/gohome/internal/daemon"
-	"github.com/fdatoo/gohome/internal/observability"
+	authpb "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
+	"github.com/fdatoo/switchyard/internal/daemon"
+	"github.com/fdatoo/switchyard/internal/observability"
 )
 
 func TestAuthSmokeE2E(t *testing.T) {
@@ -44,15 +44,15 @@ func TestAuthSmokeE2E(t *testing.T) {
 	authWaitForHealth(t, fmt.Sprintf("http://127.0.0.1:%d/health", adminPort), 30*time.Second)
 
 	// Build a Connect client over the UDS socket
-	sockPath := filepath.Join(dir, "gohomed.sock")
+	sockPath := filepath.Join(dir, "switchyardd.sock")
 	authWaitForSocket(t, sockPath, 10*time.Second)
 	httpClient := &http.Client{Transport: &http.Transport{
 		DialContext: func(ctx context.Context, _, _ string) (net.Conn, error) {
 			return (&net.Dialer{}).DialContext(ctx, "unix", sockPath)
 		},
 	}}
-	const base = "http://gohomed"
-	authSvc := gohomev1alpha1connect.NewAuthServiceClient(httpClient, base)
+	const base = "http://switchyardd"
+	authSvc := switchyardv1alpha1connect.NewAuthServiceClient(httpClient, base)
 
 	// 1. ListUsers returns empty list (no Pkl config loaded → no users)
 	t.Run("ListUsers_empty", func(t *testing.T) {

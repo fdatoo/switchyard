@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	configpb "github.com/fdatoo/gohome/gen/gohome/config/v1"
+	configpb "github.com/fdatoo/switchyard/gen/switchyard/config/v1"
 )
 
 func testdataDir(t *testing.T, name string) string {
@@ -69,15 +69,15 @@ func mustEvaluate(t *testing.T, dir string) *configpb.ConfigSnapshot {
 func TestEvaluate_TypedAutomation(t *testing.T) {
 	dir := t.TempDir()
 	writePkl(t, dir, "main.pkl", `
-amends "gohome:config"
+amends "switchyard:config"
 
-import "gohome:automations" as gohome_automations
+import "switchyard:automations" as switchyard_automations
 
 automations = new {
   new {
     id = "evening_lights"
     triggers = new {
-      new gohome_automations.StateChangeTrigger {
+      new switchyard_automations.StateChangeTrigger {
         entities = new { "motion.hallway" }
         from = "off"
         to = "on"
@@ -85,13 +85,13 @@ automations = new {
       }
     }
     conditions = new {
-      new gohome_automations.StateCondition {
+      new switchyard_automations.StateCondition {
         entity = "light.hallway"
         equals = "off"
       }
     }
     actions = new {
-      new gohome_automations.CallServiceAction {
+      new switchyard_automations.CallServiceAction {
         entity = "light.hallway"
         capability = "turn_on"
       }
@@ -129,9 +129,9 @@ automations = new {
 func TestEvaluate_TypedScript(t *testing.T) {
 	dir := t.TempDir()
 	writePkl(t, dir, "main.pkl", `
-amends "gohome:config"
+amends "switchyard:config"
 
-import "gohome:scripts" as gohome_scripts
+import "switchyard:scripts" as switchyard_scripts
 
 scripts = new {
   new {

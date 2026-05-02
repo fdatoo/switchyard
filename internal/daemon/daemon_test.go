@@ -14,10 +14,10 @@ import (
 
 	"connectrpc.com/connect"
 
-	v1 "github.com/fdatoo/gohome/gen/gohome/v1alpha1"
-	"github.com/fdatoo/gohome/gen/gohome/v1alpha1/gohomev1alpha1connect"
-	"github.com/fdatoo/gohome/internal/daemon"
-	"github.com/fdatoo/gohome/internal/observability"
+	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
+	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
+	"github.com/fdatoo/switchyard/internal/daemon"
+	"github.com/fdatoo/switchyard/internal/observability"
 )
 
 func TestDaemon_StartsAndShutsDownCleanly(t *testing.T) {
@@ -31,7 +31,7 @@ func TestDaemon_StartsAndShutsDownCleanly(t *testing.T) {
 		LogLevel:   slog.LevelInfo,
 		LogFormat:  "json",
 		AdminPort:  adminPort,
-		SocketPath: fmt.Sprintf("gohomed-%d.sock", os.Getpid()),
+		SocketPath: fmt.Sprintf("switchyardd-%d.sock", os.Getpid()),
 	}, logger, metrics)
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -82,7 +82,7 @@ func TestDaemon_APIVersion(t *testing.T) {
 		LogLevel:   slog.LevelInfo,
 		LogFormat:  "json",
 		AdminPort:  adminPort,
-		SocketPath: fmt.Sprintf("gohomed-%d.sock", os.Getpid()),
+		SocketPath: fmt.Sprintf("switchyardd-%d.sock", os.Getpid()),
 	}, logger, metrics)
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -113,13 +113,13 @@ func TestDaemon_APIVersion(t *testing.T) {
 	}
 
 	// Dial the Connect API over the Unix-domain socket.
-	sock := filepath.Join(dir, "gohomed.sock")
+	sock := filepath.Join(dir, "switchyardd.sock")
 	httpClient := &http.Client{Transport: &http.Transport{
 		DialContext: func(ctx context.Context, _, _ string) (net.Conn, error) {
 			return (&net.Dialer{}).DialContext(ctx, "unix", sock)
 		},
 	}}
-	client := gohomev1alpha1connect.NewSystemServiceClient(httpClient, "http://unix")
+	client := switchyardv1alpha1connect.NewSystemServiceClient(httpClient, "http://unix")
 	resp, err := client.Version(context.Background(), connect.NewRequest(&v1.VersionRequest{}))
 	if err != nil {
 		t.Fatalf("Version: %v", err)

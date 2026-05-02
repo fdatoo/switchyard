@@ -7,7 +7,7 @@ import (
 	"connectrpc.com/connect"
 	"github.com/stretchr/testify/require"
 
-	"github.com/fdatoo/gohome/internal/mcp"
+	"github.com/fdatoo/switchyard/internal/mcp"
 )
 
 func TestToMCPError_PlainGoError(t *testing.T) {

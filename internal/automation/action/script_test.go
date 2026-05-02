@@ -5,8 +5,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/fdatoo/gohome/internal/automation/action"
-	ghstarlark "github.com/fdatoo/gohome/internal/starlark"
+	"github.com/fdatoo/switchyard/internal/automation/action"
+	ghstarlark "github.com/fdatoo/switchyard/internal/starlark"
 )
 
 type fakeScriptRes struct {

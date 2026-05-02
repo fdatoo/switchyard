@@ -8,7 +8,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/fdatoo/gohome/internal/auth/credentials"
+	"github.com/fdatoo/switchyard/internal/auth/credentials"
 )
 
 func TestTokens_IssueThenVerify(t *testing.T) {
@@ -24,7 +24,7 @@ func TestTokens_IssueThenVerify(t *testing.T) {
 		TTL:      time.Hour,
 	})
 	require.NoError(t, err)
-	require.True(t, strings.HasPrefix(plaintext, "gohome_"), "plaintext must start with gohome_")
+	require.True(t, strings.HasPrefix(plaintext, "switchyard_"), "plaintext must start with switchyard_")
 	require.Contains(t, plaintext, tokenID)
 
 	lk, err := tok.Verify(ctx, plaintext)

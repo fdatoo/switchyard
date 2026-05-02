@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	entityv1 "github.com/fdatoo/gohome/gen/gohome/entity/v1"
+	entityv1 "github.com/fdatoo/switchyard/gen/switchyard/entity/v1"
 )
 
 func lightAttrs(on bool, brightness, colorTemp, colorRGB uint32) *entityv1.Attributes {

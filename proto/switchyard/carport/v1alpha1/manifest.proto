@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package switchyard.carport.v1alpha1;
+
+// See docs/proto-hygiene.md.
+
+message DriverManifest {
+  // 1-9: identity
+  string name             = 1;
+  string version          = 2;
+  string protocol_version = 3;
+
+  // 10-19: capability surface
+  repeated string supported_capabilities = 10;
+
+  // 90-99: future-structured fields (reserved for C4 Pkl integration)
+  bytes pkl_module = 99;
+}

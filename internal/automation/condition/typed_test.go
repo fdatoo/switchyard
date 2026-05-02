@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/fdatoo/gohome/internal/automation/condition"
-	ghstarlark "github.com/fdatoo/gohome/internal/starlark"
+	"github.com/fdatoo/switchyard/internal/automation/condition"
+	ghstarlark "github.com/fdatoo/switchyard/internal/starlark"
 )
 
 type fakeState map[string]*ghstarlark.EntityState

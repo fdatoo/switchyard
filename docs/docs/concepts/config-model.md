@@ -1,9 +1,9 @@
 # Config model
 
 !!! status-alpha "Alpha — shipped, interface evolving"
-    The Pkl and Starlark layers described here are shipped. The specific module APIs (`gohome:entities`, `gohome:automations`, etc.) may evolve before v1.0.
+    The Pkl and Starlark layers described here are shipped. The specific module APIs (`switchyard:entities`, `switchyard:automations`, etc.) may evolve before v1.0.
 
-gohome uses two languages for configuration:
+switchyard uses two languages for configuration:
 
 - **Pkl** for structure: driver instances, entity declarations, dashboards, automations shape, users, roles, policies.
 - **Starlark** for logic: automation bodies, trigger conditions, computed entity expressions, scripts.
@@ -31,27 +31,27 @@ Pkl has types:
 brightness: Int = 80   // validated at evaluation time
 ```
 
-If you write `brightness: "80"`, the Pkl evaluator rejects the config before gohomed even starts.
+If you write `brightness: "80"`, the Pkl evaluator rejects the config before switchyardd even starts.
 
 ### Why Pkl instead of YAML+Jinja
 
 Home Assistant uses YAML with Jinja templates for dynamic values. The combination is awkward: Jinja is a templating language designed for HTML, not configuration. It has no types, no way to validate whether a template is syntactically correct without rendering it, and errors only appear at runtime when the template is evaluated.
 
-Pkl holds Starlark expressions directly (see [The seam](#the-seam) below). Those expressions are syntax-validated at `gohome config validate` time — before the daemon loads the config — not at runtime.
+Pkl holds Starlark expressions directly (see [The seam](#the-seam) below). Those expressions are syntax-validated at `switchyard config validate` time — before the daemon loads the config — not at runtime.
 
 ### Typed, git-friendly, AI-editable
 
-A gohome config tree is a directory of `.pkl` files. It can be committed to git like any other code. Diffs are readable. Changes can be reviewed in a pull request.
+A switchyard config tree is a directory of `.pkl` files. It can be committed to git like any other code. Diffs are readable. Changes can be reviewed in a pull request.
 
-Because Pkl is typed and has a documented module schema, AI assistants can edit it reliably. Claude can read `gohome:entities`, understand the `Light` class, and generate a correct entity declaration. It can also run `gohome config validate` and interpret the structured error output to fix mistakes.
+Because Pkl is typed and has a documented module schema, AI assistants can edit it reliably. Claude can read `switchyard:entities`, understand the `Light` class, and generate a correct entity declaration. It can also run `switchyard config validate` and interpret the structured error output to fix mistakes.
 
 ### An example config file
 
 ```pkl
-import "gohome:base"      as base
-import "gohome:carport"   as carport
-import "gohome:entities"  as entities
-import "gohome:automations" as auto
+import "switchyard:base"      as base
+import "switchyard:carport"   as carport
+import "switchyard:entities"  as entities
+import "switchyard:automations" as auto
 
 // Driver instance — binds the hue driver to a specific bridge
 hueMain = new carport.HueDriverInstance {
@@ -89,7 +89,7 @@ lightsOff = new auto.Automation {
 
 [Starlark](https://github.com/bazelbuild/starlark) is a Python-dialect designed for sandboxed scripting. It is deterministic, has no I/O by default, and runs in a sandbox with explicit resource limits.
 
-gohome uses `go.starlark.net`, the Google-maintained canonical Go implementation.
+switchyard uses `go.starlark.net`, the Google-maintained canonical Go implementation.
 
 ### Why Starlark instead of Jinja
 
@@ -123,10 +123,10 @@ In `automation` and `script` contexts, both the typed capability form (`e.turn_o
 
 ### Syntax validation at config load time
 
-Starlark expressions inside Pkl config files are syntax-validated when you run `gohome config validate`. If a Starlark expression has a syntax error, the config is rejected with a structured error pointing to the file, line, and column:
+Starlark expressions inside Pkl config files are syntax-validated when you run `switchyard config validate`. If a Starlark expression has a syntax error, the config is rejected with a structured error pointing to the file, line, and column:
 
 ```
-$ gohome config validate
+$ switchyard config validate
 ✗ Config invalid
 
   automations/lights.pkl:14:9
@@ -172,7 +172,7 @@ def good_night_sequence(delay):
         e.turn_off()
 ```
 
-The `load("//...")` syntax resolves paths relative to the config directory root. Any path that escapes the config directory is rejected. Module results are cached in memory and invalidated when `gohome config apply` runs.
+The `load("//...")` syntax resolves paths relative to the config directory root. Any path that escapes the config directory is rejected. Module results are cached in memory and invalidated when `switchyard config apply` runs.
 
 The rule of thumb: if you would write a test for it, move it to a `.star` file. If it fits on one line and you would never need to debug it, keep it inline.
 
@@ -184,7 +184,7 @@ Secrets — API tokens, passwords, bridge credentials — are **never written in
 |---|---|---|
 | `env:` | Environment variable | `env:HUE_TOKEN` |
 | `file:` | File on disk (e.g. Docker secret) | `file:/run/secrets/hue_token` |
-| `keyring:` | OS keyring | `keyring:gohome/hue_token` |
+| `keyring:` | OS keyring | `keyring:switchyard/hue_token` |
 
 In Pkl, declare a secret value using the prefix-string format:
 
@@ -200,16 +200,16 @@ apiToken = "file:/run/secrets/hue"
 
 ```pkl
 # Option C — system keyring (service/account)
-apiToken = "keyring:gohome/hue"
+apiToken = "keyring:switchyard/hue"
 ```
 
 Secrets are resolved at `Apply` time — after the config is validated but before it is passed to drivers. Resolved secret values are **never written to the event log**. The `ConfigApplied` event records that a config was applied and what changed (number of driver instances added/removed/changed), not the contents of the config itself.
 
-If `gohome config validate` succeeds, secrets are not resolved — validation is side-effect-free. Only `gohome config apply` resolves secrets.
+If `switchyard config validate` succeeds, secrets are not resolved — validation is side-effect-free. Only `switchyard config apply` resolves secrets.
 
 ## Diff-based reload
 
-When you run `gohome config apply`, gohomed computes the diff between the current running config and the new config. Only the things that actually changed are updated:
+When you run `switchyard config apply`, switchyardd computes the diff between the current running config and the new config. Only the things that actually changed are updated:
 
 - **Unchanged driver instances** are not restarted. Their connections to hardware stay live.
 - **Changed driver instances** (new config hash) are gracefully stopped, the new config is sent, and the instance resumes.
@@ -223,7 +223,7 @@ This means applying a config change that only touches one driver instance does n
 You can preview what will change before applying:
 
 ```
-gohome config apply --dry-run
+switchyard config apply --dry-run
 ```
 
 ```
@@ -237,9 +237,9 @@ Dry-run — no changes applied
 ## Config validation workflow
 
 ```
-gohome config validate          # evaluate Pkl, check cross-references, validate Starlark syntax
-gohome config apply --dry-run   # same, plus show what would change
-gohome config apply             # validate, resolve secrets, apply diff, record ConfigApplied event
+switchyard config validate          # evaluate Pkl, check cross-references, validate Starlark syntax
+switchyard config apply --dry-run   # same, plus show what would change
+switchyard config apply             # validate, resolve secrets, apply diff, record ConfigApplied event
 ```
 
 The daemon also validates config on startup. If the config is invalid, the daemon exits with a non-zero status code and prints structured errors. It does not start with a partially-valid config.

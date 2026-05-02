@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/fdatoo/gohome/internal/api"
+	"github.com/fdatoo/switchyard/internal/api"
 )
 
 type Config struct {

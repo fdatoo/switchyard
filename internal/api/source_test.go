@@ -7,7 +7,7 @@ import (
 	"connectrpc.com/connect"
 	"github.com/stretchr/testify/require"
 
-	"github.com/fdatoo/gohome/internal/api"
+	"github.com/fdatoo/switchyard/internal/api"
 )
 
 func TestSourceFromContext_Default(t *testing.T) {
@@ -31,7 +31,7 @@ func TestSourceInterceptor_ReadsHeader(t *testing.T) {
 	})
 	h := api.SourceInterceptor().WrapUnary(next)
 	req := connect.NewRequest(&struct{}{})
-	req.Header().Set("x-gohome-source", "mcp")
+	req.Header().Set("x-switchyard-source", "mcp")
 	_, _ = h(context.Background(), req)
 	require.Equal(t, "mcp", observed)
 }

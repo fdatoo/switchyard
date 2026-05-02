@@ -4,10 +4,10 @@ import (
 	"testing"
 	"time"
 
-	entityv1 "github.com/fdatoo/gohome/gen/gohome/entity/v1"
-	eventv1 "github.com/fdatoo/gohome/gen/gohome/event/v1"
-	"github.com/fdatoo/gohome/internal/automation/trigger"
-	"github.com/fdatoo/gohome/internal/eventstore"
+	entityv1 "github.com/fdatoo/switchyard/gen/switchyard/entity/v1"
+	eventv1 "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
+	"github.com/fdatoo/switchyard/internal/automation/trigger"
+	"github.com/fdatoo/switchyard/internal/eventstore"
 )
 
 func stateEv(entity, s string) eventstore.Event {

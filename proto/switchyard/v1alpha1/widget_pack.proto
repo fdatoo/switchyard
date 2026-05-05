@@ -1,0 +1,47 @@
+// See docs/proto-hygiene.md for grouping conventions.
+
+syntax = "proto3";
+
+package switchyard.v1alpha1;
+
+import "google/protobuf/timestamp.proto";
+import "switchyard/v1alpha1/dashboard.proto";
+
+service WidgetPackService {
+  rpc Install   (InstallWidgetPackRequest)   returns (InstallWidgetPackResponse);
+  rpc List      (ListWidgetPacksRequest)     returns (ListWidgetPacksResponse);
+  rpc Uninstall (UninstallWidgetPackRequest) returns (UninstallWidgetPackResponse);
+  rpc Watch     (WatchWidgetPacksRequest)    returns (stream WidgetPackEvent);
+}
+
+message InstallWidgetPackRequest  { string ref = 1; }
+message InstallWidgetPackResponse { InstalledPack pack = 1; }
+
+message UninstallWidgetPackRequest { string name = 1; string version = 2; bool force = 3; }
+message UninstallWidgetPackResponse {}
+
+message ListWidgetPacksRequest  {}
+message ListWidgetPacksResponse { repeated InstalledPack packs = 1; }
+
+message WatchWidgetPacksRequest {}
+message WidgetPackEvent {
+  oneof kind {
+    InstalledPack   installed   = 1;
+    UninstalledPack uninstalled = 2;
+  }
+}
+message UninstalledPack { string name = 1; string version = 2; }
+
+message InstalledPack {
+  string                    name            = 1;
+  string                    version         = 2;
+  string                    sha256          = 3;
+  SignatureStatus           signature       = 4;
+  string                    signer_identity = 5;
+  repeated string           classes         = 6;
+  string                    bundle_url      = 7;
+  string                    description     = 8;
+  string                    homepage        = 9;
+  string                    license         = 10;
+  google.protobuf.Timestamp installed_at    = 11;
+}

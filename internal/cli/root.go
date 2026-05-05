@@ -47,7 +47,7 @@ func NewRoot() *cobra.Command {
 	root.AddCommand(newScriptCmd(gf))
 	root.AddCommand(newMCPCmd(gf))
 	root.AddCommand(NewAuthCmd(gf))
-	root.AddCommand(newWidgetCmd())
+	root.AddCommand(newWidgetCmd(gf))
 	root.AddCommand(newUICmd())
 	return root
 }

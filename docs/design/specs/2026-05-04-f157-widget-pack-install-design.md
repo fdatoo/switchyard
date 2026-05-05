@@ -34,7 +34,7 @@ The full server-side install flow with admin authz and end-to-end CLI usability,
 
 | Path | New? | Purpose |
 |------|------|---------|
-| `internal/config/pkl/switchyard/widgets.pkl` | modified | Full §15.2 `PackManifest` + re-export of `WidgetInstance`/`ContainerInstance`; `widgetPackPolicy` instance |
+| `internal/config/pkl/switchyard/widgets.pkl` | modified | Full §15.2 `PackManifest` + re-export of `WidgetInstance` (and its helper classes); `widgetPackPolicy` instance |
 | `internal/config/pkl/switchyard/dashboards.pkl` | modified | Import `WidgetInstance` from `widgets.pkl` rather than declaring locally |
 | `internal/config/pkl/switchyard/policy.pkl` | modified | Add top-level `widgetPackPolicy: PackPolicy` |
 | `proto/switchyard/v1alpha1/widget_pack.proto` | new | `WidgetPackService { Install, List, Uninstall, Watch }` |

@@ -2,45 +2,21 @@ package widgetpack_test
 
 import (
 	"context"
+	"errors"
 	"testing"
 
 	"github.com/fdatoo/switchyard/internal/widgetpack"
 )
 
-func TestInstaller_Install(t *testing.T) {
-	store := widgetpack.NewStore(t.TempDir())
-	installer := widgetpack.NewInstaller(store)
-
-	pack, err := installer.Install(context.Background(), widgetpack.InstallRequest{
-		Name:    "test-widgets",
-		Version: "1.0.0",
-		Ref:     "registry.example.com/test-widgets:1.0.0",
-	})
-	if err != nil {
-		t.Fatalf("Install: %v", err)
-	}
-	if pack.Name != "test-widgets" {
-		t.Errorf("Name = %q, want test-widgets", pack.Name)
-	}
-}
-
-func TestInstaller_Install_MissingName(t *testing.T) {
-	store := widgetpack.NewStore(t.TempDir())
-	installer := widgetpack.NewInstaller(store)
-	_, err := installer.Install(context.Background(), widgetpack.InstallRequest{Ref: "ref"})
-	if err == nil {
-		t.Error("expected error for missing name/version")
-	}
-}
-
-func TestInstaller_Install_MissingVersion(t *testing.T) {
-	store := widgetpack.NewStore(t.TempDir())
-	installer := widgetpack.NewInstaller(store)
-	_, err := installer.Install(context.Background(), widgetpack.InstallRequest{
-		Name: "my-widgets",
-		Ref:  "registry.example.com/my-widgets:latest",
-	})
-	if err == nil {
-		t.Error("expected error for missing version")
+// TestInstaller_Install_BadRef is a smoke test for the Installer's request
+// validation. Full end-to-end coverage of the install pipeline lives in the
+// Task 15 integration test, which exercises a real OCI registry, signer,
+// and on-disk store.
+func TestInstaller_Install_BadRef(t *testing.T) {
+	inst := widgetpack.NewInstaller(nil, nil, nil, nil, "", nil)
+	_, err := inst.Install(context.Background(), widgetpack.InstallRequest{Ref: ""})
+	var fe *widgetpack.FailureError
+	if !errors.As(err, &fe) || fe.Reason != widgetpack.ReasonBadRef {
+		t.Errorf("err = %v, want FailureError{Reason: bad_ref}", err)
 	}
 }

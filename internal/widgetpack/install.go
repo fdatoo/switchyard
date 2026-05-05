@@ -75,6 +75,18 @@ type InstallRequest struct {
 	Ref string
 }
 
+// DashboardLister is the subset of dashboard.Backend that Uninstall queries
+// to build the in-use class set. Today (F-156 unimplemented) the only
+// production binding returns an empty list — Uninstall always proceeds.
+type DashboardLister interface {
+	ClassRefs(ctx context.Context) ([]string, error) // list of "<pack>/<class>" or builtin class IDs in any dashboard
+}
+
+// emptyDashboardLister is the default; replace via Installer.SetDashboardLister.
+type emptyDashboardLister struct{}
+
+func (emptyDashboardLister) ClassRefs(_ context.Context) ([]string, error) { return nil, nil }
+
 // Installer chains the install pipeline. It is safe for concurrent use:
 // concurrent Install calls for the same (name@version) are serialized via
 // muInflight; calls for different keys run independently.
@@ -85,6 +97,7 @@ type Installer struct {
 	fetcher        *Fetcher
 	dataDir        string
 	builtinClasses []string
+	dl             DashboardLister
 
 	// muInflight gates concurrent installs of the same (name@version) so we
 	// don't race two callers into the rename step. Keyed by name@version.
@@ -274,6 +287,45 @@ func (i *Installer) checkCollisions(ctx context.Context, m *Manifest) error {
 		}
 	}
 	return nil
+}
+
+// SetDashboardLister wires a real lister once F-156 lands.
+func (i *Installer) SetDashboardLister(d DashboardLister) { i.dl = d }
+
+// Uninstall removes a pack. With force=false, returns an error if any
+// dashboard references one of the pack's classes.
+func (i *Installer) Uninstall(ctx context.Context, name, version string, force bool) error {
+	pack, err := i.store.Get(ctx, name, version)
+	if err != nil {
+		return err
+	}
+	if !force {
+		dl := i.dl
+		if dl == nil {
+			dl = emptyDashboardLister{}
+		}
+		refs, err := dl.ClassRefs(ctx)
+		if err != nil {
+			return fmt.Errorf("widgetpack: list class refs: %w", err)
+		}
+		inUse := make([]string, 0)
+		for _, c := range pack.Classes {
+			full := name + "/" + c
+			for _, ref := range refs {
+				if ref == full {
+					inUse = append(inUse, full)
+					break
+				}
+			}
+		}
+		if len(inUse) > 0 {
+			return fmt.Errorf("widgetpack: pack %s in use by classes %v", pack.Name, inUse)
+		}
+	}
+	if err := os.RemoveAll(filepath.Join(i.store.Root(), name, version)); err != nil {
+		return fmt.Errorf("widgetpack: remove dir: %w", err)
+	}
+	return i.store.Remove(ctx, name, version)
 }
 
 // untarGz extracts a gzipped tarball into dest. Symlinks, devices, and

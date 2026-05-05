@@ -35,16 +35,31 @@ type FetchedArtifact struct {
 // Fetcher pulls OCI artifacts plus their cosign signature artifacts.
 type Fetcher struct {
 	credStore credentials.Store
+	plainHTTP bool
+}
+
+// FetcherOption configures optional Fetcher behaviour.
+type FetcherOption func(*Fetcher)
+
+// WithPlainHTTP forces all registry requests to use plain HTTP rather than
+// HTTPS. Intended only for the in-process integration test registry; never
+// pass this in production code.
+func WithPlainHTTP(b bool) FetcherOption {
+	return func(f *Fetcher) { f.plainHTTP = b }
 }
 
 // NewFetcher returns a Fetcher that authenticates against registries using
 // ~/.docker/config.json (anonymous access if not present).
-func NewFetcher() (*Fetcher, error) {
+func NewFetcher(opts ...FetcherOption) (*Fetcher, error) {
 	cs, err := credentials.NewStoreFromDocker(credentials.StoreOptions{})
 	if err != nil {
 		return nil, fmt.Errorf("widgetpack: docker credentials: %w", err)
 	}
-	return &Fetcher{credStore: cs}, nil
+	f := &Fetcher{credStore: cs}
+	for _, o := range opts {
+		o(f)
+	}
+	return f, nil
 }
 
 // Fetch pulls the artifact at ref and (if present) its cosign signature
@@ -64,6 +79,7 @@ func (f *Fetcher) Fetch(ctx context.Context, ref string) (*FetchedArtifact, erro
 		Client:     retry.DefaultClient,
 		Credential: credentials.Credential(f.credStore),
 	}
+	r.PlainHTTP = f.plainHTTP
 
 	// Pull the artifact into an in-memory store.
 	store := memory.New()

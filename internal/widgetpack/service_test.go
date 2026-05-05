@@ -14,7 +14,8 @@ import (
 func TestService_List_Empty(t *testing.T) {
 	store := widgetpack.NewStore(t.TempDir())
 	_ = store.Load(context.Background())
-	svc := widgetpack.NewService(nil, store)
+	inst := widgetpack.NewInstaller(store, nil, nil, nil, "", nil)
+	svc := widgetpack.NewService(inst, store)
 	resp, err := svc.List(context.Background(), connect.NewRequest(&v1.ListWidgetPacksRequest{}))
 	if err != nil {
 		t.Fatalf("List: %v", err)

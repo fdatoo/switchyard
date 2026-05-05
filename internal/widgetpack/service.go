@@ -17,8 +17,8 @@ type Service struct {
 	store     *Store
 }
 
-// NewService wires the Connect handler. installer may be nil when only List is
-// needed (e.g. read-only frontends), but Install and Uninstall will panic.
+// NewService wires the Connect handler. Both installer and store must be
+// non-nil; the handler does not attempt to operate in a degraded mode.
 func NewService(installer *Installer, store *Store) *Service {
 	return &Service{installer: installer, store: store}
 }

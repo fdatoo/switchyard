@@ -25,7 +25,8 @@ func TestInstaller_Uninstall_NotFound(t *testing.T) {
 	store := widgetpack.NewStore(t.TempDir())
 	_ = store.Load(context.Background())
 	inst := widgetpack.NewInstaller(store, nil, nil, nil, "", nil)
-	if err := inst.Uninstall(context.Background(), "ghost", "1.0.0", false); err == nil {
-		t.Error("expected ErrPackNotFound")
+	err := inst.Uninstall(context.Background(), "ghost", "1.0.0", false)
+	if !errors.Is(err, widgetpack.ErrPackNotFound) {
+		t.Errorf("got %v, want ErrPackNotFound", err)
 	}
 }

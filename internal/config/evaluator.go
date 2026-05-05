@@ -131,18 +131,24 @@ type mcpConfigJSON struct {
 	TailMaxWaitSeconds       uint32 `json:"tailMaxWaitSeconds"`
 }
 
+type widgetPackPolicyJSON struct {
+	AllowedSigners []string `json:"allowedSigners"`
+	AllowUnsigned  bool     `json:"allowUnsigned"`
+}
+
 type configJSON struct {
-	DriverInstances []json.RawMessage `json:"driverInstances"`
-	Entities        []entityJSON      `json:"entities"`
-	Automations     []automationJSON  `json:"automations"`
-	Scripts         []scriptJSON      `json:"scripts"`
-	Dashboards      []dashboardJSON   `json:"dashboards"`
-	Users           []userJSON        `json:"users"`
-	Roles           []roleJSON        `json:"roles"`
-	Policies        []policyJSON      `json:"policies"`
-	AuthSettings    *authSettingsJSON `json:"auth_settings"`
-	Listener        listenerJSON      `json:"listener"`
-	MCP             mcpConfigJSON     `json:"mcp"`
+	DriverInstances  []json.RawMessage    `json:"driverInstances"`
+	Entities         []entityJSON         `json:"entities"`
+	Automations      []automationJSON     `json:"automations"`
+	Scripts          []scriptJSON         `json:"scripts"`
+	Dashboards       []dashboardJSON      `json:"dashboards"`
+	Users            []userJSON           `json:"users"`
+	Roles            []roleJSON           `json:"roles"`
+	Policies         []policyJSON         `json:"policies"`
+	WidgetPackPolicy widgetPackPolicyJSON `json:"widgetPackPolicy"`
+	AuthSettings     *authSettingsJSON    `json:"auth_settings"`
+	Listener         listenerJSON         `json:"listener"`
+	MCP              mcpConfigJSON        `json:"mcp"`
 }
 
 type listenerJSON struct {
@@ -427,6 +433,10 @@ func parseConfigJSON(text, configDir string) (*configpb.ConfigSnapshot, error) {
 			pbPolicy.Deny = append(pbPolicy.Deny, capabilityRuleJSONToProto(rule))
 		}
 		snap.Policies = append(snap.Policies, pbPolicy)
+	}
+	snap.WidgetPackPolicy = &configpb.WidgetPackPolicy{
+		AllowedSigners: raw.WidgetPackPolicy.AllowedSigners,
+		AllowUnsigned:  raw.WidgetPackPolicy.AllowUnsigned,
 	}
 	if raw.AuthSettings != nil {
 		as := raw.AuthSettings

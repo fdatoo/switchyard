@@ -8,6 +8,7 @@ import "switchyard:dashboards" as dash
 import "switchyard:auth" as authmod
 import "switchyard:policy" as policymod
 import "switchyard:mcp" as mcpmod
+import "switchyard:widgets" as widgets
 
 driverInstances: Listing<cp.DriverInstance> = new {}
 entities: Listing<ent.Entity> = new {}
@@ -17,6 +18,7 @@ dashboards: Listing<dash.Dashboard> = new {}
 users: Listing<authmod.User> = new {}
 roles: Listing<authmod.Role> = new {}
 policies: Listing<policymod.Policy> = new {}
+widgetPackPolicy: widgets.PackPolicy = new {}
 auth_settings: authmod.AuthSettings? = null
 mcp: mcpmod.MCPConfig = new mcpmod.MCPConfig {}
 

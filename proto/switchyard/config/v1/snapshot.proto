@@ -18,6 +18,7 @@ message ConfigSnapshot {
   repeated RoleConfig           roles            = 15;
   repeated PolicyConfig         policies         = 16;
   repeated ScriptConfig         scripts          = 17;
+  WidgetPackPolicy              widget_pack_policy = 18;
 
   // 20-29: listener & MCP
   ListenerConfig    listener      = 20;
@@ -255,6 +256,11 @@ message CapabilityRule {
 
   // 10-19: targets
   EntitySelector targets = 10;
+}
+
+message WidgetPackPolicy {
+  repeated string allowed_signers = 1;
+  bool            allow_unsigned  = 2;
 }
 
 message EntitySelector {

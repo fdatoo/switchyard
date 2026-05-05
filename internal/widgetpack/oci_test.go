@@ -39,3 +39,10 @@ func TestSingleLayerDescriptor_TwoLayers(t *testing.T) {
 		t.Error("expected error for multi-layer manifest")
 	}
 }
+
+func TestSingleLayerDescriptor_ZeroLayers(t *testing.T) {
+	manifest := []byte(`{"layers":[]}`)
+	if _, err := singleLayerDescriptor(manifest); err == nil {
+		t.Error("expected error for zero-layer manifest")
+	}
+}

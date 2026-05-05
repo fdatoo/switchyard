@@ -17,6 +17,7 @@ import (
 	"oras.land/oras-go/v2/registry/remote"
 	"oras.land/oras-go/v2/registry/remote/auth"
 	"oras.land/oras-go/v2/registry/remote/credentials"
+	"oras.land/oras-go/v2/registry/remote/retry"
 )
 
 // MediaType is the layer media type for switchyard widget pack artifacts.
@@ -58,7 +59,9 @@ func (f *Fetcher) Fetch(ctx context.Context, ref string) (*FetchedArtifact, erro
 	if err != nil {
 		return nil, fmt.Errorf("widgetpack: open repo %q: %w", repo, err)
 	}
+	// retry.DefaultClient: respects 429 Retry-After + exponential backoff.
 	r.Client = &auth.Client{
+		Client:     retry.DefaultClient,
 		Credential: credentials.Credential(f.credStore),
 	}
 
@@ -99,9 +102,17 @@ func (f *Fetcher) Fetch(ctx context.Context, ref string) (*FetchedArtifact, erro
 	}, nil
 }
 
-// fetchSignature pulls the cosign signature artifact at sigTag from r. The
-// returned error is informational; callers treat any failure as "no signature
-// present" (best-effort).
+// fetchSignature fetches the cosign signature artifact at <ref>.sig.
+//
+// LIMITATION: only the legacy tag-based signature layout is supported. Cosign
+// 2.x against OCI 1.1-capable registries (ghcr.io, AWS ECR, Docker Hub since
+// 2024) defaults to attaching signatures as Referrers (manifest.subject),
+// which this code does not query. Signed artifacts using the modern layout
+// will appear unsigned to this fetcher. Referrer support is tracked
+// separately; see the F-157 design spec known-limitations section.
+//
+// Returns (nil, err) on any fetch failure, including the common case where
+// no signature artifact exists at the .sig tag.
 func (f *Fetcher) fetchSignature(ctx context.Context, r *remote.Repository, sigTag string) ([]byte, error) {
 	store := memory.New()
 	desc, err := oras.Copy(ctx, r, sigTag, store, sigTag, oras.DefaultCopyOptions)
@@ -144,6 +155,7 @@ func singleLayerDescriptor(manifest []byte) (ocispec.Descriptor, error) {
 }
 
 // cosignSigTagFor turns "sha256:abc" into "sha256-abc.sig" — cosign's tag scheme.
+// Cosign defines this scheme for sha256 digests only; sha512 is not supported.
 func cosignSigTagFor(digest string) string {
 	parts := strings.SplitN(digest, ":", 2)
 	if len(parts) != 2 {

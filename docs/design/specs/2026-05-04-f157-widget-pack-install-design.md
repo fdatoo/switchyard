@@ -318,6 +318,14 @@ Procedure catalog entries (matching the existing `procedureCatalog` shape used b
 
 Default policy (in C9 policy Pkl): `widget_pack.install` + `widget_pack.uninstall` allowed for `admin` role only; `list` + `watch` allowed for any authenticated user (so browsers can render the catalog).
 
+### 9.6 Authz wiring dependency (F-184)
+
+`internal/daemon/daemon.go:408` currently passes `nil` as the `ProcedureCatalog` argument to `api.NewAuthorize`, which makes the authz interceptor pass-through (`if rt == nil || catalog == nil { return next(ctx, req) }`). C9 shipped the policy runtime, role graph, and interceptors, but no procedure catalog implementation exists in the daemon today.
+
+F-157 declares procedure-catalog registration code for the four `widget_pack` procedures, packaged as a `registerWidgetPackProcedures(*Catalog)` helper in `internal/api/service_widget_pack.go`. This code is **inert** until **F-184** ("C9: wire ProcedureCatalog implementation into daemon authz interceptor") lands, at which point F-157's entries become live with no further changes required.
+
+Until F-184 lands, `Install`/`Uninstall` are reachable by any caller that can dial the UDS or TCP listener. UDS file permissions (`0o600`) provide a coarse local gate; the TCP listener relies on TLS termination upstream. This is the same de-facto authz posture every other write RPC has today (Area, Zone, Device, Automation, Script, etc.). F-185 ("C9: populate ProcedureCatalog entries for all existing RPC services") tracks closing the gap across the whole API surface.
+
 ### 9.3 Service handler skeleton
 
 ```go

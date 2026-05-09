@@ -5,6 +5,7 @@ import (
 	"errors"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/fdatoo/switchyard/internal/eventstore"
 	"github.com/fdatoo/switchyard/internal/observability"
@@ -91,5 +92,54 @@ func TestReplay_ReturnsReplayError(t *testing.T) {
 	// Verify the inner error is accessible via the unwrap chain.
 	if re.Err == nil || !strings.Contains(re.Err.Error(), "intentional failure") {
 		t.Fatalf("expected inner error to contain 'intentional failure', got: %v", re.Err)
+	}
+}
+
+func TestReplay_SkipEventAllowsReplayToProceed(t *testing.T) {
+	ctx := context.Background()
+
+	// Phase A: populate the DB with one event using a store with no failing projector.
+	f := newStoreFixture(t)
+	if err := f.store.Start(ctx); err != nil {
+		t.Fatal(err)
+	}
+	pos, err := f.store.Append(ctx, testutil.StateChanged("light.z", 1))
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Logf("appended event at position %d", pos)
+	_ = f.store.Close(ctx)
+
+	// Phase B: replay with a projector that fails on the first Apply → ReplayError.
+	f2 := newStoreFixtureOnDB(t, f.db)
+	if err := f2.store.RegisterProjector(&countingProjector{name: "boom", failAt: 1}, eventstore.ProjectorModeSync); err != nil {
+		t.Fatal(err)
+	}
+	replayErr := f2.store.Replay(ctx)
+	if replayErr == nil {
+		t.Fatal("expected replay to fail")
+	}
+	var re *eventstore.ReplayError
+	if !errors.As(replayErr, &re) {
+		t.Fatalf("expected *eventstore.ReplayError, got %T", replayErr)
+	}
+
+	// Phase C: insert a skip row for (position, "boom") — simulates POST /events/{pos}/skip.
+	_, err = f.db.ExecContext(ctx, `
+		INSERT INTO skipped_events (position, projector, skipped_at, skipped_by, reason)
+		VALUES (?, ?, ?, ?, ?)`,
+		re.Position, "boom", time.Now().UnixNano(), "integration-test", "skip to unblock replay",
+	)
+	if err != nil {
+		t.Fatalf("insert skipped_events: %v", err)
+	}
+
+	// Phase D: replay again — must succeed now that the event is skipped.
+	f3 := newStoreFixtureOnDB(t, f.db)
+	if err := f3.store.RegisterProjector(&countingProjector{name: "boom", failAt: 1}, eventstore.ProjectorModeSync); err != nil {
+		t.Fatal(err)
+	}
+	if err := f3.store.Replay(ctx); err != nil {
+		t.Fatalf("replay after skip failed: %v", err)
 	}
 }

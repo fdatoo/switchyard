@@ -43,6 +43,7 @@ import (
 	"github.com/fdatoo/switchyard/internal/state"
 	"github.com/fdatoo/switchyard/internal/storage"
 	"github.com/fdatoo/switchyard/internal/web"
+	"github.com/fdatoo/switchyard/internal/widgetpack"
 )
 
 // Compile-time assertion: *carport.Host must satisfy config.CarportManager.
@@ -368,6 +369,54 @@ func (d *Daemon) Run(ctx context.Context) error {
 
 	auditRecorder := audit.New(store)
 
+	// Widget pack subsystem (F-157).
+	packStore := widgetpack.NewStore(filepath.Join(dataDir, "widgets"))
+	if err := packStore.Load(ctx); err != nil {
+		return fmt.Errorf("widget pack store: %w", err)
+	}
+
+	trustPolicy := &widgetpack.TrustPolicy{}
+	// Initial trust policy from current config snapshot, if any.
+	if d.configMgr != nil {
+		if snap := d.configMgr.Current(); snap != nil {
+			if p := snap.GetWidgetPackPolicy(); p != nil {
+				if err := trustPolicy.Set(p.GetAllowedSigners(), p.GetAllowUnsigned()); err != nil {
+					return fmt.Errorf("widget pack trust policy: %w", err)
+				}
+			}
+		}
+		// Hot-reload on config apply.
+		d.configMgr.OnApplied(func(snap *configpb.ConfigSnapshot) {
+			if p := snap.GetWidgetPackPolicy(); p != nil {
+				if err := trustPolicy.Set(p.GetAllowedSigners(), p.GetAllowUnsigned()); err != nil {
+					d.logger.Warn("widget pack: bad signer pattern in config", "err", err)
+				}
+			}
+		})
+	}
+
+	packFetcher, err := widgetpack.NewFetcher()
+	if err != nil {
+		return fmt.Errorf("widget pack fetcher: %w", err)
+	}
+
+	// NewProductionVerifier is stubbed today (returns an error). Choice:
+	// Option A — tolerate a nil verifier; Install() rejects signed packs with
+	// ReasonSignatureInvalid while still allowing the unsigned-allowed flow.
+	// This is the documented v1 behaviour until the TUF-backed trust root is
+	// wired in a follow-up ticket.
+	packVerifier, err := widgetpack.NewProductionVerifier(ctx)
+	if err != nil {
+		d.logger.Warn("widget pack: production verifier unavailable; signed packs cannot be verified", "err", err)
+		packVerifier = nil
+	}
+
+	packInstaller := widgetpack.NewInstaller(
+		packStore, packVerifier, trustPolicy, packFetcher, dashboard.BuiltinClassIDs, nil,
+	)
+	packService := widgetpack.NewService(packInstaller, packStore)
+	packBundleHandler := widgetpack.NewBundleHandler(packStore)
+
 	services := listener.Services{
 		System:     api.NewSystemService(sysBE),
 		Area:       api.NewAreaService(areaRd),
@@ -380,7 +429,8 @@ func (d *Daemon) Run(ctx context.Context) error {
 		Automation: api.NewAutomationService(autoCtl),
 		Script:     api.NewScriptService(scriptRun, &eventAppenderAdapter{store: d.store}, sysBE),
 		Scene:      api.NewSceneService(),
-		Dashboard:  dashboard.NewService(newDashboardBackend(), dashboard.NewCatalog(nil)),
+		Dashboard:  dashboard.NewService(newDashboardBackend(packStore), dashboard.NewCatalog(nil)),
+		WidgetPack: packService,
 		Auth: api.NewAuthService(api.AuthDeps{
 			Identity:   identityStore,
 			Password:   credentials.NewPassword(db, credentials.DefaultArgon2idParams()),
@@ -449,6 +499,7 @@ func (d *Daemon) Run(ctx context.Context) error {
 		ConnectRoutes:  routes,
 		WebhookHandler: wbHandler,
 		MCPHandler:     api.MCPAuthMiddleware(nil, mcpHTTPHandler),
+		WidgetsHandler: packBundleHandler,
 		WebHandler:     webHandler,
 	})
 	if err != nil {

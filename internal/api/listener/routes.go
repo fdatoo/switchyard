@@ -21,13 +21,14 @@ type Services struct {
 	Scene      switchyardv1alpha1connect.SceneServiceHandler
 	Dashboard  switchyardv1alpha1connect.DashboardServiceHandler
 	Auth       switchyardv1alpha1connect.AuthServiceHandler
+	WidgetPack switchyardv1alpha1connect.WidgetPackServiceHandler
 }
 
 // BuildRoutes returns the (path, handler) pairs to mount on the listener mux.
 // NewXServiceHandler returns (string, http.Handler).
 func BuildRoutes(svc Services, interceptors ...connect.Interceptor) []Route {
 	opts := connect.WithInterceptors(interceptors...)
-	routes := make([]Route, 0, 13)
+	routes := make([]Route, 0, 14)
 
 	p, h := switchyardv1alpha1connect.NewSystemServiceHandler(svc.System, opts)
 	routes = append(routes, Route{Path: p, Handler: h})
@@ -66,6 +67,9 @@ func BuildRoutes(svc Services, interceptors ...connect.Interceptor) []Route {
 	routes = append(routes, Route{Path: p, Handler: h})
 
 	p, h = switchyardv1alpha1connect.NewAuthServiceHandler(svc.Auth, opts)
+	routes = append(routes, Route{Path: p, Handler: h})
+
+	p, h = switchyardv1alpha1connect.NewWidgetPackServiceHandler(svc.WidgetPack, opts)
 	routes = append(routes, Route{Path: p, Handler: h})
 
 	return routes

@@ -1,40 +1,25 @@
 module switchyard.dashboards
 
-class Position {
-  x: Int(isBetween(0, 96))
-  y: Int(isBetween(0, 999))
-  width: Int(isBetween(1, 96))
-  height: Int(isBetween(1, 96))
-}
+import "switchyard:widgets" as widgets
 
-class Grid {
-  columns: Int(isBetween(1, 96)) = 12
-  rowHeight: Int(isBetween(20, 200)) = 60
-}
-
-abstract class WidgetInstance {
-  id: String(matches(Regex(#"^[a-z][a-z0-9_-]{0,63}$"#)))
-  pos: Position
-}
-
-class LeafWidget extends WidgetInstance {
+class LeafWidget extends widgets.WidgetInstance {
   widgetClass: String
   props: Mapping<String, Any> = new {}
 }
 
-class ContainerWidget extends WidgetInstance {
-  childGrid: Grid = new {}
-  children: Listing<WidgetInstance> = new {}
+class ContainerWidget extends widgets.WidgetInstance {
+  childGrid: widgets.Grid = new {}
+  children: Listing<widgets.WidgetInstance> = new {}
 }
 
 class Dashboard {
   slug: String(!isEmpty)
   title: String = ""
-  grid: Grid = new {}
-  widgets: Listing<WidgetInstance> = new {}
+  grid: widgets.Grid = new {}
+  widgets: Listing<widgets.WidgetInstance> = new {}
 }
 
 class LayoutFile {
-  grid: Grid = new {}
-  widgets: Listing<WidgetInstance> = new {}
+  grid: widgets.Grid = new {}
+  widgets: Listing<widgets.WidgetInstance> = new {}
 }

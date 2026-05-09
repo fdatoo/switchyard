@@ -1,5 +1,25 @@
 module switchyard.widgets
 
+// Re-exported so pack manifests can extend WidgetInstance without importing
+// dashboards.pkl. Same shape as the previous declaration in dashboards.pkl.
+class Position {
+  x: Int(isBetween(0, 96))
+  y: Int(isBetween(0, 999))
+  width: Int(isBetween(1, 96))
+  height: Int(isBetween(1, 96))
+}
+
+class Grid {
+  columns: Int(isBetween(1, 96)) = 12
+  rowHeight: Int(isBetween(20, 200)) = 60
+}
+
+abstract class WidgetInstance {
+  id: String(matches(Regex(#"^[a-z][a-z0-9_-]{0,63}$"#)))
+  pos: Position
+}
+
+// Built-in class IDs. Pack class IDs are namespaced as "<pack>/<class>".
 const gauge:        String = "Gauge"
 const lineChart:    String = "LineChart"
 const entityToggle: String = "EntityToggle"
@@ -9,13 +29,24 @@ const cameraStream: String = "CameraStream"
 const entityList:   String = "EntityList"
 const groupCard:    String = "GroupCard"
 
+// Top-level manifest property: pack manifest.pkl files amend this module and
+// populate this property so the Pkl evaluator can render the manifest as JSON.
+manifest: PackManifest?
+
 class PackManifest {
-  name:    String
-  version: String
-  classes: Listing<String>
+  name:        String(!isEmpty)
+  version:     String(!isEmpty)
+  protocol:    String(this == "v1")
+  sdkVersion:  String(!isEmpty)
+  bundle:      String(!isEmpty)
+  bundleHash:  String(this.startsWith("sha256:"))
+  classes:     Listing<String>(!isEmpty)
+  description: String?
+  homepage:    String?
+  license:     String?
 }
 
 class PackPolicy {
   allowedSigners: Listing<String> = new {}
-  allowUnsigned:  Boolean = false
+  allowUnsigned:  Boolean         = false
 }

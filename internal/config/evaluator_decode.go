@@ -386,3 +386,8 @@ func parseDurationToken(s string) (time.Duration, error) {
 	}
 	return 0, fmt.Errorf("cannot parse duration %q", s)
 }
+
+type widgetPackPolicyJSON struct {
+	AllowedSigners []string `json:"allowedSigners"`
+	AllowUnsigned  bool     `json:"allowUnsigned"`
+}

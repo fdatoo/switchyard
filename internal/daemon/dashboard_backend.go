@@ -4,16 +4,15 @@ import (
 	"context"
 
 	"github.com/fdatoo/switchyard/internal/dashboard"
+	"github.com/fdatoo/switchyard/internal/widgetpack"
 )
 
 type dashboardBackend struct {
-	catalog *dashboard.Catalog
+	packStore *widgetpack.Store
 }
 
-func newDashboardBackend() *dashboardBackend {
-	return &dashboardBackend{
-		catalog: dashboard.NewCatalog(nil),
-	}
+func newDashboardBackend(packStore *widgetpack.Store) *dashboardBackend {
+	return &dashboardBackend{packStore: packStore}
 }
 
 func (b *dashboardBackend) List(_ context.Context) ([]dashboard.DashboardMeta, error) {
@@ -42,5 +41,24 @@ func (b *dashboardBackend) SaveLayout(_ context.Context, d *dashboard.DashboardD
 }
 
 func (b *dashboardBackend) WidgetCatalog(_ context.Context) ([]dashboard.WidgetClassInfo, error) {
-	return b.catalog.WidgetClasses(), nil
+	var packs []dashboard.InstalledPack
+	if b.packStore != nil {
+		view := b.packStore.ClassesView()
+		for _, pv := range view {
+			classes := make([]dashboard.PackClass, 0, len(pv.Classes))
+			for _, c := range pv.Classes {
+				classes = append(classes, dashboard.PackClass{
+					Name:       c.Name,
+					BundleURL:  c.BundleURL,
+					BundleHash: c.BundleHash,
+				})
+			}
+			packs = append(packs, dashboard.InstalledPack{
+				Name:    pv.Name,
+				Version: pv.Version,
+				Classes: classes,
+			})
+		}
+	}
+	return dashboard.NewCatalog(packs).WidgetClasses(), nil
 }

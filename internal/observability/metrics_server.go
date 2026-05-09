@@ -14,9 +14,9 @@ func (m *Metrics) HTTPHandler() http.Handler {
 	return promhttp.HandlerFor(m.Registry, promhttp.HandlerOpts{})
 }
 
-// ServeMetrics runs an HTTP server exposing /metrics and /health until ctx is cancelled.
-// healthFn returns (status, httpCode).
-func (m *Metrics) ServeMetrics(ctx context.Context, addr string, healthFn func() (string, int)) error {
+// ServeMetrics runs an HTTP server exposing /metrics, /health, and (while in
+// recovery mode) the five recovery endpoints. Blocks until ctx is cancelled.
+func (m *Metrics) ServeMetrics(ctx context.Context, addr string, healthFn func() (string, int), recovery RecoveryProvider) error {
 	mux := http.NewServeMux()
 	mux.Handle("/metrics", m.HTTPHandler())
 	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
@@ -29,6 +29,12 @@ func (m *Metrics) ServeMetrics(ctx context.Context, addr string, healthFn func()
 		w.WriteHeader(code)
 		_, _ = w.Write([]byte(`{"status":"` + status + `"}`))
 	})
+
+	mux.HandleFunc("GET /events", HandleRecoveryEvents(recovery))
+	mux.HandleFunc("GET /projection-cursors", HandleProjectionCursors(recovery))
+	mux.HandleFunc("GET /skipped-events", HandleSkippedEvents(recovery))
+	mux.HandleFunc("POST /events/{position}/skip", HandleSkipEvent(recovery))
+	mux.HandleFunc("POST /shutdown", HandleShutdown(recovery))
 
 	srv := &http.Server{
 		Addr:              addr,

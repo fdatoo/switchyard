@@ -114,7 +114,7 @@ func (d *Daemon) Run(ctx context.Context) error {
 	defer func() { _ = db.Close() }()
 
 	go func() {
-		_ = d.metrics.ServeMetrics(ctx, fmt.Sprintf(":%d", d.cfg.AdminPort), d.healthStatus)
+		_ = d.metrics.ServeMetrics(ctx, fmt.Sprintf(":%d", d.cfg.AdminPort), d.healthStatus, d)
 	}()
 
 	// Phase 2: construct projectors

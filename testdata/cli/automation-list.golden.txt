@@ -1,0 +1,6 @@
+$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json automation list
+exit: 0
+stdout:
+ID	MODE	ENABLED
+manual_scene	single	yes
+stderr:

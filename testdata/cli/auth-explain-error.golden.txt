@@ -1,0 +1,24 @@
+$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json auth explain --user alice --action EntityService.Get --target entity:test_light
+exit: 1
+stdout:
+stderr:
+Error: not_found: user not found
+Usage:
+  switchyard auth explain [flags]
+
+Flags:
+      --action string   Service.Method
+  -h, --help            help for explain
+      --target string   kind:id (e.g. entity:lock.front_door)
+      --user string     user slug to check
+      --verb string     verb (default "call")
+
+Global Flags:
+      --data-dir string    data directory (default "<DEFAULT_DATA_DIR>")
+      --endpoint string    API endpoint (unix:///path or tcp://host:port)
+      --format string      auto|table|json|yaml (default "auto")
+      --log-level string   error|warn|info|debug (default "warn")
+      --no-color           disable ANSI color
+  -v, --verbose            --log-level=debug shortcut
+
+not_found: user not found

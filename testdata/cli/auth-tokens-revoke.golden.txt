@@ -1,0 +1,5 @@
+$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json auth tokens revoke <TOKEN_ID>
+exit: 0
+stdout:
+ REVOKED  <TOKEN_ID>
+stderr:

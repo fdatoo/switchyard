@@ -1,0 +1,21 @@
+$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json command send missing.entity turn_on
+exit: 1
+stdout:
+stderr:
+Error: internal: call_failed (request_id=<ULID>)
+Usage:
+  switchyard command send <entity> <capability> [flags]
+
+Flags:
+      --arg stringArray   k=v (repeatable)
+  -h, --help              help for send
+
+Global Flags:
+      --data-dir string    data directory (default "<DEFAULT_DATA_DIR>")
+      --endpoint string    API endpoint (unix:///path or tcp://host:port)
+      --format string      auto|table|json|yaml (default "auto")
+      --log-level string   error|warn|info|debug (default "warn")
+      --no-color           disable ANSI color
+  -v, --verbose            --log-level=debug shortcut
+
+internal: call_failed (request_id=<ULID>)

@@ -1,0 +1,20 @@
+$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json test <DATA_DIR>/config/missing_test.star
+exit: 1
+stdout:
+stderr:
+Error: stat <DATA_DIR>/config/missing_test.star: no such file or directory
+Usage:
+  switchyard test <file.star | dir/> [flags]
+
+Flags:
+  -h, --help   help for test
+
+Global Flags:
+      --data-dir string    data directory (default "<DEFAULT_DATA_DIR>")
+      --endpoint string    API endpoint (unix:///path or tcp://host:port)
+      --format string      auto|table|json|yaml (default "auto")
+      --log-level string   error|warn|info|debug (default "warn")
+      --no-color           disable ANSI color
+  -v, --verbose            --log-level=debug shortcut
+
+stat <DATA_DIR>/config/missing_test.star: no such file or directory

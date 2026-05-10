@@ -1,0 +1,5 @@
+$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json snapshot create --owner state_cache --reason cli-golden
+exit: 0
+stdout:
+snapshot: cursor <CURSOR> at <TIMESTAMP>
+stderr:

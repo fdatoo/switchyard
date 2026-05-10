@@ -1,0 +1,78 @@
+$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json mcp tools --json
+exit: 0
+stdout:
+[
+  {
+    "name": "switchyard__get_state",
+    "summary": "Get current state of one entity",
+    "verb": "read",
+    "status": "live"
+  },
+  {
+    "name": "switchyard__list_entities",
+    "summary": "Browse entities with optional filters",
+    "verb": "read",
+    "status": "live"
+  },
+  {
+    "name": "switchyard__call_capability",
+    "summary": "Invoke a capability on one entity",
+    "verb": "call",
+    "status": "live"
+  },
+  {
+    "name": "switchyard__query_events",
+    "summary": "Query the event log with filters",
+    "verb": "read",
+    "status": "live"
+  },
+  {
+    "name": "switchyard__tail_events",
+    "summary": "Stream recent events with a deadline",
+    "verb": "read",
+    "status": "live"
+  },
+  {
+    "name": "switchyard__apply_scene",
+    "summary": "Apply a named scene (UNIMPLEMENTED)",
+    "verb": "call",
+    "status": "unimplemented"
+  },
+  {
+    "name": "switchyard__run_script",
+    "summary": "Run a named Starlark script",
+    "verb": "call",
+    "status": "live"
+  },
+  {
+    "name": "switchyard__eval_starlark",
+    "summary": "Evaluate a Starlark expression (output capped 64KiB)",
+    "verb": "call",
+    "status": "live"
+  },
+  {
+    "name": "switchyard__validate_config",
+    "summary": "Validate a Pkl config bundle without applying",
+    "verb": "read",
+    "status": "live"
+  },
+  {
+    "name": "switchyard__apply_config",
+    "summary": "Apply a Pkl config bundle to the daemon",
+    "verb": "admin",
+    "status": "live"
+  },
+  {
+    "name": "switchyard__read_config_file",
+    "summary": "Read a file from the config dir",
+    "verb": "read",
+    "status": "live"
+  },
+  {
+    "name": "switchyard__write_config_file",
+    "summary": "Write a file to the config dir (with syntax check)",
+    "verb": "admin",
+    "status": "live"
+  }
+]
+stderr:

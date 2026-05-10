@@ -1,0 +1,7 @@
+$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json no-such-command
+exit: 1
+stdout:
+stderr:
+Error: unknown command "no-such-command" for "switchyard"
+Run 'switchyard --help' for usage.
+unknown command "no-such-command" for "switchyard"

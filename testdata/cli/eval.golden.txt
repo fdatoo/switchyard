@@ -1,0 +1,5 @@
+$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json eval <DATA_DIR>/config/eval.star
+exit: 0
+stdout:
+ok
+stderr:

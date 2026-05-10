@@ -1,0 +1,12 @@
+$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json auth tokens create --label cli-golden
+exit: 0
+stdout:
+╔═════════════════════════════════════════════════════════════════════════════════╗
+║                                                                                 ║
+║  TOKEN — STORE THIS NOW                                                         ║
+║                                                                                 ║
+║  <SWITCHYARD_TOKEN>  ║
+║                                                                                 ║
+╚═════════════════════════════════════════════════════════════════════════════════╝
+Token id: <ULID>
+stderr:

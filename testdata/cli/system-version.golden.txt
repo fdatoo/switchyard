@@ -1,0 +1,6 @@
+$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json system version
+exit: 0
+stdout:
+dev
+commit unknown · built  · schema v1alpha1
+stderr:

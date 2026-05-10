@@ -81,6 +81,7 @@ tasks:
     desc: Rewrite golden fixtures from current behavior
     cmds:
       - go test ./... -update
+      - go test -tags=integration ./cmd/switchyard -run TestCLIGoldenFixtures -update
 
   lint:
     desc: Run golangci-lint

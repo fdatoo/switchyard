@@ -1,0 +1,5 @@
+$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json events inspect not-a-number
+exit: 1
+stdout:
+stderr:
+error: strconv.ParseUint: parsing "not-a-number": invalid syntax

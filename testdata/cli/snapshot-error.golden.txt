@@ -1,0 +1,21 @@
+$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json snapshot list --data-dir <DATA_DIR>/missing
+exit: 1
+stdout:
+stderr:
+Error: no database at <DATA_DIR>/missing/switchyard.db — is switchyardd running?
+Usage:
+  switchyard snapshot list [flags]
+
+Flags:
+  -h, --help           help for list
+      --owner string   filter by owner
+
+Global Flags:
+      --data-dir string    data directory (default "<DEFAULT_DATA_DIR>")
+      --endpoint string    API endpoint (unix:///path or tcp://host:port)
+      --format string      auto|table|json|yaml (default "auto")
+      --log-level string   error|warn|info|debug (default "warn")
+      --no-color           disable ANSI color
+  -v, --verbose            --log-level=debug shortcut
+
+no database at <DATA_DIR>/missing/switchyard.db — is switchyardd running?

@@ -1,0 +1,22 @@
+$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json widget uninstall missing-pack
+exit: 1
+stdout:
+stderr:
+Error: no installed versions of "missing-pack"
+Usage:
+  switchyard widget uninstall <name> [flags]
+
+Flags:
+      --force            uninstall even if dashboards reference the pack's classes
+  -h, --help             help for uninstall
+      --version string   specific version (default: all installed)
+
+Global Flags:
+      --data-dir string    data directory (default "<DEFAULT_DATA_DIR>")
+      --endpoint string    API endpoint (unix:///path or tcp://host:port)
+      --format string      auto|table|json|yaml (default "auto")
+      --log-level string   error|warn|info|debug (default "warn")
+      --no-color           disable ANSI color
+  -v, --verbose            --log-level=debug shortcut
+
+no installed versions of "missing-pack"

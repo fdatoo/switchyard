@@ -1,0 +1,6 @@
+$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json automation enable manual_scene
+exit: 0
+stdout:
+enabled manual_scene
+(in-memory; reverts on daemon restart — edit Pkl for durable change)
+stderr:

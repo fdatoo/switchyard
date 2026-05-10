@@ -1,0 +1,8 @@
+$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json test <DATA_DIR>/config/sample_test.star
+exit: 0
+stdout:
+--- PASS: test_passes
+
+summary: 1 passed, 0 failed
+ok
+stderr:

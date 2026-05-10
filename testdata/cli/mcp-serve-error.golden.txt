@@ -1,0 +1,21 @@
+$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json mcp serve --endpoint unix:///tmp/switchyard-missing.sock
+exit: 1
+stdout:
+stderr:
+switchyard mcp: cannot reach switchyardd at unix:///tmp/switchyard-missing.sock: unavailable: dial unix /tmp/switchyard-missing.sock: connect: no such file or directory
+Error: unavailable: dial unix /tmp/switchyard-missing.sock: connect: no such file or directory
+Usage:
+  switchyard mcp serve [flags]
+
+Flags:
+  -h, --help   help for serve
+
+Global Flags:
+      --data-dir string    data directory (default "<DEFAULT_DATA_DIR>")
+      --endpoint string    API endpoint (unix:///path or tcp://host:port)
+      --format string      auto|table|json|yaml (default "auto")
+      --log-level string   error|warn|info|debug (default "warn")
+      --no-color           disable ANSI color
+  -v, --verbose            --log-level=debug shortcut
+
+unavailable: dial unix /tmp/switchyard-missing.sock: connect: no such file or directory

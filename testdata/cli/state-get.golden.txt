@@ -1,0 +1,7 @@
+$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json state get test_light
+exit: 0
+stdout:
+entity  test_light
+  Name: test_light
+  Type: light
+stderr:

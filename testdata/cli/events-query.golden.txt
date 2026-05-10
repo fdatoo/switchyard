@@ -1,0 +1,5 @@
+$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json events query --kind config --limit 1
+exit: 0
+stdout:
+{"correlation_id":"<UUID>","cursor":<CURSOR>,"entity":"","kind":"config","source":"config.Manager","timestamp":"<TIMESTAMP>"}
+stderr:

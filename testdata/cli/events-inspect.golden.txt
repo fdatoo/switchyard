@@ -1,0 +1,19 @@
+$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json events inspect 1
+exit: 0
+stdout:
+Event #1
+Time:        <TIMESTAMP>
+Kind:        config
+Entity:      
+Source:      config.Manager
+Correlation: <UUID>
+
+Payload
+{
+  "configApplied":  {
+    "appliedAtUnixMs":"<UNIX_MS>",
+    "driverInstancesAdded":  1,
+    "automationsChanged":  1
+  }
+}
+stderr:

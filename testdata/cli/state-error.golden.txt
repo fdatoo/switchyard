@@ -1,0 +1,20 @@
+$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json state get missing.entity
+exit: 1
+stdout:
+stderr:
+Error: internal: entity_not_found (request_id=<ULID>)
+Usage:
+  switchyard state get <entity-id> [flags]
+
+Flags:
+  -h, --help   help for get
+
+Global Flags:
+      --data-dir string    data directory (default "<DEFAULT_DATA_DIR>")
+      --endpoint string    API endpoint (unix:///path or tcp://host:port)
+      --format string      auto|table|json|yaml (default "auto")
+      --log-level string   error|warn|info|debug (default "warn")
+      --no-color           disable ANSI color
+  -v, --verbose            --log-level=debug shortcut
+
+internal: entity_not_found (request_id=<ULID>)

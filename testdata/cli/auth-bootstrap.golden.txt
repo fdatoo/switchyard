@@ -1,0 +1,12 @@
+$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json auth bootstrap alice --ttl 1h
+exit: 0
+stdout:
+╔═══════════════════════════════════════════╗
+║                                           ║
+║  ENROLLMENT TOKEN — STORE THIS NOW        ║
+║                                           ║
+║  <ENROLLMENT_TOKEN>  ║
+║                                           ║
+╚═══════════════════════════════════════════╝
+Expires: <TIMESTAMP>
+stderr:

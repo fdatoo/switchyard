@@ -1,0 +1,5 @@
+$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json events export --to 1
+exit: 0
+stdout:
+{"correlation_id":"<UUID>","entity":"","kind":"config","payload":{"configApplied":{"appliedAtUnixMs":"<UNIX_MS>","automationsChanged":1,"driverInstancesAdded":1}},"position":<CURSOR>,"source":"config.Manager","timestamp":"<TIMESTAMP>"}
+stderr:

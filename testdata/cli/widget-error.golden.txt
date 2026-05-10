@@ -1,0 +1,20 @@
+$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json widget install
+exit: 1
+stdout:
+stderr:
+Error: accepts 1 arg(s), received 0
+Usage:
+  switchyard widget install <oci-ref> [flags]
+
+Flags:
+  -h, --help   help for install
+
+Global Flags:
+      --data-dir string    data directory (default "<DEFAULT_DATA_DIR>")
+      --endpoint string    API endpoint (unix:///path or tcp://host:port)
+      --format string      auto|table|json|yaml (default "auto")
+      --log-level string   error|warn|info|debug (default "warn")
+      --no-color           disable ANSI color
+  -v, --verbose            --log-level=debug shortcut
+
+accepts 1 arg(s), received 0

@@ -1,0 +1,4 @@
+$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json auth users list
+exit: 0
+stdout:
+stderr:

@@ -1,0 +1,4 @@
+$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json ui dev
+exit: 0
+stdout:
+stderr:

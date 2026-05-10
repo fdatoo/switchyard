@@ -1,0 +1,23 @@
+$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json config validate --offline --config-dir <DATA_DIR>/missing-config
+exit: 1
+stdout:
+stderr:
+Error: main.pkl not found in <DATA_DIR>/missing-config: stat <DATA_DIR>/missing-config/main.pkl: no such file or directory
+Usage:
+  switchyard config validate [flags]
+
+Flags:
+      --config-dir string    config directory to validate (default: <data-dir>/config)
+      --drivers-dir string   drivers directory to scan (default: <data-dir>/drivers)
+  -h, --help                 help for validate
+      --offline              validate locally without connecting to the daemon
+
+Global Flags:
+      --data-dir string    data directory (default "<DEFAULT_DATA_DIR>")
+      --endpoint string    API endpoint (unix:///path or tcp://host:port)
+      --format string      auto|table|json|yaml (default "auto")
+      --log-level string   error|warn|info|debug (default "warn")
+      --no-color           disable ANSI color
+  -v, --verbose            --log-level=debug shortcut
+
+main.pkl not found in <DATA_DIR>/missing-config: stat <DATA_DIR>/missing-config/main.pkl: no such file or directory

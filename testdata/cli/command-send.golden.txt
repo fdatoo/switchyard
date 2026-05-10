@@ -1,0 +1,5 @@
+$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json command send test_light turn_on --arg brightness=128
+exit: 0
+stdout:
+ok: test_light.turn_on (<UUID>)
+stderr:

@@ -1,0 +1,5 @@
+$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json registry show missing.entity
+exit: 1
+stdout:
+stderr:
+error: no entity/device/driver with id "missing.entity"

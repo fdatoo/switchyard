@@ -1,0 +1,20 @@
+$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json automation trace manual_scene
+exit: 1
+stdout:
+stderr:
+Error: deadline_exceeded: <DEADLINE>
+Usage:
+  switchyard automation trace <automation-id> [run-id] [flags]
+
+Flags:
+  -h, --help   help for trace
+
+Global Flags:
+      --data-dir string    data directory (default "<DEFAULT_DATA_DIR>")
+      --endpoint string    API endpoint (unix:///path or tcp://host:port)
+      --format string      auto|table|json|yaml (default "auto")
+      --log-level string   error|warn|info|debug (default "warn")
+      --no-color           disable ANSI color
+  -v, --verbose            --log-level=debug shortcut
+
+deadline_exceeded: <DEADLINE>

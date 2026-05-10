@@ -1,0 +1,6 @@
+$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json script run hello --arg name=cli
+exit: 0
+stdout:
+ok
+run_id: <UUID>
+stderr:

@@ -1,0 +1,11 @@
+$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json config validate
+exit: 0
+stdout:
+✓ Config valid
+╭────────────────────────┬──╮
+│Driver instances added  │+0│
+│Driver instances removed│-0│
+│Driver instances changed│~0│
+│Automations changed     │~0│
+╰────────────────────────┴──╯
+stderr:

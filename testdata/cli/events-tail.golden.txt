@@ -1,0 +1,22 @@
+$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json events tail --kind script_finished
+exit: 1
+stdout:
+stderr:
+Error: deadline_exceeded: <DEADLINE>
+Usage:
+  switchyard events tail [flags]
+
+Flags:
+      --entity string   filter by entity ID prefix
+  -h, --help            help for tail
+      --kind string     filter by kind
+
+Global Flags:
+      --data-dir string    data directory (default "<DEFAULT_DATA_DIR>")
+      --endpoint string    API endpoint (unix:///path or tcp://host:port)
+      --format string      auto|table|json|yaml (default "auto")
+      --log-level string   error|warn|info|debug (default "warn")
+      --no-color           disable ANSI color
+  -v, --verbose            --log-level=debug shortcut
+
+deadline_exceeded: <DEADLINE>

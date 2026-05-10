@@ -1,0 +1,7 @@
+$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json driver status testdriver-main
+exit: 0
+stdout:
+instance: testdriver-main
+health:   ok
+detail:   running
+stderr:

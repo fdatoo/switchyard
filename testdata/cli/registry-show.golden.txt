@@ -1,0 +1,10 @@
+$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json registry show test_light
+exit: 0
+stdout:
+Entity
+  ID:     test_light
+  Type:   light
+  Name:   test_light
+  Driver: testdriver-main
+  Device: test_light
+stderr:

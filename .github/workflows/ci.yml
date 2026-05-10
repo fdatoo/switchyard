@@ -20,6 +20,7 @@ jobs:
         with:
           filters: |
             switchyard:
+              - '.github/workflows/ci.yml'
               - 'cmd/**'
               - 'gen/**'
               - 'internal/**'
@@ -130,9 +131,46 @@ jobs:
           version: v2.11.4
 
   switchyard-coverage:
+    name: switchyard-coverage (${{ matrix.package }})
     needs: changes
     if: github.event_name != 'pull_request' || needs.changes.outputs.switchyard == 'true'
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - package: eventstore
+            path: ./internal/eventstore
+            coverpkg: ./internal/eventstore/...
+            profile: cover-eventstore.out
+            # TODO(F-292): Raise this temporary floor to 85% after https://linear.app/fdatoo/issue/F-292 ships.
+            gate: "82.6"
+            target: "85"
+            exception: F-292
+          - package: state
+            path: ./internal/state
+            coverpkg: ./internal/state/...
+            profile: cover-state.out
+            # TODO(F-293): Raise this temporary floor to 85% after https://linear.app/fdatoo/issue/F-293 ships.
+            gate: "78.8"
+            target: "85"
+            exception: F-293
+          - package: registry
+            path: ./internal/registry
+            coverpkg: ./internal/registry/...
+            profile: cover-registry.out
+            # TODO(F-294): Raise this temporary floor to 85% after https://linear.app/fdatoo/issue/F-294 ships.
+            gate: "84.7"
+            target: "85"
+            exception: F-294
+          - package: carport
+            path: ./internal/carport
+            coverpkg: ./internal/carport/...
+            profile: cover-carport.out
+            # TODO(F-295): Raise this temporary floor to 85% after https://linear.app/fdatoo/issue/F-295 ships.
+            gate: "80.5"
+            target: "85"
+            exception: F-295
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -140,17 +178,32 @@ jobs:
           go-version: '1.25'
           cache: true
           cache-dependency-path: go.sum
-      - name: Run carport coverage (unit + integration, main pkg only)
-        run: go test -tags=integration -coverprofile=cover.out ./internal/carport
-      - name: Enforce ≥70% coverage
+      - name: Run ${{ matrix.package }} coverage (unit + integration)
         run: |
-          pct=$(go tool cover -func=cover.out | awk '/^total:/ {print $3}' | tr -d %)
-          awk -v p="$pct" 'BEGIN{exit !(p+0>=70)}' || {
-            echo "carport coverage ${pct}% below 70% gate"
-            go tool cover -func=cover.out
+          go test \
+            -tags=integration \
+            -coverpkg="${{ matrix.coverpkg }}" \
+            -coverprofile="${{ matrix.profile }}" \
+            "${{ matrix.path }}"
+      - name: Enforce ${{ matrix.package }} coverage gate
+        run: |
+          pct=$(go tool cover -func="${{ matrix.profile }}" | awk '/^total:/ {print $3}' | tr -d %)
+          gate="${{ matrix.gate }}"
+          target="${{ matrix.target }}"
+
+          echo "::group::${{ matrix.package }} coverage details"
+          go tool cover -func="${{ matrix.profile }}"
+          echo "::endgroup::"
+
+          awk -v p="$pct" -v gate="$gate" 'BEGIN{exit !(p+0>=gate+0)}' || {
+            echo "${{ matrix.package }} coverage ${pct}% below ${gate}% gate"
             exit 1
           }
-          echo "carport coverage ${pct}% — passes ≥70% gate"
+
+          if awk -v gate="$gate" -v target="$target" 'BEGIN{exit !(gate+0<target+0)}'; then
+            echo "::notice title=${{ matrix.package }} coverage temporary gate::${{ matrix.package }} is gated at ${gate}% pending ${{ matrix.exception }}; target is ${target}%."
+          fi
+          echo "${{ matrix.package }} coverage ${pct}% passes ≥${gate}% gate"
 
   switchyard-proto:
     needs: changes
@@ -168,9 +221,9 @@ jobs:
         id: base
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            echo "ref=origin/${{ github.event.pull_request.base.ref }}" >> $GITHUB_OUTPUT
+            echo "ref=origin/${{ github.event.pull_request.base.ref }}" >> "$GITHUB_OUTPUT"
           else
-            echo "ref=HEAD^" >> $GITHUB_OUTPUT
+            echo "ref=HEAD^" >> "$GITHUB_OUTPUT"
           fi
       - name: Proto hygiene check
         run: ./scripts/check-proto-hygiene.sh ${{ steps.base.outputs.ref }}

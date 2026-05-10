@@ -10,6 +10,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 
 	carportpb "github.com/fdatoo/switchyard/gen/switchyard/carport/v1alpha1"
+	"github.com/fdatoo/switchyard/internal/observability"
 )
 
 // instanceConn is the per-instance live runtime: the gRPC client, the open
@@ -165,6 +166,9 @@ func (ic *instanceConn) SendCommand(ctx context.Context, c *carportpb.Command) (
 		delete(ic.pending, c.CommandId)
 		ic.mu.Unlock()
 		return nil, fmt.Errorf("send command: %w", sendErr)
+	}
+	if span, ok := observability.SpanFromContext(ctx); ok {
+		span.AddEvent("sent on stream")
 	}
 
 	// Honor an explicit per-Command deadline if set.

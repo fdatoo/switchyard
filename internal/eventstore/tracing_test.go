@@ -19,6 +19,7 @@ import (
 type recordedSpan struct {
 	name   string
 	attrs  map[string]any
+	events []string
 	errors []error
 }
 
@@ -45,6 +46,7 @@ func (r *spanRecorder) snapshot() []recordedSpan {
 		out[i] = recordedSpan{
 			name:   span.name,
 			attrs:  map[string]any{},
+			events: slices.Clone(span.events),
 			errors: slices.Clone(span.errors),
 		}
 		for key, value := range span.attrs {
@@ -65,6 +67,12 @@ func (s *recordingSpan) SetAttr(key string, value any) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.attrs[key] = value
+}
+
+func (s *recordingSpan) AddEvent(name string, _ ...any) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.events = append(s.events, name)
 }
 
 func (s *recordingSpan) RecordError(err error) {

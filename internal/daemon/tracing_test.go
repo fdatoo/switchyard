@@ -58,6 +58,8 @@ func (s *daemonRecordingSpan) SetAttr(key string, value any) {
 	s.attrs[key] = value
 }
 
+func (s *daemonRecordingSpan) AddEvent(string, ...any) {}
+
 func (s *daemonRecordingSpan) RecordError(error) {}
 
 func TestDaemon_StartupPhasesOpenSpans(t *testing.T) {

@@ -12,6 +12,7 @@ import (
 	eventpb "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
 	"github.com/fdatoo/switchyard/internal/cause"
 	"github.com/fdatoo/switchyard/internal/eventstore"
+	"github.com/fdatoo/switchyard/internal/observability"
 )
 
 const defaultDispatchTimeout = 30 * time.Second
@@ -22,7 +23,15 @@ const defaultDispatchTimeout = 30 * time.Second
 // is appended BEFORE the wire send, and CommandAck is appended AFTER — even on
 // timeout, stream closure, or context cancel. INV-1: every CommandIssued has a
 // matching CommandAck within the daemon's lifetime.
-func (h *Host) Dispatch(ctx context.Context, entityID, capability string, args map[string]string) (*carportpb.CommandResult, error) {
+func (h *Host) Dispatch(ctx context.Context, entityID, capability string, args map[string]string) (result *carportpb.CommandResult, err error) {
+	ctx, span := observability.StartSpan(ctx, "carport.Dispatch")
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+		}
+		span.End()
+	}()
+
 	dispatchStart := time.Now()
 
 	// 1. Routing.
@@ -32,7 +41,14 @@ func (h *Host) Dispatch(ctx context.Context, entityID, capability string, args m
 		return nil, err
 	}
 
-	// 2. Instance lookup + state check.
+	// 2. Allocate command_id (host-assigned UUIDv4, echoed by driver).
+	commandID := uuid.NewString()
+	span.SetAttr("instance_id", instanceID)
+	span.SetAttr("entity_id", entityID)
+	span.SetAttr("capability", capability)
+	span.SetAttr("command_id", commandID)
+
+	// 3. Instance lookup + state check.
 	h.mu.RLock()
 	m, ok := h.instances[instanceID]
 	h.mu.RUnlock()
@@ -48,9 +64,6 @@ func (h *Host) Dispatch(ctx context.Context, entityID, capability string, args m
 		h.metrics.CarportCommandDispatchTotal.WithLabelValues(instanceID, "instance_not_running").Inc()
 		return nil, ErrInstanceNotRunning
 	}
-
-	// 3. Allocate command_id (host-assigned UUIDv4, echoed by driver).
-	commandID := uuid.NewString()
 
 	// 4. Append CommandIssued. Once this succeeds, INV-1 binds us to append a CommandAck.
 	// If the caller attached automation lineage, record it as the Source for tracing.
@@ -73,6 +86,7 @@ func (h *Host) Dispatch(ctx context.Context, entityID, capability string, args m
 	if err != nil {
 		return nil, fmt.Errorf("append command_issued: %w", err)
 	}
+	span.AddEvent("CommandIssued appended")
 
 	// 5. Compute effective deadline — use caller's if set, otherwise default.
 	dctx := ctx
@@ -97,6 +111,9 @@ func (h *Host) Dispatch(ctx context.Context, entityID, capability string, args m
 	h.metrics.CarportPendingCommands.WithLabelValues(instanceID).Inc()
 	result, sendErr := conn.SendCommand(dctx, cmd)
 	h.metrics.CarportPendingCommands.WithLabelValues(instanceID).Dec()
+	if sendErr == nil && result != nil {
+		span.AddEvent("CommandResult received")
+	}
 
 	// 7. INV-1: append CommandAck regardless of sendErr.
 	ack := &eventpb.CommandAck{}
@@ -131,7 +148,10 @@ func (h *Host) Dispatch(ctx context.Context, entityID, capability string, args m
 		Source:    "carport:host",
 		Payload:   &eventpb.Payload{Kind: &eventpb.Payload_CommandAck{CommandAck: ack}},
 	}); ackErr != nil {
+		span.RecordError(ackErr)
 		h.logger.Error("append command_ack", "entity", entityID, "err", ackErr)
+	} else {
+		span.AddEvent("CommandAck appended")
 	}
 
 	// Emit dispatch outcome metrics.

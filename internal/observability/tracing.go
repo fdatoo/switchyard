@@ -10,16 +10,20 @@ import (
 type Span interface {
 	End()
 	SetAttr(key string, value any)
+	AddEvent(name string, attrs ...any)
 	RecordError(err error)
 }
 
 type noopSpan struct{}
 
-func (noopSpan) End()                {}
-func (noopSpan) SetAttr(string, any) {}
-func (noopSpan) RecordError(error)   {}
+func (noopSpan) End()                    {}
+func (noopSpan) SetAttr(string, any)     {}
+func (noopSpan) AddEvent(string, ...any) {}
+func (noopSpan) RecordError(error)       {}
 
 type SpanStarter func(ctx context.Context, name string) (context.Context, Span)
+
+type spanContextKey struct{}
 
 var (
 	spanStarterMu sync.RWMutex
@@ -36,9 +40,17 @@ func StartSpan(ctx context.Context, name string) (context.Context, Span) {
 	spanStarterMu.RUnlock()
 	ctx, span := start(ctx, name)
 	if span == nil {
-		return ctx, noopSpan{}
+		span = noopSpan{}
 	}
-	return ctx, span
+	return context.WithValue(ctx, spanContextKey{}, span), span
+}
+
+func SpanFromContext(ctx context.Context) (Span, bool) {
+	span, ok := ctx.Value(spanContextKey{}).(Span)
+	if !ok || span == nil {
+		return nil, false
+	}
+	return span, true
 }
 
 func SetSpanStarterForTest(start SpanStarter) func() {

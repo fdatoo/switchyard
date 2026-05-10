@@ -1,7 +1,7 @@
 module switchyard.entities
 
 abstract class Entity {
-  id: String(matches(Regex("[a-z_]+\\.[a-z_]+")))
+  id: String(!isEmpty)
   friendlyName: String
   area: String?
 }

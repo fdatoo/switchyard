@@ -537,9 +537,9 @@ message DriverInstanceRestarted {
 **Kind string:** `scene_applied`
 
 !!! status-planned "Planned — SceneService not yet implemented"
-    SceneApplied events will be emitted when the SceneService ships.
+    Current scene stubs append minimal bookkeeping events. Full SceneApplied events ship with the SceneService implementation.
 
-**When emitted:** When a scene is applied via `switchyard scene apply` or from an automation.
+**When emitted:** Currently, when the automation `SceneAction` stub records a scene application. Starlark `scene.apply()` records a separate `scene.applied` bookkeeping event until the SceneService ships. After the SceneService ships, `scene_applied` is emitted when a scene is applied via `switchyard scene apply`, Starlark, or automation.
 
 | Field | Type | Description |
 |---|---|---|

@@ -1,8 +1,8 @@
 # Scenes
 
-!!! status-alpha "Alpha — shipped, interface evolving"
+!!! status-planned "Planned — scene engine not implemented"
 
-A scene is a named snapshot of desired entity states. Applying a scene sets all of its target entities to the declared state in a single operation. Scenes are declared in `scenes.pkl` and applied via `switchyard scene apply <scene-id>` or through the web UI.
+A scene is a named snapshot of desired entity states. The scene engine is not shipped yet: current automation `SceneAction` and Starlark `scene.apply()` calls append bookkeeping scene events but do not resolve target states or dispatch entity commands. Scene declarations, `switchyard scene apply <scene-id>`, and web UI scene application are planned for the Scene engine spec.
 
 ## Declaring scenes
 
@@ -66,18 +66,18 @@ Import scenes from `main.pkl`:
 scenes = import("scenes.pkl").scenes
 ```
 
-## Applying a scene from the CLI
+## Planned CLI application
 
 ```
 $ switchyard scene apply night_mode
 ✓ Scene "Night Mode" applied (3 entities updated)
 ```
 
-The command sets each entity in the scene to the declared state. Entities not listed in the scene are unchanged.
+When implemented, the command will set each entity in the scene to the declared state. Entities not listed in the scene are unchanged.
 
 ## The `SceneApplied` event
 
-Every successful `switchyard scene apply` appends a `SceneApplied` event to the event store:
+Every successful scene application will append a `SceneApplied` event to the event store. The current stubs append a minimal bookkeeping `scene_applied` event without changing entity state.
 
 ```
 cursor: 5102

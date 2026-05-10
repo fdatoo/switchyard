@@ -63,7 +63,7 @@ All `args` values are strings at the Pkl level; the driver's capability schema c
 
 ## Apply a scene
 
-`SceneAction` applies a named scene, setting all of its entities to their declared states in one operation.
+`SceneAction` is the automation hook for applying a named scene.
 
 ```pkl
 class SceneAction extends Action {
@@ -77,7 +77,7 @@ class SceneAction extends Action {
 new automations.SceneAction { slug = "night_mode" }
 ```
 
-This is equivalent to `switchyard scene apply night_mode`. The scene engine resolves which entities to update; the automation does not need to know them individually.
+The C6 automation engine currently wires this to `StubSceneApplier`: it warn-logs `scene engine not yet implemented`, appends a `scene_applied` event, and does not dispatch entity commands. The real scene engine is deferred to the Scene engine spec.
 
 ---
 
@@ -263,7 +263,7 @@ new automations.CallServiceAction {
 | Pkl class | Effect |
 |---|---|
 | `CallServiceAction` | Dispatch a typed command to an entity's driver |
-| `SceneAction` | Apply a named scene |
+| `SceneAction` | Record a scene application stub |
 | `ScriptAction` | Call a named script (shares correlation ID) |
 | `StarlarkAction` | Run Starlark inline (30s / 10M steps) |
 | `WaitAction` | Pause for a duration (no Starlark thread held) |

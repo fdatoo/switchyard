@@ -69,7 +69,7 @@ Used for `StarlarkAction` bodies and `StarlarkScript` handlers invoked from an a
 | `now` | `now() → Time` | Current UTC time |
 | `log` | `log(msg, level="info")` | Emit a log line (captured in run record) |
 | `notify` | `notify(target, message)` | Send a notification |
-| `scene` | `scene.apply(slug)` | Apply a named scene |
+| `scene` | `scene.apply(slug)` | Record a scene application stub |
 | `event` | `event.fire(kind, data)` | Fire a custom event; `.kind`, `.entity_id`, `.data` from trigger |
 | `random` | `random() → float` | Random float in [0, 1) |
 | `time` | module | `go.starlark.net/lib/time` — `time.now()`, durations, parsing |
@@ -164,7 +164,7 @@ When the MCP policy grants write access:
 | Additional built-in | Description |
 |---|---|
 | `call_service(entity_id, capability, **kwargs)` | Dispatch a command |
-| `scene.apply(slug)` | Apply a scene |
+| `scene.apply(slug)` | Record a scene application stub |
 | `notify(target, message)` | Send a notification |
 
 ---

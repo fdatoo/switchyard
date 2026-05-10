@@ -5,8 +5,6 @@ package state
 
 import (
 	"context"
-	"database/sql"
-	"errors"
 	"fmt"
 	"sync"
 	"sync/atomic"
@@ -41,8 +39,9 @@ type Cache struct {
 	// pending is the tx-local buffer being mutated during Apply.
 	// Only one Append runs at a time (SQLite serializes writers), so
 	// a single pending slot is sufficient; a mutex enforces the invariant.
-	mu      sync.Mutex
-	pending *immutable.Map[EntityID, State]
+	mu                       sync.Mutex
+	pending                  *immutable.Map[EntityID, State]
+	reportSnapshotCorruption func(owner string)
 }
 
 func New() *Cache {
@@ -68,6 +67,12 @@ func (c *Cache) Len() int {
 
 // Name implements eventstore.Projector.
 func (c *Cache) Name() string { return "state_cache" }
+
+func (c *Cache) SetSnapshotCorruptionReporter(fn func(owner string)) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.reportSnapshotCorruption = fn
+}
 
 // Apply mutates the pending HAMT. Callers MUST call Promote after the
 // enclosing transaction commits (or Discard on rollback).
@@ -185,53 +190,79 @@ func (c *Cache) Snapshot(ctx context.Context, tx storage.Tx) error {
 	return nil
 }
 
-// Restore reads the latest snapshot for this cache from the snapshots table
-// and populates the current map. Returns the snapshot position (0 if none).
+// Restore reads the latest valid snapshot for this cache from the snapshots
+// table and populates the current map. Returns the snapshot position (0 if none).
 func (c *Cache) Restore(ctx context.Context, tx storage.Tx) (uint64, error) {
-	var (
-		pos        int64
-		encoding   string
-		compressed []byte
-	)
-	err := tx.QueryRowContext(ctx, `
+	rows, err := tx.QueryContext(ctx, `
 		SELECT position, encoding, state FROM snapshots
-		WHERE owner = ? ORDER BY position DESC LIMIT 1`,
+		WHERE owner = ? ORDER BY position DESC`,
 		c.Name(),
-	).Scan(&pos, &encoding, &compressed)
-	if errors.Is(err, sql.ErrNoRows) {
-		return 0, nil
-	}
+	)
 	if err != nil {
-		return 0, fmt.Errorf("read snapshot row: %w", err)
+		return 0, fmt.Errorf("read snapshot rows: %w", err)
 	}
-	if encoding != "protobuf+zstd" {
-		return 0, fmt.Errorf("unknown snapshot encoding %q", encoding)
-	}
+	defer rows.Close() //nolint:errcheck
 
+	for rows.Next() {
+		var (
+			pos        int64
+			encoding   string
+			compressed []byte
+		)
+		if err := rows.Scan(&pos, &encoding, &compressed); err != nil {
+			return 0, fmt.Errorf("read snapshot row: %w", err)
+		}
+		if encoding != "protobuf+zstd" {
+			return 0, fmt.Errorf("unknown snapshot encoding %q", encoding)
+		}
+
+		snapProto, err := decodeSnapshot(compressed)
+		if err != nil {
+			c.reportCorruptSnapshot()
+			continue
+		}
+
+		b := immutable.NewMapBuilder[EntityID, State](nil)
+		for _, es := range snapProto.Entities {
+			b.Set(es.EntityId, State{
+				EntityID:   es.EntityId,
+				UpdatedAt:  time.Unix(0, es.UpdatedAt),
+				UpdatedBy:  es.UpdatedBy,
+				Attributes: es.Attributes,
+			})
+		}
+		c.current.Store(b.Map())
+		return uint64(pos), nil
+	}
+	if err := rows.Err(); err != nil {
+		return 0, fmt.Errorf("read snapshot rows: %w", err)
+	}
+	return 0, nil
+}
+
+func decodeSnapshot(compressed []byte) (*eventv1.StateCacheSnapshot, error) {
 	dec, err := zstd.NewReader(nil)
 	if err != nil {
-		return 0, fmt.Errorf("zstd reader: %w", err)
+		return nil, fmt.Errorf("zstd reader: %w", err)
 	}
 	raw, err := dec.DecodeAll(compressed, nil)
 	dec.Close()
 	if err != nil {
-		return 0, fmt.Errorf("zstd decode: %w", err)
+		return nil, fmt.Errorf("zstd decode: %w", err)
 	}
 
 	var snapProto eventv1.StateCacheSnapshot
 	if err := proto.Unmarshal(raw, &snapProto); err != nil {
-		return 0, fmt.Errorf("unmarshal snapshot: %w", err)
+		return nil, fmt.Errorf("unmarshal snapshot: %w", err)
 	}
+	return &snapProto, nil
+}
 
-	b := immutable.NewMapBuilder[EntityID, State](nil)
-	for _, es := range snapProto.Entities {
-		b.Set(es.EntityId, State{
-			EntityID:   es.EntityId,
-			UpdatedAt:  time.Unix(0, es.UpdatedAt),
-			UpdatedBy:  es.UpdatedBy,
-			Attributes: es.Attributes,
-		})
+func (c *Cache) reportCorruptSnapshot() {
+	c.mu.Lock()
+	fn := c.reportSnapshotCorruption
+	c.mu.Unlock()
+	if fn != nil {
+		fn(c.Name())
 	}
-	c.current.Store(b.Map())
-	return uint64(pos), nil
 }

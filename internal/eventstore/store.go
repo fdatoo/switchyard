@@ -89,6 +89,11 @@ func (s *Store) RegisterProjector(p Projector, mode ProjectorMode) error {
 	if s.started.Load() {
 		return errors.New("RegisterProjector: already started")
 	}
+	if reporter, ok := p.(SnapshotCorruptionReporter); ok {
+		reporter.SetSnapshotCorruptionReporter(func(owner string) {
+			s.metrics.SnapshotCorruption.WithLabelValues(owner).Inc()
+		})
+	}
 	s.projectors = append(s.projectors, projectorReg{p: p, mode: mode})
 	return nil
 }

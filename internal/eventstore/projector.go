@@ -22,6 +22,12 @@ type Projector interface {
 	Restore(ctx context.Context, tx storage.Tx) (resumeFrom uint64, err error)
 }
 
+// SnapshotCorruptionReporter is implemented by projectors that can detect
+// corrupt snapshot rows while restoring.
+type SnapshotCorruptionReporter interface {
+	SetSnapshotCorruptionReporter(func(owner string))
+}
+
 // PostCommit is implemented by projectors that need to promote in-memory
 // state after the Append transaction commits. Called by the store in
 // registration order; errors are logged and ignored (log is source of truth).

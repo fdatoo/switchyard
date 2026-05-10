@@ -29,7 +29,12 @@ message User {
   repeated string roles        = 4;
 }
 
-message LoginRequest                  { string username = 1; string password = 2; }
+message LoginRequest {
+  string username                 = 1;
+  string password                 = 2;
+  bytes  public_key_credential    = 3;
+  string webauthn_challenge_id    = 4;
+}
 message LoginResponse                 { string session_token = 1; }
 message LogoutRequest                 {}
 message LogoutResponse                {}
@@ -41,10 +46,22 @@ message RevokeTokenRequest            { string token_id = 1; }
 message RevokeTokenResponse           {}
 message ListUsersRequest              { PageRequest page = 1; }
 message ListUsersResponse             { repeated User users = 1; PageResponse page = 2; }
-message RegisterPasskeyRequest        { bytes public_key_credential = 1; string user_slug = 2; }
+message RegisterPasskeyRequest {
+  bytes  public_key_credential = 1;
+  string user_slug              = 2;
+  string webauthn_challenge_id  = 3;
+  string label                  = 4;
+}
 message RegisterPasskeyResponse       { string credential_id = 1; }
-message StartWebAuthnChallengeRequest  { string user_slug = 1; }
-message StartWebAuthnChallengeResponse { bytes challenge = 1; }
+message StartWebAuthnChallengeRequest {
+  string user_slug     = 1;
+  string intent        = 2; // "register" | "login"
+  string display_name  = 3;
+}
+message StartWebAuthnChallengeResponse {
+  bytes  challenge              = 1;
+  string webauthn_challenge_id  = 2;
+}
 
 message RefreshRequest {}
 message RefreshResponse {

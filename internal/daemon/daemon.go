@@ -16,6 +16,8 @@ import (
 	"time"
 
 	"connectrpc.com/connect"
+	"github.com/go-webauthn/webauthn/protocol"
+	wa "github.com/go-webauthn/webauthn/webauthn"
 	"google.golang.org/protobuf/encoding/protojson"
 
 	configpb "github.com/fdatoo/switchyard/gen/switchyard/config/v1"
@@ -455,6 +457,12 @@ func (d *Daemon) Run(ctx context.Context) (err error) {
 	)
 	packService := widgetpack.NewService(packInstaller, packStore)
 	packBundleHandler := widgetpack.NewBundleHandler(packStore)
+	webAuthn, err := newWebAuthn(currentSnap.GetAuthSettings())
+	if err != nil {
+		return fmt.Errorf("webauthn: %w", err)
+	}
+	passkeys := credentials.NewPasskeys(db, webAuthn)
+	webAuthnChallenges := credentials.NewChallengeStore(5 * time.Minute)
 
 	services := listener.Services{
 		System:     api.NewSystemService(sysBE),
@@ -473,9 +481,11 @@ func (d *Daemon) Run(ctx context.Context) (err error) {
 		Auth: api.NewAuthService(api.AuthDeps{
 			Identity:   identityStore,
 			Password:   credentials.NewPassword(db, credentials.DefaultArgon2idParams()),
+			Passkeys:   passkeys,
 			Tokens:     credentials.NewTokens(db),
 			Sessions:   sessStore,
 			Enrollment: credentials.NewEnrollment(db),
+			Challenges: webAuthnChallenges,
 			Throttle:   throttleStore,
 			Audit:      auditRecorder,
 			Policy:     policyRuntime,
@@ -763,6 +773,43 @@ func expandPath(path, dataDir string) string {
 		return filepath.Join(dataDir, path[len("@data/"):])
 	}
 	return path
+}
+
+func newWebAuthn(settings *configpb.AuthSettingsConfig) (*wa.WebAuthn, error) {
+	rpID := "localhost"
+	rpDisplayName := "switchyard"
+	rpOrigins := []string{"http://localhost", "https://localhost"}
+	uv := protocol.VerificationPreferred
+	if settings != nil {
+		if settings.GetRpId() != "" {
+			rpID = settings.GetRpId()
+		}
+		if settings.GetRpDisplayName() != "" {
+			rpDisplayName = settings.GetRpDisplayName()
+		}
+		if len(settings.GetRpOrigins()) > 0 {
+			rpOrigins = settings.GetRpOrigins()
+		}
+		switch settings.GetWebauthnUserVerification() {
+		case "required":
+			uv = protocol.VerificationRequired
+		case "discouraged":
+			uv = protocol.VerificationDiscouraged
+		case "", "preferred":
+			uv = protocol.VerificationPreferred
+		default:
+			return nil, fmt.Errorf("invalid webauthn_user_verification %q", settings.GetWebauthnUserVerification())
+		}
+	}
+	return wa.New(&wa.Config{
+		RPID:          rpID,
+		RPDisplayName: rpDisplayName,
+		RPOrigins:     rpOrigins,
+		AuthenticatorSelection: protocol.AuthenticatorSelection{
+			ResidentKey:      protocol.ResidentKeyRequirementRequired,
+			UserVerification: uv,
+		},
+	})
 }
 
 // stateAdapter wraps state.Cache to satisfy starlark.StateReader.

@@ -92,11 +92,13 @@ func (x *User) GetRoles() []string {
 }
 
 type LoginRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Username      string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
-	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state               protoimpl.MessageState `protogen:"open.v1"`
+	Username            string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
+	Password            string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	PublicKeyCredential []byte                 `protobuf:"bytes,3,opt,name=public_key_credential,json=publicKeyCredential,proto3" json:"public_key_credential,omitempty"`
+	WebauthnChallengeId string                 `protobuf:"bytes,4,opt,name=webauthn_challenge_id,json=webauthnChallengeId,proto3" json:"webauthn_challenge_id,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *LoginRequest) Reset() {
@@ -139,6 +141,20 @@ func (x *LoginRequest) GetUsername() string {
 func (x *LoginRequest) GetPassword() string {
 	if x != nil {
 		return x.Password
+	}
+	return ""
+}
+
+func (x *LoginRequest) GetPublicKeyCredential() []byte {
+	if x != nil {
+		return x.PublicKeyCredential
+	}
+	return nil
+}
+
+func (x *LoginRequest) GetWebauthnChallengeId() string {
+	if x != nil {
+		return x.WebauthnChallengeId
 	}
 	return ""
 }
@@ -623,6 +639,8 @@ type RegisterPasskeyRequest struct {
 	state               protoimpl.MessageState `protogen:"open.v1"`
 	PublicKeyCredential []byte                 `protobuf:"bytes,1,opt,name=public_key_credential,json=publicKeyCredential,proto3" json:"public_key_credential,omitempty"`
 	UserSlug            string                 `protobuf:"bytes,2,opt,name=user_slug,json=userSlug,proto3" json:"user_slug,omitempty"`
+	WebauthnChallengeId string                 `protobuf:"bytes,3,opt,name=webauthn_challenge_id,json=webauthnChallengeId,proto3" json:"webauthn_challenge_id,omitempty"`
+	Label               string                 `protobuf:"bytes,4,opt,name=label,proto3" json:"label,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
 }
@@ -667,6 +685,20 @@ func (x *RegisterPasskeyRequest) GetPublicKeyCredential() []byte {
 func (x *RegisterPasskeyRequest) GetUserSlug() string {
 	if x != nil {
 		return x.UserSlug
+	}
+	return ""
+}
+
+func (x *RegisterPasskeyRequest) GetWebauthnChallengeId() string {
+	if x != nil {
+		return x.WebauthnChallengeId
+	}
+	return ""
+}
+
+func (x *RegisterPasskeyRequest) GetLabel() string {
+	if x != nil {
+		return x.Label
 	}
 	return ""
 }
@@ -718,6 +750,8 @@ func (x *RegisterPasskeyResponse) GetCredentialId() string {
 type StartWebAuthnChallengeRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	UserSlug      string                 `protobuf:"bytes,1,opt,name=user_slug,json=userSlug,proto3" json:"user_slug,omitempty"`
+	Intent        string                 `protobuf:"bytes,2,opt,name=intent,proto3" json:"intent,omitempty"` // "register" | "login"
+	DisplayName   string                 `protobuf:"bytes,3,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -759,11 +793,26 @@ func (x *StartWebAuthnChallengeRequest) GetUserSlug() string {
 	return ""
 }
 
+func (x *StartWebAuthnChallengeRequest) GetIntent() string {
+	if x != nil {
+		return x.Intent
+	}
+	return ""
+}
+
+func (x *StartWebAuthnChallengeRequest) GetDisplayName() string {
+	if x != nil {
+		return x.DisplayName
+	}
+	return ""
+}
+
 type StartWebAuthnChallengeResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Challenge     []byte                 `protobuf:"bytes,1,opt,name=challenge,proto3" json:"challenge,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state               protoimpl.MessageState `protogen:"open.v1"`
+	Challenge           []byte                 `protobuf:"bytes,1,opt,name=challenge,proto3" json:"challenge,omitempty"`
+	WebauthnChallengeId string                 `protobuf:"bytes,2,opt,name=webauthn_challenge_id,json=webauthnChallengeId,proto3" json:"webauthn_challenge_id,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *StartWebAuthnChallengeResponse) Reset() {
@@ -801,6 +850,13 @@ func (x *StartWebAuthnChallengeResponse) GetChallenge() []byte {
 		return x.Challenge
 	}
 	return nil
+}
+
+func (x *StartWebAuthnChallengeResponse) GetWebauthnChallengeId() string {
+	if x != nil {
+		return x.WebauthnChallengeId
+	}
+	return ""
 }
 
 type RefreshRequest struct {
@@ -1364,10 +1420,12 @@ const file_switchyard_v1alpha1_auth_proto_rawDesc = "" +
 	"\x04slug\x18\x01 \x01(\tR\x04slug\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x16\n" +
 	"\x06active\x18\x03 \x01(\bR\x06active\x12\x14\n" +
-	"\x05roles\x18\x04 \x03(\tR\x05roles\"F\n" +
+	"\x05roles\x18\x04 \x03(\tR\x05roles\"\xae\x01\n" +
 	"\fLoginRequest\x12\x1a\n" +
 	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\"4\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\x122\n" +
+	"\x15public_key_credential\x18\x03 \x01(\fR\x13publicKeyCredential\x122\n" +
+	"\x15webauthn_challenge_id\x18\x04 \x01(\tR\x13webauthnChallengeId\"4\n" +
 	"\rLoginResponse\x12#\n" +
 	"\rsession_token\x18\x01 \x01(\tR\fsessionToken\"\x0f\n" +
 	"\rLogoutRequest\"\x10\n" +
@@ -1388,16 +1446,21 @@ const file_switchyard_v1alpha1_auth_proto_rawDesc = "" +
 	"\x04page\x18\x01 \x01(\v2 .switchyard.v1alpha1.PageRequestR\x04page\"{\n" +
 	"\x11ListUsersResponse\x12/\n" +
 	"\x05users\x18\x01 \x03(\v2\x19.switchyard.v1alpha1.UserR\x05users\x125\n" +
-	"\x04page\x18\x02 \x01(\v2!.switchyard.v1alpha1.PageResponseR\x04page\"i\n" +
+	"\x04page\x18\x02 \x01(\v2!.switchyard.v1alpha1.PageResponseR\x04page\"\xb3\x01\n" +
 	"\x16RegisterPasskeyRequest\x122\n" +
 	"\x15public_key_credential\x18\x01 \x01(\fR\x13publicKeyCredential\x12\x1b\n" +
-	"\tuser_slug\x18\x02 \x01(\tR\buserSlug\">\n" +
+	"\tuser_slug\x18\x02 \x01(\tR\buserSlug\x122\n" +
+	"\x15webauthn_challenge_id\x18\x03 \x01(\tR\x13webauthnChallengeId\x12\x14\n" +
+	"\x05label\x18\x04 \x01(\tR\x05label\">\n" +
 	"\x17RegisterPasskeyResponse\x12#\n" +
-	"\rcredential_id\x18\x01 \x01(\tR\fcredentialId\"<\n" +
+	"\rcredential_id\x18\x01 \x01(\tR\fcredentialId\"w\n" +
 	"\x1dStartWebAuthnChallengeRequest\x12\x1b\n" +
-	"\tuser_slug\x18\x01 \x01(\tR\buserSlug\">\n" +
+	"\tuser_slug\x18\x01 \x01(\tR\buserSlug\x12\x16\n" +
+	"\x06intent\x18\x02 \x01(\tR\x06intent\x12!\n" +
+	"\fdisplay_name\x18\x03 \x01(\tR\vdisplayName\"r\n" +
 	"\x1eStartWebAuthnChallengeResponse\x12\x1c\n" +
-	"\tchallenge\x18\x01 \x01(\fR\tchallenge\"\x10\n" +
+	"\tchallenge\x18\x01 \x01(\fR\tchallenge\x122\n" +
+	"\x15webauthn_challenge_id\x18\x02 \x01(\tR\x13webauthnChallengeId\"\x10\n" +
 	"\x0eRefreshRequest\"M\n" +
 	"\x0fRefreshResponse\x12\x1b\n" +
 	"\tuser_slug\x18\x01 \x01(\tR\buserSlug\x12\x1d\n" +

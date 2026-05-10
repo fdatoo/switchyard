@@ -68,7 +68,7 @@ func seedUser(t *testing.T, db *sql.DB, identityStore *identity.Store, slug, pas
 	ctx := context.Background()
 	err := identityStore.ApplySnapshot(ctx, identity.Snapshot{
 		Users: []identity.User{
-			{Slug: slug, DisplayName: slug, Active: true, PasswordAllowed: true},
+			{Slug: slug, DisplayName: slug, Active: true, PasswordAllowed: true, PasskeyAllowed: true},
 		},
 	})
 	require.NoError(t, err)

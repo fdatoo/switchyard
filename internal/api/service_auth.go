@@ -2,11 +2,17 @@ package api
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/base64"
+	"encoding/json"
 	"errors"
+	"net/http"
 	"strings"
 	"time"
 
 	"connectrpc.com/connect"
+	"github.com/go-webauthn/webauthn/protocol"
+	wa "github.com/go-webauthn/webauthn/webauthn"
 
 	authpb "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
 	"github.com/fdatoo/switchyard/internal/auth"
@@ -19,13 +25,23 @@ import (
 	"github.com/fdatoo/switchyard/internal/policy"
 )
 
+const webAuthnChallengeCookie = "switchyard_webauthn"
+
+type webAuthnChallengePayload struct {
+	Kind        string          `json:"kind"`
+	UserSlug    string          `json:"user_slug,omitempty"`
+	SessionData *wa.SessionData `json:"session_data"`
+}
+
 // AuthDeps holds the dependencies required by the real AuthService.
 type AuthDeps struct {
 	Identity   *identity.Store
 	Password   *credentials.Password
+	Passkeys   *credentials.Passkeys
 	Tokens     *credentials.Tokens
 	Sessions   *sessions.Store
 	Enrollment *credentials.Enrollment
+	Challenges *credentials.ChallengeStore
 	Throttle   *throttle.Throttle
 	Audit      *audit.Recorder
 	Policy     *policy.Runtime
@@ -42,6 +58,10 @@ func NewAuthService(d AuthDeps) *AuthService { return &AuthService{d: d} }
 
 // Login authenticates a user with username + password and issues a session cookie.
 func (s *AuthService) Login(ctx context.Context, req *connect.Request[authpb.LoginRequest]) (*connect.Response[authpb.LoginResponse], error) {
+	if len(req.Msg.PublicKeyCredential) > 0 || req.Msg.WebauthnChallengeId != "" {
+		return s.loginPasskey(ctx, req)
+	}
+
 	ip := remoteAddrFromCtx(ctx)
 	ua := userAgentFromCtx(ctx)
 	username := req.Msg.Username
@@ -113,6 +133,103 @@ func (s *AuthService) Login(ctx context.Context, req *connect.Request[authpb.Log
 	})
 	if s.d.Metrics != nil {
 		s.d.Metrics.AuthLoginAttemptsTotal.WithLabelValues("password", "ok").Inc()
+	}
+	return connect.NewResponse(&authpb.LoginResponse{SessionToken: sd.SessionID}), nil
+}
+
+func (s *AuthService) loginPasskey(ctx context.Context, req *connect.Request[authpb.LoginRequest]) (*connect.Response[authpb.LoginResponse], error) {
+	if s.d.Passkeys == nil || s.d.Challenges == nil {
+		return nil, connect.NewError(connect.CodeFailedPrecondition, errors.New("passkeys not configured"))
+	}
+	ip := remoteAddrFromCtx(ctx)
+	ua := userAgentFromCtx(ctx)
+
+	start := time.Now()
+	defer func() {
+		if s.d.Metrics != nil {
+			s.d.Metrics.AuthLoginDurationSeconds.WithLabelValues("passkey").Observe(time.Since(start).Seconds())
+		}
+	}()
+
+	if err := s.d.Throttle.Check(ctx, ip, "passkey"); err != nil {
+		if s.d.Metrics != nil {
+			s.d.Metrics.AuthThrottleBlocksTotal.WithLabelValues("passkey").Inc()
+			s.d.Metrics.AuthLoginAttemptsTotal.WithLabelValues("passkey", "throttled").Inc()
+		}
+		_ = s.d.Audit.LoginFailed(ctx, audit.Identity{SourceIP: ip}, audit.LoginFailed{
+			AuthMethod: "passkey", Reason: "throttled",
+		})
+		return nil, connect.NewError(connect.CodeUnauthenticated, errors.New("throttled"))
+	}
+
+	parsed, err := protocol.ParseCredentialRequestResponseBytes(req.Msg.PublicKeyCredential)
+	if err != nil {
+		_ = s.d.Throttle.Record(ctx, ip, "passkey", false)
+		if s.d.Metrics != nil {
+			s.d.Metrics.AuthLoginAttemptsTotal.WithLabelValues("passkey", "failed").Inc()
+		}
+		_ = s.d.Audit.LoginFailed(ctx, audit.Identity{SourceIP: ip}, audit.LoginFailed{
+			AuthMethod: "passkey", Reason: "passkey_assertion_invalid",
+		})
+		return nil, connect.NewError(connect.CodeUnauthenticated, errors.New("invalid passkey assertion"))
+	}
+
+	payload, err := s.consumeWebAuthnChallenge(ctx, req.Msg.WebauthnChallengeId, "login")
+	if err != nil {
+		_ = s.d.Throttle.Record(ctx, ip, "passkey", false)
+		if s.d.Metrics != nil {
+			s.d.Metrics.AuthLoginAttemptsTotal.WithLabelValues("passkey", "failed").Inc()
+		}
+		_ = s.d.Audit.LoginFailed(ctx, audit.Identity{SourceIP: ip}, audit.LoginFailed{
+			AuthMethod: "passkey", Reason: "passkey_assertion_invalid",
+		})
+		if errors.Is(err, credentials.ErrChallengeNotFound) {
+			return nil, connect.NewError(connect.CodeUnauthenticated, err)
+		}
+		return nil, err
+	}
+
+	slug, err := s.d.Passkeys.FinishLogin(ctx, payload.SessionData, parsed)
+	if errors.Is(err, credentials.ErrSignCountRegression) {
+		_ = s.d.Throttle.Record(ctx, ip, "passkey", false)
+		if s.d.Metrics != nil {
+			s.d.Metrics.AuthLoginAttemptsTotal.WithLabelValues("passkey", "failed").Inc()
+		}
+		_ = s.d.Audit.LoginFailed(ctx, audit.Identity{SourceIP: ip}, audit.LoginFailed{
+			AuthMethod: "passkey", AttemptedUserSlug: string(parsed.Response.UserHandle), Reason: "sign_count_regression",
+		})
+		return nil, connect.NewError(connect.CodeUnauthenticated, err)
+	}
+	if err != nil {
+		_ = s.d.Throttle.Record(ctx, ip, "passkey", false)
+		if s.d.Metrics != nil {
+			s.d.Metrics.AuthLoginAttemptsTotal.WithLabelValues("passkey", "failed").Inc()
+		}
+		_ = s.d.Audit.LoginFailed(ctx, audit.Identity{SourceIP: ip}, audit.LoginFailed{
+			AuthMethod: "passkey", AttemptedUserSlug: string(parsed.Response.UserHandle), Reason: "passkey_assertion_invalid",
+		})
+		return nil, connect.NewError(connect.CodeUnauthenticated, errors.New("invalid passkey assertion"))
+	}
+	_ = s.d.Throttle.Record(ctx, ip, "passkey", true)
+
+	w := responseWriterFromCtx(ctx)
+	if w == nil {
+		return nil, connect.NewError(connect.CodeInternal, errors.New("no response writer"))
+	}
+	sd, err := s.d.Sessions.Issue(ctx, w, sessions.IssueInput{
+		UserSlug: slug, AuthMethod: "passkey", RemoteIP: ip, UserAgent: ua,
+	})
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	credentialID := base64.RawURLEncoding.EncodeToString(parsed.RawID)
+	_ = s.d.Audit.LoginSucceeded(ctx, audit.Identity{
+		PrincipalID: "user:" + slug, SourceIP: ip, RequestID: requestIDFromCtx(ctx),
+	}, audit.LoginSucceeded{
+		AuthMethod: "passkey", UserSlug: slug, SessionID: sd.SessionID, CredentialID: credentialID,
+	})
+	if s.d.Metrics != nil {
+		s.d.Metrics.AuthLoginAttemptsTotal.WithLabelValues("passkey", "ok").Inc()
 	}
 	return connect.NewResponse(&authpb.LoginResponse{SessionToken: sd.SessionID}), nil
 }
@@ -233,14 +350,179 @@ func (s *AuthService) ListUsers(ctx context.Context, _ *connect.Request[authpb.L
 	return connect.NewResponse(&authpb.ListUsersResponse{Users: pbUsers}), nil
 }
 
-// RegisterPasskey is not yet implemented.
-func (s *AuthService) RegisterPasskey(ctx context.Context, _ *connect.Request[authpb.RegisterPasskeyRequest]) (*connect.Response[authpb.RegisterPasskeyResponse], error) {
-	return nil, unimplemented(ctx, "auth_register_passkey_unimplemented")
+// RegisterPasskey finishes a WebAuthn registration ceremony started by StartWebAuthnChallenge.
+func (s *AuthService) RegisterPasskey(ctx context.Context, req *connect.Request[authpb.RegisterPasskeyRequest]) (*connect.Response[authpb.RegisterPasskeyResponse], error) {
+	if s.d.Passkeys == nil || s.d.Challenges == nil {
+		return nil, connect.NewError(connect.CodeFailedPrecondition, errors.New("passkeys not configured"))
+	}
+	slug, err := userSlugForPasskeyRegistration(ctx, req.Msg.UserSlug)
+	if err != nil {
+		return nil, err
+	}
+	parsed, err := protocol.ParseCredentialCreationResponseBytes(req.Msg.PublicKeyCredential)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+	payload, err := s.consumeWebAuthnChallenge(ctx, req.Msg.WebauthnChallengeId, "register")
+	if errors.Is(err, credentials.ErrChallengeNotFound) {
+		return nil, connect.NewError(connect.CodeUnauthenticated, err)
+	}
+	if err != nil {
+		return nil, err
+	}
+	if payload.UserSlug != "" && payload.UserSlug != slug {
+		return nil, connect.NewError(connect.CodePermissionDenied, errors.New("challenge belongs to a different user"))
+	}
+	label := req.Msg.Label
+	if label == "" {
+		label = "passkey"
+	}
+	pk, err := s.d.Passkeys.FinishRegistration(ctx, slug, label, payload.SessionData, parsed)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+	credentialID := base64.RawURLEncoding.EncodeToString(pk.CredentialID)
+	_ = s.d.Audit.PasskeyRegistered(ctx, identityFromCtx(ctx), audit.PasskeyRegistered{
+		UserSlug: slug, CredentialID: credentialID, Label: label,
+	})
+	return connect.NewResponse(&authpb.RegisterPasskeyResponse{CredentialId: credentialID}), nil
 }
 
-// StartWebAuthnChallenge is not yet implemented.
-func (s *AuthService) StartWebAuthnChallenge(ctx context.Context, _ *connect.Request[authpb.StartWebAuthnChallengeRequest]) (*connect.Response[authpb.StartWebAuthnChallengeResponse], error) {
-	return nil, unimplemented(ctx, "auth_webauthn_challenge_unimplemented")
+// StartWebAuthnChallenge starts a passkey registration or discoverable-login ceremony.
+func (s *AuthService) StartWebAuthnChallenge(ctx context.Context, req *connect.Request[authpb.StartWebAuthnChallengeRequest]) (*connect.Response[authpb.StartWebAuthnChallengeResponse], error) {
+	if s.d.Passkeys == nil || s.d.Challenges == nil {
+		return nil, connect.NewError(connect.CodeFailedPrecondition, errors.New("passkeys not configured"))
+	}
+	switch req.Msg.Intent {
+	case "register", "register_passkey":
+		slug, err := userSlugForPasskeyRegistration(ctx, req.Msg.UserSlug)
+		if err != nil {
+			return nil, err
+		}
+		creation, sd, err := s.d.Passkeys.BeginRegistration(ctx, slug, req.Msg.DisplayName)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, err)
+		}
+		challengeID, err := s.storeWebAuthnChallenge(ctx, webAuthnChallengePayload{
+			Kind: "register", UserSlug: slug, SessionData: sd,
+		})
+		if err != nil {
+			return nil, err
+		}
+		options, err := json.Marshal(creation.Response)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, err)
+		}
+		return connect.NewResponse(&authpb.StartWebAuthnChallengeResponse{
+			Challenge: options, WebauthnChallengeId: challengeID,
+		}), nil
+	case "login":
+		assertion, sd, err := s.d.Passkeys.BeginLogin(ctx)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, err)
+		}
+		assertion.Response.AllowedCredentials = []protocol.CredentialDescriptor{}
+		challengeID, err := s.storeWebAuthnChallenge(ctx, webAuthnChallengePayload{
+			Kind: "login", SessionData: sd,
+		})
+		if err != nil {
+			return nil, err
+		}
+		options, err := json.Marshal(assertion.Response)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, err)
+		}
+		return connect.NewResponse(&authpb.StartWebAuthnChallengeResponse{
+			Challenge: options, WebauthnChallengeId: challengeID,
+		}), nil
+	default:
+		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("invalid webauthn intent"))
+	}
+}
+
+func userSlugForPasskeyRegistration(ctx context.Context, requested string) (string, error) {
+	p, ok := auth.PrincipalFromContext(ctx)
+	if ok && strings.HasPrefix(p.ID, "user:") {
+		slug := strings.TrimPrefix(p.ID, "user:")
+		if requested != "" && requested != slug {
+			return "", connect.NewError(connect.CodePermissionDenied, errors.New("cannot register passkey for another user"))
+		}
+		return slug, nil
+	}
+	if requested != "" {
+		return requested, nil
+	}
+	return "", connect.NewError(connect.CodeUnauthenticated, errors.New("not authenticated"))
+}
+
+func (s *AuthService) storeWebAuthnChallenge(ctx context.Context, payload webAuthnChallengePayload) (string, error) {
+	key, err := webAuthnChallengeSessionKey(ctx, true)
+	if err != nil {
+		return "", err
+	}
+	data, err := json.Marshal(payload)
+	if err != nil {
+		return "", connect.NewError(connect.CodeInternal, err)
+	}
+	id, err := s.d.Challenges.Store(ctx, key, data)
+	if err != nil {
+		return "", connect.NewError(connect.CodeInternal, err)
+	}
+	return id, nil
+}
+
+func (s *AuthService) consumeWebAuthnChallenge(ctx context.Context, id, kind string) (webAuthnChallengePayload, error) {
+	if id == "" {
+		return webAuthnChallengePayload{}, connect.NewError(connect.CodeInvalidArgument, errors.New("missing webauthn challenge id"))
+	}
+	key, err := webAuthnChallengeSessionKey(ctx, false)
+	if err != nil {
+		return webAuthnChallengePayload{}, err
+	}
+	data, err := s.d.Challenges.Consume(ctx, key, id)
+	if err != nil {
+		return webAuthnChallengePayload{}, err
+	}
+	var payload webAuthnChallengePayload
+	if err := json.Unmarshal(data, &payload); err != nil {
+		return webAuthnChallengePayload{}, connect.NewError(connect.CodeInternal, err)
+	}
+	if payload.Kind != kind || payload.SessionData == nil {
+		return webAuthnChallengePayload{}, connect.NewError(connect.CodeUnauthenticated, errors.New("invalid webauthn challenge"))
+	}
+	return payload, nil
+}
+
+func webAuthnChallengeSessionKey(ctx context.Context, create bool) (string, error) {
+	if p, ok := auth.PrincipalFromContext(ctx); ok {
+		if sid := p.Metadata["session_id"]; sid != "" {
+			return "session:" + sid, nil
+		}
+	}
+	r := httpRequestFromCtx(ctx)
+	if r != nil {
+		if c, err := r.Cookie(webAuthnChallengeCookie); err == nil && c.Value != "" {
+			return "cookie:" + c.Value, nil
+		}
+	}
+	if !create {
+		return "", credentials.ErrChallengeNotFound
+	}
+	w := responseWriterFromCtx(ctx)
+	if w == nil {
+		return "", connect.NewError(connect.CodeInternal, errors.New("no response writer"))
+	}
+	raw := make([]byte, 32)
+	if _, err := rand.Read(raw); err != nil {
+		return "", connect.NewError(connect.CodeInternal, err)
+	}
+	value := base64.RawURLEncoding.EncodeToString(raw)
+	http.SetCookie(w, &http.Cookie{
+		Name: webAuthnChallengeCookie, Value: value, Path: "/",
+		HttpOnly: true, Secure: true, SameSite: http.SameSiteStrictMode,
+		MaxAge: int((5 * time.Minute).Seconds()),
+	})
+	return "cookie:" + value, nil
 }
 
 // MintEnrollmentToken issues a one-time enrollment token for a user.

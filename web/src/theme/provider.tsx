@@ -21,7 +21,7 @@ function resolveMode(p: ThemeModePreference): ThemeMode {
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [pref, setPref] = useState<ThemeModePreference>(() => readPref());
-  const [tick, setTick] = useState(0);
+  const [, setTick] = useState(0);
   useEffect(() => {
     if (typeof matchMedia === "undefined") return;
     const mql = matchMedia("(prefers-color-scheme: dark)");
@@ -29,7 +29,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     mql.addEventListener("change", fn);
     return () => mql.removeEventListener("change", fn);
   }, []);
-  const mode = useMemo(() => resolveMode(pref), [pref, tick]);
+  const mode = resolveMode(pref);
   const language: LanguageId = "developer";
   const tokens = LANGUAGES[language].modes[mode];
   useEffect(() => { document.documentElement.setAttribute("data-theme", `${language}-${mode}`); }, [language, mode]);
@@ -40,6 +40,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useTheme(): Ctx {
   const v = useContext(ThemeContext);
   if (!v) throw new Error("useTheme must be inside <ThemeProvider>");

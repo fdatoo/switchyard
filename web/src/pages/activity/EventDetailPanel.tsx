@@ -100,7 +100,7 @@ export function EventDetailPanel({ event, onClose }: EventDetailPanelProps) {
           <button className={styles.actionBtn} disabled aria-label="Repeat command (coming soon)">
             Repeat command
           </button>
-          {event.sequence !== "0" && event.sequence !== 0 && (
+          {event.sequence !== "0" && event.sequence !== undefined && (
             <button
               className={styles.actionBtn}
               onClick={() => navigateToTimeMachine(event.eventId)}

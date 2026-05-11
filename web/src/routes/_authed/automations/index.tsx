@@ -1,5 +1,5 @@
-import { PlaceholderPage } from "@/shell/PlaceholderPage";
+import { AutomationList } from "@/pages/automations/AutomationList";
 
 export function Automations() {
-  return <PlaceholderPage title="Automations" plan="Plan 10" />;
+  return <AutomationList />;
 }

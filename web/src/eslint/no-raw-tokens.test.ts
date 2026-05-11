@@ -14,9 +14,24 @@ describe("switchyard/no-raw-tokens", () => {
   it("fails on raw color, radius, and spacing utilities", () => {
     tester.run("no-raw-tokens", rule, {
       valid: [
+        // Non-color Tailwind classes pass
         { code: '<div className="surface-panel control-compact" />' },
-        { code: '<div className="bg-surface bg-token-danger text-[var(--sy-color-fg)] rounded-token-md p-token-sm gap-[var(--sy-pad-normal)]" />' },
+        // Token-aliased utilities pass
+        { code: '<div className="bg-surface bg-token-danger text-[var(--sy-color-fg)] rounded-token-md p-token-sm gap-[var(--sy-space-2)]" />' },
+        // --sy-* var() refs in style prop are always valid
         { code: '<div style={{ color: "var(--sy-color-fg)", backgroundColor: "var(--sy-color-bg)" }} />' },
+        { code: '<div style={{ borderRadius: "var(--sy-radius)", padding: "var(--sy-space-3)" }} />' },
+        { code: '<div style={{ boxShadow: "var(--sy-shadow)", font: "var(--sy-font-body)" }} />' },
+        { code: '<div style={{ transition: "var(--sy-motion)", background: "var(--sy-gradient-tod)" }} />' },
+        // Full --sy-* token surface in style prop
+        {
+          code: `<div style={{
+            color: "var(--sy-color-fg)",
+            background: "var(--sy-color-bg)",
+            borderColor: "var(--sy-color-line)",
+            accentColor: "var(--sy-color-accent)",
+          }} />`,
+        },
       ],
       invalid: [
         {

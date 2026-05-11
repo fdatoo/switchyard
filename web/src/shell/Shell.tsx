@@ -43,6 +43,8 @@ export function Shell({ children, currentPath }: ShellProps) {
         <main
           style={{
             flex: 1,
+            display: "flex",
+            flexDirection: "column",
             overflowY: "auto",
           }}
         >

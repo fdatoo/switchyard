@@ -10,6 +10,7 @@ import (
 
 	"connectrpc.com/connect"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 
 	eventv1 "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
 	authpb "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
@@ -20,6 +21,7 @@ import (
 	"github.com/fdatoo/switchyard/internal/auth/identity"
 	"github.com/fdatoo/switchyard/internal/auth/sessions"
 	"github.com/fdatoo/switchyard/internal/auth/throttle"
+	"github.com/fdatoo/switchyard/internal/policy"
 	"github.com/fdatoo/switchyard/internal/testutil"
 )
 
@@ -181,6 +183,93 @@ func TestAuthService_CreateToken(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, resp.Msg.Token)
 	require.NotEmpty(t, resp.Msg.TokenId)
+}
+
+func TestAuthService_CreateTokenPersistsScope(t *testing.T) {
+	deps, db := newAuthTestDeps(t)
+	seedUser(t, db, deps.Identity, "dave", "pass")
+
+	svc := api.NewAuthService(deps)
+	ctx := auth.WithPrincipal(context.Background(), auth.Principal{
+		ID: "user:dave", Kind: "user",
+	})
+
+	resp, err := svc.CreateToken(ctx, connect.NewRequest(&authpb.CreateTokenRequest{
+		DisplayName: "kitchen-token",
+		Scope: &authpb.TokenScope{
+			AllowServices: []string{"EntityService.*"},
+			AllowTargets: &authpb.TokenTargetSelector{
+				Areas: []string{"kitchen"},
+			},
+		},
+	}))
+	require.NoError(t, err)
+
+	look, err := deps.Tokens.Verify(context.Background(), resp.Msg.Token)
+	require.NoError(t, err)
+	require.NotEmpty(t, look.Scope)
+	var stored authpb.TokenScope
+	require.NoError(t, proto.Unmarshal(look.Scope, &stored))
+	require.Equal(t, []string{"EntityService.*"}, stored.GetAllowServices())
+	require.Equal(t, []string{"kitchen"}, stored.GetAllowTargets().GetAreas())
+}
+
+func TestAuthService_CreateTokenRejectsBroaderScopeFromScopedToken(t *testing.T) {
+	deps, db := newAuthTestDeps(t)
+	seedUser(t, db, deps.Identity, "dave", "pass")
+
+	svc := api.NewAuthService(deps)
+	ctx := auth.WithPrincipal(context.Background(), auth.Principal{
+		ID: "user:dave", Kind: "user",
+	})
+	ctx = policy.WithTokenScope(ctx, policy.CompiledTokenScope{
+		AllowedServices: []string{"EntityService.Get"},
+		AllowedTargets: policy.CompiledSelector{
+			AreaSet: map[policy.AreaSlug]struct{}{"kitchen": {}},
+		},
+	})
+
+	_, err := svc.CreateToken(ctx, connect.NewRequest(&authpb.CreateTokenRequest{
+		DisplayName: "too-wide",
+		Scope: &authpb.TokenScope{
+			AllowServices: []string{"EntityService.*"},
+			AllowTargets: &authpb.TokenTargetSelector{
+				Areas: []string{"kitchen"},
+			},
+		},
+	}))
+	require.Error(t, err)
+	var ce *connect.Error
+	require.ErrorAs(t, err, &ce)
+	require.Equal(t, connect.CodePermissionDenied, ce.Code())
+
+	_, err = svc.CreateToken(ctx, connect.NewRequest(&authpb.CreateTokenRequest{
+		DisplayName: "full-token",
+	}))
+	require.Error(t, err)
+	require.ErrorAs(t, err, &ce)
+	require.Equal(t, connect.CodePermissionDenied, ce.Code())
+}
+
+func TestAuthService_CreateTokenRejectsEmbeddedWildcard(t *testing.T) {
+	deps, db := newAuthTestDeps(t)
+	seedUser(t, db, deps.Identity, "dave", "pass")
+
+	svc := api.NewAuthService(deps)
+	ctx := auth.WithPrincipal(context.Background(), auth.Principal{
+		ID: "user:dave", Kind: "user",
+	})
+
+	_, err := svc.CreateToken(ctx, connect.NewRequest(&authpb.CreateTokenRequest{
+		DisplayName: "bad-wildcard",
+		Scope: &authpb.TokenScope{
+			AllowServices: []string{"Entity*.Get"},
+		},
+	}))
+	require.Error(t, err)
+	var ce *connect.Error
+	require.ErrorAs(t, err, &ce)
+	require.Equal(t, connect.CodeInvalidArgument, ce.Code())
 }
 
 func TestAuthService_RevokeToken(t *testing.T) {

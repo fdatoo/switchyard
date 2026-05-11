@@ -13,6 +13,7 @@ import (
 	"connectrpc.com/connect"
 	"github.com/go-webauthn/webauthn/protocol"
 	wa "github.com/go-webauthn/webauthn/webauthn"
+	"google.golang.org/protobuf/proto"
 
 	authpb "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
 	"github.com/fdatoo/switchyard/internal/auth"
@@ -304,20 +305,48 @@ func (s *AuthService) CreateToken(ctx context.Context, req *connect.Request[auth
 	if !ok {
 		return nil, connect.NewError(connect.CodeUnauthenticated, errors.New("not authenticated"))
 	}
+	scopeBlob, scopeSummary, err := tokenScopeBlobForMint(ctx, req.Msg.GetScope())
+	if errors.Is(err, errTokenScopeBroader) {
+		return nil, connect.NewError(connect.CodePermissionDenied, err)
+	}
+	if errors.Is(err, ErrValidationFailed) {
+		return nil, ToConnect(ctx, err, "invalid_token_scope")
+	}
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
 	slug := strings.TrimPrefix(p.ID, "user:")
 	plaintext, tokenID, err := s.d.Tokens.Issue(ctx, credentials.IssueTokenInput{
 		UserSlug: slug,
 		Label:    req.Msg.DisplayName,
 		IssuedBy: p.ID,
-		Scope:    []byte{},
+		Scope:    scopeBlob,
 	})
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 	_ = s.d.Audit.TokenMinted(ctx, identityFromCtx(ctx), audit.TokenMinted{
-		UserSlug: slug, TokenID: tokenID, Label: req.Msg.DisplayName, IssuedBy: p.ID,
+		UserSlug: slug, TokenID: tokenID, Label: req.Msg.DisplayName, ScopeSummary: scopeSummary, IssuedBy: p.ID,
 	})
 	return connect.NewResponse(&authpb.CreateTokenResponse{Token: plaintext, TokenId: tokenID}), nil
+}
+
+func tokenScopeBlobForMint(ctx context.Context, scope *authpb.TokenScope) ([]byte, string, error) {
+	compiled, err := compileTokenScopePB(scope)
+	if err != nil {
+		return nil, "", err
+	}
+	if parent, ok := policy.TokenScopeFromContext(ctx); ok && !parent.Contains(compiled) {
+		return nil, "", errTokenScopeBroader
+	}
+	if emptyTokenScopePB(scope) {
+		return []byte{}, "full", nil
+	}
+	blob, err := proto.Marshal(scope)
+	if err != nil {
+		return nil, "", err
+	}
+	return blob, tokenScopeSummary(scope), nil
 }
 
 // RevokeToken revokes a token by ID.

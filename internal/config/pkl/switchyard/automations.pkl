@@ -120,6 +120,27 @@ class ParallelBlock extends Action {
   actions: Listing<Action>
 }
 
+// ── OnFailure strategies ────────────────────────────────────
+abstract class OnFailureStrategy {
+  _type: String
+}
+
+class IgnoreStrategy extends OnFailureStrategy {
+  _type = "switchyard.automations#IgnoreStrategy"
+}
+
+class RetryStrategy extends OnFailureStrategy {
+  _type       = "switchyard.automations#RetryStrategy"
+  maxAttempts: Int(isPositive)
+  backoff:     Duration
+}
+
+class NotifyStrategy extends OnFailureStrategy {
+  _type   = "switchyard.automations#NotifyStrategy"
+  entity:  String(!isEmpty)
+  message: String(!isEmpty)
+}
+
 // ── Automation ──────────────────────────────────────────────
 class Automation {
   id:         String(!isEmpty)
@@ -129,4 +150,5 @@ class Automation {
   mode:       String(this == "single" || this == "queued" || this == "restart" || this == "parallel") = "single"
   maxQueued:  Int = 10
   enabled:    Boolean = true
+  onFailure:  OnFailureStrategy = new IgnoreStrategy {}
 }

@@ -47,6 +47,9 @@ const (
 	// ConfigServiceEvalComputeProcedure is the fully-qualified name of the ConfigService's EvalCompute
 	// RPC.
 	ConfigServiceEvalComputeProcedure = "/switchyard.v1alpha1.ConfigService/EvalCompute"
+	// ConfigServiceRegenPreviewProcedure is the fully-qualified name of the ConfigService's
+	// RegenPreview RPC.
+	ConfigServiceRegenPreviewProcedure = "/switchyard.v1alpha1.ConfigService/RegenPreview"
 )
 
 // ConfigServiceClient is a client for the switchyard.v1alpha1.ConfigService service.
@@ -56,6 +59,7 @@ type ConfigServiceClient interface {
 	Reload(context.Context, *connect.Request[v1alpha1.ReloadConfigRequest]) (*connect.Response[v1alpha1.ReloadConfigResponse], error)
 	GetArtifact(context.Context, *connect.Request[v1alpha1.GetConfigArtifactRequest]) (*connect.Response[v1alpha1.GetConfigArtifactResponse], error)
 	EvalCompute(context.Context, *connect.Request[v1alpha1.EvalComputeRequest]) (*connect.Response[v1alpha1.EvalComputeResponse], error)
+	RegenPreview(context.Context, *connect.Request[v1alpha1.RegenPreviewRequest]) (*connect.Response[v1alpha1.RegenPreviewResponse], error)
 }
 
 // NewConfigServiceClient constructs a client for the switchyard.v1alpha1.ConfigService service. By
@@ -99,16 +103,23 @@ func NewConfigServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			connect.WithSchema(configServiceMethods.ByName("EvalCompute")),
 			connect.WithClientOptions(opts...),
 		),
+		regenPreview: connect.NewClient[v1alpha1.RegenPreviewRequest, v1alpha1.RegenPreviewResponse](
+			httpClient,
+			baseURL+ConfigServiceRegenPreviewProcedure,
+			connect.WithSchema(configServiceMethods.ByName("RegenPreview")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // configServiceClient implements ConfigServiceClient.
 type configServiceClient struct {
-	validate    *connect.Client[v1alpha1.ValidateConfigRequest, v1alpha1.ValidateConfigResponse]
-	apply       *connect.Client[v1alpha1.ApplyConfigRequest, v1alpha1.ApplyConfigResponse]
-	reload      *connect.Client[v1alpha1.ReloadConfigRequest, v1alpha1.ReloadConfigResponse]
-	getArtifact *connect.Client[v1alpha1.GetConfigArtifactRequest, v1alpha1.GetConfigArtifactResponse]
-	evalCompute *connect.Client[v1alpha1.EvalComputeRequest, v1alpha1.EvalComputeResponse]
+	validate     *connect.Client[v1alpha1.ValidateConfigRequest, v1alpha1.ValidateConfigResponse]
+	apply        *connect.Client[v1alpha1.ApplyConfigRequest, v1alpha1.ApplyConfigResponse]
+	reload       *connect.Client[v1alpha1.ReloadConfigRequest, v1alpha1.ReloadConfigResponse]
+	getArtifact  *connect.Client[v1alpha1.GetConfigArtifactRequest, v1alpha1.GetConfigArtifactResponse]
+	evalCompute  *connect.Client[v1alpha1.EvalComputeRequest, v1alpha1.EvalComputeResponse]
+	regenPreview *connect.Client[v1alpha1.RegenPreviewRequest, v1alpha1.RegenPreviewResponse]
 }
 
 // Validate calls switchyard.v1alpha1.ConfigService.Validate.
@@ -136,6 +147,11 @@ func (c *configServiceClient) EvalCompute(ctx context.Context, req *connect.Requ
 	return c.evalCompute.CallUnary(ctx, req)
 }
 
+// RegenPreview calls switchyard.v1alpha1.ConfigService.RegenPreview.
+func (c *configServiceClient) RegenPreview(ctx context.Context, req *connect.Request[v1alpha1.RegenPreviewRequest]) (*connect.Response[v1alpha1.RegenPreviewResponse], error) {
+	return c.regenPreview.CallUnary(ctx, req)
+}
+
 // ConfigServiceHandler is an implementation of the switchyard.v1alpha1.ConfigService service.
 type ConfigServiceHandler interface {
 	Validate(context.Context, *connect.Request[v1alpha1.ValidateConfigRequest]) (*connect.Response[v1alpha1.ValidateConfigResponse], error)
@@ -143,6 +159,7 @@ type ConfigServiceHandler interface {
 	Reload(context.Context, *connect.Request[v1alpha1.ReloadConfigRequest]) (*connect.Response[v1alpha1.ReloadConfigResponse], error)
 	GetArtifact(context.Context, *connect.Request[v1alpha1.GetConfigArtifactRequest]) (*connect.Response[v1alpha1.GetConfigArtifactResponse], error)
 	EvalCompute(context.Context, *connect.Request[v1alpha1.EvalComputeRequest]) (*connect.Response[v1alpha1.EvalComputeResponse], error)
+	RegenPreview(context.Context, *connect.Request[v1alpha1.RegenPreviewRequest]) (*connect.Response[v1alpha1.RegenPreviewResponse], error)
 }
 
 // NewConfigServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -182,6 +199,12 @@ func NewConfigServiceHandler(svc ConfigServiceHandler, opts ...connect.HandlerOp
 		connect.WithSchema(configServiceMethods.ByName("EvalCompute")),
 		connect.WithHandlerOptions(opts...),
 	)
+	configServiceRegenPreviewHandler := connect.NewUnaryHandler(
+		ConfigServiceRegenPreviewProcedure,
+		svc.RegenPreview,
+		connect.WithSchema(configServiceMethods.ByName("RegenPreview")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/switchyard.v1alpha1.ConfigService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case ConfigServiceValidateProcedure:
@@ -194,6 +217,8 @@ func NewConfigServiceHandler(svc ConfigServiceHandler, opts ...connect.HandlerOp
 			configServiceGetArtifactHandler.ServeHTTP(w, r)
 		case ConfigServiceEvalComputeProcedure:
 			configServiceEvalComputeHandler.ServeHTTP(w, r)
+		case ConfigServiceRegenPreviewProcedure:
+			configServiceRegenPreviewHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -221,4 +246,8 @@ func (UnimplementedConfigServiceHandler) GetArtifact(context.Context, *connect.R
 
 func (UnimplementedConfigServiceHandler) EvalCompute(context.Context, *connect.Request[v1alpha1.EvalComputeRequest]) (*connect.Response[v1alpha1.EvalComputeResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("switchyard.v1alpha1.ConfigService.EvalCompute is not implemented"))
+}
+
+func (UnimplementedConfigServiceHandler) RegenPreview(context.Context, *connect.Request[v1alpha1.RegenPreviewRequest]) (*connect.Response[v1alpha1.RegenPreviewResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("switchyard.v1alpha1.ConfigService.RegenPreview is not implemented"))
 }

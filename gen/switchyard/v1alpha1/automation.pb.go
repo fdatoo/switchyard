@@ -284,6 +284,112 @@ func (x *GetAutomationResponse) GetAutomation() *Automation {
 	return nil
 }
 
+type GetAutomationDetailRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAutomationDetailRequest) Reset() {
+	*x = GetAutomationDetailRequest{}
+	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAutomationDetailRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAutomationDetailRequest) ProtoMessage() {}
+
+func (x *GetAutomationDetailRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAutomationDetailRequest.ProtoReflect.Descriptor instead.
+func (*GetAutomationDetailRequest) Descriptor() ([]byte, []int) {
+	return file_switchyard_v1alpha1_automation_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *GetAutomationDetailRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+type GetAutomationDetailResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// 1-9: summary
+	Automation *Automation `protobuf:"bytes,1,opt,name=automation,proto3" json:"automation,omitempty"`
+	// 10-19: editor payload
+	AstJson       string `protobuf:"bytes,10,opt,name=ast_json,json=astJson,proto3" json:"ast_json,omitempty"`
+	FilePath      string `protobuf:"bytes,11,opt,name=file_path,json=filePath,proto3" json:"file_path,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAutomationDetailResponse) Reset() {
+	*x = GetAutomationDetailResponse{}
+	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAutomationDetailResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAutomationDetailResponse) ProtoMessage() {}
+
+func (x *GetAutomationDetailResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAutomationDetailResponse.ProtoReflect.Descriptor instead.
+func (*GetAutomationDetailResponse) Descriptor() ([]byte, []int) {
+	return file_switchyard_v1alpha1_automation_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *GetAutomationDetailResponse) GetAutomation() *Automation {
+	if x != nil {
+		return x.Automation
+	}
+	return nil
+}
+
+func (x *GetAutomationDetailResponse) GetAstJson() string {
+	if x != nil {
+		return x.AstJson
+	}
+	return ""
+}
+
+func (x *GetAutomationDetailResponse) GetFilePath() string {
+	if x != nil {
+		return x.FilePath
+	}
+	return ""
+}
+
 type EnableAutomationRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -293,7 +399,7 @@ type EnableAutomationRequest struct {
 
 func (x *EnableAutomationRequest) Reset() {
 	*x = EnableAutomationRequest{}
-	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[5]
+	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -305,7 +411,7 @@ func (x *EnableAutomationRequest) String() string {
 func (*EnableAutomationRequest) ProtoMessage() {}
 
 func (x *EnableAutomationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[5]
+	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -318,7 +424,7 @@ func (x *EnableAutomationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EnableAutomationRequest.ProtoReflect.Descriptor instead.
 func (*EnableAutomationRequest) Descriptor() ([]byte, []int) {
-	return file_switchyard_v1alpha1_automation_proto_rawDescGZIP(), []int{5}
+	return file_switchyard_v1alpha1_automation_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *EnableAutomationRequest) GetId() string {
@@ -337,7 +443,7 @@ type EnableAutomationResponse struct {
 
 func (x *EnableAutomationResponse) Reset() {
 	*x = EnableAutomationResponse{}
-	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[6]
+	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -349,7 +455,7 @@ func (x *EnableAutomationResponse) String() string {
 func (*EnableAutomationResponse) ProtoMessage() {}
 
 func (x *EnableAutomationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[6]
+	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -362,7 +468,7 @@ func (x *EnableAutomationResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EnableAutomationResponse.ProtoReflect.Descriptor instead.
 func (*EnableAutomationResponse) Descriptor() ([]byte, []int) {
-	return file_switchyard_v1alpha1_automation_proto_rawDescGZIP(), []int{6}
+	return file_switchyard_v1alpha1_automation_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *EnableAutomationResponse) GetAutomation() *Automation {
@@ -381,7 +487,7 @@ type DisableAutomationRequest struct {
 
 func (x *DisableAutomationRequest) Reset() {
 	*x = DisableAutomationRequest{}
-	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[7]
+	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -393,7 +499,7 @@ func (x *DisableAutomationRequest) String() string {
 func (*DisableAutomationRequest) ProtoMessage() {}
 
 func (x *DisableAutomationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[7]
+	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -406,7 +512,7 @@ func (x *DisableAutomationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DisableAutomationRequest.ProtoReflect.Descriptor instead.
 func (*DisableAutomationRequest) Descriptor() ([]byte, []int) {
-	return file_switchyard_v1alpha1_automation_proto_rawDescGZIP(), []int{7}
+	return file_switchyard_v1alpha1_automation_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *DisableAutomationRequest) GetId() string {
@@ -425,7 +531,7 @@ type DisableAutomationResponse struct {
 
 func (x *DisableAutomationResponse) Reset() {
 	*x = DisableAutomationResponse{}
-	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[8]
+	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -437,7 +543,7 @@ func (x *DisableAutomationResponse) String() string {
 func (*DisableAutomationResponse) ProtoMessage() {}
 
 func (x *DisableAutomationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[8]
+	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -450,7 +556,7 @@ func (x *DisableAutomationResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DisableAutomationResponse.ProtoReflect.Descriptor instead.
 func (*DisableAutomationResponse) Descriptor() ([]byte, []int) {
-	return file_switchyard_v1alpha1_automation_proto_rawDescGZIP(), []int{8}
+	return file_switchyard_v1alpha1_automation_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *DisableAutomationResponse) GetAutomation() *Automation {
@@ -469,7 +575,7 @@ type TriggerAutomationRequest struct {
 
 func (x *TriggerAutomationRequest) Reset() {
 	*x = TriggerAutomationRequest{}
-	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[9]
+	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -481,7 +587,7 @@ func (x *TriggerAutomationRequest) String() string {
 func (*TriggerAutomationRequest) ProtoMessage() {}
 
 func (x *TriggerAutomationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[9]
+	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -494,7 +600,7 @@ func (x *TriggerAutomationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TriggerAutomationRequest.ProtoReflect.Descriptor instead.
 func (*TriggerAutomationRequest) Descriptor() ([]byte, []int) {
-	return file_switchyard_v1alpha1_automation_proto_rawDescGZIP(), []int{9}
+	return file_switchyard_v1alpha1_automation_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *TriggerAutomationRequest) GetId() string {
@@ -513,7 +619,7 @@ type TriggerAutomationResponse struct {
 
 func (x *TriggerAutomationResponse) Reset() {
 	*x = TriggerAutomationResponse{}
-	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[10]
+	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -525,7 +631,7 @@ func (x *TriggerAutomationResponse) String() string {
 func (*TriggerAutomationResponse) ProtoMessage() {}
 
 func (x *TriggerAutomationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[10]
+	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -538,7 +644,7 @@ func (x *TriggerAutomationResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TriggerAutomationResponse.ProtoReflect.Descriptor instead.
 func (*TriggerAutomationResponse) Descriptor() ([]byte, []int) {
-	return file_switchyard_v1alpha1_automation_proto_rawDescGZIP(), []int{10}
+	return file_switchyard_v1alpha1_automation_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *TriggerAutomationResponse) GetRunId() string {
@@ -559,7 +665,7 @@ type TraceAutomationRequest struct {
 
 func (x *TraceAutomationRequest) Reset() {
 	*x = TraceAutomationRequest{}
-	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[11]
+	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -571,7 +677,7 @@ func (x *TraceAutomationRequest) String() string {
 func (*TraceAutomationRequest) ProtoMessage() {}
 
 func (x *TraceAutomationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[11]
+	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -584,7 +690,7 @@ func (x *TraceAutomationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TraceAutomationRequest.ProtoReflect.Descriptor instead.
 func (*TraceAutomationRequest) Descriptor() ([]byte, []int) {
-	return file_switchyard_v1alpha1_automation_proto_rawDescGZIP(), []int{11}
+	return file_switchyard_v1alpha1_automation_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *TraceAutomationRequest) GetId() string {
@@ -623,7 +729,7 @@ type TraceEvent struct {
 
 func (x *TraceEvent) Reset() {
 	*x = TraceEvent{}
-	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[12]
+	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -635,7 +741,7 @@ func (x *TraceEvent) String() string {
 func (*TraceEvent) ProtoMessage() {}
 
 func (x *TraceEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[12]
+	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -648,7 +754,7 @@ func (x *TraceEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TraceEvent.ProtoReflect.Descriptor instead.
 func (*TraceEvent) Descriptor() ([]byte, []int) {
-	return file_switchyard_v1alpha1_automation_proto_rawDescGZIP(), []int{12}
+	return file_switchyard_v1alpha1_automation_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *TraceEvent) GetCursor() uint64 {
@@ -713,7 +819,7 @@ type TraceAutomationResponse struct {
 
 func (x *TraceAutomationResponse) Reset() {
 	*x = TraceAutomationResponse{}
-	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[13]
+	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -725,7 +831,7 @@ func (x *TraceAutomationResponse) String() string {
 func (*TraceAutomationResponse) ProtoMessage() {}
 
 func (x *TraceAutomationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[13]
+	mi := &file_switchyard_v1alpha1_automation_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -738,7 +844,7 @@ func (x *TraceAutomationResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TraceAutomationResponse.ProtoReflect.Descriptor instead.
 func (*TraceAutomationResponse) Descriptor() ([]byte, []int) {
-	return file_switchyard_v1alpha1_automation_proto_rawDescGZIP(), []int{13}
+	return file_switchyard_v1alpha1_automation_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *TraceAutomationResponse) GetKind() isTraceAutomationResponse_Kind {
@@ -804,7 +910,16 @@ const file_switchyard_v1alpha1_automation_proto_rawDesc = "" +
 	"\x15GetAutomationResponse\x12?\n" +
 	"\n" +
 	"automation\x18\x01 \x01(\v2\x1f.switchyard.v1alpha1.AutomationR\n" +
-	"automation\")\n" +
+	"automation\",\n" +
+	"\x1aGetAutomationDetailRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\x96\x01\n" +
+	"\x1bGetAutomationDetailResponse\x12?\n" +
+	"\n" +
+	"automation\x18\x01 \x01(\v2\x1f.switchyard.v1alpha1.AutomationR\n" +
+	"automation\x12\x19\n" +
+	"\bast_json\x18\n" +
+	" \x01(\tR\aastJson\x12\x1b\n" +
+	"\tfile_path\x18\v \x01(\tR\bfilePath\")\n" +
 	"\x17EnableAutomationRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"[\n" +
 	"\x18EnableAutomationResponse\x12?\n" +
@@ -841,10 +956,11 @@ const file_switchyard_v1alpha1_automation_proto_rawDesc = "" +
 	"\x17TraceAutomationResponse\x127\n" +
 	"\x05event\x18\x01 \x01(\v2\x1f.switchyard.v1alpha1.TraceEventH\x00R\x05event\x12>\n" +
 	"\theartbeat\x18\x02 \x01(\v2\x1e.switchyard.v1alpha1.HeartbeatH\x00R\theartbeatB\x06\n" +
-	"\x04kind2\xf5\x04\n" +
+	"\x04kind2\xe5\x05\n" +
 	"\x11AutomationService\x12a\n" +
 	"\x04List\x12+.switchyard.v1alpha1.ListAutomationsRequest\x1a,.switchyard.v1alpha1.ListAutomationsResponse\x12\\\n" +
-	"\x03Get\x12).switchyard.v1alpha1.GetAutomationRequest\x1a*.switchyard.v1alpha1.GetAutomationResponse\x12e\n" +
+	"\x03Get\x12).switchyard.v1alpha1.GetAutomationRequest\x1a*.switchyard.v1alpha1.GetAutomationResponse\x12n\n" +
+	"\tGetDetail\x12/.switchyard.v1alpha1.GetAutomationDetailRequest\x1a0.switchyard.v1alpha1.GetAutomationDetailResponse\x12e\n" +
 	"\x06Enable\x12,.switchyard.v1alpha1.EnableAutomationRequest\x1a-.switchyard.v1alpha1.EnableAutomationResponse\x12h\n" +
 	"\aDisable\x12-.switchyard.v1alpha1.DisableAutomationRequest\x1a..switchyard.v1alpha1.DisableAutomationResponse\x12h\n" +
 	"\aTrigger\x12-.switchyard.v1alpha1.TriggerAutomationRequest\x1a..switchyard.v1alpha1.TriggerAutomationResponse\x12d\n" +
@@ -863,56 +979,61 @@ func file_switchyard_v1alpha1_automation_proto_rawDescGZIP() []byte {
 	return file_switchyard_v1alpha1_automation_proto_rawDescData
 }
 
-var file_switchyard_v1alpha1_automation_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
+var file_switchyard_v1alpha1_automation_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_switchyard_v1alpha1_automation_proto_goTypes = []any{
-	(*Automation)(nil),                // 0: switchyard.v1alpha1.Automation
-	(*ListAutomationsRequest)(nil),    // 1: switchyard.v1alpha1.ListAutomationsRequest
-	(*ListAutomationsResponse)(nil),   // 2: switchyard.v1alpha1.ListAutomationsResponse
-	(*GetAutomationRequest)(nil),      // 3: switchyard.v1alpha1.GetAutomationRequest
-	(*GetAutomationResponse)(nil),     // 4: switchyard.v1alpha1.GetAutomationResponse
-	(*EnableAutomationRequest)(nil),   // 5: switchyard.v1alpha1.EnableAutomationRequest
-	(*EnableAutomationResponse)(nil),  // 6: switchyard.v1alpha1.EnableAutomationResponse
-	(*DisableAutomationRequest)(nil),  // 7: switchyard.v1alpha1.DisableAutomationRequest
-	(*DisableAutomationResponse)(nil), // 8: switchyard.v1alpha1.DisableAutomationResponse
-	(*TriggerAutomationRequest)(nil),  // 9: switchyard.v1alpha1.TriggerAutomationRequest
-	(*TriggerAutomationResponse)(nil), // 10: switchyard.v1alpha1.TriggerAutomationResponse
-	(*TraceAutomationRequest)(nil),    // 11: switchyard.v1alpha1.TraceAutomationRequest
-	(*TraceEvent)(nil),                // 12: switchyard.v1alpha1.TraceEvent
-	(*TraceAutomationResponse)(nil),   // 13: switchyard.v1alpha1.TraceAutomationResponse
-	nil,                               // 14: switchyard.v1alpha1.TraceEvent.MetadataEntry
-	(*PageRequest)(nil),               // 15: switchyard.v1alpha1.PageRequest
-	(*PageResponse)(nil),              // 16: switchyard.v1alpha1.PageResponse
-	(*timestamppb.Timestamp)(nil),     // 17: google.protobuf.Timestamp
-	(*Heartbeat)(nil),                 // 18: switchyard.v1alpha1.Heartbeat
+	(*Automation)(nil),                  // 0: switchyard.v1alpha1.Automation
+	(*ListAutomationsRequest)(nil),      // 1: switchyard.v1alpha1.ListAutomationsRequest
+	(*ListAutomationsResponse)(nil),     // 2: switchyard.v1alpha1.ListAutomationsResponse
+	(*GetAutomationRequest)(nil),        // 3: switchyard.v1alpha1.GetAutomationRequest
+	(*GetAutomationResponse)(nil),       // 4: switchyard.v1alpha1.GetAutomationResponse
+	(*GetAutomationDetailRequest)(nil),  // 5: switchyard.v1alpha1.GetAutomationDetailRequest
+	(*GetAutomationDetailResponse)(nil), // 6: switchyard.v1alpha1.GetAutomationDetailResponse
+	(*EnableAutomationRequest)(nil),     // 7: switchyard.v1alpha1.EnableAutomationRequest
+	(*EnableAutomationResponse)(nil),    // 8: switchyard.v1alpha1.EnableAutomationResponse
+	(*DisableAutomationRequest)(nil),    // 9: switchyard.v1alpha1.DisableAutomationRequest
+	(*DisableAutomationResponse)(nil),   // 10: switchyard.v1alpha1.DisableAutomationResponse
+	(*TriggerAutomationRequest)(nil),    // 11: switchyard.v1alpha1.TriggerAutomationRequest
+	(*TriggerAutomationResponse)(nil),   // 12: switchyard.v1alpha1.TriggerAutomationResponse
+	(*TraceAutomationRequest)(nil),      // 13: switchyard.v1alpha1.TraceAutomationRequest
+	(*TraceEvent)(nil),                  // 14: switchyard.v1alpha1.TraceEvent
+	(*TraceAutomationResponse)(nil),     // 15: switchyard.v1alpha1.TraceAutomationResponse
+	nil,                                 // 16: switchyard.v1alpha1.TraceEvent.MetadataEntry
+	(*PageRequest)(nil),                 // 17: switchyard.v1alpha1.PageRequest
+	(*PageResponse)(nil),                // 18: switchyard.v1alpha1.PageResponse
+	(*timestamppb.Timestamp)(nil),       // 19: google.protobuf.Timestamp
+	(*Heartbeat)(nil),                   // 20: switchyard.v1alpha1.Heartbeat
 }
 var file_switchyard_v1alpha1_automation_proto_depIdxs = []int32{
-	15, // 0: switchyard.v1alpha1.ListAutomationsRequest.page:type_name -> switchyard.v1alpha1.PageRequest
+	17, // 0: switchyard.v1alpha1.ListAutomationsRequest.page:type_name -> switchyard.v1alpha1.PageRequest
 	0,  // 1: switchyard.v1alpha1.ListAutomationsResponse.automations:type_name -> switchyard.v1alpha1.Automation
-	16, // 2: switchyard.v1alpha1.ListAutomationsResponse.page:type_name -> switchyard.v1alpha1.PageResponse
+	18, // 2: switchyard.v1alpha1.ListAutomationsResponse.page:type_name -> switchyard.v1alpha1.PageResponse
 	0,  // 3: switchyard.v1alpha1.GetAutomationResponse.automation:type_name -> switchyard.v1alpha1.Automation
-	0,  // 4: switchyard.v1alpha1.EnableAutomationResponse.automation:type_name -> switchyard.v1alpha1.Automation
-	0,  // 5: switchyard.v1alpha1.DisableAutomationResponse.automation:type_name -> switchyard.v1alpha1.Automation
-	17, // 6: switchyard.v1alpha1.TraceEvent.at:type_name -> google.protobuf.Timestamp
-	14, // 7: switchyard.v1alpha1.TraceEvent.metadata:type_name -> switchyard.v1alpha1.TraceEvent.MetadataEntry
-	12, // 8: switchyard.v1alpha1.TraceAutomationResponse.event:type_name -> switchyard.v1alpha1.TraceEvent
-	18, // 9: switchyard.v1alpha1.TraceAutomationResponse.heartbeat:type_name -> switchyard.v1alpha1.Heartbeat
-	1,  // 10: switchyard.v1alpha1.AutomationService.List:input_type -> switchyard.v1alpha1.ListAutomationsRequest
-	3,  // 11: switchyard.v1alpha1.AutomationService.Get:input_type -> switchyard.v1alpha1.GetAutomationRequest
-	5,  // 12: switchyard.v1alpha1.AutomationService.Enable:input_type -> switchyard.v1alpha1.EnableAutomationRequest
-	7,  // 13: switchyard.v1alpha1.AutomationService.Disable:input_type -> switchyard.v1alpha1.DisableAutomationRequest
-	9,  // 14: switchyard.v1alpha1.AutomationService.Trigger:input_type -> switchyard.v1alpha1.TriggerAutomationRequest
-	11, // 15: switchyard.v1alpha1.AutomationService.Trace:input_type -> switchyard.v1alpha1.TraceAutomationRequest
-	2,  // 16: switchyard.v1alpha1.AutomationService.List:output_type -> switchyard.v1alpha1.ListAutomationsResponse
-	4,  // 17: switchyard.v1alpha1.AutomationService.Get:output_type -> switchyard.v1alpha1.GetAutomationResponse
-	6,  // 18: switchyard.v1alpha1.AutomationService.Enable:output_type -> switchyard.v1alpha1.EnableAutomationResponse
-	8,  // 19: switchyard.v1alpha1.AutomationService.Disable:output_type -> switchyard.v1alpha1.DisableAutomationResponse
-	10, // 20: switchyard.v1alpha1.AutomationService.Trigger:output_type -> switchyard.v1alpha1.TriggerAutomationResponse
-	13, // 21: switchyard.v1alpha1.AutomationService.Trace:output_type -> switchyard.v1alpha1.TraceAutomationResponse
-	16, // [16:22] is the sub-list for method output_type
-	10, // [10:16] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+	0,  // 4: switchyard.v1alpha1.GetAutomationDetailResponse.automation:type_name -> switchyard.v1alpha1.Automation
+	0,  // 5: switchyard.v1alpha1.EnableAutomationResponse.automation:type_name -> switchyard.v1alpha1.Automation
+	0,  // 6: switchyard.v1alpha1.DisableAutomationResponse.automation:type_name -> switchyard.v1alpha1.Automation
+	19, // 7: switchyard.v1alpha1.TraceEvent.at:type_name -> google.protobuf.Timestamp
+	16, // 8: switchyard.v1alpha1.TraceEvent.metadata:type_name -> switchyard.v1alpha1.TraceEvent.MetadataEntry
+	14, // 9: switchyard.v1alpha1.TraceAutomationResponse.event:type_name -> switchyard.v1alpha1.TraceEvent
+	20, // 10: switchyard.v1alpha1.TraceAutomationResponse.heartbeat:type_name -> switchyard.v1alpha1.Heartbeat
+	1,  // 11: switchyard.v1alpha1.AutomationService.List:input_type -> switchyard.v1alpha1.ListAutomationsRequest
+	3,  // 12: switchyard.v1alpha1.AutomationService.Get:input_type -> switchyard.v1alpha1.GetAutomationRequest
+	5,  // 13: switchyard.v1alpha1.AutomationService.GetDetail:input_type -> switchyard.v1alpha1.GetAutomationDetailRequest
+	7,  // 14: switchyard.v1alpha1.AutomationService.Enable:input_type -> switchyard.v1alpha1.EnableAutomationRequest
+	9,  // 15: switchyard.v1alpha1.AutomationService.Disable:input_type -> switchyard.v1alpha1.DisableAutomationRequest
+	11, // 16: switchyard.v1alpha1.AutomationService.Trigger:input_type -> switchyard.v1alpha1.TriggerAutomationRequest
+	13, // 17: switchyard.v1alpha1.AutomationService.Trace:input_type -> switchyard.v1alpha1.TraceAutomationRequest
+	2,  // 18: switchyard.v1alpha1.AutomationService.List:output_type -> switchyard.v1alpha1.ListAutomationsResponse
+	4,  // 19: switchyard.v1alpha1.AutomationService.Get:output_type -> switchyard.v1alpha1.GetAutomationResponse
+	6,  // 20: switchyard.v1alpha1.AutomationService.GetDetail:output_type -> switchyard.v1alpha1.GetAutomationDetailResponse
+	8,  // 21: switchyard.v1alpha1.AutomationService.Enable:output_type -> switchyard.v1alpha1.EnableAutomationResponse
+	10, // 22: switchyard.v1alpha1.AutomationService.Disable:output_type -> switchyard.v1alpha1.DisableAutomationResponse
+	12, // 23: switchyard.v1alpha1.AutomationService.Trigger:output_type -> switchyard.v1alpha1.TriggerAutomationResponse
+	15, // 24: switchyard.v1alpha1.AutomationService.Trace:output_type -> switchyard.v1alpha1.TraceAutomationResponse
+	18, // [18:25] is the sub-list for method output_type
+	11, // [11:18] is the sub-list for method input_type
+	11, // [11:11] is the sub-list for extension type_name
+	11, // [11:11] is the sub-list for extension extendee
+	0,  // [0:11] is the sub-list for field type_name
 }
 
 func init() { file_switchyard_v1alpha1_automation_proto_init() }
@@ -921,7 +1042,7 @@ func file_switchyard_v1alpha1_automation_proto_init() {
 		return
 	}
 	file_switchyard_v1alpha1_common_proto_init()
-	file_switchyard_v1alpha1_automation_proto_msgTypes[13].OneofWrappers = []any{
+	file_switchyard_v1alpha1_automation_proto_msgTypes[15].OneofWrappers = []any{
 		(*TraceAutomationResponse_Event)(nil),
 		(*TraceAutomationResponse_Heartbeat)(nil),
 	}
@@ -931,7 +1052,7 @@ func file_switchyard_v1alpha1_automation_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_switchyard_v1alpha1_automation_proto_rawDesc), len(file_switchyard_v1alpha1_automation_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   15,
+			NumMessages:   17,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

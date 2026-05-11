@@ -52,6 +52,7 @@ message AutomationConfig {
   repeated TriggerConfig   triggers   = 10;
   repeated ConditionConfig conditions = 11;
   repeated ActionConfig    actions    = 12;
+  OnFailureConfig          on_failure = 13;
 
   reserved 5, 6, 7, 8, 9;
   reserved "content";
@@ -178,6 +179,32 @@ message WaitAction {
 
 message SequenceBlock { repeated ActionConfig actions = 1; }
 message ParallelBlock { repeated ActionConfig actions = 1; }
+
+// ── OnFailure strategies ──────────────────────────────────────
+
+// OnFailureConfig holds the strategy to apply when an automation run fails.
+// Exactly one strategy variant is set; absence means IgnoreStrategy (default).
+message OnFailureConfig {
+  oneof strategy {
+    IgnoreStrategy ignore = 1;
+    RetryStrategy  retry  = 2;
+    NotifyStrategy notify = 3;
+  }
+}
+
+message IgnoreStrategy {}
+
+message RetryStrategy {
+  // 1-9: retry parameters
+  int32 max_attempts = 1;
+  int64 backoff_ns   = 2;
+}
+
+message NotifyStrategy {
+  // 1-9: notification target
+  string entity  = 1;
+  string message = 2;
+}
 
 message ScriptConfig {
   string               name    = 1;

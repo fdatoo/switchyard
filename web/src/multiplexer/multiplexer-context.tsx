@@ -14,6 +14,7 @@ export function Multiplexer({ entityIds, children }: { entityIds: string[]; chil
   return <MuxCtx.Provider value={mux}>{children}</MuxCtx.Provider>;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useMultiplexer(): Mux {
   const v = useContext(MuxCtx);
   if (!v) throw new Error("useMultiplexer must be inside <Multiplexer>");

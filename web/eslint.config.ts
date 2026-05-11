@@ -11,7 +11,7 @@ export default tseslint.config(
     files: ["**/*.{ts,tsx}"],
     languageOptions: { ecmaVersion: 2022 },
     plugins: {
-      "react-hooks": reactHooks as any,
+      "react-hooks": reactHooks,
       "react-refresh": reactRefresh,
       switchyard: {
         rules: {
@@ -21,6 +21,10 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_", caughtErrorsIgnorePattern: "^_" },
+      ],
       "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
       "switchyard/no-raw-tokens": "error",
     },

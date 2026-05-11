@@ -5,4 +5,5 @@ export function EditModeProvider({ children }: { children: ReactNode }) {
   const [editing, setEditing] = useState(false);
   return <Ctx.Provider value={{ editing, toggleEdit: () => setEditing(e => !e) }}>{children}</Ctx.Provider>;
 }
+// eslint-disable-next-line react-refresh/only-export-components
 export const useEditMode = () => useContext(Ctx);

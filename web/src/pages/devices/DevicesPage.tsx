@@ -215,15 +215,46 @@ export function DevicesPage() {
                     {d.pack || "—"} {d.version && `· ${d.version}`}
                   </div>
                 </div>
-                <span
+                {/* Entity count + type breakdown chips */}
+                <div
                   style={{
-                    fontSize: "0.75rem",
-                    color: "var(--sy-color-fg-3)",
-                    fontVariantNumeric: "tabular-nums",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-end",
+                    gap: "var(--sy-space-1)",
                   }}
                 >
-                  {d.entityCount} {d.entityCount === 1 ? "entity" : "entities"}
-                </span>
+                  <span
+                    style={{
+                      fontSize: "0.75rem",
+                      color: "var(--sy-color-fg-3)",
+                      fontVariantNumeric: "tabular-nums",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {d.entityCount} {d.entityCount === 1 ? "entity" : "entities"}
+                  </span>
+                  {/* TODO: replace with real entity-type breakdown from DriverManagementService when the API provides type counts.
+                      For now, assumes all entities are lights as a fallback. */}
+                  {d.entityCount > 0 && (
+                    <div style={{ display: "flex", gap: "4px", flexWrap: "wrap", justifyContent: "flex-end" }}>
+                      <span
+                        style={{
+                          fontSize: "0.6875rem",
+                          fontWeight: 500,
+                          color: "var(--sy-color-fg-3)",
+                          background: "var(--sy-color-surface-2)",
+                          border: "1px solid var(--sy-color-line)",
+                          padding: "1px 6px",
+                          borderRadius: "var(--sy-radius-pill)",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {d.entityCount} {d.entityCount === 1 ? "light" : "lights"}
+                      </span>
+                    </div>
+                  )}
+                </div>
                 <span
                   style={{
                     display: "inline-flex",

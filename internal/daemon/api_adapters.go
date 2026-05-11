@@ -19,6 +19,7 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 
 	configpb "github.com/fdatoo/switchyard/gen/switchyard/config/v1"
+	driverv1 "github.com/fdatoo/switchyard/gen/switchyard/driver/v1"
 	entityv1 "github.com/fdatoo/switchyard/gen/switchyard/entity/v1"
 	eventv1 "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
 	"github.com/fdatoo/switchyard/internal/api"
@@ -1133,6 +1134,80 @@ func (ra roleAdapter) For(p auth.Principal) map[policy.RoleSlug]struct{} {
 		m[policy.RoleSlug(r)] = struct{}{}
 	}
 	return m
+}
+
+// ---- driverMgmtRegistryAdapter ----
+
+// driverMgmtRegistryAdapter satisfies management.Registry using the SQL-backed
+// registry for instance metadata and the carport host for lifecycle control.
+type driverMgmtRegistryAdapter struct {
+	reg *registry.Registry
+	sup *carport.Host
+}
+
+func (a *driverMgmtRegistryAdapter) ListRunning(ctx context.Context) ([]*driverv1.DriverSummary, error) {
+	instances, err := a.reg.ListDriverInstances(ctx)
+	if err != nil {
+		return nil, err
+	}
+	var out []*driverv1.DriverSummary
+	for _, di := range instances {
+		if a.sup != nil && a.sup.InstanceState(di.ID) != carport.StateRunning {
+			continue
+		}
+		var uptime int64
+		if !di.StartedAt.IsZero() {
+			uptime = int64(time.Since(di.StartedAt).Seconds())
+		}
+		out = append(out, &driverv1.DriverSummary{
+			Id:            di.ID,
+			Pack:          di.DriverName,
+			Status:        di.Status,
+			UptimeSeconds: uptime,
+		})
+	}
+	return out, nil
+}
+
+func (a *driverMgmtRegistryAdapter) ListAvailable(_ context.Context) ([]*driverv1.RegistryDriver, error) {
+	// Driver registry catalog is not yet implemented; return empty list.
+	return nil, nil
+}
+
+func (a *driverMgmtRegistryAdapter) Get(ctx context.Context, id string) (*driverv1.DriverSummary, error) {
+	di, err := a.reg.GetDriverInstance(ctx, id)
+	if err != nil {
+		return nil, fmt.Errorf("driver not found")
+	}
+	var uptime int64
+	if !di.StartedAt.IsZero() {
+		uptime = int64(time.Since(di.StartedAt).Seconds())
+	}
+	return &driverv1.DriverSummary{
+		Id:            di.ID,
+		Pack:          di.DriverName,
+		Status:        di.Status,
+		UptimeSeconds: uptime,
+	}, nil
+}
+
+func (a *driverMgmtRegistryAdapter) Restart(ctx context.Context, id, _ string) error {
+	if a.sup == nil {
+		return fmt.Errorf("supervisor not available")
+	}
+	return a.sup.RestartInstance(ctx, id)
+}
+
+func (a *driverMgmtRegistryAdapter) Stop(ctx context.Context, id, _ string) error {
+	if a.sup == nil {
+		return fmt.Errorf("supervisor not available")
+	}
+	return a.sup.UnregisterInstance(ctx, id)
+}
+
+func (a *driverMgmtRegistryAdapter) Logs(_ context.Context, _ string, _ uint32) ([]string, error) {
+	// In-process log buffering per driver instance is not yet implemented.
+	return nil, nil
 }
 
 // ---- compilePolicyFromSnapshot ----

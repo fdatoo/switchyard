@@ -26,6 +26,7 @@ import (
 	"github.com/fdatoo/switchyard/internal/activity"
 	"github.com/fdatoo/switchyard/internal/api"
 	"github.com/fdatoo/switchyard/internal/api/listener"
+	drvmgmt "github.com/fdatoo/switchyard/internal/driver/management"
 	"github.com/fdatoo/switchyard/internal/auth"
 	"github.com/fdatoo/switchyard/internal/auth/audit"
 	"github.com/fdatoo/switchyard/internal/auth/authn"
@@ -519,6 +520,12 @@ func (d *Daemon) Run(ctx context.Context) (err error) {
 		SavedQueriesDir: filepath.Join(dataDir, "saved-queries"),
 	})
 
+	// DriverManagement service (F-404) — settings → drivers, /devices, /devices/:id.
+	drvMgmtSvc := drvmgmt.NewService(&driverMgmtRegistryAdapter{
+		reg: d.registry,
+		sup: d.carport,
+	})
+
 	// Replay service (plan 04) — time-machine replay via ReplayService.
 	replayAdapter := replay.NewStoreAdapter(d.store)
 	replaySvc := replay.NewService(replayAdapter, replayAdapter, replayAdapter, replayAdapter)
@@ -551,10 +558,11 @@ func (d *Daemon) Run(ctx context.Context) (err error) {
 			Policy:     policyRuntime,
 			Metrics:    d.metrics,
 		}),
-		EditSession: editSvc,
-		StarlarkLs:  starLsSvc,
-		Activity:    activitySvc,
-		Replay:      replaySvc,
+		EditSession:      editSvc,
+		StarlarkLs:       starLsSvc,
+		Activity:         activitySvc,
+		DriverManagement: drvMgmtSvc,
+		Replay:           replaySvc,
 		Display:     display.NewService(filepath.Join(dataDir, "displays"), display.NewPairCodeStore()),
 		Solar:       solar.NewService(),
 	}

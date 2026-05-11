@@ -49,23 +49,14 @@ async function callUnary<TReq, TResp>(
 }
 
 /**
- * useStories returns stories from the ActivityService filtered by `filter`.
- * Returns a Promise that resolves to the full array (server-streaming
- * collapsed for simplicity — the streaming response is consumed in one shot).
+ * listStories returns stories from the ActivityService filtered by `filter`.
  */
 export async function listStories(filter?: StoriesFilter): Promise<Story[]> {
   const resp = await callUnary<{ filter?: StoriesFilter; cursor?: string }, StoriesResponse>(
     "Stories",
     { filter },
   );
-  // The server returns a streaming response encoded as JSON objects per line,
-  // but in the Connect JSON protocol unary-ish mode each response object is
-  // wrapped. For simplicity we handle the case where resp.story is set or
-  // we receive an array in the result field.
-  if (resp && typeof resp === "object" && "story" in resp) {
-    return [resp.story];
-  }
-  return [];
+  return resp.stories ?? [];
 }
 
 /**
@@ -76,10 +67,7 @@ export async function listEvents(filter?: EventsFilter): Promise<EventRecord[]> 
     "Events",
     { filter },
   );
-  if (resp && typeof resp === "object" && "event" in resp) {
-    return [resp.event];
-  }
-  return [];
+  return resp.events ?? [];
 }
 
 /**

@@ -55,11 +55,11 @@ const (
 
 // ActivityServiceClient is a client for the switchyard.activity.v1.ActivityService service.
 type ActivityServiceClient interface {
-	// Stories streams Story groups in reverse-chronological order, optionally
+	// Stories returns Story groups in reverse-chronological order, optionally
 	// filtered by interesting category and/or free-text.
-	Stories(context.Context, *connect.Request[v1.StoriesRequest]) (*connect.ServerStreamForClient[v1.StoriesResponse], error)
-	// Events streams individual EventRecord items, optionally filtered.
-	Events(context.Context, *connect.Request[v1.EventsRequest]) (*connect.ServerStreamForClient[v1.EventsResponse], error)
+	Stories(context.Context, *connect.Request[v1.StoriesRequest]) (*connect.Response[v1.StoriesResponse], error)
+	// Events returns individual EventRecord items, optionally filtered.
+	Events(context.Context, *connect.Request[v1.EventsRequest]) (*connect.Response[v1.EventsResponse], error)
 	// EventDetail returns a single event with its tags and causation chain.
 	EventDetail(context.Context, *connect.Request[v1.EventDetailRequest]) (*connect.Response[v1.EventDetailResponse], error)
 	// SaveQuery persists a named query with an optional cron schedule.
@@ -131,13 +131,13 @@ type activityServiceClient struct {
 }
 
 // Stories calls switchyard.activity.v1.ActivityService.Stories.
-func (c *activityServiceClient) Stories(ctx context.Context, req *connect.Request[v1.StoriesRequest]) (*connect.ServerStreamForClient[v1.StoriesResponse], error) {
-	return c.stories.CallServerStream(ctx, req)
+func (c *activityServiceClient) Stories(ctx context.Context, req *connect.Request[v1.StoriesRequest]) (*connect.Response[v1.StoriesResponse], error) {
+	return c.stories.CallUnary(ctx, req)
 }
 
 // Events calls switchyard.activity.v1.ActivityService.Events.
-func (c *activityServiceClient) Events(ctx context.Context, req *connect.Request[v1.EventsRequest]) (*connect.ServerStreamForClient[v1.EventsResponse], error) {
-	return c.events.CallServerStream(ctx, req)
+func (c *activityServiceClient) Events(ctx context.Context, req *connect.Request[v1.EventsRequest]) (*connect.Response[v1.EventsResponse], error) {
+	return c.events.CallUnary(ctx, req)
 }
 
 // EventDetail calls switchyard.activity.v1.ActivityService.EventDetail.
@@ -163,11 +163,11 @@ func (c *activityServiceClient) DeleteSavedQuery(ctx context.Context, req *conne
 // ActivityServiceHandler is an implementation of the switchyard.activity.v1.ActivityService
 // service.
 type ActivityServiceHandler interface {
-	// Stories streams Story groups in reverse-chronological order, optionally
+	// Stories returns Story groups in reverse-chronological order, optionally
 	// filtered by interesting category and/or free-text.
-	Stories(context.Context, *connect.Request[v1.StoriesRequest], *connect.ServerStream[v1.StoriesResponse]) error
-	// Events streams individual EventRecord items, optionally filtered.
-	Events(context.Context, *connect.Request[v1.EventsRequest], *connect.ServerStream[v1.EventsResponse]) error
+	Stories(context.Context, *connect.Request[v1.StoriesRequest]) (*connect.Response[v1.StoriesResponse], error)
+	// Events returns individual EventRecord items, optionally filtered.
+	Events(context.Context, *connect.Request[v1.EventsRequest]) (*connect.Response[v1.EventsResponse], error)
 	// EventDetail returns a single event with its tags and causation chain.
 	EventDetail(context.Context, *connect.Request[v1.EventDetailRequest]) (*connect.Response[v1.EventDetailResponse], error)
 	// SaveQuery persists a named query with an optional cron schedule.
@@ -185,13 +185,13 @@ type ActivityServiceHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewActivityServiceHandler(svc ActivityServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
 	activityServiceMethods := v1.File_switchyard_activity_v1_activity_proto.Services().ByName("ActivityService").Methods()
-	activityServiceStoriesHandler := connect.NewServerStreamHandler(
+	activityServiceStoriesHandler := connect.NewUnaryHandler(
 		ActivityServiceStoriesProcedure,
 		svc.Stories,
 		connect.WithSchema(activityServiceMethods.ByName("Stories")),
 		connect.WithHandlerOptions(opts...),
 	)
-	activityServiceEventsHandler := connect.NewServerStreamHandler(
+	activityServiceEventsHandler := connect.NewUnaryHandler(
 		ActivityServiceEventsProcedure,
 		svc.Events,
 		connect.WithSchema(activityServiceMethods.ByName("Events")),
@@ -244,12 +244,12 @@ func NewActivityServiceHandler(svc ActivityServiceHandler, opts ...connect.Handl
 // UnimplementedActivityServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedActivityServiceHandler struct{}
 
-func (UnimplementedActivityServiceHandler) Stories(context.Context, *connect.Request[v1.StoriesRequest], *connect.ServerStream[v1.StoriesResponse]) error {
-	return connect.NewError(connect.CodeUnimplemented, errors.New("switchyard.activity.v1.ActivityService.Stories is not implemented"))
+func (UnimplementedActivityServiceHandler) Stories(context.Context, *connect.Request[v1.StoriesRequest]) (*connect.Response[v1.StoriesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("switchyard.activity.v1.ActivityService.Stories is not implemented"))
 }
 
-func (UnimplementedActivityServiceHandler) Events(context.Context, *connect.Request[v1.EventsRequest], *connect.ServerStream[v1.EventsResponse]) error {
-	return connect.NewError(connect.CodeUnimplemented, errors.New("switchyard.activity.v1.ActivityService.Events is not implemented"))
+func (UnimplementedActivityServiceHandler) Events(context.Context, *connect.Request[v1.EventsRequest]) (*connect.Response[v1.EventsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("switchyard.activity.v1.ActivityService.Events is not implemented"))
 }
 
 func (UnimplementedActivityServiceHandler) EventDetail(context.Context, *connect.Request[v1.EventDetailRequest]) (*connect.Response[v1.EventDetailResponse], error) {

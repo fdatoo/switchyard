@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package switchyard.commandcatalog.v1;
+
+option go_package = "github.com/fdatoo/switchyard/gen/switchyard/commandcatalog/v1";
+
+service CommandCatalogService {
+  rpc List(ListRequest) returns (ListResponse) {}
+}
+
+message ListRequest {}
+
+message ListResponse {
+  repeated Verb verbs = 1;
+}
+
+message Verb {
+  string name        = 1; // e.g. "events tail"
+  string description = 2;
+  repeated ArgSchema args = 3;
+  string cli_form    = 4; // e.g. "switchyard event tail"
+  string handler_ref = 5; // e.g. "events.tail"
+}
+
+message ArgSchema {
+  string   name     = 1;
+  ArgType  type     = 2;
+  bool     required = 3;
+  string   cli_flag = 4; // e.g. "--source"
+  string   hint     = 5; // shown in the arg chip placeholder
+}
+
+enum ArgType {
+  ARG_TYPE_UNSPECIFIED = 0;
+  ARG_TYPE_STRING      = 1;
+  ARG_TYPE_INT         = 2;
+  ARG_TYPE_BOOL        = 3;
+  ARG_TYPE_DURATION    = 4;
+  ARG_TYPE_STRING_LIST = 5;
+}

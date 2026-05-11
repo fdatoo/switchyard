@@ -11,6 +11,10 @@ import { Button } from "./primitives/button";
 import { Chip } from "./primitives/chip";
 import { Pill } from "./primitives/pill";
 import { Surface } from "./primitives/surface";
+import { DeveloperButton } from "./primitives/developer/button";
+import { DeveloperChip } from "./primitives/developer/chip";
+import { DeveloperPill } from "./primitives/developer/pill";
+import { DeveloperSurface } from "./primitives/developer/surface";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -39,9 +43,14 @@ const BUILT_IN_REGISTRY: PrimitiveRegistry = {
     Pill,
     Surface,
   },
-  // ambient and developer: null slots — later plans fill them in
+  // ambient: falls back to friendly primitives via FallbackPrimitive for now
   ambient: {},
-  developer: {},
+  developer: {
+    Button: DeveloperButton,
+    Chip: DeveloperChip,
+    Pill: DeveloperPill,
+    Surface: DeveloperSurface,
+  },
 };
 
 // ---------------------------------------------------------------------------

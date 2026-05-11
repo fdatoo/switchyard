@@ -75,7 +75,7 @@ describe("LanguagePrimitives provider", () => {
     expect(screen.getByTestId("surface-direct")).toHaveTextContent("hello");
   });
 
-  it("falls back to FallbackPrimitive (plain div) for developer language since developer has no registered Surface yet", () => {
+  it("renders developer Surface variant with data-variant=developer-surface", () => {
     // Override localStorage to return developer before rendering
     vi.stubGlobal("localStorage", makeLsStub("developer"));
 
@@ -85,10 +85,10 @@ describe("LanguagePrimitives provider", () => {
       </Wrapper>,
     );
 
-    // Developer has no registered Surface → FallbackPrimitive (plain div) renders children
+    // Developer now has a registered Surface variant
     const el = screen.getByTestId("surface-dev");
     expect(el).toBeInTheDocument();
-    expect(el.tagName).toBe("DIV");
+    expect(el).toHaveAttribute("data-variant", "developer-surface");
     expect(el).toHaveTextContent("content");
   });
 });

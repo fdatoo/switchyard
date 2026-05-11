@@ -3,17 +3,29 @@ package api
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"connectrpc.com/connect"
+	"google.golang.org/protobuf/encoding/protojson"
 
 	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
 	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
 )
 
-type AutomationService struct{ be AutomationControl }
+type AutomationService struct {
+	be      AutomationControl
+	configs ConfigApplier
+	sys     SystemBackend
+}
 
 func NewAutomationService(be AutomationControl) *AutomationService {
 	return &AutomationService{be: be}
+}
+
+// NewAutomationServiceWithDetail constructs an AutomationService that can serve
+// the GetDetail RPC (requires access to the live snapshot and config dir).
+func NewAutomationServiceWithDetail(be AutomationControl, configs ConfigApplier, sys SystemBackend) *AutomationService {
+	return &AutomationService{be: be, configs: configs, sys: sys}
 }
 
 var _ switchyardv1alpha1connect.AutomationServiceHandler = (*AutomationService)(nil)
@@ -43,6 +55,47 @@ func (s *AutomationService) Get(ctx context.Context, req *connect.Request[v1.Get
 		return nil, ToConnect(ctx, err, "automation_not_found")
 	}
 	return connect.NewResponse(&v1.GetAutomationResponse{Automation: automationToProto(a)}), nil
+}
+
+func (s *AutomationService) GetDetail(ctx context.Context, req *connect.Request[v1.GetAutomationDetailRequest]) (*connect.Response[v1.GetAutomationDetailResponse], error) {
+	if s.configs == nil || s.sys == nil {
+		return nil, connect.NewError(connect.CodeUnimplemented, errors.New("GetDetail not configured"))
+	}
+	a, err := s.be.Get(ctx, req.Msg.Id)
+	if err != nil {
+		return nil, ToConnect(ctx, err, "automation_not_found")
+	}
+	snap, err := s.configs.CurrentArtifact(ctx)
+	if err != nil {
+		return nil, ToConnect(ctx, err, "snapshot_unavailable")
+	}
+	var acfg interface{ GetId() string }
+	var astJSON string
+	for _, ac := range snap.GetAutomations() {
+		if ac.GetId() == req.Msg.Id {
+			b, merr := protojson.Marshal(ac)
+			if merr != nil {
+				return nil, ToConnect(ctx, merr, "marshal_failed")
+			}
+			astJSON = string(b)
+			_ = acfg // silence unused warning
+			break
+		}
+	}
+	if astJSON == "" {
+		// Automation exists in engine but not yet in snapshot — still return summary.
+		astJSON = fmt.Sprintf(`{"id":%q}`, req.Msg.Id)
+	}
+	configDir, err := s.sys.ConfigDir(ctx)
+	if err != nil {
+		return nil, ToConnect(ctx, err, "config_dir_unavailable")
+	}
+	filePath := configDir + "/automations/" + req.Msg.Id + ".pkl"
+	return connect.NewResponse(&v1.GetAutomationDetailResponse{
+		Automation: automationToProto(a),
+		AstJson:    astJSON,
+		FilePath:   filePath,
+	}), nil
 }
 
 func (s *AutomationService) Enable(ctx context.Context, req *connect.Request[v1.EnableAutomationRequest]) (*connect.Response[v1.EnableAutomationResponse], error) {

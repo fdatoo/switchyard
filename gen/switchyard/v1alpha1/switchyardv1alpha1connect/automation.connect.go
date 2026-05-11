@@ -39,6 +39,9 @@ const (
 	AutomationServiceListProcedure = "/switchyard.v1alpha1.AutomationService/List"
 	// AutomationServiceGetProcedure is the fully-qualified name of the AutomationService's Get RPC.
 	AutomationServiceGetProcedure = "/switchyard.v1alpha1.AutomationService/Get"
+	// AutomationServiceGetDetailProcedure is the fully-qualified name of the AutomationService's
+	// GetDetail RPC.
+	AutomationServiceGetDetailProcedure = "/switchyard.v1alpha1.AutomationService/GetDetail"
 	// AutomationServiceEnableProcedure is the fully-qualified name of the AutomationService's Enable
 	// RPC.
 	AutomationServiceEnableProcedure = "/switchyard.v1alpha1.AutomationService/Enable"
@@ -56,6 +59,7 @@ const (
 type AutomationServiceClient interface {
 	List(context.Context, *connect.Request[v1alpha1.ListAutomationsRequest]) (*connect.Response[v1alpha1.ListAutomationsResponse], error)
 	Get(context.Context, *connect.Request[v1alpha1.GetAutomationRequest]) (*connect.Response[v1alpha1.GetAutomationResponse], error)
+	GetDetail(context.Context, *connect.Request[v1alpha1.GetAutomationDetailRequest]) (*connect.Response[v1alpha1.GetAutomationDetailResponse], error)
 	Enable(context.Context, *connect.Request[v1alpha1.EnableAutomationRequest]) (*connect.Response[v1alpha1.EnableAutomationResponse], error)
 	Disable(context.Context, *connect.Request[v1alpha1.DisableAutomationRequest]) (*connect.Response[v1alpha1.DisableAutomationResponse], error)
 	Trigger(context.Context, *connect.Request[v1alpha1.TriggerAutomationRequest]) (*connect.Response[v1alpha1.TriggerAutomationResponse], error)
@@ -83,6 +87,12 @@ func NewAutomationServiceClient(httpClient connect.HTTPClient, baseURL string, o
 			httpClient,
 			baseURL+AutomationServiceGetProcedure,
 			connect.WithSchema(automationServiceMethods.ByName("Get")),
+			connect.WithClientOptions(opts...),
+		),
+		getDetail: connect.NewClient[v1alpha1.GetAutomationDetailRequest, v1alpha1.GetAutomationDetailResponse](
+			httpClient,
+			baseURL+AutomationServiceGetDetailProcedure,
+			connect.WithSchema(automationServiceMethods.ByName("GetDetail")),
 			connect.WithClientOptions(opts...),
 		),
 		enable: connect.NewClient[v1alpha1.EnableAutomationRequest, v1alpha1.EnableAutomationResponse](
@@ -114,12 +124,13 @@ func NewAutomationServiceClient(httpClient connect.HTTPClient, baseURL string, o
 
 // automationServiceClient implements AutomationServiceClient.
 type automationServiceClient struct {
-	list    *connect.Client[v1alpha1.ListAutomationsRequest, v1alpha1.ListAutomationsResponse]
-	get     *connect.Client[v1alpha1.GetAutomationRequest, v1alpha1.GetAutomationResponse]
-	enable  *connect.Client[v1alpha1.EnableAutomationRequest, v1alpha1.EnableAutomationResponse]
-	disable *connect.Client[v1alpha1.DisableAutomationRequest, v1alpha1.DisableAutomationResponse]
-	trigger *connect.Client[v1alpha1.TriggerAutomationRequest, v1alpha1.TriggerAutomationResponse]
-	trace   *connect.Client[v1alpha1.TraceAutomationRequest, v1alpha1.TraceAutomationResponse]
+	list      *connect.Client[v1alpha1.ListAutomationsRequest, v1alpha1.ListAutomationsResponse]
+	get       *connect.Client[v1alpha1.GetAutomationRequest, v1alpha1.GetAutomationResponse]
+	getDetail *connect.Client[v1alpha1.GetAutomationDetailRequest, v1alpha1.GetAutomationDetailResponse]
+	enable    *connect.Client[v1alpha1.EnableAutomationRequest, v1alpha1.EnableAutomationResponse]
+	disable   *connect.Client[v1alpha1.DisableAutomationRequest, v1alpha1.DisableAutomationResponse]
+	trigger   *connect.Client[v1alpha1.TriggerAutomationRequest, v1alpha1.TriggerAutomationResponse]
+	trace     *connect.Client[v1alpha1.TraceAutomationRequest, v1alpha1.TraceAutomationResponse]
 }
 
 // List calls switchyard.v1alpha1.AutomationService.List.
@@ -130,6 +141,11 @@ func (c *automationServiceClient) List(ctx context.Context, req *connect.Request
 // Get calls switchyard.v1alpha1.AutomationService.Get.
 func (c *automationServiceClient) Get(ctx context.Context, req *connect.Request[v1alpha1.GetAutomationRequest]) (*connect.Response[v1alpha1.GetAutomationResponse], error) {
 	return c.get.CallUnary(ctx, req)
+}
+
+// GetDetail calls switchyard.v1alpha1.AutomationService.GetDetail.
+func (c *automationServiceClient) GetDetail(ctx context.Context, req *connect.Request[v1alpha1.GetAutomationDetailRequest]) (*connect.Response[v1alpha1.GetAutomationDetailResponse], error) {
+	return c.getDetail.CallUnary(ctx, req)
 }
 
 // Enable calls switchyard.v1alpha1.AutomationService.Enable.
@@ -157,6 +173,7 @@ func (c *automationServiceClient) Trace(ctx context.Context, req *connect.Reques
 type AutomationServiceHandler interface {
 	List(context.Context, *connect.Request[v1alpha1.ListAutomationsRequest]) (*connect.Response[v1alpha1.ListAutomationsResponse], error)
 	Get(context.Context, *connect.Request[v1alpha1.GetAutomationRequest]) (*connect.Response[v1alpha1.GetAutomationResponse], error)
+	GetDetail(context.Context, *connect.Request[v1alpha1.GetAutomationDetailRequest]) (*connect.Response[v1alpha1.GetAutomationDetailResponse], error)
 	Enable(context.Context, *connect.Request[v1alpha1.EnableAutomationRequest]) (*connect.Response[v1alpha1.EnableAutomationResponse], error)
 	Disable(context.Context, *connect.Request[v1alpha1.DisableAutomationRequest]) (*connect.Response[v1alpha1.DisableAutomationResponse], error)
 	Trigger(context.Context, *connect.Request[v1alpha1.TriggerAutomationRequest]) (*connect.Response[v1alpha1.TriggerAutomationResponse], error)
@@ -180,6 +197,12 @@ func NewAutomationServiceHandler(svc AutomationServiceHandler, opts ...connect.H
 		AutomationServiceGetProcedure,
 		svc.Get,
 		connect.WithSchema(automationServiceMethods.ByName("Get")),
+		connect.WithHandlerOptions(opts...),
+	)
+	automationServiceGetDetailHandler := connect.NewUnaryHandler(
+		AutomationServiceGetDetailProcedure,
+		svc.GetDetail,
+		connect.WithSchema(automationServiceMethods.ByName("GetDetail")),
 		connect.WithHandlerOptions(opts...),
 	)
 	automationServiceEnableHandler := connect.NewUnaryHandler(
@@ -212,6 +235,8 @@ func NewAutomationServiceHandler(svc AutomationServiceHandler, opts ...connect.H
 			automationServiceListHandler.ServeHTTP(w, r)
 		case AutomationServiceGetProcedure:
 			automationServiceGetHandler.ServeHTTP(w, r)
+		case AutomationServiceGetDetailProcedure:
+			automationServiceGetDetailHandler.ServeHTTP(w, r)
 		case AutomationServiceEnableProcedure:
 			automationServiceEnableHandler.ServeHTTP(w, r)
 		case AutomationServiceDisableProcedure:
@@ -235,6 +260,10 @@ func (UnimplementedAutomationServiceHandler) List(context.Context, *connect.Requ
 
 func (UnimplementedAutomationServiceHandler) Get(context.Context, *connect.Request[v1alpha1.GetAutomationRequest]) (*connect.Response[v1alpha1.GetAutomationResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("switchyard.v1alpha1.AutomationService.Get is not implemented"))
+}
+
+func (UnimplementedAutomationServiceHandler) GetDetail(context.Context, *connect.Request[v1alpha1.GetAutomationDetailRequest]) (*connect.Response[v1alpha1.GetAutomationDetailResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("switchyard.v1alpha1.AutomationService.GetDetail is not implemented"))
 }
 
 func (UnimplementedAutomationServiceHandler) Enable(context.Context, *connect.Request[v1alpha1.EnableAutomationRequest]) (*connect.Response[v1alpha1.EnableAutomationResponse], error) {

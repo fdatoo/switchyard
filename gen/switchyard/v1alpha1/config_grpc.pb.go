@@ -21,11 +21,12 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ConfigService_Validate_FullMethodName    = "/switchyard.v1alpha1.ConfigService/Validate"
-	ConfigService_Apply_FullMethodName       = "/switchyard.v1alpha1.ConfigService/Apply"
-	ConfigService_Reload_FullMethodName      = "/switchyard.v1alpha1.ConfigService/Reload"
-	ConfigService_GetArtifact_FullMethodName = "/switchyard.v1alpha1.ConfigService/GetArtifact"
-	ConfigService_EvalCompute_FullMethodName = "/switchyard.v1alpha1.ConfigService/EvalCompute"
+	ConfigService_Validate_FullMethodName     = "/switchyard.v1alpha1.ConfigService/Validate"
+	ConfigService_Apply_FullMethodName        = "/switchyard.v1alpha1.ConfigService/Apply"
+	ConfigService_Reload_FullMethodName       = "/switchyard.v1alpha1.ConfigService/Reload"
+	ConfigService_GetArtifact_FullMethodName  = "/switchyard.v1alpha1.ConfigService/GetArtifact"
+	ConfigService_EvalCompute_FullMethodName  = "/switchyard.v1alpha1.ConfigService/EvalCompute"
+	ConfigService_RegenPreview_FullMethodName = "/switchyard.v1alpha1.ConfigService/RegenPreview"
 )
 
 // ConfigServiceClient is the client API for ConfigService service.
@@ -37,6 +38,7 @@ type ConfigServiceClient interface {
 	Reload(ctx context.Context, in *ReloadConfigRequest, opts ...grpc.CallOption) (*ReloadConfigResponse, error)
 	GetArtifact(ctx context.Context, in *GetConfigArtifactRequest, opts ...grpc.CallOption) (*GetConfigArtifactResponse, error)
 	EvalCompute(ctx context.Context, in *EvalComputeRequest, opts ...grpc.CallOption) (*EvalComputeResponse, error)
+	RegenPreview(ctx context.Context, in *RegenPreviewRequest, opts ...grpc.CallOption) (*RegenPreviewResponse, error)
 }
 
 type configServiceClient struct {
@@ -97,6 +99,16 @@ func (c *configServiceClient) EvalCompute(ctx context.Context, in *EvalComputeRe
 	return out, nil
 }
 
+func (c *configServiceClient) RegenPreview(ctx context.Context, in *RegenPreviewRequest, opts ...grpc.CallOption) (*RegenPreviewResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RegenPreviewResponse)
+	err := c.cc.Invoke(ctx, ConfigService_RegenPreview_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ConfigServiceServer is the server API for ConfigService service.
 // All implementations should embed UnimplementedConfigServiceServer
 // for forward compatibility.
@@ -106,6 +118,7 @@ type ConfigServiceServer interface {
 	Reload(context.Context, *ReloadConfigRequest) (*ReloadConfigResponse, error)
 	GetArtifact(context.Context, *GetConfigArtifactRequest) (*GetConfigArtifactResponse, error)
 	EvalCompute(context.Context, *EvalComputeRequest) (*EvalComputeResponse, error)
+	RegenPreview(context.Context, *RegenPreviewRequest) (*RegenPreviewResponse, error)
 }
 
 // UnimplementedConfigServiceServer should be embedded to have
@@ -129,6 +142,9 @@ func (UnimplementedConfigServiceServer) GetArtifact(context.Context, *GetConfigA
 }
 func (UnimplementedConfigServiceServer) EvalCompute(context.Context, *EvalComputeRequest) (*EvalComputeResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method EvalCompute not implemented")
+}
+func (UnimplementedConfigServiceServer) RegenPreview(context.Context, *RegenPreviewRequest) (*RegenPreviewResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method RegenPreview not implemented")
 }
 func (UnimplementedConfigServiceServer) testEmbeddedByValue() {}
 
@@ -240,6 +256,24 @@ func _ConfigService_EvalCompute_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ConfigService_RegenPreview_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RegenPreviewRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConfigServiceServer).RegenPreview(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ConfigService_RegenPreview_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConfigServiceServer).RegenPreview(ctx, req.(*RegenPreviewRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ConfigService_ServiceDesc is the grpc.ServiceDesc for ConfigService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -266,6 +300,10 @@ var ConfigService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "EvalCompute",
 			Handler:    _ConfigService_EvalCompute_Handler,
+		},
+		{
+			MethodName: "RegenPreview",
+			Handler:    _ConfigService_RegenPreview_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

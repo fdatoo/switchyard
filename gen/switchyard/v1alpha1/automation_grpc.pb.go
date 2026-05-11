@@ -21,12 +21,13 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AutomationService_List_FullMethodName    = "/switchyard.v1alpha1.AutomationService/List"
-	AutomationService_Get_FullMethodName     = "/switchyard.v1alpha1.AutomationService/Get"
-	AutomationService_Enable_FullMethodName  = "/switchyard.v1alpha1.AutomationService/Enable"
-	AutomationService_Disable_FullMethodName = "/switchyard.v1alpha1.AutomationService/Disable"
-	AutomationService_Trigger_FullMethodName = "/switchyard.v1alpha1.AutomationService/Trigger"
-	AutomationService_Trace_FullMethodName   = "/switchyard.v1alpha1.AutomationService/Trace"
+	AutomationService_List_FullMethodName      = "/switchyard.v1alpha1.AutomationService/List"
+	AutomationService_Get_FullMethodName       = "/switchyard.v1alpha1.AutomationService/Get"
+	AutomationService_GetDetail_FullMethodName = "/switchyard.v1alpha1.AutomationService/GetDetail"
+	AutomationService_Enable_FullMethodName    = "/switchyard.v1alpha1.AutomationService/Enable"
+	AutomationService_Disable_FullMethodName   = "/switchyard.v1alpha1.AutomationService/Disable"
+	AutomationService_Trigger_FullMethodName   = "/switchyard.v1alpha1.AutomationService/Trigger"
+	AutomationService_Trace_FullMethodName     = "/switchyard.v1alpha1.AutomationService/Trace"
 )
 
 // AutomationServiceClient is the client API for AutomationService service.
@@ -35,6 +36,7 @@ const (
 type AutomationServiceClient interface {
 	List(ctx context.Context, in *ListAutomationsRequest, opts ...grpc.CallOption) (*ListAutomationsResponse, error)
 	Get(ctx context.Context, in *GetAutomationRequest, opts ...grpc.CallOption) (*GetAutomationResponse, error)
+	GetDetail(ctx context.Context, in *GetAutomationDetailRequest, opts ...grpc.CallOption) (*GetAutomationDetailResponse, error)
 	Enable(ctx context.Context, in *EnableAutomationRequest, opts ...grpc.CallOption) (*EnableAutomationResponse, error)
 	Disable(ctx context.Context, in *DisableAutomationRequest, opts ...grpc.CallOption) (*DisableAutomationResponse, error)
 	Trigger(ctx context.Context, in *TriggerAutomationRequest, opts ...grpc.CallOption) (*TriggerAutomationResponse, error)
@@ -63,6 +65,16 @@ func (c *automationServiceClient) Get(ctx context.Context, in *GetAutomationRequ
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetAutomationResponse)
 	err := c.cc.Invoke(ctx, AutomationService_Get_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *automationServiceClient) GetDetail(ctx context.Context, in *GetAutomationDetailRequest, opts ...grpc.CallOption) (*GetAutomationDetailResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetAutomationDetailResponse)
+	err := c.cc.Invoke(ctx, AutomationService_GetDetail_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -124,6 +136,7 @@ type AutomationService_TraceClient = grpc.ServerStreamingClient[TraceAutomationR
 type AutomationServiceServer interface {
 	List(context.Context, *ListAutomationsRequest) (*ListAutomationsResponse, error)
 	Get(context.Context, *GetAutomationRequest) (*GetAutomationResponse, error)
+	GetDetail(context.Context, *GetAutomationDetailRequest) (*GetAutomationDetailResponse, error)
 	Enable(context.Context, *EnableAutomationRequest) (*EnableAutomationResponse, error)
 	Disable(context.Context, *DisableAutomationRequest) (*DisableAutomationResponse, error)
 	Trigger(context.Context, *TriggerAutomationRequest) (*TriggerAutomationResponse, error)
@@ -142,6 +155,9 @@ func (UnimplementedAutomationServiceServer) List(context.Context, *ListAutomatio
 }
 func (UnimplementedAutomationServiceServer) Get(context.Context, *GetAutomationRequest) (*GetAutomationResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Get not implemented")
+}
+func (UnimplementedAutomationServiceServer) GetDetail(context.Context, *GetAutomationDetailRequest) (*GetAutomationDetailResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetDetail not implemented")
 }
 func (UnimplementedAutomationServiceServer) Enable(context.Context, *EnableAutomationRequest) (*EnableAutomationResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Enable not implemented")
@@ -207,6 +223,24 @@ func _AutomationService_Get_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AutomationServiceServer).Get(ctx, req.(*GetAutomationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AutomationService_GetDetail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAutomationDetailRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AutomationServiceServer).GetDetail(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AutomationService_GetDetail_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AutomationServiceServer).GetDetail(ctx, req.(*GetAutomationDetailRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -290,6 +324,10 @@ var AutomationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Get",
 			Handler:    _AutomationService_Get_Handler,
+		},
+		{
+			MethodName: "GetDetail",
+			Handler:    _AutomationService_GetDetail_Handler,
 		},
 		{
 			MethodName: "Enable",

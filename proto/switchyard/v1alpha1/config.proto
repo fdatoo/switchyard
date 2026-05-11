@@ -8,11 +8,12 @@ import "switchyard/config/v1/snapshot.proto";
 import "google/protobuf/struct.proto";
 
 service ConfigService {
-  rpc Validate   (ValidateConfigRequest)    returns (ValidateConfigResponse);
-  rpc Apply      (ApplyConfigRequest)       returns (ApplyConfigResponse);
-  rpc Reload     (ReloadConfigRequest)      returns (ReloadConfigResponse);
-  rpc GetArtifact(GetConfigArtifactRequest) returns (GetConfigArtifactResponse);
-  rpc EvalCompute(EvalComputeRequest) returns (EvalComputeResponse);
+  rpc Validate      (ValidateConfigRequest)       returns (ValidateConfigResponse);
+  rpc Apply         (ApplyConfigRequest)          returns (ApplyConfigResponse);
+  rpc Reload        (ReloadConfigRequest)         returns (ReloadConfigResponse);
+  rpc GetArtifact   (GetConfigArtifactRequest)    returns (GetConfigArtifactResponse);
+  rpc EvalCompute   (EvalComputeRequest)          returns (EvalComputeResponse);
+  rpc RegenPreview  (RegenPreviewRequest)         returns (RegenPreviewResponse);
 }
 
 message ValidateConfigRequest  { bytes pkl_bundle = 1; }
@@ -63,4 +64,16 @@ message ConfigDiff {
   int32           entities_removed         = 5;
   int32           automations_changed      = 6;
   repeated string lines                    = 10;
+}
+
+message RegenPreviewRequest {
+  // 1-9: inputs
+  string file_type = 1;   // "automation" | "page"
+  string ast_json  = 2;
+}
+
+message RegenPreviewResponse {
+  // 1-9: result
+  bytes  pkl_bytes = 1;
+  string error     = 2;
 }

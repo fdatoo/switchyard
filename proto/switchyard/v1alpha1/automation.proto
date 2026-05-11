@@ -8,12 +8,13 @@ import "switchyard/v1alpha1/common.proto";
 import "google/protobuf/timestamp.proto";
 
 service AutomationService {
-  rpc List    (ListAutomationsRequest)    returns (ListAutomationsResponse);
-  rpc Get     (GetAutomationRequest)      returns (GetAutomationResponse);
-  rpc Enable  (EnableAutomationRequest)   returns (EnableAutomationResponse);
-  rpc Disable (DisableAutomationRequest)  returns (DisableAutomationResponse);
-  rpc Trigger (TriggerAutomationRequest)  returns (TriggerAutomationResponse);
-  rpc Trace   (TraceAutomationRequest)    returns (stream TraceAutomationResponse);
+  rpc List              (ListAutomationsRequest)         returns (ListAutomationsResponse);
+  rpc Get               (GetAutomationRequest)           returns (GetAutomationResponse);
+  rpc GetDetail         (GetAutomationDetailRequest)     returns (GetAutomationDetailResponse);
+  rpc Enable            (EnableAutomationRequest)        returns (EnableAutomationResponse);
+  rpc Disable           (DisableAutomationRequest)       returns (DisableAutomationResponse);
+  rpc Trigger           (TriggerAutomationRequest)       returns (TriggerAutomationResponse);
+  rpc Trace             (TraceAutomationRequest)         returns (stream TraceAutomationResponse);
 }
 
 message Automation {
@@ -29,6 +30,16 @@ message ListAutomationsResponse { repeated Automation automations = 1; PageRespo
 
 message GetAutomationRequest  { string id = 1; }
 message GetAutomationResponse { Automation automation = 1; }
+
+message GetAutomationDetailRequest  { string id = 1; }
+message GetAutomationDetailResponse {
+  // 1-9: summary
+  Automation automation = 1;
+
+  // 10-19: editor payload
+  string ast_json  = 10;
+  string file_path = 11;
+}
 
 message EnableAutomationRequest  { string id = 1; }
 message EnableAutomationResponse { Automation automation = 1; }

@@ -133,7 +133,7 @@ func (x ScriptParam_Type) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ScriptParam_Type.Descriptor instead.
 func (ScriptParam_Type) EnumDescriptor() ([]byte, []int) {
-	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{26, 0}
+	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{30, 0}
 }
 
 type ConfigSnapshot struct {
@@ -442,6 +442,7 @@ type AutomationConfig struct {
 	Triggers      []*TriggerConfig   `protobuf:"bytes,10,rep,name=triggers,proto3" json:"triggers,omitempty"`
 	Conditions    []*ConditionConfig `protobuf:"bytes,11,rep,name=conditions,proto3" json:"conditions,omitempty"`
 	Actions       []*ActionConfig    `protobuf:"bytes,12,rep,name=actions,proto3" json:"actions,omitempty"`
+	OnFailure     *OnFailureConfig   `protobuf:"bytes,13,opt,name=on_failure,json=onFailure,proto3" json:"on_failure,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -521,6 +522,13 @@ func (x *AutomationConfig) GetConditions() []*ConditionConfig {
 func (x *AutomationConfig) GetActions() []*ActionConfig {
 	if x != nil {
 		return x.Actions
+	}
+	return nil
+}
+
+func (x *AutomationConfig) GetOnFailure() *OnFailureConfig {
+	if x != nil {
+		return x.OnFailure
 	}
 	return nil
 }
@@ -1910,6 +1918,248 @@ func (x *ParallelBlock) GetActions() []*ActionConfig {
 	return nil
 }
 
+// OnFailureConfig holds the strategy to apply when an automation run fails.
+// Exactly one strategy variant is set; absence means IgnoreStrategy (default).
+type OnFailureConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Types that are valid to be assigned to Strategy:
+	//
+	//	*OnFailureConfig_Ignore
+	//	*OnFailureConfig_Retry
+	//	*OnFailureConfig_Notify
+	Strategy      isOnFailureConfig_Strategy `protobuf_oneof:"strategy"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OnFailureConfig) Reset() {
+	*x = OnFailureConfig{}
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OnFailureConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OnFailureConfig) ProtoMessage() {}
+
+func (x *OnFailureConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OnFailureConfig.ProtoReflect.Descriptor instead.
+func (*OnFailureConfig) Descriptor() ([]byte, []int) {
+	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{25}
+}
+
+func (x *OnFailureConfig) GetStrategy() isOnFailureConfig_Strategy {
+	if x != nil {
+		return x.Strategy
+	}
+	return nil
+}
+
+func (x *OnFailureConfig) GetIgnore() *IgnoreStrategy {
+	if x != nil {
+		if x, ok := x.Strategy.(*OnFailureConfig_Ignore); ok {
+			return x.Ignore
+		}
+	}
+	return nil
+}
+
+func (x *OnFailureConfig) GetRetry() *RetryStrategy {
+	if x != nil {
+		if x, ok := x.Strategy.(*OnFailureConfig_Retry); ok {
+			return x.Retry
+		}
+	}
+	return nil
+}
+
+func (x *OnFailureConfig) GetNotify() *NotifyStrategy {
+	if x != nil {
+		if x, ok := x.Strategy.(*OnFailureConfig_Notify); ok {
+			return x.Notify
+		}
+	}
+	return nil
+}
+
+type isOnFailureConfig_Strategy interface {
+	isOnFailureConfig_Strategy()
+}
+
+type OnFailureConfig_Ignore struct {
+	Ignore *IgnoreStrategy `protobuf:"bytes,1,opt,name=ignore,proto3,oneof"`
+}
+
+type OnFailureConfig_Retry struct {
+	Retry *RetryStrategy `protobuf:"bytes,2,opt,name=retry,proto3,oneof"`
+}
+
+type OnFailureConfig_Notify struct {
+	Notify *NotifyStrategy `protobuf:"bytes,3,opt,name=notify,proto3,oneof"`
+}
+
+func (*OnFailureConfig_Ignore) isOnFailureConfig_Strategy() {}
+
+func (*OnFailureConfig_Retry) isOnFailureConfig_Strategy() {}
+
+func (*OnFailureConfig_Notify) isOnFailureConfig_Strategy() {}
+
+type IgnoreStrategy struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *IgnoreStrategy) Reset() {
+	*x = IgnoreStrategy{}
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[26]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *IgnoreStrategy) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*IgnoreStrategy) ProtoMessage() {}
+
+func (x *IgnoreStrategy) ProtoReflect() protoreflect.Message {
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[26]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use IgnoreStrategy.ProtoReflect.Descriptor instead.
+func (*IgnoreStrategy) Descriptor() ([]byte, []int) {
+	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{26}
+}
+
+type RetryStrategy struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// 1-9: retry parameters
+	MaxAttempts   int32 `protobuf:"varint,1,opt,name=max_attempts,json=maxAttempts,proto3" json:"max_attempts,omitempty"`
+	BackoffNs     int64 `protobuf:"varint,2,opt,name=backoff_ns,json=backoffNs,proto3" json:"backoff_ns,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RetryStrategy) Reset() {
+	*x = RetryStrategy{}
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RetryStrategy) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RetryStrategy) ProtoMessage() {}
+
+func (x *RetryStrategy) ProtoReflect() protoreflect.Message {
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RetryStrategy.ProtoReflect.Descriptor instead.
+func (*RetryStrategy) Descriptor() ([]byte, []int) {
+	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{27}
+}
+
+func (x *RetryStrategy) GetMaxAttempts() int32 {
+	if x != nil {
+		return x.MaxAttempts
+	}
+	return 0
+}
+
+func (x *RetryStrategy) GetBackoffNs() int64 {
+	if x != nil {
+		return x.BackoffNs
+	}
+	return 0
+}
+
+type NotifyStrategy struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// 1-9: notification target
+	Entity        string `protobuf:"bytes,1,opt,name=entity,proto3" json:"entity,omitempty"`
+	Message       string `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *NotifyStrategy) Reset() {
+	*x = NotifyStrategy{}
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[28]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *NotifyStrategy) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NotifyStrategy) ProtoMessage() {}
+
+func (x *NotifyStrategy) ProtoReflect() protoreflect.Message {
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[28]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use NotifyStrategy.ProtoReflect.Descriptor instead.
+func (*NotifyStrategy) Descriptor() ([]byte, []int) {
+	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{28}
+}
+
+func (x *NotifyStrategy) GetEntity() string {
+	if x != nil {
+		return x.Entity
+	}
+	return ""
+}
+
+func (x *NotifyStrategy) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
 type ScriptConfig struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -1921,7 +2171,7 @@ type ScriptConfig struct {
 
 func (x *ScriptConfig) Reset() {
 	*x = ScriptConfig{}
-	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[25]
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1933,7 +2183,7 @@ func (x *ScriptConfig) String() string {
 func (*ScriptConfig) ProtoMessage() {}
 
 func (x *ScriptConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[25]
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1946,7 +2196,7 @@ func (x *ScriptConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ScriptConfig.ProtoReflect.Descriptor instead.
 func (*ScriptConfig) Descriptor() ([]byte, []int) {
-	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{25}
+	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *ScriptConfig) GetName() string {
@@ -1982,7 +2232,7 @@ type ScriptParam struct {
 
 func (x *ScriptParam) Reset() {
 	*x = ScriptParam{}
-	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[26]
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1994,7 +2244,7 @@ func (x *ScriptParam) String() string {
 func (*ScriptParam) ProtoMessage() {}
 
 func (x *ScriptParam) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[26]
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2007,7 +2257,7 @@ func (x *ScriptParam) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ScriptParam.ProtoReflect.Descriptor instead.
 func (*ScriptParam) Descriptor() ([]byte, []int) {
-	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{26}
+	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *ScriptParam) GetName() string {
@@ -2048,7 +2298,7 @@ type DashboardConfig struct {
 
 func (x *DashboardConfig) Reset() {
 	*x = DashboardConfig{}
-	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[27]
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2060,7 +2310,7 @@ func (x *DashboardConfig) String() string {
 func (*DashboardConfig) ProtoMessage() {}
 
 func (x *DashboardConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[27]
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2073,7 +2323,7 @@ func (x *DashboardConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DashboardConfig.ProtoReflect.Descriptor instead.
 func (*DashboardConfig) Descriptor() ([]byte, []int) {
-	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{27}
+	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *DashboardConfig) GetSlug() string {
@@ -2109,7 +2359,7 @@ type UserConfig struct {
 
 func (x *UserConfig) Reset() {
 	*x = UserConfig{}
-	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[28]
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2121,7 +2371,7 @@ func (x *UserConfig) String() string {
 func (*UserConfig) ProtoMessage() {}
 
 func (x *UserConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[28]
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2134,7 +2384,7 @@ func (x *UserConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserConfig.ProtoReflect.Descriptor instead.
 func (*UserConfig) Descriptor() ([]byte, []int) {
-	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{28}
+	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *UserConfig) GetSlug() string {
@@ -2206,7 +2456,7 @@ type RoleConfig struct {
 
 func (x *RoleConfig) Reset() {
 	*x = RoleConfig{}
-	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[29]
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2218,7 +2468,7 @@ func (x *RoleConfig) String() string {
 func (*RoleConfig) ProtoMessage() {}
 
 func (x *RoleConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[29]
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2231,7 +2481,7 @@ func (x *RoleConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RoleConfig.ProtoReflect.Descriptor instead.
 func (*RoleConfig) Descriptor() ([]byte, []int) {
-	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{29}
+	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *RoleConfig) GetSlug() string {
@@ -2269,7 +2519,7 @@ type PolicyConfig struct {
 
 func (x *PolicyConfig) Reset() {
 	*x = PolicyConfig{}
-	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[30]
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2281,7 +2531,7 @@ func (x *PolicyConfig) String() string {
 func (*PolicyConfig) ProtoMessage() {}
 
 func (x *PolicyConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[30]
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2294,7 +2544,7 @@ func (x *PolicyConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PolicyConfig.ProtoReflect.Descriptor instead.
 func (*PolicyConfig) Descriptor() ([]byte, []int) {
-	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{30}
+	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *PolicyConfig) GetName() string {
@@ -2338,7 +2588,7 @@ type CapabilityRule struct {
 
 func (x *CapabilityRule) Reset() {
 	*x = CapabilityRule{}
-	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[31]
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2350,7 +2600,7 @@ func (x *CapabilityRule) String() string {
 func (*CapabilityRule) ProtoMessage() {}
 
 func (x *CapabilityRule) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[31]
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2363,7 +2613,7 @@ func (x *CapabilityRule) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CapabilityRule.ProtoReflect.Descriptor instead.
 func (*CapabilityRule) Descriptor() ([]byte, []int) {
-	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{31}
+	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *CapabilityRule) GetVerbs() []string {
@@ -2397,7 +2647,7 @@ type WidgetPackPolicy struct {
 
 func (x *WidgetPackPolicy) Reset() {
 	*x = WidgetPackPolicy{}
-	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[32]
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2409,7 +2659,7 @@ func (x *WidgetPackPolicy) String() string {
 func (*WidgetPackPolicy) ProtoMessage() {}
 
 func (x *WidgetPackPolicy) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[32]
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2422,7 +2672,7 @@ func (x *WidgetPackPolicy) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WidgetPackPolicy.ProtoReflect.Descriptor instead.
 func (*WidgetPackPolicy) Descriptor() ([]byte, []int) {
-	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{32}
+	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *WidgetPackPolicy) GetAllowedSigners() []string {
@@ -2450,7 +2700,7 @@ type EntitySelector struct {
 
 func (x *EntitySelector) Reset() {
 	*x = EntitySelector{}
-	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[33]
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2462,7 +2712,7 @@ func (x *EntitySelector) String() string {
 func (*EntitySelector) ProtoMessage() {}
 
 func (x *EntitySelector) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[33]
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2475,7 +2725,7 @@ func (x *EntitySelector) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EntitySelector.ProtoReflect.Descriptor instead.
 func (*EntitySelector) Descriptor() ([]byte, []int) {
-	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{33}
+	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *EntitySelector) GetAreas() []string {
@@ -2536,7 +2786,7 @@ type AuthSettingsConfig struct {
 
 func (x *AuthSettingsConfig) Reset() {
 	*x = AuthSettingsConfig{}
-	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[34]
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2548,7 +2798,7 @@ func (x *AuthSettingsConfig) String() string {
 func (*AuthSettingsConfig) ProtoMessage() {}
 
 func (x *AuthSettingsConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[34]
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2561,7 +2811,7 @@ func (x *AuthSettingsConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AuthSettingsConfig.ProtoReflect.Descriptor instead.
 func (*AuthSettingsConfig) Descriptor() ([]byte, []int) {
-	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{34}
+	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *AuthSettingsConfig) GetPasswordLoginEnabled() bool {
@@ -2727,7 +2977,7 @@ type ListenerConfig struct {
 
 func (x *ListenerConfig) Reset() {
 	*x = ListenerConfig{}
-	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[35]
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2739,7 +2989,7 @@ func (x *ListenerConfig) String() string {
 func (*ListenerConfig) ProtoMessage() {}
 
 func (x *ListenerConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[35]
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2752,7 +3002,7 @@ func (x *ListenerConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListenerConfig.ProtoReflect.Descriptor instead.
 func (*ListenerConfig) Descriptor() ([]byte, []int) {
-	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{35}
+	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *ListenerConfig) GetUds() *UDSListenerConfig {
@@ -2793,7 +3043,7 @@ type UDSListenerConfig struct {
 
 func (x *UDSListenerConfig) Reset() {
 	*x = UDSListenerConfig{}
-	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[36]
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2805,7 +3055,7 @@ func (x *UDSListenerConfig) String() string {
 func (*UDSListenerConfig) ProtoMessage() {}
 
 func (x *UDSListenerConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[36]
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2818,7 +3068,7 @@ func (x *UDSListenerConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UDSListenerConfig.ProtoReflect.Descriptor instead.
 func (*UDSListenerConfig) Descriptor() ([]byte, []int) {
-	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{36}
+	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *UDSListenerConfig) GetPath() string {
@@ -2845,7 +3095,7 @@ type TCPListenerConfig struct {
 
 func (x *TCPListenerConfig) Reset() {
 	*x = TCPListenerConfig{}
-	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[37]
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2857,7 +3107,7 @@ func (x *TCPListenerConfig) String() string {
 func (*TCPListenerConfig) ProtoMessage() {}
 
 func (x *TCPListenerConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[37]
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2870,7 +3120,7 @@ func (x *TCPListenerConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TCPListenerConfig.ProtoReflect.Descriptor instead.
 func (*TCPListenerConfig) Descriptor() ([]byte, []int) {
-	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{37}
+	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *TCPListenerConfig) GetBind() string {
@@ -2897,7 +3147,7 @@ type TLSListenerConfig struct {
 
 func (x *TLSListenerConfig) Reset() {
 	*x = TLSListenerConfig{}
-	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[38]
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2909,7 +3159,7 @@ func (x *TLSListenerConfig) String() string {
 func (*TLSListenerConfig) ProtoMessage() {}
 
 func (x *TLSListenerConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[38]
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2922,7 +3172,7 @@ func (x *TLSListenerConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TLSListenerConfig.ProtoReflect.Descriptor instead.
 func (*TLSListenerConfig) Descriptor() ([]byte, []int) {
-	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{38}
+	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *TLSListenerConfig) GetCertFile() string {
@@ -2949,7 +3199,7 @@ type WebhookListenerConfig struct {
 
 func (x *WebhookListenerConfig) Reset() {
 	*x = WebhookListenerConfig{}
-	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[39]
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2961,7 +3211,7 @@ func (x *WebhookListenerConfig) String() string {
 func (*WebhookListenerConfig) ProtoMessage() {}
 
 func (x *WebhookListenerConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[39]
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2974,7 +3224,7 @@ func (x *WebhookListenerConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WebhookListenerConfig.ProtoReflect.Descriptor instead.
 func (*WebhookListenerConfig) Descriptor() ([]byte, []int) {
-	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{39}
+	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *WebhookListenerConfig) GetMaxBodyBytes() int64 {
@@ -3005,7 +3255,7 @@ type MCPConfig struct {
 
 func (x *MCPConfig) Reset() {
 	*x = MCPConfig{}
-	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[40]
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3017,7 +3267,7 @@ func (x *MCPConfig) String() string {
 func (*MCPConfig) ProtoMessage() {}
 
 func (x *MCPConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[40]
+	mi := &file_switchyard_config_v1_snapshot_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3030,7 +3280,7 @@ func (x *MCPConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MCPConfig.ProtoReflect.Descriptor instead.
 func (*MCPConfig) Descriptor() ([]byte, []int) {
-	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{40}
+	return file_switchyard_config_v1_snapshot_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *MCPConfig) GetEvalResultMaxBytes() uint32 {
@@ -3112,7 +3362,7 @@ const file_switchyard_config_v1_snapshot_proto_rawDesc = "" +
 	"\rfriendly_name\x18\x02 \x01(\tR\ffriendlyName\x12\x1f\n" +
 	"\ventity_type\x18\x03 \x01(\tR\n" +
 	"entityType\x12\x12\n" +
-	"\x04area\x18\x04 \x01(\tR\x04area\"\xee\x03\n" +
+	"\x04area\x18\x04 \x01(\tR\x04area\"\xb4\x04\n" +
 	"\x10AutomationConfig\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x18\n" +
 	"\aenabled\x18\x02 \x01(\bR\aenabled\x12?\n" +
@@ -3124,7 +3374,9 @@ const file_switchyard_config_v1_snapshot_proto_rawDesc = "" +
 	"\n" +
 	"conditions\x18\v \x03(\v2%.switchyard.config.v1.ConditionConfigR\n" +
 	"conditions\x12<\n" +
-	"\aactions\x18\f \x03(\v2\".switchyard.config.v1.ActionConfigR\aactions\"c\n" +
+	"\aactions\x18\f \x03(\v2\".switchyard.config.v1.ActionConfigR\aactions\x12D\n" +
+	"\n" +
+	"on_failure\x18\r \x01(\v2%.switchyard.config.v1.OnFailureConfigR\tonFailure\"c\n" +
 	"\x04Mode\x12\x14\n" +
 	"\x10MODE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vMODE_SINGLE\x10\x01\x12\x0f\n" +
@@ -3225,7 +3477,21 @@ const file_switchyard_config_v1_snapshot_proto_rawDesc = "" +
 	"\rSequenceBlock\x12<\n" +
 	"\aactions\x18\x01 \x03(\v2\".switchyard.config.v1.ActionConfigR\aactions\"M\n" +
 	"\rParallelBlock\x12<\n" +
-	"\aactions\x18\x01 \x03(\v2\".switchyard.config.v1.ActionConfigR\aactions\"w\n" +
+	"\aactions\x18\x01 \x03(\v2\".switchyard.config.v1.ActionConfigR\aactions\"\xda\x01\n" +
+	"\x0fOnFailureConfig\x12>\n" +
+	"\x06ignore\x18\x01 \x01(\v2$.switchyard.config.v1.IgnoreStrategyH\x00R\x06ignore\x12;\n" +
+	"\x05retry\x18\x02 \x01(\v2#.switchyard.config.v1.RetryStrategyH\x00R\x05retry\x12>\n" +
+	"\x06notify\x18\x03 \x01(\v2$.switchyard.config.v1.NotifyStrategyH\x00R\x06notifyB\n" +
+	"\n" +
+	"\bstrategy\"\x10\n" +
+	"\x0eIgnoreStrategy\"Q\n" +
+	"\rRetryStrategy\x12!\n" +
+	"\fmax_attempts\x18\x01 \x01(\x05R\vmaxAttempts\x12\x1d\n" +
+	"\n" +
+	"backoff_ns\x18\x02 \x01(\x03R\tbackoffNs\"B\n" +
+	"\x0eNotifyStrategy\x12\x16\n" +
+	"\x06entity\x18\x01 \x01(\tR\x06entity\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\"w\n" +
 	"\fScriptConfig\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x129\n" +
 	"\x06params\x18\x02 \x03(\v2!.switchyard.config.v1.ScriptParamR\x06params\x12\x18\n" +
@@ -3347,7 +3613,7 @@ func file_switchyard_config_v1_snapshot_proto_rawDescGZIP() []byte {
 }
 
 var file_switchyard_config_v1_snapshot_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_switchyard_config_v1_snapshot_proto_msgTypes = make([]protoimpl.MessageInfo, 44)
+var file_switchyard_config_v1_snapshot_proto_msgTypes = make([]protoimpl.MessageInfo, 48)
 var file_switchyard_config_v1_snapshot_proto_goTypes = []any{
 	(AutomationConfig_Mode)(0),    // 0: switchyard.config.v1.AutomationConfig.Mode
 	(ScriptParam_Type)(0),         // 1: switchyard.config.v1.ScriptParam.Type
@@ -3376,86 +3642,94 @@ var file_switchyard_config_v1_snapshot_proto_goTypes = []any{
 	(*WaitAction)(nil),            // 24: switchyard.config.v1.WaitAction
 	(*SequenceBlock)(nil),         // 25: switchyard.config.v1.SequenceBlock
 	(*ParallelBlock)(nil),         // 26: switchyard.config.v1.ParallelBlock
-	(*ScriptConfig)(nil),          // 27: switchyard.config.v1.ScriptConfig
-	(*ScriptParam)(nil),           // 28: switchyard.config.v1.ScriptParam
-	(*DashboardConfig)(nil),       // 29: switchyard.config.v1.DashboardConfig
-	(*UserConfig)(nil),            // 30: switchyard.config.v1.UserConfig
-	(*RoleConfig)(nil),            // 31: switchyard.config.v1.RoleConfig
-	(*PolicyConfig)(nil),          // 32: switchyard.config.v1.PolicyConfig
-	(*CapabilityRule)(nil),        // 33: switchyard.config.v1.CapabilityRule
-	(*WidgetPackPolicy)(nil),      // 34: switchyard.config.v1.WidgetPackPolicy
-	(*EntitySelector)(nil),        // 35: switchyard.config.v1.EntitySelector
-	(*AuthSettingsConfig)(nil),    // 36: switchyard.config.v1.AuthSettingsConfig
-	(*ListenerConfig)(nil),        // 37: switchyard.config.v1.ListenerConfig
-	(*UDSListenerConfig)(nil),     // 38: switchyard.config.v1.UDSListenerConfig
-	(*TCPListenerConfig)(nil),     // 39: switchyard.config.v1.TCPListenerConfig
-	(*TLSListenerConfig)(nil),     // 40: switchyard.config.v1.TLSListenerConfig
-	(*WebhookListenerConfig)(nil), // 41: switchyard.config.v1.WebhookListenerConfig
-	(*MCPConfig)(nil),             // 42: switchyard.config.v1.MCPConfig
-	nil,                           // 43: switchyard.config.v1.EventTrigger.DataEntry
-	nil,                           // 44: switchyard.config.v1.CallServiceAction.ArgsEntry
-	nil,                           // 45: switchyard.config.v1.ScriptAction.ArgsEntry
+	(*OnFailureConfig)(nil),       // 27: switchyard.config.v1.OnFailureConfig
+	(*IgnoreStrategy)(nil),        // 28: switchyard.config.v1.IgnoreStrategy
+	(*RetryStrategy)(nil),         // 29: switchyard.config.v1.RetryStrategy
+	(*NotifyStrategy)(nil),        // 30: switchyard.config.v1.NotifyStrategy
+	(*ScriptConfig)(nil),          // 31: switchyard.config.v1.ScriptConfig
+	(*ScriptParam)(nil),           // 32: switchyard.config.v1.ScriptParam
+	(*DashboardConfig)(nil),       // 33: switchyard.config.v1.DashboardConfig
+	(*UserConfig)(nil),            // 34: switchyard.config.v1.UserConfig
+	(*RoleConfig)(nil),            // 35: switchyard.config.v1.RoleConfig
+	(*PolicyConfig)(nil),          // 36: switchyard.config.v1.PolicyConfig
+	(*CapabilityRule)(nil),        // 37: switchyard.config.v1.CapabilityRule
+	(*WidgetPackPolicy)(nil),      // 38: switchyard.config.v1.WidgetPackPolicy
+	(*EntitySelector)(nil),        // 39: switchyard.config.v1.EntitySelector
+	(*AuthSettingsConfig)(nil),    // 40: switchyard.config.v1.AuthSettingsConfig
+	(*ListenerConfig)(nil),        // 41: switchyard.config.v1.ListenerConfig
+	(*UDSListenerConfig)(nil),     // 42: switchyard.config.v1.UDSListenerConfig
+	(*TCPListenerConfig)(nil),     // 43: switchyard.config.v1.TCPListenerConfig
+	(*TLSListenerConfig)(nil),     // 44: switchyard.config.v1.TLSListenerConfig
+	(*WebhookListenerConfig)(nil), // 45: switchyard.config.v1.WebhookListenerConfig
+	(*MCPConfig)(nil),             // 46: switchyard.config.v1.MCPConfig
+	nil,                           // 47: switchyard.config.v1.EventTrigger.DataEntry
+	nil,                           // 48: switchyard.config.v1.CallServiceAction.ArgsEntry
+	nil,                           // 49: switchyard.config.v1.ScriptAction.ArgsEntry
 }
 var file_switchyard_config_v1_snapshot_proto_depIdxs = []int32{
 	3,  // 0: switchyard.config.v1.ConfigSnapshot.driver_instances:type_name -> switchyard.config.v1.DriverInstanceConfig
 	4,  // 1: switchyard.config.v1.ConfigSnapshot.entities:type_name -> switchyard.config.v1.EntityConfig
 	5,  // 2: switchyard.config.v1.ConfigSnapshot.automations:type_name -> switchyard.config.v1.AutomationConfig
-	29, // 3: switchyard.config.v1.ConfigSnapshot.dashboards:type_name -> switchyard.config.v1.DashboardConfig
-	30, // 4: switchyard.config.v1.ConfigSnapshot.users:type_name -> switchyard.config.v1.UserConfig
-	31, // 5: switchyard.config.v1.ConfigSnapshot.roles:type_name -> switchyard.config.v1.RoleConfig
-	32, // 6: switchyard.config.v1.ConfigSnapshot.policies:type_name -> switchyard.config.v1.PolicyConfig
-	27, // 7: switchyard.config.v1.ConfigSnapshot.scripts:type_name -> switchyard.config.v1.ScriptConfig
-	34, // 8: switchyard.config.v1.ConfigSnapshot.widget_pack_policy:type_name -> switchyard.config.v1.WidgetPackPolicy
-	37, // 9: switchyard.config.v1.ConfigSnapshot.listener:type_name -> switchyard.config.v1.ListenerConfig
-	42, // 10: switchyard.config.v1.ConfigSnapshot.mcp:type_name -> switchyard.config.v1.MCPConfig
-	36, // 11: switchyard.config.v1.ConfigSnapshot.auth_settings:type_name -> switchyard.config.v1.AuthSettingsConfig
+	33, // 3: switchyard.config.v1.ConfigSnapshot.dashboards:type_name -> switchyard.config.v1.DashboardConfig
+	34, // 4: switchyard.config.v1.ConfigSnapshot.users:type_name -> switchyard.config.v1.UserConfig
+	35, // 5: switchyard.config.v1.ConfigSnapshot.roles:type_name -> switchyard.config.v1.RoleConfig
+	36, // 6: switchyard.config.v1.ConfigSnapshot.policies:type_name -> switchyard.config.v1.PolicyConfig
+	31, // 7: switchyard.config.v1.ConfigSnapshot.scripts:type_name -> switchyard.config.v1.ScriptConfig
+	38, // 8: switchyard.config.v1.ConfigSnapshot.widget_pack_policy:type_name -> switchyard.config.v1.WidgetPackPolicy
+	41, // 9: switchyard.config.v1.ConfigSnapshot.listener:type_name -> switchyard.config.v1.ListenerConfig
+	46, // 10: switchyard.config.v1.ConfigSnapshot.mcp:type_name -> switchyard.config.v1.MCPConfig
+	40, // 11: switchyard.config.v1.ConfigSnapshot.auth_settings:type_name -> switchyard.config.v1.AuthSettingsConfig
 	0,  // 12: switchyard.config.v1.AutomationConfig.mode:type_name -> switchyard.config.v1.AutomationConfig.Mode
 	6,  // 13: switchyard.config.v1.AutomationConfig.triggers:type_name -> switchyard.config.v1.TriggerConfig
 	11, // 14: switchyard.config.v1.AutomationConfig.conditions:type_name -> switchyard.config.v1.ConditionConfig
 	19, // 15: switchyard.config.v1.AutomationConfig.actions:type_name -> switchyard.config.v1.ActionConfig
-	7,  // 16: switchyard.config.v1.TriggerConfig.state_change:type_name -> switchyard.config.v1.StateChangeTrigger
-	8,  // 17: switchyard.config.v1.TriggerConfig.event:type_name -> switchyard.config.v1.EventTrigger
-	9,  // 18: switchyard.config.v1.TriggerConfig.time:type_name -> switchyard.config.v1.TimeTrigger
-	10, // 19: switchyard.config.v1.TriggerConfig.webhook:type_name -> switchyard.config.v1.WebhookTrigger
-	43, // 20: switchyard.config.v1.EventTrigger.data:type_name -> switchyard.config.v1.EventTrigger.DataEntry
-	12, // 21: switchyard.config.v1.ConditionConfig.state:type_name -> switchyard.config.v1.StateCondition
-	13, // 22: switchyard.config.v1.ConditionConfig.numeric:type_name -> switchyard.config.v1.NumericCondition
-	14, // 23: switchyard.config.v1.ConditionConfig.time:type_name -> switchyard.config.v1.TimeCondition
-	15, // 24: switchyard.config.v1.ConditionConfig.starlark:type_name -> switchyard.config.v1.StarlarkCondition
-	16, // 25: switchyard.config.v1.ConditionConfig.and:type_name -> switchyard.config.v1.AndCondition
-	17, // 26: switchyard.config.v1.ConditionConfig.or:type_name -> switchyard.config.v1.OrCondition
-	18, // 27: switchyard.config.v1.ConditionConfig.not:type_name -> switchyard.config.v1.NotCondition
-	11, // 28: switchyard.config.v1.AndCondition.all:type_name -> switchyard.config.v1.ConditionConfig
-	11, // 29: switchyard.config.v1.OrCondition.any:type_name -> switchyard.config.v1.ConditionConfig
-	11, // 30: switchyard.config.v1.NotCondition.not:type_name -> switchyard.config.v1.ConditionConfig
-	20, // 31: switchyard.config.v1.ActionConfig.call_service:type_name -> switchyard.config.v1.CallServiceAction
-	21, // 32: switchyard.config.v1.ActionConfig.scene:type_name -> switchyard.config.v1.SceneAction
-	22, // 33: switchyard.config.v1.ActionConfig.script:type_name -> switchyard.config.v1.ScriptAction
-	23, // 34: switchyard.config.v1.ActionConfig.starlark:type_name -> switchyard.config.v1.StarlarkAction
-	24, // 35: switchyard.config.v1.ActionConfig.wait:type_name -> switchyard.config.v1.WaitAction
-	25, // 36: switchyard.config.v1.ActionConfig.sequence:type_name -> switchyard.config.v1.SequenceBlock
-	26, // 37: switchyard.config.v1.ActionConfig.parallel:type_name -> switchyard.config.v1.ParallelBlock
-	44, // 38: switchyard.config.v1.CallServiceAction.args:type_name -> switchyard.config.v1.CallServiceAction.ArgsEntry
-	45, // 39: switchyard.config.v1.ScriptAction.args:type_name -> switchyard.config.v1.ScriptAction.ArgsEntry
-	19, // 40: switchyard.config.v1.SequenceBlock.actions:type_name -> switchyard.config.v1.ActionConfig
-	19, // 41: switchyard.config.v1.ParallelBlock.actions:type_name -> switchyard.config.v1.ActionConfig
-	28, // 42: switchyard.config.v1.ScriptConfig.params:type_name -> switchyard.config.v1.ScriptParam
-	1,  // 43: switchyard.config.v1.ScriptParam.type:type_name -> switchyard.config.v1.ScriptParam.Type
-	31, // 44: switchyard.config.v1.UserConfig.roles:type_name -> switchyard.config.v1.RoleConfig
-	31, // 45: switchyard.config.v1.RoleConfig.inherits:type_name -> switchyard.config.v1.RoleConfig
-	31, // 46: switchyard.config.v1.PolicyConfig.subjects:type_name -> switchyard.config.v1.RoleConfig
-	33, // 47: switchyard.config.v1.PolicyConfig.allow:type_name -> switchyard.config.v1.CapabilityRule
-	33, // 48: switchyard.config.v1.PolicyConfig.deny:type_name -> switchyard.config.v1.CapabilityRule
-	35, // 49: switchyard.config.v1.CapabilityRule.targets:type_name -> switchyard.config.v1.EntitySelector
-	38, // 50: switchyard.config.v1.ListenerConfig.uds:type_name -> switchyard.config.v1.UDSListenerConfig
-	39, // 51: switchyard.config.v1.ListenerConfig.tcp:type_name -> switchyard.config.v1.TCPListenerConfig
-	41, // 52: switchyard.config.v1.ListenerConfig.webhooks:type_name -> switchyard.config.v1.WebhookListenerConfig
-	40, // 53: switchyard.config.v1.TCPListenerConfig.tls:type_name -> switchyard.config.v1.TLSListenerConfig
-	54, // [54:54] is the sub-list for method output_type
-	54, // [54:54] is the sub-list for method input_type
-	54, // [54:54] is the sub-list for extension type_name
-	54, // [54:54] is the sub-list for extension extendee
-	0,  // [0:54] is the sub-list for field type_name
+	27, // 16: switchyard.config.v1.AutomationConfig.on_failure:type_name -> switchyard.config.v1.OnFailureConfig
+	7,  // 17: switchyard.config.v1.TriggerConfig.state_change:type_name -> switchyard.config.v1.StateChangeTrigger
+	8,  // 18: switchyard.config.v1.TriggerConfig.event:type_name -> switchyard.config.v1.EventTrigger
+	9,  // 19: switchyard.config.v1.TriggerConfig.time:type_name -> switchyard.config.v1.TimeTrigger
+	10, // 20: switchyard.config.v1.TriggerConfig.webhook:type_name -> switchyard.config.v1.WebhookTrigger
+	47, // 21: switchyard.config.v1.EventTrigger.data:type_name -> switchyard.config.v1.EventTrigger.DataEntry
+	12, // 22: switchyard.config.v1.ConditionConfig.state:type_name -> switchyard.config.v1.StateCondition
+	13, // 23: switchyard.config.v1.ConditionConfig.numeric:type_name -> switchyard.config.v1.NumericCondition
+	14, // 24: switchyard.config.v1.ConditionConfig.time:type_name -> switchyard.config.v1.TimeCondition
+	15, // 25: switchyard.config.v1.ConditionConfig.starlark:type_name -> switchyard.config.v1.StarlarkCondition
+	16, // 26: switchyard.config.v1.ConditionConfig.and:type_name -> switchyard.config.v1.AndCondition
+	17, // 27: switchyard.config.v1.ConditionConfig.or:type_name -> switchyard.config.v1.OrCondition
+	18, // 28: switchyard.config.v1.ConditionConfig.not:type_name -> switchyard.config.v1.NotCondition
+	11, // 29: switchyard.config.v1.AndCondition.all:type_name -> switchyard.config.v1.ConditionConfig
+	11, // 30: switchyard.config.v1.OrCondition.any:type_name -> switchyard.config.v1.ConditionConfig
+	11, // 31: switchyard.config.v1.NotCondition.not:type_name -> switchyard.config.v1.ConditionConfig
+	20, // 32: switchyard.config.v1.ActionConfig.call_service:type_name -> switchyard.config.v1.CallServiceAction
+	21, // 33: switchyard.config.v1.ActionConfig.scene:type_name -> switchyard.config.v1.SceneAction
+	22, // 34: switchyard.config.v1.ActionConfig.script:type_name -> switchyard.config.v1.ScriptAction
+	23, // 35: switchyard.config.v1.ActionConfig.starlark:type_name -> switchyard.config.v1.StarlarkAction
+	24, // 36: switchyard.config.v1.ActionConfig.wait:type_name -> switchyard.config.v1.WaitAction
+	25, // 37: switchyard.config.v1.ActionConfig.sequence:type_name -> switchyard.config.v1.SequenceBlock
+	26, // 38: switchyard.config.v1.ActionConfig.parallel:type_name -> switchyard.config.v1.ParallelBlock
+	48, // 39: switchyard.config.v1.CallServiceAction.args:type_name -> switchyard.config.v1.CallServiceAction.ArgsEntry
+	49, // 40: switchyard.config.v1.ScriptAction.args:type_name -> switchyard.config.v1.ScriptAction.ArgsEntry
+	19, // 41: switchyard.config.v1.SequenceBlock.actions:type_name -> switchyard.config.v1.ActionConfig
+	19, // 42: switchyard.config.v1.ParallelBlock.actions:type_name -> switchyard.config.v1.ActionConfig
+	28, // 43: switchyard.config.v1.OnFailureConfig.ignore:type_name -> switchyard.config.v1.IgnoreStrategy
+	29, // 44: switchyard.config.v1.OnFailureConfig.retry:type_name -> switchyard.config.v1.RetryStrategy
+	30, // 45: switchyard.config.v1.OnFailureConfig.notify:type_name -> switchyard.config.v1.NotifyStrategy
+	32, // 46: switchyard.config.v1.ScriptConfig.params:type_name -> switchyard.config.v1.ScriptParam
+	1,  // 47: switchyard.config.v1.ScriptParam.type:type_name -> switchyard.config.v1.ScriptParam.Type
+	35, // 48: switchyard.config.v1.UserConfig.roles:type_name -> switchyard.config.v1.RoleConfig
+	35, // 49: switchyard.config.v1.RoleConfig.inherits:type_name -> switchyard.config.v1.RoleConfig
+	35, // 50: switchyard.config.v1.PolicyConfig.subjects:type_name -> switchyard.config.v1.RoleConfig
+	37, // 51: switchyard.config.v1.PolicyConfig.allow:type_name -> switchyard.config.v1.CapabilityRule
+	37, // 52: switchyard.config.v1.PolicyConfig.deny:type_name -> switchyard.config.v1.CapabilityRule
+	39, // 53: switchyard.config.v1.CapabilityRule.targets:type_name -> switchyard.config.v1.EntitySelector
+	42, // 54: switchyard.config.v1.ListenerConfig.uds:type_name -> switchyard.config.v1.UDSListenerConfig
+	43, // 55: switchyard.config.v1.ListenerConfig.tcp:type_name -> switchyard.config.v1.TCPListenerConfig
+	45, // 56: switchyard.config.v1.ListenerConfig.webhooks:type_name -> switchyard.config.v1.WebhookListenerConfig
+	44, // 57: switchyard.config.v1.TCPListenerConfig.tls:type_name -> switchyard.config.v1.TLSListenerConfig
+	58, // [58:58] is the sub-list for method output_type
+	58, // [58:58] is the sub-list for method input_type
+	58, // [58:58] is the sub-list for extension type_name
+	58, // [58:58] is the sub-list for extension extendee
+	0,  // [0:58] is the sub-list for field type_name
 }
 
 func init() { file_switchyard_config_v1_snapshot_proto_init() }
@@ -3487,13 +3761,18 @@ func file_switchyard_config_v1_snapshot_proto_init() {
 		(*ActionConfig_Sequence)(nil),
 		(*ActionConfig_Parallel)(nil),
 	}
+	file_switchyard_config_v1_snapshot_proto_msgTypes[25].OneofWrappers = []any{
+		(*OnFailureConfig_Ignore)(nil),
+		(*OnFailureConfig_Retry)(nil),
+		(*OnFailureConfig_Notify)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_switchyard_config_v1_snapshot_proto_rawDesc), len(file_switchyard_config_v1_snapshot_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   44,
+			NumMessages:   48,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

@@ -661,6 +661,112 @@ func (x *ConfigDiff) GetLines() []string {
 	return nil
 }
 
+type RegenPreviewRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// 1-9: inputs
+	FileType      string `protobuf:"bytes,1,opt,name=file_type,json=fileType,proto3" json:"file_type,omitempty"` // "automation" | "page"
+	AstJson       string `protobuf:"bytes,2,opt,name=ast_json,json=astJson,proto3" json:"ast_json,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RegenPreviewRequest) Reset() {
+	*x = RegenPreviewRequest{}
+	mi := &file_switchyard_v1alpha1_config_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RegenPreviewRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RegenPreviewRequest) ProtoMessage() {}
+
+func (x *RegenPreviewRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_switchyard_v1alpha1_config_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RegenPreviewRequest.ProtoReflect.Descriptor instead.
+func (*RegenPreviewRequest) Descriptor() ([]byte, []int) {
+	return file_switchyard_v1alpha1_config_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *RegenPreviewRequest) GetFileType() string {
+	if x != nil {
+		return x.FileType
+	}
+	return ""
+}
+
+func (x *RegenPreviewRequest) GetAstJson() string {
+	if x != nil {
+		return x.AstJson
+	}
+	return ""
+}
+
+type RegenPreviewResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// 1-9: result
+	PklBytes      []byte `protobuf:"bytes,1,opt,name=pkl_bytes,json=pklBytes,proto3" json:"pkl_bytes,omitempty"`
+	Error         string `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RegenPreviewResponse) Reset() {
+	*x = RegenPreviewResponse{}
+	mi := &file_switchyard_v1alpha1_config_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RegenPreviewResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RegenPreviewResponse) ProtoMessage() {}
+
+func (x *RegenPreviewResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_switchyard_v1alpha1_config_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RegenPreviewResponse.ProtoReflect.Descriptor instead.
+func (*RegenPreviewResponse) Descriptor() ([]byte, []int) {
+	return file_switchyard_v1alpha1_config_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *RegenPreviewResponse) GetPklBytes() []byte {
+	if x != nil {
+		return x.PklBytes
+	}
+	return nil
+}
+
+func (x *RegenPreviewResponse) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
 var File_switchyard_v1alpha1_config_proto protoreflect.FileDescriptor
 
 const file_switchyard_v1alpha1_config_proto_rawDesc = "" +
@@ -713,13 +819,20 @@ const file_switchyard_v1alpha1_config_proto_rawDesc = "" +
 	"\x10entities_removed\x18\x05 \x01(\x05R\x0fentitiesRemoved\x12/\n" +
 	"\x13automations_changed\x18\x06 \x01(\x05R\x12automationsChanged\x12\x14\n" +
 	"\x05lines\x18\n" +
-	" \x03(\tR\x05lines2\xff\x03\n" +
+	" \x03(\tR\x05lines\"M\n" +
+	"\x13RegenPreviewRequest\x12\x1b\n" +
+	"\tfile_type\x18\x01 \x01(\tR\bfileType\x12\x19\n" +
+	"\bast_json\x18\x02 \x01(\tR\aastJson\"I\n" +
+	"\x14RegenPreviewResponse\x12\x1b\n" +
+	"\tpkl_bytes\x18\x01 \x01(\fR\bpklBytes\x12\x14\n" +
+	"\x05error\x18\x02 \x01(\tR\x05error2\xe4\x04\n" +
 	"\rConfigService\x12c\n" +
 	"\bValidate\x12*.switchyard.v1alpha1.ValidateConfigRequest\x1a+.switchyard.v1alpha1.ValidateConfigResponse\x12Z\n" +
 	"\x05Apply\x12'.switchyard.v1alpha1.ApplyConfigRequest\x1a(.switchyard.v1alpha1.ApplyConfigResponse\x12]\n" +
 	"\x06Reload\x12(.switchyard.v1alpha1.ReloadConfigRequest\x1a).switchyard.v1alpha1.ReloadConfigResponse\x12l\n" +
 	"\vGetArtifact\x12-.switchyard.v1alpha1.GetConfigArtifactRequest\x1a..switchyard.v1alpha1.GetConfigArtifactResponse\x12`\n" +
-	"\vEvalCompute\x12'.switchyard.v1alpha1.EvalComputeRequest\x1a(.switchyard.v1alpha1.EvalComputeResponseB\xdc\x01\n" +
+	"\vEvalCompute\x12'.switchyard.v1alpha1.EvalComputeRequest\x1a(.switchyard.v1alpha1.EvalComputeResponse\x12c\n" +
+	"\fRegenPreview\x12(.switchyard.v1alpha1.RegenPreviewRequest\x1a).switchyard.v1alpha1.RegenPreviewResponseB\xdc\x01\n" +
 	"\x17com.switchyard.v1alpha1B\vConfigProtoP\x01ZGgithub.com/fdatoo/switchyard/gen/switchyard/v1alpha1;switchyardv1alpha1\xa2\x02\x03SXX\xaa\x02\x13Switchyard.V1alpha1\xca\x02\x13Switchyard\\V1alpha1\xe2\x02\x1fSwitchyard\\V1alpha1\\GPBMetadata\xea\x02\x14Switchyard::V1alpha1b\x06proto3"
 
 var (
@@ -734,7 +847,7 @@ func file_switchyard_v1alpha1_config_proto_rawDescGZIP() []byte {
 	return file_switchyard_v1alpha1_config_proto_rawDescData
 }
 
-var file_switchyard_v1alpha1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_switchyard_v1alpha1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_switchyard_v1alpha1_config_proto_goTypes = []any{
 	(*ValidateConfigRequest)(nil),     // 0: switchyard.v1alpha1.ValidateConfigRequest
 	(*ValidateConfigResponse)(nil),    // 1: switchyard.v1alpha1.ValidateConfigResponse
@@ -747,29 +860,33 @@ var file_switchyard_v1alpha1_config_proto_goTypes = []any{
 	(*EvalComputeRequest)(nil),        // 8: switchyard.v1alpha1.EvalComputeRequest
 	(*EvalComputeResponse)(nil),       // 9: switchyard.v1alpha1.EvalComputeResponse
 	(*ConfigDiff)(nil),                // 10: switchyard.v1alpha1.ConfigDiff
-	(*v1.ConfigSnapshot)(nil),         // 11: switchyard.config.v1.ConfigSnapshot
-	(*structpb.Struct)(nil),           // 12: google.protobuf.Struct
-	(*structpb.Value)(nil),            // 13: google.protobuf.Value
+	(*RegenPreviewRequest)(nil),       // 11: switchyard.v1alpha1.RegenPreviewRequest
+	(*RegenPreviewResponse)(nil),      // 12: switchyard.v1alpha1.RegenPreviewResponse
+	(*v1.ConfigSnapshot)(nil),         // 13: switchyard.config.v1.ConfigSnapshot
+	(*structpb.Struct)(nil),           // 14: google.protobuf.Struct
+	(*structpb.Value)(nil),            // 15: google.protobuf.Value
 }
 var file_switchyard_v1alpha1_config_proto_depIdxs = []int32{
 	10, // 0: switchyard.v1alpha1.ValidateConfigResponse.diff:type_name -> switchyard.v1alpha1.ConfigDiff
 	10, // 1: switchyard.v1alpha1.ApplyConfigResponse.diff:type_name -> switchyard.v1alpha1.ConfigDiff
 	10, // 2: switchyard.v1alpha1.ReloadConfigResponse.diff:type_name -> switchyard.v1alpha1.ConfigDiff
-	11, // 3: switchyard.v1alpha1.GetConfigArtifactResponse.snapshot:type_name -> switchyard.config.v1.ConfigSnapshot
-	12, // 4: switchyard.v1alpha1.EvalComputeRequest.state_snapshot:type_name -> google.protobuf.Struct
-	13, // 5: switchyard.v1alpha1.EvalComputeResponse.result:type_name -> google.protobuf.Value
+	13, // 3: switchyard.v1alpha1.GetConfigArtifactResponse.snapshot:type_name -> switchyard.config.v1.ConfigSnapshot
+	14, // 4: switchyard.v1alpha1.EvalComputeRequest.state_snapshot:type_name -> google.protobuf.Struct
+	15, // 5: switchyard.v1alpha1.EvalComputeResponse.result:type_name -> google.protobuf.Value
 	0,  // 6: switchyard.v1alpha1.ConfigService.Validate:input_type -> switchyard.v1alpha1.ValidateConfigRequest
 	2,  // 7: switchyard.v1alpha1.ConfigService.Apply:input_type -> switchyard.v1alpha1.ApplyConfigRequest
 	4,  // 8: switchyard.v1alpha1.ConfigService.Reload:input_type -> switchyard.v1alpha1.ReloadConfigRequest
 	6,  // 9: switchyard.v1alpha1.ConfigService.GetArtifact:input_type -> switchyard.v1alpha1.GetConfigArtifactRequest
 	8,  // 10: switchyard.v1alpha1.ConfigService.EvalCompute:input_type -> switchyard.v1alpha1.EvalComputeRequest
-	1,  // 11: switchyard.v1alpha1.ConfigService.Validate:output_type -> switchyard.v1alpha1.ValidateConfigResponse
-	3,  // 12: switchyard.v1alpha1.ConfigService.Apply:output_type -> switchyard.v1alpha1.ApplyConfigResponse
-	5,  // 13: switchyard.v1alpha1.ConfigService.Reload:output_type -> switchyard.v1alpha1.ReloadConfigResponse
-	7,  // 14: switchyard.v1alpha1.ConfigService.GetArtifact:output_type -> switchyard.v1alpha1.GetConfigArtifactResponse
-	9,  // 15: switchyard.v1alpha1.ConfigService.EvalCompute:output_type -> switchyard.v1alpha1.EvalComputeResponse
-	11, // [11:16] is the sub-list for method output_type
-	6,  // [6:11] is the sub-list for method input_type
+	11, // 11: switchyard.v1alpha1.ConfigService.RegenPreview:input_type -> switchyard.v1alpha1.RegenPreviewRequest
+	1,  // 12: switchyard.v1alpha1.ConfigService.Validate:output_type -> switchyard.v1alpha1.ValidateConfigResponse
+	3,  // 13: switchyard.v1alpha1.ConfigService.Apply:output_type -> switchyard.v1alpha1.ApplyConfigResponse
+	5,  // 14: switchyard.v1alpha1.ConfigService.Reload:output_type -> switchyard.v1alpha1.ReloadConfigResponse
+	7,  // 15: switchyard.v1alpha1.ConfigService.GetArtifact:output_type -> switchyard.v1alpha1.GetConfigArtifactResponse
+	9,  // 16: switchyard.v1alpha1.ConfigService.EvalCompute:output_type -> switchyard.v1alpha1.EvalComputeResponse
+	12, // 17: switchyard.v1alpha1.ConfigService.RegenPreview:output_type -> switchyard.v1alpha1.RegenPreviewResponse
+	12, // [12:18] is the sub-list for method output_type
+	6,  // [6:12] is the sub-list for method input_type
 	6,  // [6:6] is the sub-list for extension type_name
 	6,  // [6:6] is the sub-list for extension extendee
 	0,  // [0:6] is the sub-list for field type_name
@@ -786,7 +903,7 @@ func file_switchyard_v1alpha1_config_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_switchyard_v1alpha1_config_proto_rawDesc), len(file_switchyard_v1alpha1_config_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   11,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -23,7 +23,7 @@ export function Shell({ children, currentPath }: ShellProps) {
       data-testid="shell"
       style={{
         display: "flex",
-        minHeight: "100vh",
+        height: "100vh",
         background: "var(--sy-color-bg)",
       }}
     >
@@ -34,6 +34,7 @@ export function Shell({ children, currentPath }: ShellProps) {
           flexDirection: "column",
           flex: 1,
           minWidth: 0,
+          height: "100vh",
           overflow: "hidden",
         }}
       >

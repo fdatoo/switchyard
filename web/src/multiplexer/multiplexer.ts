@@ -1,5 +1,6 @@
 import { StateCache } from "./state-cache";
 import { CommandTracker } from "./command-tracker";
+import { markDaemonReachable, markDaemonUnreachable } from "@/data/daemon-connection";
 
 export type StreamKind = "state" | "command";
 export type StreamEvent =
@@ -38,6 +39,7 @@ export function createMultiplexer(opts: { transport?: Transport; openStream?: St
   let stopped = false;
 
   const handleEvent = (event: StreamEvent) => {
+    markDaemonReachable();
     if (event.kind === "state") {
       cursors.state = event.cursor;
       cache.set(event.entityId, { entityId: event.entityId, state: String(event.state) });
@@ -58,18 +60,27 @@ export function createMultiplexer(opts: { transport?: Transport; openStream?: St
   const open = (kind: StreamKind) => {
     if (!opts.openStream || stopped || entityIds.size === 0) return;
     handles[kind]?.close();
-    handles[kind] = opts.openStream({
-      kind,
-      entityIds: [...entityIds],
-      cursor: cursors[kind],
-      onEvent: handleEvent,
-      onClose: () => {
-        handles[kind] = undefined;
-        if (!stopped) {
-          timers[kind] = setTimeout(() => open(kind), opts.reconnectDelayMs ?? 1000);
-        }
-      },
-    });
+    try {
+      handles[kind] = opts.openStream({
+        kind,
+        entityIds: [...entityIds],
+        cursor: cursors[kind],
+        onEvent: handleEvent,
+        onClose: () => {
+          handles[kind] = undefined;
+          markDaemonUnreachable(new Error(`${kind} stream closed`));
+          if (!stopped) {
+            timers[kind] = setTimeout(() => open(kind), opts.reconnectDelayMs ?? 1000);
+          }
+        },
+      });
+    } catch (error) {
+      handles[kind] = undefined;
+      markDaemonUnreachable(error);
+      if (!stopped) {
+        timers[kind] = setTimeout(() => open(kind), opts.reconnectDelayMs ?? 1000);
+      }
+    }
   };
 
   return {

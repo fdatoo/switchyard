@@ -1,3 +1,5 @@
+import { markDaemonReachable, markDaemonUnreachable } from "./daemon-connection";
+
 export class ConnectHTTPError extends Error {
   constructor(
     message: string,
@@ -43,15 +45,22 @@ async function postConnect<TRequest, TResponse>(
   procedure: string,
   body: TRequest,
 ): Promise<TResponse> {
-  const response = await fetch(procedure, {
-    method: "POST",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      "Connect-Protocol-Version": "1",
-    },
-    body: JSON.stringify(body),
-  });
+  let response: Response;
+  try {
+    response = await fetch(procedure, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        "Connect-Protocol-Version": "1",
+      },
+      body: JSON.stringify(body),
+    });
+  } catch (error) {
+    markDaemonUnreachable(error);
+    throw error;
+  }
+  markDaemonReachable();
   if (!response.ok) {
     throw new ConnectHTTPError(`connect request failed: ${response.status}`, response.status);
   }

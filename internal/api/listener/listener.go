@@ -61,6 +61,7 @@ func (l *Listener) Start(ctx context.Context) error {
 	defer l.mu.Unlock()
 
 	mux := http.NewServeMux()
+	mux.HandleFunc("/health", l.healthzHandler)
 	mux.HandleFunc("/healthz", l.healthzHandler)
 	for _, r := range l.deps.ConnectRoutes {
 		handler := r.Handler
@@ -80,7 +81,7 @@ func (l *Listener) Start(ctx context.Context) error {
 	if l.deps.WidgetsHandler != nil {
 		mux.Handle("/widgets/", l.deps.WidgetsHandler)
 	}
-	// SPA catch-all — must be last so explicit routes (Connect, /healthz, /webhooks/, /mcp, /widgets/) win.
+	// SPA catch-all — must be last so explicit routes (Connect, /health, /healthz, /webhooks/, /mcp, /widgets/) win.
 	if l.deps.WebHandler != nil {
 		mux.Handle("/", l.deps.WebHandler)
 	}

@@ -42,6 +42,35 @@ func TestListener_HealthzOnTCP(t *testing.T) {
 	}
 }
 
+func TestListener_HealthOnTCP(t *testing.T) {
+	dir := t.TempDir()
+	cfg := listener.Config{
+		UDSPath: filepath.Join(dir, "sock"),
+		UDSMode: 0o600,
+		TCPBind: "127.0.0.1:0",
+	}
+	l, err := listener.Build(cfg, listener.Deps{HealthProbe: func() error { return nil }})
+	if err != nil {
+		t.Fatalf("Build: %v", err)
+	}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	if err := l.Start(ctx); err != nil {
+		t.Fatalf("Start: %v", err)
+	}
+	defer l.Shutdown(context.Background())
+
+	resp, err := http.Get("http://" + l.TCPAddr().String() + "/health")
+	if err != nil {
+		t.Fatalf("GET /health: %v", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		b, _ := io.ReadAll(resp.Body)
+		t.Errorf("status = %d, body = %q", resp.StatusCode, b)
+	}
+}
+
 func TestListener_UDSFileMode(t *testing.T) {
 	dir := t.TempDir()
 	sock := filepath.Join(dir, "sock")

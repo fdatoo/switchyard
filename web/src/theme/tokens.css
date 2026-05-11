@@ -40,3 +40,18 @@ body {
   color: var(--gh-color-fg);
   font-family: var(--gh-font-body);
 }
+
+.reconnecting-banner {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gh-pad-normal);
+  border-bottom: 1px solid var(--gh-color-border);
+  background: var(--gh-color-warning);
+  color: var(--gh-color-bg);
+  padding: var(--gh-pad-normal) var(--gh-pad-loose);
+  font-size: 0.875rem;
+}

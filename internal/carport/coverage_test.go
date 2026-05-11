@@ -95,6 +95,52 @@ func TestInstance_Health_OK(t *testing.T) {
 	}
 }
 
+func TestFakeDriver_HandshakeAndShutdownState(t *testing.T) {
+	d := &fakedriver.Double{
+		ExpectedSecret: "secret",
+		Manifest: &carportpb.DriverManifest{
+			Name:            "fake",
+			Version:         "1.2.3",
+			ProtocolVersion: "v1alpha1",
+		},
+		InitialEntities: []*eventpb.EntityRegistered{{DeviceId: "light.fake"}},
+	}
+
+	if _, err := d.Handshake(context.Background(), &carportpb.HandshakeRequest{
+		ProtocolVersion: "v1alpha1",
+		InstanceId:      "fake",
+		HandshakeSecret: "wrong",
+	}); err == nil {
+		t.Fatal("expected bad handshake secret to fail")
+	}
+	resp, err := d.Handshake(context.Background(), &carportpb.HandshakeRequest{
+		ProtocolVersion: "v1alpha1",
+		InstanceId:      "fake",
+		HandshakeSecret: "secret",
+	})
+	if err != nil {
+		t.Fatalf("Handshake: %v", err)
+	}
+	if resp.GetManifest().GetVersion() != "1.2.3" {
+		t.Fatalf("manifest version = %q, want 1.2.3", resp.GetManifest().GetVersion())
+	}
+	if len(resp.GetInitialEntities()) != 1 {
+		t.Fatalf("initial entities len = %d, want 1", len(resp.GetInitialEntities()))
+	}
+	if d.HandshakeCount() != 1 {
+		t.Fatalf("HandshakeCount = %d, want 1", d.HandshakeCount())
+	}
+	if d.Closed() {
+		t.Fatal("Closed true before Shutdown")
+	}
+	if _, err := d.Shutdown(context.Background(), &carportpb.ShutdownRequest{}); err != nil {
+		t.Fatalf("Shutdown: %v", err)
+	}
+	if !d.Closed() {
+		t.Fatal("Closed false after Shutdown")
+	}
+}
+
 // ---- IngestMessage error paths ----
 
 func TestIngestMessage_RejectsResultKind(t *testing.T) {

@@ -194,10 +194,8 @@ jobs:
             path: ./internal/carport
             coverpkg: ./internal/carport/...
             profile: cover-carport.out
-            # TODO(F-295): Raise this temporary floor to 85% after https://linear.app/fdatoo/issue/F-295 ships.
-            gate: "80.5"
+            gate: "85"
             target: "85"
-            exception: F-295
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5

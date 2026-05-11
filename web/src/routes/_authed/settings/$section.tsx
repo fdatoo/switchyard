@@ -59,7 +59,7 @@ export function SettingsSection({ section = "" }: Props) {
       style={{
         display: "flex",
         flex: 1,
-        minHeight: 0,
+        minHeight: "100%",
         overflow: "hidden",
       }}
     >

@@ -26,6 +26,16 @@ func TestTokenScope_EmptyAllowedActions_PermitsAll(t *testing.T) {
 	require.True(t, s.PermitsAction(policy.VerbAdmin, "AnythingService.Anything"))
 }
 
+func TestTokenScope_Allow_TrailingWildcardActions(t *testing.T) {
+	s := policy.CompiledTokenScope{
+		AllowedTools:    []string{"gohome__*"},
+		AllowedServices: []string{"EntityService.*"},
+	}
+	require.True(t, s.Allow("gohome__turn_on", policy.Target{}))
+	require.True(t, s.Allow("EntityService.Get", policy.Target{}))
+	require.False(t, s.Allow("ConfigService.Apply", policy.Target{}))
+}
+
 func TestTokenScope_PermitsTarget_NarrowsByEntitySelector(t *testing.T) {
 	s := policy.CompiledTokenScope{
 		AllowedTargets: policy.CompiledSelector{
@@ -39,4 +49,37 @@ func TestTokenScope_PermitsTarget_NarrowsByEntitySelector(t *testing.T) {
 func TestTokenScope_EmptyAllowedTargets_PermitsAll(t *testing.T) {
 	s := policy.CompiledTokenScope{}
 	require.True(t, s.PermitsTarget(policy.Target{Class: "Anything"}))
+}
+
+func TestTokenScope_Allow_NarrowsByArea(t *testing.T) {
+	s := policy.CompiledTokenScope{
+		AllowedServices: []string{"EntityService.*"},
+		AllowedTargets: policy.CompiledSelector{
+			AreaSet: map[policy.AreaSlug]struct{}{"kitchen": {}},
+		},
+	}
+	require.True(t, s.Allow("EntityService.Get", policy.Target{Area: "kitchen"}))
+	require.False(t, s.Allow("EntityService.Get", policy.Target{Area: "garage"}))
+}
+
+func TestTokenScope_Contains_RejectsBroaderChild(t *testing.T) {
+	parent := policy.CompiledTokenScope{
+		AllowedServices: []string{"EntityService.Get"},
+		AllowedTargets: policy.CompiledSelector{
+			AreaSet: map[policy.AreaSlug]struct{}{"kitchen": {}},
+		},
+	}
+	require.True(t, parent.Contains(policy.CompiledTokenScope{
+		AllowedServices: []string{"EntityService.Get"},
+		AllowedTargets: policy.CompiledSelector{
+			AreaSet: map[policy.AreaSlug]struct{}{"kitchen": {}},
+		},
+	}))
+	require.False(t, parent.Contains(policy.CompiledTokenScope{
+		AllowedServices: []string{"EntityService.*"},
+		AllowedTargets: policy.CompiledSelector{
+			AreaSet: map[policy.AreaSlug]struct{}{"kitchen": {}},
+		},
+	}))
+	require.False(t, parent.Contains(policy.CompiledTokenScope{}))
 }

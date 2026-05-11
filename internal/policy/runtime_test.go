@@ -63,6 +63,31 @@ func TestAuthorize_AdminAllowedEverything(t *testing.T) {
 	require.NoError(t, err)
 }
 
+func TestAuthorize_TokenScopeIntersectsUserPolicy(t *testing.T) {
+	rt := setupRuntime(t)
+	ctx := policy.WithTokenScope(context.Background(), policy.CompiledTokenScope{
+		AllowedServices: []string{"EntityService.*"},
+		AllowedTargets: policy.CompiledSelector{
+			AreaSet: map[policy.AreaSlug]struct{}{"kitchen": {}},
+		},
+	})
+
+	err := rt.Authorize(ctx,
+		auth.Principal{ID: "user:fdatoo", Kind: "user"},
+		auth.Action{Service: "EntityService", Method: "Get", Verb: "read"},
+		auth.Target{Kind: "entity", ID: "light.kitchen", Area: "kitchen", Class: "Light"})
+	require.NoError(t, err)
+
+	err = rt.Authorize(ctx,
+		auth.Principal{ID: "user:fdatoo", Kind: "user"},
+		auth.Action{Service: "EntityService", Method: "Get", Verb: "read"},
+		auth.Target{Kind: "entity", ID: "light.garage", Area: "garage", Class: "Light"})
+	require.Error(t, err)
+	var fb *policy.ErrForbidden
+	require.ErrorAs(t, err, &fb)
+	require.Equal(t, "token_target_denied", fb.Reason)
+}
+
 func TestAuthorize_KidDeniedFrontDoorLock(t *testing.T) {
 	rt := setupRuntime(t)
 	err := rt.Authorize(context.Background(),

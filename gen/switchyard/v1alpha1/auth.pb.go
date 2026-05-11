@@ -355,17 +355,138 @@ func (x *CurrentUserResponse) GetUser() *User {
 	return nil
 }
 
+type TokenTargetSelector struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Areas         []string               `protobuf:"bytes,1,rep,name=areas,proto3" json:"areas,omitempty"`
+	Classes       []string               `protobuf:"bytes,2,rep,name=classes,proto3" json:"classes,omitempty"`
+	EntityIds     []string               `protobuf:"bytes,3,rep,name=entity_ids,json=entityIds,proto3" json:"entity_ids,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TokenTargetSelector) Reset() {
+	*x = TokenTargetSelector{}
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TokenTargetSelector) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TokenTargetSelector) ProtoMessage() {}
+
+func (x *TokenTargetSelector) ProtoReflect() protoreflect.Message {
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TokenTargetSelector.ProtoReflect.Descriptor instead.
+func (*TokenTargetSelector) Descriptor() ([]byte, []int) {
+	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *TokenTargetSelector) GetAreas() []string {
+	if x != nil {
+		return x.Areas
+	}
+	return nil
+}
+
+func (x *TokenTargetSelector) GetClasses() []string {
+	if x != nil {
+		return x.Classes
+	}
+	return nil
+}
+
+func (x *TokenTargetSelector) GetEntityIds() []string {
+	if x != nil {
+		return x.EntityIds
+	}
+	return nil
+}
+
+type TokenScope struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AllowTools    []string               `protobuf:"bytes,1,rep,name=allow_tools,json=allowTools,proto3" json:"allow_tools,omitempty"`
+	AllowServices []string               `protobuf:"bytes,2,rep,name=allow_services,json=allowServices,proto3" json:"allow_services,omitempty"`
+	AllowTargets  *TokenTargetSelector   `protobuf:"bytes,3,opt,name=allow_targets,json=allowTargets,proto3" json:"allow_targets,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TokenScope) Reset() {
+	*x = TokenScope{}
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TokenScope) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TokenScope) ProtoMessage() {}
+
+func (x *TokenScope) ProtoReflect() protoreflect.Message {
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TokenScope.ProtoReflect.Descriptor instead.
+func (*TokenScope) Descriptor() ([]byte, []int) {
+	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *TokenScope) GetAllowTools() []string {
+	if x != nil {
+		return x.AllowTools
+	}
+	return nil
+}
+
+func (x *TokenScope) GetAllowServices() []string {
+	if x != nil {
+		return x.AllowServices
+	}
+	return nil
+}
+
+func (x *TokenScope) GetAllowTargets() *TokenTargetSelector {
+	if x != nil {
+		return x.AllowTargets
+	}
+	return nil
+}
+
 type CreateTokenRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	DisplayName   string                 `protobuf:"bytes,1,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	Scopes        []string               `protobuf:"bytes,2,rep,name=scopes,proto3" json:"scopes,omitempty"`
+	Scope         *TokenScope            `protobuf:"bytes,3,opt,name=scope,proto3" json:"scope,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CreateTokenRequest) Reset() {
 	*x = CreateTokenRequest{}
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[7]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -377,7 +498,7 @@ func (x *CreateTokenRequest) String() string {
 func (*CreateTokenRequest) ProtoMessage() {}
 
 func (x *CreateTokenRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[7]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -390,7 +511,7 @@ func (x *CreateTokenRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateTokenRequest.ProtoReflect.Descriptor instead.
 func (*CreateTokenRequest) Descriptor() ([]byte, []int) {
-	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{7}
+	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *CreateTokenRequest) GetDisplayName() string {
@@ -407,6 +528,13 @@ func (x *CreateTokenRequest) GetScopes() []string {
 	return nil
 }
 
+func (x *CreateTokenRequest) GetScope() *TokenScope {
+	if x != nil {
+		return x.Scope
+	}
+	return nil
+}
+
 type CreateTokenResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Token         string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
@@ -417,7 +545,7 @@ type CreateTokenResponse struct {
 
 func (x *CreateTokenResponse) Reset() {
 	*x = CreateTokenResponse{}
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[8]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -429,7 +557,7 @@ func (x *CreateTokenResponse) String() string {
 func (*CreateTokenResponse) ProtoMessage() {}
 
 func (x *CreateTokenResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[8]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -442,7 +570,7 @@ func (x *CreateTokenResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateTokenResponse.ProtoReflect.Descriptor instead.
 func (*CreateTokenResponse) Descriptor() ([]byte, []int) {
-	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{8}
+	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *CreateTokenResponse) GetToken() string {
@@ -468,7 +596,7 @@ type RevokeTokenRequest struct {
 
 func (x *RevokeTokenRequest) Reset() {
 	*x = RevokeTokenRequest{}
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[9]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -480,7 +608,7 @@ func (x *RevokeTokenRequest) String() string {
 func (*RevokeTokenRequest) ProtoMessage() {}
 
 func (x *RevokeTokenRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[9]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -493,7 +621,7 @@ func (x *RevokeTokenRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RevokeTokenRequest.ProtoReflect.Descriptor instead.
 func (*RevokeTokenRequest) Descriptor() ([]byte, []int) {
-	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{9}
+	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *RevokeTokenRequest) GetTokenId() string {
@@ -511,7 +639,7 @@ type RevokeTokenResponse struct {
 
 func (x *RevokeTokenResponse) Reset() {
 	*x = RevokeTokenResponse{}
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[10]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -523,7 +651,7 @@ func (x *RevokeTokenResponse) String() string {
 func (*RevokeTokenResponse) ProtoMessage() {}
 
 func (x *RevokeTokenResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[10]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -536,7 +664,7 @@ func (x *RevokeTokenResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RevokeTokenResponse.ProtoReflect.Descriptor instead.
 func (*RevokeTokenResponse) Descriptor() ([]byte, []int) {
-	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{10}
+	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{12}
 }
 
 type ListUsersRequest struct {
@@ -548,7 +676,7 @@ type ListUsersRequest struct {
 
 func (x *ListUsersRequest) Reset() {
 	*x = ListUsersRequest{}
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[11]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -560,7 +688,7 @@ func (x *ListUsersRequest) String() string {
 func (*ListUsersRequest) ProtoMessage() {}
 
 func (x *ListUsersRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[11]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -573,7 +701,7 @@ func (x *ListUsersRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListUsersRequest.ProtoReflect.Descriptor instead.
 func (*ListUsersRequest) Descriptor() ([]byte, []int) {
-	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{11}
+	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *ListUsersRequest) GetPage() *PageRequest {
@@ -593,7 +721,7 @@ type ListUsersResponse struct {
 
 func (x *ListUsersResponse) Reset() {
 	*x = ListUsersResponse{}
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[12]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -605,7 +733,7 @@ func (x *ListUsersResponse) String() string {
 func (*ListUsersResponse) ProtoMessage() {}
 
 func (x *ListUsersResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[12]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -618,7 +746,7 @@ func (x *ListUsersResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListUsersResponse.ProtoReflect.Descriptor instead.
 func (*ListUsersResponse) Descriptor() ([]byte, []int) {
-	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{12}
+	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *ListUsersResponse) GetUsers() []*User {
@@ -647,7 +775,7 @@ type RegisterPasskeyRequest struct {
 
 func (x *RegisterPasskeyRequest) Reset() {
 	*x = RegisterPasskeyRequest{}
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[13]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -659,7 +787,7 @@ func (x *RegisterPasskeyRequest) String() string {
 func (*RegisterPasskeyRequest) ProtoMessage() {}
 
 func (x *RegisterPasskeyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[13]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -672,7 +800,7 @@ func (x *RegisterPasskeyRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RegisterPasskeyRequest.ProtoReflect.Descriptor instead.
 func (*RegisterPasskeyRequest) Descriptor() ([]byte, []int) {
-	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{13}
+	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *RegisterPasskeyRequest) GetPublicKeyCredential() []byte {
@@ -712,7 +840,7 @@ type RegisterPasskeyResponse struct {
 
 func (x *RegisterPasskeyResponse) Reset() {
 	*x = RegisterPasskeyResponse{}
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[14]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -724,7 +852,7 @@ func (x *RegisterPasskeyResponse) String() string {
 func (*RegisterPasskeyResponse) ProtoMessage() {}
 
 func (x *RegisterPasskeyResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[14]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -737,7 +865,7 @@ func (x *RegisterPasskeyResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RegisterPasskeyResponse.ProtoReflect.Descriptor instead.
 func (*RegisterPasskeyResponse) Descriptor() ([]byte, []int) {
-	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{14}
+	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *RegisterPasskeyResponse) GetCredentialId() string {
@@ -758,7 +886,7 @@ type StartWebAuthnChallengeRequest struct {
 
 func (x *StartWebAuthnChallengeRequest) Reset() {
 	*x = StartWebAuthnChallengeRequest{}
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[15]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -770,7 +898,7 @@ func (x *StartWebAuthnChallengeRequest) String() string {
 func (*StartWebAuthnChallengeRequest) ProtoMessage() {}
 
 func (x *StartWebAuthnChallengeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[15]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -783,7 +911,7 @@ func (x *StartWebAuthnChallengeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartWebAuthnChallengeRequest.ProtoReflect.Descriptor instead.
 func (*StartWebAuthnChallengeRequest) Descriptor() ([]byte, []int) {
-	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{15}
+	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *StartWebAuthnChallengeRequest) GetUserSlug() string {
@@ -817,7 +945,7 @@ type StartWebAuthnChallengeResponse struct {
 
 func (x *StartWebAuthnChallengeResponse) Reset() {
 	*x = StartWebAuthnChallengeResponse{}
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[16]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -829,7 +957,7 @@ func (x *StartWebAuthnChallengeResponse) String() string {
 func (*StartWebAuthnChallengeResponse) ProtoMessage() {}
 
 func (x *StartWebAuthnChallengeResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[16]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -842,7 +970,7 @@ func (x *StartWebAuthnChallengeResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartWebAuthnChallengeResponse.ProtoReflect.Descriptor instead.
 func (*StartWebAuthnChallengeResponse) Descriptor() ([]byte, []int) {
-	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{16}
+	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *StartWebAuthnChallengeResponse) GetChallenge() []byte {
@@ -867,7 +995,7 @@ type RefreshRequest struct {
 
 func (x *RefreshRequest) Reset() {
 	*x = RefreshRequest{}
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[17]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -879,7 +1007,7 @@ func (x *RefreshRequest) String() string {
 func (*RefreshRequest) ProtoMessage() {}
 
 func (x *RefreshRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[17]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -892,7 +1020,7 @@ func (x *RefreshRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RefreshRequest.ProtoReflect.Descriptor instead.
 func (*RefreshRequest) Descriptor() ([]byte, []int) {
-	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{17}
+	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{19}
 }
 
 type RefreshResponse struct {
@@ -905,7 +1033,7 @@ type RefreshResponse struct {
 
 func (x *RefreshResponse) Reset() {
 	*x = RefreshResponse{}
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[18]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -917,7 +1045,7 @@ func (x *RefreshResponse) String() string {
 func (*RefreshResponse) ProtoMessage() {}
 
 func (x *RefreshResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[18]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -930,7 +1058,7 @@ func (x *RefreshResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RefreshResponse.ProtoReflect.Descriptor instead.
 func (*RefreshResponse) Descriptor() ([]byte, []int) {
-	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{18}
+	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *RefreshResponse) GetUserSlug() string {
@@ -958,7 +1086,7 @@ type MintEnrollmentTokenRequest struct {
 
 func (x *MintEnrollmentTokenRequest) Reset() {
 	*x = MintEnrollmentTokenRequest{}
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[19]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -970,7 +1098,7 @@ func (x *MintEnrollmentTokenRequest) String() string {
 func (*MintEnrollmentTokenRequest) ProtoMessage() {}
 
 func (x *MintEnrollmentTokenRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[19]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -983,7 +1111,7 @@ func (x *MintEnrollmentTokenRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MintEnrollmentTokenRequest.ProtoReflect.Descriptor instead.
 func (*MintEnrollmentTokenRequest) Descriptor() ([]byte, []int) {
-	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{19}
+	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *MintEnrollmentTokenRequest) GetUserSlug() string {
@@ -1017,7 +1145,7 @@ type MintEnrollmentTokenResponse struct {
 
 func (x *MintEnrollmentTokenResponse) Reset() {
 	*x = MintEnrollmentTokenResponse{}
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[20]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1029,7 +1157,7 @@ func (x *MintEnrollmentTokenResponse) String() string {
 func (*MintEnrollmentTokenResponse) ProtoMessage() {}
 
 func (x *MintEnrollmentTokenResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[20]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1042,7 +1170,7 @@ func (x *MintEnrollmentTokenResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MintEnrollmentTokenResponse.ProtoReflect.Descriptor instead.
 func (*MintEnrollmentTokenResponse) Descriptor() ([]byte, []int) {
-	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{20}
+	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *MintEnrollmentTokenResponse) GetToken() string {
@@ -1068,7 +1196,7 @@ type RedeemEnrollmentTokenRequest struct {
 
 func (x *RedeemEnrollmentTokenRequest) Reset() {
 	*x = RedeemEnrollmentTokenRequest{}
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[21]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1080,7 +1208,7 @@ func (x *RedeemEnrollmentTokenRequest) String() string {
 func (*RedeemEnrollmentTokenRequest) ProtoMessage() {}
 
 func (x *RedeemEnrollmentTokenRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[21]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1093,7 +1221,7 @@ func (x *RedeemEnrollmentTokenRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RedeemEnrollmentTokenRequest.ProtoReflect.Descriptor instead.
 func (*RedeemEnrollmentTokenRequest) Descriptor() ([]byte, []int) {
-	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{21}
+	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *RedeemEnrollmentTokenRequest) GetToken() string {
@@ -1113,7 +1241,7 @@ type RedeemEnrollmentTokenResponse struct {
 
 func (x *RedeemEnrollmentTokenResponse) Reset() {
 	*x = RedeemEnrollmentTokenResponse{}
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[22]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1125,7 +1253,7 @@ func (x *RedeemEnrollmentTokenResponse) String() string {
 func (*RedeemEnrollmentTokenResponse) ProtoMessage() {}
 
 func (x *RedeemEnrollmentTokenResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[22]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1138,7 +1266,7 @@ func (x *RedeemEnrollmentTokenResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RedeemEnrollmentTokenResponse.ProtoReflect.Descriptor instead.
 func (*RedeemEnrollmentTokenResponse) Descriptor() ([]byte, []int) {
-	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{22}
+	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *RedeemEnrollmentTokenResponse) GetUserSlug() string {
@@ -1165,7 +1293,7 @@ type ChangePasswordRequest struct {
 
 func (x *ChangePasswordRequest) Reset() {
 	*x = ChangePasswordRequest{}
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[23]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1177,7 +1305,7 @@ func (x *ChangePasswordRequest) String() string {
 func (*ChangePasswordRequest) ProtoMessage() {}
 
 func (x *ChangePasswordRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[23]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1190,7 +1318,7 @@ func (x *ChangePasswordRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChangePasswordRequest.ProtoReflect.Descriptor instead.
 func (*ChangePasswordRequest) Descriptor() ([]byte, []int) {
-	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{23}
+	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *ChangePasswordRequest) GetOldPlaintext() string {
@@ -1215,7 +1343,7 @@ type ChangePasswordResponse struct {
 
 func (x *ChangePasswordResponse) Reset() {
 	*x = ChangePasswordResponse{}
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[24]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1227,7 +1355,7 @@ func (x *ChangePasswordResponse) String() string {
 func (*ChangePasswordResponse) ProtoMessage() {}
 
 func (x *ChangePasswordResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[24]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1240,7 +1368,7 @@ func (x *ChangePasswordResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChangePasswordResponse.ProtoReflect.Descriptor instead.
 func (*ChangePasswordResponse) Descriptor() ([]byte, []int) {
-	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{24}
+	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{26}
 }
 
 type ExplainAuthorizationRequest struct {
@@ -1259,7 +1387,7 @@ type ExplainAuthorizationRequest struct {
 
 func (x *ExplainAuthorizationRequest) Reset() {
 	*x = ExplainAuthorizationRequest{}
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[25]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1271,7 +1399,7 @@ func (x *ExplainAuthorizationRequest) String() string {
 func (*ExplainAuthorizationRequest) ProtoMessage() {}
 
 func (x *ExplainAuthorizationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[25]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1284,7 +1412,7 @@ func (x *ExplainAuthorizationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExplainAuthorizationRequest.ProtoReflect.Descriptor instead.
 func (*ExplainAuthorizationRequest) Descriptor() ([]byte, []int) {
-	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{25}
+	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *ExplainAuthorizationRequest) GetUserSlug() string {
@@ -1355,7 +1483,7 @@ type ExplainAuthorizationResponse struct {
 
 func (x *ExplainAuthorizationResponse) Reset() {
 	*x = ExplainAuthorizationResponse{}
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[26]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1367,7 +1495,7 @@ func (x *ExplainAuthorizationResponse) String() string {
 func (*ExplainAuthorizationResponse) ProtoMessage() {}
 
 func (x *ExplainAuthorizationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[26]
+	mi := &file_switchyard_v1alpha1_auth_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1380,7 +1508,7 @@ func (x *ExplainAuthorizationResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExplainAuthorizationResponse.ProtoReflect.Descriptor instead.
 func (*ExplainAuthorizationResponse) Descriptor() ([]byte, []int) {
-	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{26}
+	return file_switchyard_v1alpha1_auth_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *ExplainAuthorizationResponse) GetDecision() string {
@@ -1432,10 +1560,22 @@ const file_switchyard_v1alpha1_auth_proto_rawDesc = "" +
 	"\x0eLogoutResponse\"\x14\n" +
 	"\x12CurrentUserRequest\"D\n" +
 	"\x13CurrentUserResponse\x12-\n" +
-	"\x04user\x18\x01 \x01(\v2\x19.switchyard.v1alpha1.UserR\x04user\"O\n" +
+	"\x04user\x18\x01 \x01(\v2\x19.switchyard.v1alpha1.UserR\x04user\"d\n" +
+	"\x13TokenTargetSelector\x12\x14\n" +
+	"\x05areas\x18\x01 \x03(\tR\x05areas\x12\x18\n" +
+	"\aclasses\x18\x02 \x03(\tR\aclasses\x12\x1d\n" +
+	"\n" +
+	"entity_ids\x18\x03 \x03(\tR\tentityIds\"\xa3\x01\n" +
+	"\n" +
+	"TokenScope\x12\x1f\n" +
+	"\vallow_tools\x18\x01 \x03(\tR\n" +
+	"allowTools\x12%\n" +
+	"\x0eallow_services\x18\x02 \x03(\tR\rallowServices\x12M\n" +
+	"\rallow_targets\x18\x03 \x01(\v2(.switchyard.v1alpha1.TokenTargetSelectorR\fallowTargets\"\x86\x01\n" +
 	"\x12CreateTokenRequest\x12!\n" +
 	"\fdisplay_name\x18\x01 \x01(\tR\vdisplayName\x12\x16\n" +
-	"\x06scopes\x18\x02 \x03(\tR\x06scopes\"F\n" +
+	"\x06scopes\x18\x02 \x03(\tR\x06scopes\x125\n" +
+	"\x05scope\x18\x03 \x01(\v2\x1f.switchyard.v1alpha1.TokenScopeR\x05scope\"F\n" +
 	"\x13CreateTokenResponse\x12\x14\n" +
 	"\x05token\x18\x01 \x01(\tR\x05token\x12\x19\n" +
 	"\btoken_id\x18\x02 \x01(\tR\atokenId\"/\n" +
@@ -1530,7 +1670,7 @@ func file_switchyard_v1alpha1_auth_proto_rawDescGZIP() []byte {
 	return file_switchyard_v1alpha1_auth_proto_rawDescData
 }
 
-var file_switchyard_v1alpha1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 27)
+var file_switchyard_v1alpha1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 29)
 var file_switchyard_v1alpha1_auth_proto_goTypes = []any{
 	(*User)(nil),                           // 0: switchyard.v1alpha1.User
 	(*LoginRequest)(nil),                   // 1: switchyard.v1alpha1.LoginRequest
@@ -1539,65 +1679,69 @@ var file_switchyard_v1alpha1_auth_proto_goTypes = []any{
 	(*LogoutResponse)(nil),                 // 4: switchyard.v1alpha1.LogoutResponse
 	(*CurrentUserRequest)(nil),             // 5: switchyard.v1alpha1.CurrentUserRequest
 	(*CurrentUserResponse)(nil),            // 6: switchyard.v1alpha1.CurrentUserResponse
-	(*CreateTokenRequest)(nil),             // 7: switchyard.v1alpha1.CreateTokenRequest
-	(*CreateTokenResponse)(nil),            // 8: switchyard.v1alpha1.CreateTokenResponse
-	(*RevokeTokenRequest)(nil),             // 9: switchyard.v1alpha1.RevokeTokenRequest
-	(*RevokeTokenResponse)(nil),            // 10: switchyard.v1alpha1.RevokeTokenResponse
-	(*ListUsersRequest)(nil),               // 11: switchyard.v1alpha1.ListUsersRequest
-	(*ListUsersResponse)(nil),              // 12: switchyard.v1alpha1.ListUsersResponse
-	(*RegisterPasskeyRequest)(nil),         // 13: switchyard.v1alpha1.RegisterPasskeyRequest
-	(*RegisterPasskeyResponse)(nil),        // 14: switchyard.v1alpha1.RegisterPasskeyResponse
-	(*StartWebAuthnChallengeRequest)(nil),  // 15: switchyard.v1alpha1.StartWebAuthnChallengeRequest
-	(*StartWebAuthnChallengeResponse)(nil), // 16: switchyard.v1alpha1.StartWebAuthnChallengeResponse
-	(*RefreshRequest)(nil),                 // 17: switchyard.v1alpha1.RefreshRequest
-	(*RefreshResponse)(nil),                // 18: switchyard.v1alpha1.RefreshResponse
-	(*MintEnrollmentTokenRequest)(nil),     // 19: switchyard.v1alpha1.MintEnrollmentTokenRequest
-	(*MintEnrollmentTokenResponse)(nil),    // 20: switchyard.v1alpha1.MintEnrollmentTokenResponse
-	(*RedeemEnrollmentTokenRequest)(nil),   // 21: switchyard.v1alpha1.RedeemEnrollmentTokenRequest
-	(*RedeemEnrollmentTokenResponse)(nil),  // 22: switchyard.v1alpha1.RedeemEnrollmentTokenResponse
-	(*ChangePasswordRequest)(nil),          // 23: switchyard.v1alpha1.ChangePasswordRequest
-	(*ChangePasswordResponse)(nil),         // 24: switchyard.v1alpha1.ChangePasswordResponse
-	(*ExplainAuthorizationRequest)(nil),    // 25: switchyard.v1alpha1.ExplainAuthorizationRequest
-	(*ExplainAuthorizationResponse)(nil),   // 26: switchyard.v1alpha1.ExplainAuthorizationResponse
-	(*PageRequest)(nil),                    // 27: switchyard.v1alpha1.PageRequest
-	(*PageResponse)(nil),                   // 28: switchyard.v1alpha1.PageResponse
+	(*TokenTargetSelector)(nil),            // 7: switchyard.v1alpha1.TokenTargetSelector
+	(*TokenScope)(nil),                     // 8: switchyard.v1alpha1.TokenScope
+	(*CreateTokenRequest)(nil),             // 9: switchyard.v1alpha1.CreateTokenRequest
+	(*CreateTokenResponse)(nil),            // 10: switchyard.v1alpha1.CreateTokenResponse
+	(*RevokeTokenRequest)(nil),             // 11: switchyard.v1alpha1.RevokeTokenRequest
+	(*RevokeTokenResponse)(nil),            // 12: switchyard.v1alpha1.RevokeTokenResponse
+	(*ListUsersRequest)(nil),               // 13: switchyard.v1alpha1.ListUsersRequest
+	(*ListUsersResponse)(nil),              // 14: switchyard.v1alpha1.ListUsersResponse
+	(*RegisterPasskeyRequest)(nil),         // 15: switchyard.v1alpha1.RegisterPasskeyRequest
+	(*RegisterPasskeyResponse)(nil),        // 16: switchyard.v1alpha1.RegisterPasskeyResponse
+	(*StartWebAuthnChallengeRequest)(nil),  // 17: switchyard.v1alpha1.StartWebAuthnChallengeRequest
+	(*StartWebAuthnChallengeResponse)(nil), // 18: switchyard.v1alpha1.StartWebAuthnChallengeResponse
+	(*RefreshRequest)(nil),                 // 19: switchyard.v1alpha1.RefreshRequest
+	(*RefreshResponse)(nil),                // 20: switchyard.v1alpha1.RefreshResponse
+	(*MintEnrollmentTokenRequest)(nil),     // 21: switchyard.v1alpha1.MintEnrollmentTokenRequest
+	(*MintEnrollmentTokenResponse)(nil),    // 22: switchyard.v1alpha1.MintEnrollmentTokenResponse
+	(*RedeemEnrollmentTokenRequest)(nil),   // 23: switchyard.v1alpha1.RedeemEnrollmentTokenRequest
+	(*RedeemEnrollmentTokenResponse)(nil),  // 24: switchyard.v1alpha1.RedeemEnrollmentTokenResponse
+	(*ChangePasswordRequest)(nil),          // 25: switchyard.v1alpha1.ChangePasswordRequest
+	(*ChangePasswordResponse)(nil),         // 26: switchyard.v1alpha1.ChangePasswordResponse
+	(*ExplainAuthorizationRequest)(nil),    // 27: switchyard.v1alpha1.ExplainAuthorizationRequest
+	(*ExplainAuthorizationResponse)(nil),   // 28: switchyard.v1alpha1.ExplainAuthorizationResponse
+	(*PageRequest)(nil),                    // 29: switchyard.v1alpha1.PageRequest
+	(*PageResponse)(nil),                   // 30: switchyard.v1alpha1.PageResponse
 }
 var file_switchyard_v1alpha1_auth_proto_depIdxs = []int32{
 	0,  // 0: switchyard.v1alpha1.CurrentUserResponse.user:type_name -> switchyard.v1alpha1.User
-	27, // 1: switchyard.v1alpha1.ListUsersRequest.page:type_name -> switchyard.v1alpha1.PageRequest
-	0,  // 2: switchyard.v1alpha1.ListUsersResponse.users:type_name -> switchyard.v1alpha1.User
-	28, // 3: switchyard.v1alpha1.ListUsersResponse.page:type_name -> switchyard.v1alpha1.PageResponse
-	1,  // 4: switchyard.v1alpha1.AuthService.Login:input_type -> switchyard.v1alpha1.LoginRequest
-	3,  // 5: switchyard.v1alpha1.AuthService.Logout:input_type -> switchyard.v1alpha1.LogoutRequest
-	5,  // 6: switchyard.v1alpha1.AuthService.CurrentUser:input_type -> switchyard.v1alpha1.CurrentUserRequest
-	7,  // 7: switchyard.v1alpha1.AuthService.CreateToken:input_type -> switchyard.v1alpha1.CreateTokenRequest
-	9,  // 8: switchyard.v1alpha1.AuthService.RevokeToken:input_type -> switchyard.v1alpha1.RevokeTokenRequest
-	11, // 9: switchyard.v1alpha1.AuthService.ListUsers:input_type -> switchyard.v1alpha1.ListUsersRequest
-	13, // 10: switchyard.v1alpha1.AuthService.RegisterPasskey:input_type -> switchyard.v1alpha1.RegisterPasskeyRequest
-	15, // 11: switchyard.v1alpha1.AuthService.StartWebAuthnChallenge:input_type -> switchyard.v1alpha1.StartWebAuthnChallengeRequest
-	17, // 12: switchyard.v1alpha1.AuthService.Refresh:input_type -> switchyard.v1alpha1.RefreshRequest
-	19, // 13: switchyard.v1alpha1.AuthService.MintEnrollmentToken:input_type -> switchyard.v1alpha1.MintEnrollmentTokenRequest
-	21, // 14: switchyard.v1alpha1.AuthService.RedeemEnrollmentToken:input_type -> switchyard.v1alpha1.RedeemEnrollmentTokenRequest
-	23, // 15: switchyard.v1alpha1.AuthService.ChangePassword:input_type -> switchyard.v1alpha1.ChangePasswordRequest
-	25, // 16: switchyard.v1alpha1.AuthService.ExplainAuthorization:input_type -> switchyard.v1alpha1.ExplainAuthorizationRequest
-	2,  // 17: switchyard.v1alpha1.AuthService.Login:output_type -> switchyard.v1alpha1.LoginResponse
-	4,  // 18: switchyard.v1alpha1.AuthService.Logout:output_type -> switchyard.v1alpha1.LogoutResponse
-	6,  // 19: switchyard.v1alpha1.AuthService.CurrentUser:output_type -> switchyard.v1alpha1.CurrentUserResponse
-	8,  // 20: switchyard.v1alpha1.AuthService.CreateToken:output_type -> switchyard.v1alpha1.CreateTokenResponse
-	10, // 21: switchyard.v1alpha1.AuthService.RevokeToken:output_type -> switchyard.v1alpha1.RevokeTokenResponse
-	12, // 22: switchyard.v1alpha1.AuthService.ListUsers:output_type -> switchyard.v1alpha1.ListUsersResponse
-	14, // 23: switchyard.v1alpha1.AuthService.RegisterPasskey:output_type -> switchyard.v1alpha1.RegisterPasskeyResponse
-	16, // 24: switchyard.v1alpha1.AuthService.StartWebAuthnChallenge:output_type -> switchyard.v1alpha1.StartWebAuthnChallengeResponse
-	18, // 25: switchyard.v1alpha1.AuthService.Refresh:output_type -> switchyard.v1alpha1.RefreshResponse
-	20, // 26: switchyard.v1alpha1.AuthService.MintEnrollmentToken:output_type -> switchyard.v1alpha1.MintEnrollmentTokenResponse
-	22, // 27: switchyard.v1alpha1.AuthService.RedeemEnrollmentToken:output_type -> switchyard.v1alpha1.RedeemEnrollmentTokenResponse
-	24, // 28: switchyard.v1alpha1.AuthService.ChangePassword:output_type -> switchyard.v1alpha1.ChangePasswordResponse
-	26, // 29: switchyard.v1alpha1.AuthService.ExplainAuthorization:output_type -> switchyard.v1alpha1.ExplainAuthorizationResponse
-	17, // [17:30] is the sub-list for method output_type
-	4,  // [4:17] is the sub-list for method input_type
-	4,  // [4:4] is the sub-list for extension type_name
-	4,  // [4:4] is the sub-list for extension extendee
-	0,  // [0:4] is the sub-list for field type_name
+	7,  // 1: switchyard.v1alpha1.TokenScope.allow_targets:type_name -> switchyard.v1alpha1.TokenTargetSelector
+	8,  // 2: switchyard.v1alpha1.CreateTokenRequest.scope:type_name -> switchyard.v1alpha1.TokenScope
+	29, // 3: switchyard.v1alpha1.ListUsersRequest.page:type_name -> switchyard.v1alpha1.PageRequest
+	0,  // 4: switchyard.v1alpha1.ListUsersResponse.users:type_name -> switchyard.v1alpha1.User
+	30, // 5: switchyard.v1alpha1.ListUsersResponse.page:type_name -> switchyard.v1alpha1.PageResponse
+	1,  // 6: switchyard.v1alpha1.AuthService.Login:input_type -> switchyard.v1alpha1.LoginRequest
+	3,  // 7: switchyard.v1alpha1.AuthService.Logout:input_type -> switchyard.v1alpha1.LogoutRequest
+	5,  // 8: switchyard.v1alpha1.AuthService.CurrentUser:input_type -> switchyard.v1alpha1.CurrentUserRequest
+	9,  // 9: switchyard.v1alpha1.AuthService.CreateToken:input_type -> switchyard.v1alpha1.CreateTokenRequest
+	11, // 10: switchyard.v1alpha1.AuthService.RevokeToken:input_type -> switchyard.v1alpha1.RevokeTokenRequest
+	13, // 11: switchyard.v1alpha1.AuthService.ListUsers:input_type -> switchyard.v1alpha1.ListUsersRequest
+	15, // 12: switchyard.v1alpha1.AuthService.RegisterPasskey:input_type -> switchyard.v1alpha1.RegisterPasskeyRequest
+	17, // 13: switchyard.v1alpha1.AuthService.StartWebAuthnChallenge:input_type -> switchyard.v1alpha1.StartWebAuthnChallengeRequest
+	19, // 14: switchyard.v1alpha1.AuthService.Refresh:input_type -> switchyard.v1alpha1.RefreshRequest
+	21, // 15: switchyard.v1alpha1.AuthService.MintEnrollmentToken:input_type -> switchyard.v1alpha1.MintEnrollmentTokenRequest
+	23, // 16: switchyard.v1alpha1.AuthService.RedeemEnrollmentToken:input_type -> switchyard.v1alpha1.RedeemEnrollmentTokenRequest
+	25, // 17: switchyard.v1alpha1.AuthService.ChangePassword:input_type -> switchyard.v1alpha1.ChangePasswordRequest
+	27, // 18: switchyard.v1alpha1.AuthService.ExplainAuthorization:input_type -> switchyard.v1alpha1.ExplainAuthorizationRequest
+	2,  // 19: switchyard.v1alpha1.AuthService.Login:output_type -> switchyard.v1alpha1.LoginResponse
+	4,  // 20: switchyard.v1alpha1.AuthService.Logout:output_type -> switchyard.v1alpha1.LogoutResponse
+	6,  // 21: switchyard.v1alpha1.AuthService.CurrentUser:output_type -> switchyard.v1alpha1.CurrentUserResponse
+	10, // 22: switchyard.v1alpha1.AuthService.CreateToken:output_type -> switchyard.v1alpha1.CreateTokenResponse
+	12, // 23: switchyard.v1alpha1.AuthService.RevokeToken:output_type -> switchyard.v1alpha1.RevokeTokenResponse
+	14, // 24: switchyard.v1alpha1.AuthService.ListUsers:output_type -> switchyard.v1alpha1.ListUsersResponse
+	16, // 25: switchyard.v1alpha1.AuthService.RegisterPasskey:output_type -> switchyard.v1alpha1.RegisterPasskeyResponse
+	18, // 26: switchyard.v1alpha1.AuthService.StartWebAuthnChallenge:output_type -> switchyard.v1alpha1.StartWebAuthnChallengeResponse
+	20, // 27: switchyard.v1alpha1.AuthService.Refresh:output_type -> switchyard.v1alpha1.RefreshResponse
+	22, // 28: switchyard.v1alpha1.AuthService.MintEnrollmentToken:output_type -> switchyard.v1alpha1.MintEnrollmentTokenResponse
+	24, // 29: switchyard.v1alpha1.AuthService.RedeemEnrollmentToken:output_type -> switchyard.v1alpha1.RedeemEnrollmentTokenResponse
+	26, // 30: switchyard.v1alpha1.AuthService.ChangePassword:output_type -> switchyard.v1alpha1.ChangePasswordResponse
+	28, // 31: switchyard.v1alpha1.AuthService.ExplainAuthorization:output_type -> switchyard.v1alpha1.ExplainAuthorizationResponse
+	19, // [19:32] is the sub-list for method output_type
+	6,  // [6:19] is the sub-list for method input_type
+	6,  // [6:6] is the sub-list for extension type_name
+	6,  // [6:6] is the sub-list for extension extendee
+	0,  // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_switchyard_v1alpha1_auth_proto_init() }
@@ -1612,7 +1756,7 @@ func file_switchyard_v1alpha1_auth_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_switchyard_v1alpha1_auth_proto_rawDesc), len(file_switchyard_v1alpha1_auth_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   27,
+			NumMessages:   29,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

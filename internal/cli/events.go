@@ -120,7 +120,7 @@ func newEventsTailCmd(gf *globalFlags) *cobra.Command {
 			if err := stream.Err(); err != nil {
 				return renderConnectErr(err)
 			}
-			return nil
+			return liveStreamContextErr(cmd.Context())
 		},
 	}
 	c.Flags().StringVar(&kind, "kind", "", "filter by kind")

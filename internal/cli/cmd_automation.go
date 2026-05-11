@@ -178,8 +178,8 @@ func newAutomationTraceCmd(gf *globalFlags) *cobra.Command {
 			if err := stream.Err(); err != nil {
 				return renderConnectErr(err)
 			}
-			if err := cmd.Context().Err(); err != nil {
-				return renderConnectErr(err)
+			if err := liveStreamContextErr(cmd.Context()); err != nil {
+				return err
 			}
 			fmt.Printf("\n%s %d events\n", Dim.Render("total:"), len(traceEvents))
 			return nil
@@ -305,10 +305,7 @@ func newAutomationWatchCmd(gf *globalFlags) *cobra.Command {
 			if err := stream.Err(); err != nil {
 				return renderConnectErr(err)
 			}
-			if err := cmd.Context().Err(); err != nil {
-				return renderConnectErr(err)
-			}
-			return nil
+			return liveStreamContextErr(cmd.Context())
 		},
 	}
 }

@@ -91,11 +91,15 @@ func (r *Runtime) Authorize(ctx context.Context, p auth.Principal, a auth.Action
 	}
 
 	if scope, ok := tokenScopeFromCtx(ctx); ok {
-		if !scope.PermitsAction(verb, actionKey) {
+		if t.Kind == "entity" {
+			if !scope.Allow(string(actionKey), targetFromAuth(t)) {
+				if !scope.PermitsAction(verb, actionKey) {
+					return &ErrForbidden{Reason: "token_action_denied"}
+				}
+				return &ErrForbidden{Reason: "token_target_denied"}
+			}
+		} else if !scope.PermitsAction(verb, actionKey) {
 			return &ErrForbidden{Reason: "token_action_denied"}
-		}
-		if t.Kind == "entity" && !scope.PermitsTarget(targetFromAuth(t)) {
-			return &ErrForbidden{Reason: "token_target_denied"}
 		}
 	}
 
@@ -203,6 +207,10 @@ type ctxKey struct{}
 
 func WithTokenScope(ctx context.Context, scope CompiledTokenScope) context.Context {
 	return context.WithValue(ctx, ctxKey{}, scope)
+}
+
+func TokenScopeFromContext(ctx context.Context) (CompiledTokenScope, bool) {
+	return tokenScopeFromCtx(ctx)
 }
 
 func tokenScopeFromCtx(ctx context.Context) (CompiledTokenScope, bool) {

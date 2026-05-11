@@ -40,7 +40,21 @@ message LogoutRequest                 {}
 message LogoutResponse                {}
 message CurrentUserRequest            {}
 message CurrentUserResponse           { User user = 1; }
-message CreateTokenRequest            { string display_name = 1; repeated string scopes = 2; }
+message TokenTargetSelector {
+  repeated string areas      = 1;
+  repeated string classes    = 2;
+  repeated string entity_ids = 3;
+}
+message TokenScope {
+  repeated string      allow_tools    = 1;
+  repeated string      allow_services = 2;
+  TokenTargetSelector  allow_targets  = 3;
+}
+message CreateTokenRequest {
+  string     display_name = 1;
+  repeated string scopes  = 2;
+  TokenScope scope        = 3;
+}
 message CreateTokenResponse           { string token = 1; string token_id = 2; }
 message RevokeTokenRequest            { string token_id = 1; }
 message RevokeTokenResponse           {}

@@ -1,5 +1,5 @@
 export function AuthedIndex() {
-  // Redirect to default dashboard
-  if (typeof window !== "undefined") window.location.replace("/dashboards/default");
+  // Redirect to /home (v2 IA entry point)
+  if (typeof window !== "undefined") window.location.replace("/_authed/home");
   return null;
 }

@@ -1,5 +1,5 @@
 import type { ComponentType } from "react";
-import type { WidgetProps } from "@gohome/widget-sdk";
+import type { WidgetProps } from "@switchyard/widget-sdk";
 
 const cache = new Map<string, Promise<Record<string, ComponentType<WidgetProps>>>>();
 

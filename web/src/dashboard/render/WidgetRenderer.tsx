@@ -1,6 +1,6 @@
 import { builtInWidgets } from "@/dashboard/catalog";
 import { WidgetErrorBoundary } from "./WidgetErrorBoundary";
-import type { WidgetProps } from "@gohome/widget-sdk";
+import type { WidgetProps } from "@switchyard/widget-sdk";
 
 export function WidgetRenderer(props: WidgetProps) {
   const Comp = builtInWidgets[props.classId];

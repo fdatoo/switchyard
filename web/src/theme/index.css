@@ -1,0 +1,27 @@
+/* Switchyard design-token surface — imports all three language definitions */
+@import "./languages/friendly.css";
+@import "./languages/ambient.css";
+@import "./languages/developer.css";
+
+/* Global resets that read from tokens */
+body {
+  background: var(--sy-color-bg);
+  color: var(--sy-color-fg);
+  font-family: var(--sy-font-body);
+}
+
+/* Reconnecting banner — uses token vars */
+.reconnecting-banner {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sy-space-2);
+  border-bottom: 1px solid var(--sy-color-line);
+  background: var(--sy-color-warn);
+  color: var(--sy-color-bg);
+  padding: var(--sy-space-2) var(--sy-space-4);
+  font-size: 0.875rem;
+}

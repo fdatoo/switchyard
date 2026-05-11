@@ -39,6 +39,13 @@ tasks:
     cmds:
       - npm test
 
+  web:e2e:
+    desc: Run Playwright end-to-end tests (requires a running switchyardd)
+    dir: web
+    deps: [web:install]
+    cmds:
+      - npm run test:e2e
+
   ui:dev:
     desc: Start Vite dev server (proxies to switchyardd)
     dir: web

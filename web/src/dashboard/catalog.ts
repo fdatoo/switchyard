@@ -1,5 +1,5 @@
 import type { ComponentType } from "react";
-import type { WidgetProps } from "@gohome/widget-sdk";
+import type { WidgetProps } from "@switchyard/widget-sdk";
 import { EntityToggle } from "@/widgets/EntityToggle";
 
 export const builtInWidgets: Record<string, ComponentType<WidgetProps>> = {

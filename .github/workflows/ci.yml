@@ -82,6 +82,22 @@ jobs:
               - 'go.work'
               - 'go.work.sum'
 
+  web-lint:
+    needs: changes
+    if: github.event_name != 'pull_request' || needs.changes.outputs.web == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: web/package-lock.json
+      - name: Install web dependencies
+        run: npm ci --prefix web
+      - name: Lint web
+        run: npm run lint --prefix web
+
   web-test:
     needs: changes
     if: github.event_name != 'pull_request' || needs.changes.outputs.web == 'true'
@@ -97,6 +113,50 @@ jobs:
         run: npm ci --prefix web
       - name: Test web
         run: npm run test --prefix web
+
+  web-build:
+    needs: changes
+    if: github.event_name != 'pull_request' || needs.changes.outputs.web == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: web/package-lock.json
+      - name: Install web dependencies
+        run: npm ci --prefix web
+      - name: Build web bundle
+        run: npm run build --prefix web
+
+  web-e2e:
+    needs: changes
+    if: github.event_name != 'pull_request' || needs.changes.outputs.web == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+          cache: true
+          cache-dependency-path: go.sum
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: web/package-lock.json
+      - name: Install Pkl
+        run: |
+          sudo curl -fsSL -o /usr/local/bin/pkl "https://github.com/apple/pkl/releases/download/0.31.1/pkl-linux-amd64"
+          sudo chmod +x /usr/local/bin/pkl
+          pkl --version
+      - name: Install web dependencies
+        run: npm ci --prefix web
+      - name: Install Playwright browsers
+        run: npx --prefix web playwright install --with-deps chromium
+      - name: Run Playwright e2e tests
+        run: npm run test:e2e --prefix web
 
   web-playwright:
     needs: changes

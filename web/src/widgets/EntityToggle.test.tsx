@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { EntityToggle } from "./EntityToggle";
-import type { WidgetProps } from "@gohome/widget-sdk";
+import type { WidgetProps } from "@switchyard/widget-sdk";
 
 describe("EntityToggle", () => {
   it("renders with stubbed WidgetProps", () => {

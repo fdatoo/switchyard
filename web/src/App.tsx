@@ -1,10 +1,10 @@
-import { useTheme } from "./theme/provider";
+import { useLanguage } from "./theme/language-provider";
 import { DashboardSlug } from "./routes/_authed/dashboards/$slug";
 import { Login } from "./routes/login";
 import { ReconnectingBanner } from "./shell/ReconnectingBanner";
 
 export default function App() {
-  const { mode } = useTheme();
+  const { resolvedTheme } = useLanguage();
   const path = window.location.pathname;
   if (path === "/login") {
     return (
@@ -25,7 +25,7 @@ export default function App() {
   return (
     <div>
       <ReconnectingBanner />
-      <p>gohome — theme: {mode}</p>
+      <p>switchyard — theme: {resolvedTheme}</p>
     </div>
   );
 }

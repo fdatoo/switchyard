@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { registerWidget } from "@/dashboard/catalog";
 import { WidgetRenderer } from "./WidgetRenderer";
-import type { WidgetProps } from "@gohome/widget-sdk";
+import type { WidgetProps } from "@switchyard/widget-sdk";
 
 describe("WidgetRenderer", () => {
   it("renders registered widget-sdk components", () => {

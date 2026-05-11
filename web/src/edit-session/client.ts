@@ -24,6 +24,11 @@ export type OpenForEditResult = {
   astJson: string;
 };
 
+export type ListFilesEntry = {
+  path: string;
+  hasError: boolean;
+};
+
 export type CommitSuccess = {
   kind: "success";
   newFileHash: string;
@@ -62,6 +67,7 @@ export interface EditSessionClient {
     onEvent: (event: SessionEventKind) => void,
     signal: AbortSignal,
   ): Promise<void>;
+  listFiles(): Promise<ListFilesEntry[]>;
 }
 
 // ---------------------------------------------------------------------------
@@ -146,6 +152,16 @@ export class RealEditSessionClient implements EditSessionClient {
       startLine: r.startLine,
       endLine: r.endLine,
       reason: r.reason as FileOnlyRegion["reason"],
+    }));
+  }
+
+  async listFiles(): Promise<ListFilesEntry[]> {
+    const res = await postConnect<Record<string, never>, {
+      files?: Array<{ path: string; hasError?: boolean }>;
+    }>("/switchyard.editsession.v1.EditSessionService/ListFiles", {});
+    return (res.files ?? []).map((f) => ({
+      path: f.path,
+      hasError: f.hasError ?? false,
     }));
   }
 

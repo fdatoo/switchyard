@@ -14,7 +14,7 @@ import (
 func newTestService(t *testing.T) *Service {
 	t.Helper()
 	lm := NewLockManager()
-	svc := NewService(lm, nil, nil, nil)
+	svc := NewService(lm, nil, nil, nil, "")
 	return svc
 }
 
@@ -195,7 +195,7 @@ func TestService_AbandonEdit_ReleasesLock(t *testing.T) {
 func TestService_CommitEdit_ExpiredLock(t *testing.T) {
 	dir := t.TempDir()
 	lm := newLockManagerWithTTL(0) // immediately expired
-	svc := NewService(lm, nil, nil, nil)
+	svc := NewService(lm, nil, nil, nil, "")
 
 	path := writeTmpPkl(t, dir, "expired.pkl", "id = \"e\"\n")
 
@@ -231,5 +231,62 @@ func TestService_AnalyzeRegenerability(t *testing.T) {
 	}
 	if len(resp.Msg.FileOnlyRegions) != 1 {
 		t.Errorf("expected 1 region, got %d", len(resp.Msg.FileOnlyRegions))
+	}
+}
+
+func TestService_ListFiles_HappyPath(t *testing.T) {
+	dir := t.TempDir()
+
+	// Create a mix of Pkl, Starlark, and other files.
+	writeTmpPkl(t, dir, "main.pkl", "")
+	writeTmpPkl(t, dir, "automations.pkl", "")
+	if err := os.WriteFile(filepath.Join(dir, "script.star"), []byte(""), 0o644); err != nil {
+		t.Fatalf("write star: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "ignored.json"), []byte("{}"), 0o644); err != nil {
+		t.Fatalf("write json: %v", err)
+	}
+
+	lm := NewLockManager()
+	svc := NewService(lm, nil, nil, nil, dir)
+
+	resp, err := svc.ListFiles(context.Background(), connect.NewRequest(&v1.ListFilesRequest{}))
+	if err != nil {
+		t.Fatalf("ListFiles: %v", err)
+	}
+
+	paths := make(map[string]bool, len(resp.Msg.Files))
+	for _, f := range resp.Msg.Files {
+		paths[f.Path] = true
+	}
+
+	if !paths["main.pkl"] {
+		t.Error("expected main.pkl in ListFiles response")
+	}
+	if !paths["automations.pkl"] {
+		t.Error("expected automations.pkl in ListFiles response")
+	}
+	if !paths["script.star"] {
+		t.Error("expected script.star in ListFiles response")
+	}
+	if paths["ignored.json"] {
+		t.Error("ignored.json should not appear in ListFiles response")
+	}
+	if len(resp.Msg.Files) != 3 {
+		t.Errorf("expected 3 files, got %d", len(resp.Msg.Files))
+	}
+}
+
+func TestService_ListFiles_NoConfigDir(t *testing.T) {
+	lm := NewLockManager()
+	svc := NewService(lm, nil, nil, nil, "")
+
+	_, err := svc.ListFiles(context.Background(), connect.NewRequest(&v1.ListFilesRequest{}))
+	if err == nil {
+		t.Fatal("expected error when configDir is empty")
+	}
+	connErr, ok := err.(*connect.Error)
+	if !ok || connErr.Code() != connect.CodeFailedPrecondition {
+		t.Errorf("expected FailedPrecondition, got %v", err)
 	}
 }

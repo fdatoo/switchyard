@@ -90,7 +90,8 @@ export interface StoriesRequest {
 }
 
 export interface StoriesResponse {
-  story: Story;
+  stories: Story[];
+  nextCursor: string;
 }
 
 export interface EventsRequest {
@@ -99,7 +100,8 @@ export interface EventsRequest {
 }
 
 export interface EventsResponse {
-  event: EventRecord;
+  events: EventRecord[];
+  nextCursor: string;
 }
 
 export interface EventDetailRequest {

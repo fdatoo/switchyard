@@ -31,6 +31,10 @@ service EditSessionService {
   // AnalyzeRegenerability returns a report of file-only regions that the
   // regenerator cannot round-trip. Stateless; does not require an open session.
   rpc AnalyzeRegenerability(AnalyzeRegenerabilityRequest) returns (RegenerabilityReport);
+
+  // ListFiles returns all Pkl and Starlark files in the config root.
+  // Used by the web editor to populate the file tree.
+  rpc ListFiles(ListFilesRequest) returns (ListFilesResponse);
 }
 
 // ---------------------------------------------------------------------------
@@ -150,4 +154,22 @@ message FileOnlyRegion {
 
   // 10-19: classification
   string reason     = 10; // starlark_call | import | let_binding | nondeterministic
+}
+
+// ---------------------------------------------------------------------------
+// ListFiles
+// ---------------------------------------------------------------------------
+
+message ListFilesRequest {}
+
+message ListFilesResponse {
+  // 1-9: files
+  repeated FileEntry files = 1;
+}
+
+message FileEntry {
+  // 1-9: identity
+  string path      = 1; // relative to config root
+  // 10-19: status
+  bool has_error   = 10; // true if validation failed last attempt
 }

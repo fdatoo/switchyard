@@ -33,7 +33,7 @@ func TestIntegration_OpenExternalEditConflict(t *testing.T) {
 	defer cancel()
 	watcher.Start(ctx)
 
-	svc := NewService(lm, watcher, nil, nil)
+	svc := NewService(lm, watcher, nil, nil, "")
 
 	// Step 1: OpenForEdit
 	openResp, err := svc.OpenForEdit(ctx, connect.NewRequest(&v1.OpenForEditRequest{

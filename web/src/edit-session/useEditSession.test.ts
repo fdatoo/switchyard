@@ -1,6 +1,6 @@
 import { renderHook, act, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { EditSessionClient, FileOnlyRegion, SessionEventKind } from "./client";
+import type { EditSessionClient, FileOnlyRegion, ListFilesEntry, SessionEventKind } from "./client";
 import { useEditSession } from "./useEditSession";
 
 // ---------------------------------------------------------------------------
@@ -31,6 +31,7 @@ function makeMockClient(overrides?: Partial<EditSessionClient>): {
     analyzeRegenerability: vi.fn().mockResolvedValue([] as FileOnlyRegion[]),
     commitEdit: vi.fn().mockResolvedValue({ kind: "success", newFileHash: "hash-2" }),
     abandonEdit: vi.fn().mockResolvedValue(undefined),
+    listFiles: vi.fn().mockResolvedValue([] as ListFilesEntry[]),
     sessionEvents: vi.fn().mockImplementation(
       (_sessionId: string, onEvent: (evt: SessionEventKind) => void, signal: AbortSignal) => {
         emitters.push(onEvent);

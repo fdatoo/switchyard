@@ -19,6 +19,7 @@ import { findStarlarkRegions } from "./embedded";
 import { registerPklLanguage } from "./languages/pkl";
 import { registerStarlarkLanguage, STARLARK_LANGUAGE_ID } from "./languages/starlark";
 import { AppRail } from "../shell/AppRail";
+import { editSessionClient } from "../edit-session/client";
 import "./pkl-editor.css";
 
 export interface PklEditorRouteProps {
@@ -37,6 +38,7 @@ export default function PklEditorRoute({ filePath: propFilePath }: PklEditorRout
 
   const [files, setFiles] = useState<FileEntry[]>([]);
   const [content, setContent] = useState("");
+  const [savedContent, setSavedContent] = useState(""); // last committed content
   const [astPath, setAstPath] = useState<string[]>([]);
   const [formBoundRegions] = useState<FormBoundRegion[]>([]);
   const [problems, setProblems] = useState<
@@ -46,6 +48,11 @@ export default function PklEditorRoute({ filePath: propFilePath }: PklEditorRout
   const [cursorCol, setCursorCol] = useState(1);
   const editorRef =
     useRef<monacoTypes.editor.IStandaloneCodeEditor | null>(null);
+
+  // Edit session state
+  const lockTokenRef = useRef<string>("");
+  const fileHashRef = useRef<string>("");
+  const sessionIdRef = useRef<string>("");
 
   const starlarkRegions = useMemo(() => findStarlarkRegions(content), [content]);
 
@@ -122,15 +129,57 @@ export default function PklEditorRoute({ filePath: propFilePath }: PklEditorRout
     [filePath]
   );
 
-  // Load file content — in production, calls ConfigService.OpenForEdit(filePath).
+  // Load file content and file list from the daemon on mount.
   useEffect(() => {
     if (!filePath) return;
-    // Placeholder: real content comes from ConfigService.OpenForEdit
-    setContent(`// ${filePath}\n`);
-    setFiles([{ path: filePath, dirty: false, hasError: false }]);
-    // Derive a simple breadcrumb from the file path
-    const parts = filePath.split("/");
-    setAstPath(parts);
+
+    let abandoned = false;
+
+    // Open the file for editing via EditSessionService.
+    editSessionClient.openForEdit(filePath).then((result) => {
+      if (abandoned) return;
+      lockTokenRef.current = result.lockToken;
+      fileHashRef.current = result.fileHash;
+      sessionIdRef.current = result.sessionId;
+      setContent(result.ancestorPkl);
+      setSavedContent(result.ancestorPkl);
+      // Derive breadcrumb from file path
+      setAstPath(filePath.split("/"));
+    }).catch((err: unknown) => {
+      if (abandoned) return;
+      const status = err instanceof Error ? err.message : String(err);
+      let message = "Daemon error loading file";
+      if (status.includes("404") || status.includes("not_found")) {
+        message = "File not found";
+      } else if (status.includes("401") || status.includes("unauthenticated")) {
+        message = "Sign in to edit";
+      }
+      setProblems([{ line: 1, message, severity: "error" }]);
+      // Still show the file path as a breadcrumb
+      setAstPath(filePath.split("/"));
+    });
+
+    // Populate the file tree with all Pkl/Starlark files from the config root.
+    editSessionClient.listFiles().then((entries) => {
+      if (abandoned) return;
+      setFiles(
+        entries.map((e) => ({ path: e.path, dirty: false, hasError: e.hasError }))
+      );
+    }).catch(() => {
+      if (abandoned) return;
+      // Fallback: show only the current file if listing fails.
+      setFiles([{ path: filePath, dirty: false, hasError: false }]);
+    });
+
+    return () => {
+      abandoned = true;
+      // Release the edit lock on unmount (fire-and-forget).
+      if (lockTokenRef.current) {
+        editSessionClient.abandonEdit(filePath, lockTokenRef.current).catch(() => {
+          // Best-effort; ignore errors on unload.
+        });
+      }
+    };
   }, [filePath]);
 
   const handleFormat = () => {
@@ -144,7 +193,40 @@ export default function PklEditorRoute({ filePath: propFilePath }: PklEditorRout
   };
 
   const handleApply = () => {
-    // Plan 11 CommitEdit
+    if (!lockTokenRef.current || !fileHashRef.current) return;
+    editSessionClient.commitEdit({
+      filePath,
+      lockToken: lockTokenRef.current,
+      regeneratedPkl: content,
+      expectedFileHash: fileHashRef.current,
+      force: false,
+    }).then((result) => {
+      if (result.kind === "success") {
+        fileHashRef.current = result.newFileHash;
+        setSavedContent(content);
+        // Clear dirty flag on current file in tree
+        setFiles((prev) =>
+          prev.map((f) => (f.path === filePath ? { ...f, dirty: false } : f))
+        );
+        setProblems([]);
+      } else {
+        setProblems([
+          {
+            line: 1,
+            message: "Save conflict: file changed externally. Reload to see latest version.",
+            severity: "error",
+          },
+        ]);
+      }
+    }).catch((err: unknown) => {
+      setProblems([
+        {
+          line: 1,
+          message: `Save failed: ${err instanceof Error ? err.message : String(err)}`,
+          severity: "error",
+        },
+      ]);
+    });
   };
 
   const handleRevealFormEditor = (editorId: string) => {
@@ -157,7 +239,15 @@ export default function PklEditorRoute({ filePath: propFilePath }: PklEditorRout
     window.location.reload();
   };
 
-  const unsavedCount = files.filter((f) => f.dirty).length;
+  // Sync dirty flag when content diverges from last saved content.
+  const isDirty = content !== savedContent && savedContent !== "";
+  const unsavedCount = isDirty ? 1 : 0;
+
+  // Merge live dirty state into file tree entries for the active file.
+  const displayFiles = useMemo(
+    () => files.map((f) => (f.path === filePath ? { ...f, dirty: isDirty } : f)),
+    [files, filePath, isDirty]
+  );
 
   return (
     <div
@@ -167,7 +257,7 @@ export default function PklEditorRoute({ filePath: propFilePath }: PklEditorRout
       {/* AppRail — rendered on pkl-editor routes per plan decision 3 */}
       <AppRail />
       <FileTree
-        files={files}
+        files={displayFiles}
         activePath={filePath}
         onSelect={handleSelectFile}
         onSearch={() => {

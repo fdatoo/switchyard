@@ -888,6 +888,141 @@ func (x *FileOnlyRegion) GetReason() string {
 	return ""
 }
 
+type ListFilesRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListFilesRequest) Reset() {
+	*x = ListFilesRequest{}
+	mi := &file_switchyard_editsession_v1_editsession_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListFilesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListFilesRequest) ProtoMessage() {}
+
+func (x *ListFilesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_switchyard_editsession_v1_editsession_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListFilesRequest.ProtoReflect.Descriptor instead.
+func (*ListFilesRequest) Descriptor() ([]byte, []int) {
+	return file_switchyard_editsession_v1_editsession_proto_rawDescGZIP(), []int{15}
+}
+
+type ListFilesResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// 1-9: files
+	Files         []*FileEntry `protobuf:"bytes,1,rep,name=files,proto3" json:"files,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListFilesResponse) Reset() {
+	*x = ListFilesResponse{}
+	mi := &file_switchyard_editsession_v1_editsession_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListFilesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListFilesResponse) ProtoMessage() {}
+
+func (x *ListFilesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_switchyard_editsession_v1_editsession_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListFilesResponse.ProtoReflect.Descriptor instead.
+func (*ListFilesResponse) Descriptor() ([]byte, []int) {
+	return file_switchyard_editsession_v1_editsession_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *ListFilesResponse) GetFiles() []*FileEntry {
+	if x != nil {
+		return x.Files
+	}
+	return nil
+}
+
+type FileEntry struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// 1-9: identity
+	Path string `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"` // relative to config root
+	// 10-19: status
+	HasError      bool `protobuf:"varint,10,opt,name=has_error,json=hasError,proto3" json:"has_error,omitempty"` // true if validation failed last attempt
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FileEntry) Reset() {
+	*x = FileEntry{}
+	mi := &file_switchyard_editsession_v1_editsession_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FileEntry) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FileEntry) ProtoMessage() {}
+
+func (x *FileEntry) ProtoReflect() protoreflect.Message {
+	mi := &file_switchyard_editsession_v1_editsession_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FileEntry.ProtoReflect.Descriptor instead.
+func (*FileEntry) Descriptor() ([]byte, []int) {
+	return file_switchyard_editsession_v1_editsession_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *FileEntry) GetPath() string {
+	if x != nil {
+		return x.Path
+	}
+	return ""
+}
+
+func (x *FileEntry) GetHasError() bool {
+	if x != nil {
+		return x.HasError
+	}
+	return false
+}
+
 var File_switchyard_editsession_v1_editsession_proto protoreflect.FileDescriptor
 
 const file_switchyard_editsession_v1_editsession_proto_rawDesc = "" +
@@ -951,14 +1086,22 @@ const file_switchyard_editsession_v1_editsession_proto_rawDesc = "" +
 	"start_line\x18\x01 \x01(\x05R\tstartLine\x12\x19\n" +
 	"\bend_line\x18\x02 \x01(\x05R\aendLine\x12\x16\n" +
 	"\x06reason\x18\n" +
-	" \x01(\tR\x06reason2\xcc\x04\n" +
+	" \x01(\tR\x06reason\"\x12\n" +
+	"\x10ListFilesRequest\"O\n" +
+	"\x11ListFilesResponse\x12:\n" +
+	"\x05files\x18\x01 \x03(\v2$.switchyard.editsession.v1.FileEntryR\x05files\"<\n" +
+	"\tFileEntry\x12\x12\n" +
+	"\x04path\x18\x01 \x01(\tR\x04path\x12\x1b\n" +
+	"\thas_error\x18\n" +
+	" \x01(\bR\bhasError2\xb4\x05\n" +
 	"\x12EditSessionService\x12l\n" +
 	"\vOpenForEdit\x12-.switchyard.editsession.v1.OpenForEditRequest\x1a..switchyard.editsession.v1.OpenForEditResponse\x12i\n" +
 	"\n" +
 	"CommitEdit\x12,.switchyard.editsession.v1.CommitEditRequest\x1a-.switchyard.editsession.v1.CommitEditResponse\x12l\n" +
 	"\vAbandonEdit\x12-.switchyard.editsession.v1.AbandonEditRequest\x1a..switchyard.editsession.v1.AbandonEditResponse\x12k\n" +
 	"\rSessionEvents\x12/.switchyard.editsession.v1.SessionEventsRequest\x1a'.switchyard.editsession.v1.SessionEvent0\x01\x12\x81\x01\n" +
-	"\x15AnalyzeRegenerability\x127.switchyard.editsession.v1.AnalyzeRegenerabilityRequest\x1a/.switchyard.editsession.v1.RegenerabilityReportB\x81\x02\n" +
+	"\x15AnalyzeRegenerability\x127.switchyard.editsession.v1.AnalyzeRegenerabilityRequest\x1a/.switchyard.editsession.v1.RegenerabilityReport\x12f\n" +
+	"\tListFiles\x12+.switchyard.editsession.v1.ListFilesRequest\x1a,.switchyard.editsession.v1.ListFilesResponseB\x81\x02\n" +
 	"\x1dcom.switchyard.editsession.v1B\x10EditsessionProtoP\x01ZHgithub.com/fdatoo/switchyard/gen/switchyard/editsession/v1;editsessionv1\xa2\x02\x03SEX\xaa\x02\x19Switchyard.Editsession.V1\xca\x02\x19Switchyard\\Editsession\\V1\xe2\x02%Switchyard\\Editsession\\V1\\GPBMetadata\xea\x02\x1bSwitchyard::Editsession::V1b\x06proto3"
 
 var (
@@ -973,7 +1116,7 @@ func file_switchyard_editsession_v1_editsession_proto_rawDescGZIP() []byte {
 	return file_switchyard_editsession_v1_editsession_proto_rawDescData
 }
 
-var file_switchyard_editsession_v1_editsession_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
+var file_switchyard_editsession_v1_editsession_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
 var file_switchyard_editsession_v1_editsession_proto_goTypes = []any{
 	(*OpenForEditRequest)(nil),           // 0: switchyard.editsession.v1.OpenForEditRequest
 	(*OpenForEditResponse)(nil),          // 1: switchyard.editsession.v1.OpenForEditResponse
@@ -990,31 +1133,37 @@ var file_switchyard_editsession_v1_editsession_proto_goTypes = []any{
 	(*AnalyzeRegenerabilityRequest)(nil), // 12: switchyard.editsession.v1.AnalyzeRegenerabilityRequest
 	(*RegenerabilityReport)(nil),         // 13: switchyard.editsession.v1.RegenerabilityReport
 	(*FileOnlyRegion)(nil),               // 14: switchyard.editsession.v1.FileOnlyRegion
-	(*timestamppb.Timestamp)(nil),        // 15: google.protobuf.Timestamp
+	(*ListFilesRequest)(nil),             // 15: switchyard.editsession.v1.ListFilesRequest
+	(*ListFilesResponse)(nil),            // 16: switchyard.editsession.v1.ListFilesResponse
+	(*FileEntry)(nil),                    // 17: switchyard.editsession.v1.FileEntry
+	(*timestamppb.Timestamp)(nil),        // 18: google.protobuf.Timestamp
 }
 var file_switchyard_editsession_v1_editsession_proto_depIdxs = []int32{
 	4,  // 0: switchyard.editsession.v1.CommitEditResponse.success:type_name -> switchyard.editsession.v1.CommitSuccess
 	5,  // 1: switchyard.editsession.v1.CommitEditResponse.conflict:type_name -> switchyard.editsession.v1.CommitConflict
 	10, // 2: switchyard.editsession.v1.SessionEvent.external_edit:type_name -> switchyard.editsession.v1.ExternalEditDetected
 	11, // 3: switchyard.editsession.v1.SessionEvent.heartbeat:type_name -> switchyard.editsession.v1.SessionHeartbeat
-	15, // 4: switchyard.editsession.v1.ExternalEditDetected.modified_at:type_name -> google.protobuf.Timestamp
-	15, // 5: switchyard.editsession.v1.SessionHeartbeat.server_time:type_name -> google.protobuf.Timestamp
+	18, // 4: switchyard.editsession.v1.ExternalEditDetected.modified_at:type_name -> google.protobuf.Timestamp
+	18, // 5: switchyard.editsession.v1.SessionHeartbeat.server_time:type_name -> google.protobuf.Timestamp
 	14, // 6: switchyard.editsession.v1.RegenerabilityReport.file_only_regions:type_name -> switchyard.editsession.v1.FileOnlyRegion
-	0,  // 7: switchyard.editsession.v1.EditSessionService.OpenForEdit:input_type -> switchyard.editsession.v1.OpenForEditRequest
-	2,  // 8: switchyard.editsession.v1.EditSessionService.CommitEdit:input_type -> switchyard.editsession.v1.CommitEditRequest
-	6,  // 9: switchyard.editsession.v1.EditSessionService.AbandonEdit:input_type -> switchyard.editsession.v1.AbandonEditRequest
-	8,  // 10: switchyard.editsession.v1.EditSessionService.SessionEvents:input_type -> switchyard.editsession.v1.SessionEventsRequest
-	12, // 11: switchyard.editsession.v1.EditSessionService.AnalyzeRegenerability:input_type -> switchyard.editsession.v1.AnalyzeRegenerabilityRequest
-	1,  // 12: switchyard.editsession.v1.EditSessionService.OpenForEdit:output_type -> switchyard.editsession.v1.OpenForEditResponse
-	3,  // 13: switchyard.editsession.v1.EditSessionService.CommitEdit:output_type -> switchyard.editsession.v1.CommitEditResponse
-	7,  // 14: switchyard.editsession.v1.EditSessionService.AbandonEdit:output_type -> switchyard.editsession.v1.AbandonEditResponse
-	9,  // 15: switchyard.editsession.v1.EditSessionService.SessionEvents:output_type -> switchyard.editsession.v1.SessionEvent
-	13, // 16: switchyard.editsession.v1.EditSessionService.AnalyzeRegenerability:output_type -> switchyard.editsession.v1.RegenerabilityReport
-	12, // [12:17] is the sub-list for method output_type
-	7,  // [7:12] is the sub-list for method input_type
-	7,  // [7:7] is the sub-list for extension type_name
-	7,  // [7:7] is the sub-list for extension extendee
-	0,  // [0:7] is the sub-list for field type_name
+	17, // 7: switchyard.editsession.v1.ListFilesResponse.files:type_name -> switchyard.editsession.v1.FileEntry
+	0,  // 8: switchyard.editsession.v1.EditSessionService.OpenForEdit:input_type -> switchyard.editsession.v1.OpenForEditRequest
+	2,  // 9: switchyard.editsession.v1.EditSessionService.CommitEdit:input_type -> switchyard.editsession.v1.CommitEditRequest
+	6,  // 10: switchyard.editsession.v1.EditSessionService.AbandonEdit:input_type -> switchyard.editsession.v1.AbandonEditRequest
+	8,  // 11: switchyard.editsession.v1.EditSessionService.SessionEvents:input_type -> switchyard.editsession.v1.SessionEventsRequest
+	12, // 12: switchyard.editsession.v1.EditSessionService.AnalyzeRegenerability:input_type -> switchyard.editsession.v1.AnalyzeRegenerabilityRequest
+	15, // 13: switchyard.editsession.v1.EditSessionService.ListFiles:input_type -> switchyard.editsession.v1.ListFilesRequest
+	1,  // 14: switchyard.editsession.v1.EditSessionService.OpenForEdit:output_type -> switchyard.editsession.v1.OpenForEditResponse
+	3,  // 15: switchyard.editsession.v1.EditSessionService.CommitEdit:output_type -> switchyard.editsession.v1.CommitEditResponse
+	7,  // 16: switchyard.editsession.v1.EditSessionService.AbandonEdit:output_type -> switchyard.editsession.v1.AbandonEditResponse
+	9,  // 17: switchyard.editsession.v1.EditSessionService.SessionEvents:output_type -> switchyard.editsession.v1.SessionEvent
+	13, // 18: switchyard.editsession.v1.EditSessionService.AnalyzeRegenerability:output_type -> switchyard.editsession.v1.RegenerabilityReport
+	16, // 19: switchyard.editsession.v1.EditSessionService.ListFiles:output_type -> switchyard.editsession.v1.ListFilesResponse
+	14, // [14:20] is the sub-list for method output_type
+	8,  // [8:14] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_switchyard_editsession_v1_editsession_proto_init() }
@@ -1036,7 +1185,7 @@ func file_switchyard_editsession_v1_editsession_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_switchyard_editsession_v1_editsession_proto_rawDesc), len(file_switchyard_editsession_v1_editsession_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   15,
+			NumMessages:   18,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -50,6 +50,9 @@ const (
 	// EditSessionServiceAnalyzeRegenerabilityProcedure is the fully-qualified name of the
 	// EditSessionService's AnalyzeRegenerability RPC.
 	EditSessionServiceAnalyzeRegenerabilityProcedure = "/switchyard.editsession.v1.EditSessionService/AnalyzeRegenerability"
+	// EditSessionServiceListFilesProcedure is the fully-qualified name of the EditSessionService's
+	// ListFiles RPC.
+	EditSessionServiceListFilesProcedure = "/switchyard.editsession.v1.EditSessionService/ListFiles"
 )
 
 // EditSessionServiceClient is a client for the switchyard.editsession.v1.EditSessionService
@@ -71,6 +74,9 @@ type EditSessionServiceClient interface {
 	// AnalyzeRegenerability returns a report of file-only regions that the
 	// regenerator cannot round-trip. Stateless; does not require an open session.
 	AnalyzeRegenerability(context.Context, *connect.Request[v1.AnalyzeRegenerabilityRequest]) (*connect.Response[v1.RegenerabilityReport], error)
+	// ListFiles returns all Pkl and Starlark files in the config root.
+	// Used by the web editor to populate the file tree.
+	ListFiles(context.Context, *connect.Request[v1.ListFilesRequest]) (*connect.Response[v1.ListFilesResponse], error)
 }
 
 // NewEditSessionServiceClient constructs a client for the
@@ -115,6 +121,12 @@ func NewEditSessionServiceClient(httpClient connect.HTTPClient, baseURL string, 
 			connect.WithSchema(editSessionServiceMethods.ByName("AnalyzeRegenerability")),
 			connect.WithClientOptions(opts...),
 		),
+		listFiles: connect.NewClient[v1.ListFilesRequest, v1.ListFilesResponse](
+			httpClient,
+			baseURL+EditSessionServiceListFilesProcedure,
+			connect.WithSchema(editSessionServiceMethods.ByName("ListFiles")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -125,6 +137,7 @@ type editSessionServiceClient struct {
 	abandonEdit           *connect.Client[v1.AbandonEditRequest, v1.AbandonEditResponse]
 	sessionEvents         *connect.Client[v1.SessionEventsRequest, v1.SessionEvent]
 	analyzeRegenerability *connect.Client[v1.AnalyzeRegenerabilityRequest, v1.RegenerabilityReport]
+	listFiles             *connect.Client[v1.ListFilesRequest, v1.ListFilesResponse]
 }
 
 // OpenForEdit calls switchyard.editsession.v1.EditSessionService.OpenForEdit.
@@ -152,6 +165,11 @@ func (c *editSessionServiceClient) AnalyzeRegenerability(ctx context.Context, re
 	return c.analyzeRegenerability.CallUnary(ctx, req)
 }
 
+// ListFiles calls switchyard.editsession.v1.EditSessionService.ListFiles.
+func (c *editSessionServiceClient) ListFiles(ctx context.Context, req *connect.Request[v1.ListFilesRequest]) (*connect.Response[v1.ListFilesResponse], error) {
+	return c.listFiles.CallUnary(ctx, req)
+}
+
 // EditSessionServiceHandler is an implementation of the
 // switchyard.editsession.v1.EditSessionService service.
 type EditSessionServiceHandler interface {
@@ -171,6 +189,9 @@ type EditSessionServiceHandler interface {
 	// AnalyzeRegenerability returns a report of file-only regions that the
 	// regenerator cannot round-trip. Stateless; does not require an open session.
 	AnalyzeRegenerability(context.Context, *connect.Request[v1.AnalyzeRegenerabilityRequest]) (*connect.Response[v1.RegenerabilityReport], error)
+	// ListFiles returns all Pkl and Starlark files in the config root.
+	// Used by the web editor to populate the file tree.
+	ListFiles(context.Context, *connect.Request[v1.ListFilesRequest]) (*connect.Response[v1.ListFilesResponse], error)
 }
 
 // NewEditSessionServiceHandler builds an HTTP handler from the service implementation. It returns
@@ -210,6 +231,12 @@ func NewEditSessionServiceHandler(svc EditSessionServiceHandler, opts ...connect
 		connect.WithSchema(editSessionServiceMethods.ByName("AnalyzeRegenerability")),
 		connect.WithHandlerOptions(opts...),
 	)
+	editSessionServiceListFilesHandler := connect.NewUnaryHandler(
+		EditSessionServiceListFilesProcedure,
+		svc.ListFiles,
+		connect.WithSchema(editSessionServiceMethods.ByName("ListFiles")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/switchyard.editsession.v1.EditSessionService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case EditSessionServiceOpenForEditProcedure:
@@ -222,6 +249,8 @@ func NewEditSessionServiceHandler(svc EditSessionServiceHandler, opts ...connect
 			editSessionServiceSessionEventsHandler.ServeHTTP(w, r)
 		case EditSessionServiceAnalyzeRegenerabilityProcedure:
 			editSessionServiceAnalyzeRegenerabilityHandler.ServeHTTP(w, r)
+		case EditSessionServiceListFilesProcedure:
+			editSessionServiceListFilesHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -249,4 +278,8 @@ func (UnimplementedEditSessionServiceHandler) SessionEvents(context.Context, *co
 
 func (UnimplementedEditSessionServiceHandler) AnalyzeRegenerability(context.Context, *connect.Request[v1.AnalyzeRegenerabilityRequest]) (*connect.Response[v1.RegenerabilityReport], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("switchyard.editsession.v1.EditSessionService.AnalyzeRegenerability is not implemented"))
+}
+
+func (UnimplementedEditSessionServiceHandler) ListFiles(context.Context, *connect.Request[v1.ListFilesRequest]) (*connect.Response[v1.ListFilesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("switchyard.editsession.v1.EditSessionService.ListFiles is not implemented"))
 }

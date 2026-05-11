@@ -47,7 +47,7 @@ async function postConnect<TRequest, TResponse>(
   procedure: string,
   body: TRequest,
 ): Promise<TResponse> {
-  const response = await fetch("/api" + procedure, {
+  const response = await fetch(procedure, {
     method: "POST",
     credentials: "include",
     headers: {

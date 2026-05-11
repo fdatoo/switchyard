@@ -10,8 +10,11 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"io/fs"
 	"log/slog"
 	"os"
+	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 
@@ -38,10 +41,11 @@ type sessionMeta struct {
 
 // Service implements EditSessionServiceHandler.
 type Service struct {
-	locks    *LockManager
-	watcher  *FileWatcher
-	reloader ConfigReloader
-	logger   *slog.Logger
+	locks     *LockManager
+	watcher   *FileWatcher
+	reloader  ConfigReloader
+	logger    *slog.Logger
+	configDir string // root directory for Pkl/Starlark config files
 
 	mu       sync.Mutex
 	sessions map[string]*sessionMeta // key: session_id
@@ -51,17 +55,19 @@ type Service struct {
 var _ editsessionv1connect.EditSessionServiceHandler = (*Service)(nil)
 
 // NewService creates a Service. watcher may be nil in tests that do not
-// exercise the SessionEvents stream.
-func NewService(locks *LockManager, watcher *FileWatcher, reloader ConfigReloader, logger *slog.Logger) *Service {
+// exercise the SessionEvents stream. configDir is the root directory for
+// Pkl/Starlark files; it may be empty in tests that do not exercise ListFiles.
+func NewService(locks *LockManager, watcher *FileWatcher, reloader ConfigReloader, logger *slog.Logger, configDir string) *Service {
 	if logger == nil {
 		logger = slog.Default()
 	}
 	return &Service{
-		locks:    locks,
-		watcher:  watcher,
-		reloader: reloader,
-		logger:   logger,
-		sessions: make(map[string]*sessionMeta),
+		locks:     locks,
+		watcher:   watcher,
+		reloader:  reloader,
+		logger:    logger,
+		configDir: configDir,
+		sessions:  make(map[string]*sessionMeta),
 	}
 }
 
@@ -319,6 +325,43 @@ func (s *Service) AnalyzeRegenerability(_ context.Context, req *connect.Request[
 
 	return connect.NewResponse(&v1.RegenerabilityReport{
 		FileOnlyRegions: pbRegions,
+	}), nil
+}
+
+// ListFiles walks the config root and returns all Pkl and Starlark files.
+func (s *Service) ListFiles(_ context.Context, _ *connect.Request[v1.ListFilesRequest]) (*connect.Response[v1.ListFilesResponse], error) {
+	if s.configDir == "" {
+		return nil, connect.NewError(connect.CodeFailedPrecondition, errors.New("config_dir not configured"))
+	}
+
+	var entries []*v1.FileEntry
+	err := filepath.WalkDir(s.configDir, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return nil // skip unreadable entries
+		}
+		if d.IsDir() {
+			return nil
+		}
+		name := d.Name()
+		if !strings.HasSuffix(name, ".pkl") && !strings.HasSuffix(name, ".star") {
+			return nil
+		}
+		rel, relErr := filepath.Rel(s.configDir, path)
+		if relErr != nil {
+			return nil
+		}
+		entries = append(entries, &v1.FileEntry{
+			Path:     rel,
+			HasError: false,
+		})
+		return nil
+	})
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("walk config dir: %w", err))
+	}
+
+	return connect.NewResponse(&v1.ListFilesResponse{
+		Files: entries,
 	}), nil
 }
 

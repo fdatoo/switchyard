@@ -123,44 +123,47 @@ func (s *ActivityService) ListEvents(ctx context.Context, req *activityv1.Events
 	return nil
 }
 
-// Stories streams Story groups in reverse-chronological order.
+// maxPageSize is the maximum number of items returned in a single Stories or
+// Events response. Callers use the next_cursor field to paginate.
+const maxPageSize = 200
+
+// Stories returns Story groups in reverse-chronological order.
 func (s *ActivityService) Stories(
 	ctx context.Context,
 	req *connect.Request[activityv1.StoriesRequest],
-	stream *connect.ServerStream[activityv1.StoriesResponse],
-) error {
+) (*connect.Response[activityv1.StoriesResponse], error) {
 	if s.cfg.Mock {
-		return s.storiesMock(ctx, req, stream)
+		return s.storiesMock(ctx, req)
 	}
-	return s.storiesLive(ctx, req, stream)
+	return s.storiesLive(ctx, req)
 }
 
 func (s *ActivityService) storiesMock(
 	ctx context.Context,
 	req *connect.Request[activityv1.StoriesRequest],
-	stream *connect.ServerStream[activityv1.StoriesResponse],
-) error {
+) (*connect.Response[activityv1.StoriesResponse], error) {
 	syntheticStories := mock.GenerateStories(ctx)
 	filter := req.Msg.GetFilter()
 
+	var page []*activityv1.Story
 	for _, story := range syntheticStories {
 		if !matchesStoriesFilter(story, filter) {
 			continue
 		}
-		if err := stream.Send(&activityv1.StoriesResponse{Story: story}); err != nil {
-			return err
+		page = append(page, story)
+		if len(page) >= maxPageSize {
+			break
 		}
 	}
-	return nil
+	return connect.NewResponse(&activityv1.StoriesResponse{Stories: page}), nil
 }
 
 func (s *ActivityService) storiesLive(
 	ctx context.Context,
 	req *connect.Request[activityv1.StoriesRequest],
-	stream *connect.ServerStream[activityv1.StoriesResponse],
-) error {
+) (*connect.Response[activityv1.StoriesResponse], error) {
 	if s.coalescer == nil {
-		return connect.NewError(connect.CodeUnavailable, fmt.Errorf("event store not available"))
+		return nil, connect.NewError(connect.CodeUnavailable, fmt.Errorf("event store not available"))
 	}
 
 	filter := req.Msg.GetFilter()
@@ -168,59 +171,60 @@ func (s *ActivityService) storiesLive(
 
 	storyList, err := s.coalescer.CoalesceWindow(ctx, since, until)
 	if err != nil {
-		return connect.NewError(connect.CodeInternal, fmt.Errorf("coalesce: %w", err))
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("coalesce: %w", err))
 	}
 
+	var page []*activityv1.Story
 	for _, story := range storyList {
 		proto := story.ToProto()
 		if !matchesStoriesFilter(proto, filter) {
 			continue
 		}
-		if err := stream.Send(&activityv1.StoriesResponse{Story: proto}); err != nil {
-			return err
+		page = append(page, proto)
+		if len(page) >= maxPageSize {
+			break
 		}
 	}
-	return nil
+	return connect.NewResponse(&activityv1.StoriesResponse{Stories: page}), nil
 }
 
-// Events streams individual event records.
+// Events returns individual event records.
 func (s *ActivityService) Events(
 	ctx context.Context,
 	req *connect.Request[activityv1.EventsRequest],
-	stream *connect.ServerStream[activityv1.EventsResponse],
-) error {
+) (*connect.Response[activityv1.EventsResponse], error) {
 	if s.cfg.Mock {
-		return s.eventsMock(ctx, req, stream)
+		return s.eventsMock(ctx, req)
 	}
-	return s.eventsLive(ctx, req, stream)
+	return s.eventsLive(ctx, req)
 }
 
 func (s *ActivityService) eventsMock(
 	ctx context.Context,
 	req *connect.Request[activityv1.EventsRequest],
-	stream *connect.ServerStream[activityv1.EventsResponse],
-) error {
+) (*connect.Response[activityv1.EventsResponse], error) {
 	events := mock.GenerateEvents(ctx)
 	filter := req.Msg.GetFilter()
 
+	var page []*activityv1.EventRecord
 	for _, ev := range events {
 		if filter != nil && filter.Kind != "" && ev.Kind != filter.Kind {
 			continue
 		}
-		if err := stream.Send(&activityv1.EventsResponse{Event: ev}); err != nil {
-			return err
+		page = append(page, ev)
+		if len(page) >= maxPageSize {
+			break
 		}
 	}
-	return nil
+	return connect.NewResponse(&activityv1.EventsResponse{Events: page}), nil
 }
 
 func (s *ActivityService) eventsLive(
 	ctx context.Context,
 	req *connect.Request[activityv1.EventsRequest],
-	stream *connect.ServerStream[activityv1.EventsResponse],
-) error {
+) (*connect.Response[activityv1.EventsResponse], error) {
 	if s.coalescer == nil {
-		return connect.NewError(connect.CodeUnavailable, fmt.Errorf("event store not available"))
+		return nil, connect.NewError(connect.CodeUnavailable, fmt.Errorf("event store not available"))
 	}
 
 	filter := req.Msg.GetFilter()
@@ -228,19 +232,20 @@ func (s *ActivityService) eventsLive(
 
 	events, err := s.coalescer.QueryEvents(ctx, since, until, filter.GetKind())
 	if err != nil {
-		return connect.NewError(connect.CodeInternal, fmt.Errorf("events query: %w", err))
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("events query: %w", err))
 	}
 
+	var page []*activityv1.EventRecord
 	for _, e := range events {
 		if e.Kind == "interestingness.tagged" {
 			continue
 		}
-		rec := eventToProto(e)
-		if err := stream.Send(&activityv1.EventsResponse{Event: rec}); err != nil {
-			return err
+		page = append(page, eventToProto(e))
+		if len(page) >= maxPageSize {
+			break
 		}
 	}
-	return nil
+	return connect.NewResponse(&activityv1.EventsResponse{Events: page}), nil
 }
 
 // EventDetail returns a single event with tags and causation chain.

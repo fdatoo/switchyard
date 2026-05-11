@@ -41,6 +41,7 @@ import (
 	"github.com/fdatoo/switchyard/internal/page"
 	"github.com/fdatoo/switchyard/internal/display"
 	"github.com/fdatoo/switchyard/internal/driver"
+	"github.com/fdatoo/switchyard/internal/solar"
 	"github.com/fdatoo/switchyard/internal/editsession"
 	"github.com/fdatoo/switchyard/internal/entity"
 	"github.com/fdatoo/switchyard/internal/eventstore"
@@ -554,6 +555,8 @@ func (d *Daemon) Run(ctx context.Context) (err error) {
 		StarlarkLs:  starLsSvc,
 		Activity:    activitySvc,
 		Replay:      replaySvc,
+		Display:     display.NewService(filepath.Join(dataDir, "displays"), display.NewPairCodeStore()),
+		Solar:       solar.NewService(),
 	}
 
 	authnChain := auth.Chain(auth.LocalPeerCred{}, bearer, authn.NewSessionCookie(sessStore), auth.RejectAll{})

@@ -1,0 +1,32 @@
+// See docs/proto-hygiene.md for grouping conventions.
+
+syntax = "proto3";
+
+package switchyard.solar.v1;
+
+import "google/protobuf/timestamp.proto";
+
+service SolarService {
+  // GetTable returns sunrise, sunset, and solar noon for today and tomorrow.
+  rpc GetTable(GetTableRequest) returns (GetTableResponse);
+}
+
+message GetTableRequest {
+  // Optional: latitude/longitude for more accurate solar times.
+  // If empty, the server uses its configured location.
+  double latitude  = 1;
+  double longitude = 2;
+}
+
+// SolarDay holds solar event times for a single calendar day.
+message SolarDay {
+  google.protobuf.Timestamp sunrise    = 1;
+  google.protobuf.Timestamp solar_noon = 2;
+  google.protobuf.Timestamp sunset     = 3;
+  string                    date       = 4; // ISO-8601 date string, e.g. "2026-05-11"
+}
+
+message GetTableResponse {
+  SolarDay today    = 1;
+  SolarDay tomorrow = 2;
+}

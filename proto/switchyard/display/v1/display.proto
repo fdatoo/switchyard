@@ -1,0 +1,145 @@
+// See docs/proto-hygiene.md for grouping conventions.
+
+syntax = "proto3";
+
+package switchyard.display.v1;
+
+import "google/protobuf/timestamp.proto";
+
+service DisplayService {
+  // Pair generates a 6-digit pairing code with a 5-minute TTL.
+  rpc Pair(PairRequest) returns (PairResponse);
+
+  // RedeemPairCode claims a pairing code, creates the Display record, and
+  // returns a per-display JWT.
+  rpc RedeemPairCode(RedeemPairCodeRequest) returns (RedeemPairCodeResponse);
+
+  // List returns all paired displays.
+  rpc List(ListDisplaysRequest) returns (ListDisplaysResponse);
+
+  // Get returns a single display by ID.
+  rpc Get(GetDisplayRequest) returns (GetDisplayResponse);
+
+  // Update persists a display configuration update.
+  rpc Update(UpdateDisplayRequest) returns (UpdateDisplayResponse);
+
+  // Unpair removes a display and revokes its token.
+  rpc Unpair(UnpairDisplayRequest) returns (UnpairDisplayResponse);
+}
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+enum AlertThreshold {
+  ALERT_THRESHOLD_UNSPECIFIED = 0;
+  ALERT_THRESHOLD_NONE        = 1;
+  ALERT_THRESHOLD_LOW         = 2;
+  ALERT_THRESHOLD_MEDIUM      = 3;
+  ALERT_THRESHOLD_HIGH        = 4;
+}
+
+enum TileWidth {
+  TILE_WIDTH_UNSPECIFIED = 0;
+  TILE_WIDTH_STANDARD    = 1;
+  TILE_WIDTH_WIDE        = 2;
+}
+
+enum TileMetric {
+  TILE_METRIC_UNSPECIFIED      = 0;
+  TILE_METRIC_NONE             = 1;
+  TILE_METRIC_SENSOR           = 2;
+  TILE_METRIC_PRESENCE         = 3;
+  TILE_METRIC_NOW_PLAYING      = 4;
+  TILE_METRIC_NEXT_AUTOMATION  = 5;
+  TILE_METRIC_LAST_ACTIVITY    = 6;
+}
+
+// ---------------------------------------------------------------------------
+// Core messages
+// ---------------------------------------------------------------------------
+
+message FidelityOverride {
+  TileWidth  width   = 1;
+  int32      scenes  = 2; // 0 | 2 | 4
+  TileMetric metric  = 3;
+}
+
+message IdleBehavior {
+  bool  wake_on_motion    = 1;
+  int32 dim_after_minutes = 2;
+  int32 off_after_minutes = 3;
+}
+
+message Display {
+  // 1-9: identity
+  string                     id          = 1;
+  string                     device_name = 2;
+
+  // 10-19: page binding
+  string                     page_slug   = 10;
+
+  // 20-29: fidelity overrides (keyed by room tile ID)
+  map<string, FidelityOverride> tile_overrides = 20;
+
+  // 30-39: idle behavior
+  IdleBehavior               idle_behavior         = 30;
+
+  // 40-49: access control
+  repeated string            allowed_interactions  = 40;
+  AlertThreshold             alert_threshold       = 41;
+
+  // 50-59: timestamps
+  google.protobuf.Timestamp  created_at   = 50;
+  google.protobuf.Timestamp  last_seen_at = 51;
+}
+
+// ---------------------------------------------------------------------------
+// RPC messages
+// ---------------------------------------------------------------------------
+
+message PairRequest {}
+
+message PairResponse {
+  string code       = 1; // 6-digit zero-padded string
+  int64  expires_at = 2; // Unix timestamp
+}
+
+message RedeemPairCodeRequest {
+  string code        = 1;
+  string device_name = 2;
+}
+
+message RedeemPairCodeResponse {
+  string  display_id = 1;
+  string  token      = 2; // per-display JWT
+}
+
+message ListDisplaysRequest {}
+
+message ListDisplaysResponse {
+  repeated Display displays = 1;
+}
+
+message GetDisplayRequest {
+  string id = 1;
+}
+
+message GetDisplayResponse {
+  Display display = 1;
+}
+
+message UpdateDisplayRequest {
+  string          id      = 1;
+  Display         config  = 2;
+}
+
+message UpdateDisplayResponse {
+  Display display = 1;
+}
+
+message UnpairDisplayRequest {
+  string id = 1;
+}
+
+message UnpairDisplayResponse {}

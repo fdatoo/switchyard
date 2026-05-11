@@ -5,9 +5,11 @@ import (
 
 	"github.com/fdatoo/switchyard/gen/switchyard/activity/v1/activityv1connect"
 	"github.com/fdatoo/switchyard/gen/switchyard/commandcatalog/v1/commandcatalogv1connect"
+	displayv1connect "github.com/fdatoo/switchyard/gen/switchyard/display/v1/displayv1connect"
 	"github.com/fdatoo/switchyard/gen/switchyard/editsession/v1/editsessionv1connect"
 	pagev1connect "github.com/fdatoo/switchyard/gen/switchyard/page/v1/pagev1connect"
 	"github.com/fdatoo/switchyard/gen/switchyard/replay/v1/replayv1connect"
+	solarv1connect "github.com/fdatoo/switchyard/gen/switchyard/solar/v1/solarv1connect"
 	"github.com/fdatoo/switchyard/gen/switchyard/starlarkls/v1/starlarklsv1connect"
 	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
 )
@@ -33,6 +35,8 @@ type Services struct {
 	StarlarkLs     starlarklsv1connect.StarlarkLsServiceHandler
 	Activity       activityv1connect.ActivityServiceHandler
 	Replay         replayv1connect.ReplayServiceHandler
+	Display        displayv1connect.DisplayServiceHandler
+	Solar          solarv1connect.SolarServiceHandler
 }
 
 // BuildRoutes returns the (path, handler) pairs to mount on the listener mux.
@@ -101,6 +105,14 @@ func BuildRoutes(svc Services, interceptors ...connect.Interceptor) []Route {
 	}
 	if svc.Replay != nil {
 		p, h = replayv1connect.NewReplayServiceHandler(svc.Replay, opts)
+		routes = append(routes, Route{Path: p, Handler: h})
+	}
+	if svc.Display != nil {
+		p, h = displayv1connect.NewDisplayServiceHandler(svc.Display, opts)
+		routes = append(routes, Route{Path: p, Handler: h})
+	}
+	if svc.Solar != nil {
+		p, h = solarv1connect.NewSolarServiceHandler(svc.Solar, opts)
 		routes = append(routes, Route{Path: p, Handler: h})
 	}
 

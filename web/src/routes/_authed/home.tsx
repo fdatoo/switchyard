@@ -1,5 +1,5 @@
-import { PlaceholderPage } from "@/shell/PlaceholderPage";
+import { HomePage } from "@/pages/home";
 
 export function Home() {
-  return <PlaceholderPage title="Home" plan="Plan 02" />;
+  return <HomePage />;
 }

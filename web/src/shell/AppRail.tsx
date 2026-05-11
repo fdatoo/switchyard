@@ -37,7 +37,3 @@ export function AppRail() {
   );
 }
 
-/** Returns true when the AppRail should be visible (pkl-editor routes). */
-export function shouldShowAppRail(pathname: string): boolean {
-  return pathname.startsWith("/_authed/pkl-editor");
-}

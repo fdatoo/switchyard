@@ -1,0 +1,13 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  background: var(--sy-color-bg);
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  /* leave space for the fixed bottom tab bar (~56px + safe area) */
+  padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+}

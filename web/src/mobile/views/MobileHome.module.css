@@ -1,0 +1,46 @@
+.page {
+  padding: var(--sy-space-3);
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sy-space-2);
+  margin-bottom: var(--sy-space-4);
+}
+
+.statTile {
+  background: var(--sy-color-surface-1);
+  border-radius: var(--sy-radius);
+  padding: var(--sy-space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sy-space-1);
+}
+
+.statValue {
+  font-family: var(--sy-font-numeric);
+  font-size: 24px;
+  color: var(--sy-color-fg);
+}
+
+.statLabel {
+  font-size: 12px;
+  color: var(--sy-color-fg-3);
+}
+
+.roomsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sy-space-2);
+}
+
+.roomCard {
+  background: var(--sy-color-surface-1);
+  border: 1px solid var(--sy-color-line-soft);
+  border-radius: var(--sy-radius);
+  padding: var(--sy-space-4) var(--sy-space-3);
+  text-align: left;
+  color: var(--sy-color-fg);
+  font-size: 15px;
+}

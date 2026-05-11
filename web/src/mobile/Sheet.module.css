@@ -1,0 +1,39 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 0.4);
+  z-index: 200;
+}
+
+.content {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-height: 90dvh;
+  overflow-y: auto;
+  background: var(--sy-color-surface-1);
+  border-radius: var(--sy-radius-xl) var(--sy-radius-xl) 0 0;
+  padding: var(--sy-space-4);
+  padding-bottom: calc(var(--sy-space-4) + env(safe-area-inset-bottom, 0px));
+  z-index: 201;
+  /* entrance animation */
+  animation: slideUp var(--sy-motion) ease-out;
+}
+
+.handle {
+  width: 36px;
+  height: 4px;
+  border-radius: var(--sy-radius-pill);
+  background: var(--sy-color-line);
+  margin: 0 auto var(--sy-space-3);
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}

@@ -6,29 +6,32 @@ import (
 	"path/filepath"
 )
 
-// ScaffoldDashboard creates the two-file Pkl split for a new dashboard.
-// sourcePkl = <slug>.pkl (user-owned, imports layout)
-// layoutPkl = <slug>.layout.pkl (WYSIWYG-owned, auto-generated)
-func ScaffoldDashboard(configDir, slug, title string) error {
-	if err := os.MkdirAll(configDir, 0o755); err != nil {
+// ScaffoldDashboard creates the two-file Pkl split for a new dashboard in a
+// dashboards directory.
+func ScaffoldDashboard(dashboardDir, slug, title string) error {
+	if err := os.MkdirAll(dashboardDir, 0o755); err != nil {
 		return fmt.Errorf("scaffold: mkdir: %w", err)
 	}
 
-	sourcePath := filepath.Join(configDir, slug+".pkl")
-	layoutPath := filepath.Join(configDir, slug+".layout.pkl")
+	sourcePath := filepath.Join(dashboardDir, slug+".pkl")
+	layoutPath := filepath.Join(dashboardDir, slug+".layout.pkl")
 
-	sourceContent := fmt.Sprintf(`amends "package://pkg.pkl-lang.org/pkl-pantry/pkl.experimental.uri@0.2.0#/URI.pkl"
-import "@switchyard/dashboards.pkl" as d
+	sourceContent := fmt.Sprintf(`import "switchyard:dashboards" as d
+import "%s.layout.pkl" as layout
 
-slug = %q
-title = %q
-`, slug, title)
+dashboard = new d.Dashboard {
+  slug = %q
+  title = %q
+  grid = layout.grid
+  widgets = layout.widgets
+}
+`, slug, slug, title)
 
-	const layoutContent = `amends "package://pkg.pkl-lang.org/pkl-pantry/pkl.experimental.uri@0.2.0#/URI.pkl"
+	const layoutContent = `import "switchyard:widgets" as widgetmod
 
 // Auto-generated layout — do not edit manually.
-grid { columns = 12; rowHeight = 60 }
-widgets {}
+grid: widgetmod.Grid = new { columns = 12; rowHeight = 60 }
+widgets: Listing<widgetmod.WidgetInstance> = new {}
 `
 
 	if err := os.WriteFile(sourcePath, []byte(sourceContent), 0o644); err != nil {

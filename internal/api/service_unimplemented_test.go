@@ -17,12 +17,6 @@ func TestSceneService_AllUnimplemented(t *testing.T) {
 	assertUnimplemented(t, err)
 }
 
-func TestDashboardService_AllUnimplemented(t *testing.T) {
-	d := api.NewDashboardService()
-	_, err := d.Get(context.Background(), connect.NewRequest(&v1.GetDashboardRequest{Slug: "main"}))
-	assertUnimplemented(t, err)
-}
-
 func assertUnimplemented(t *testing.T, err error) {
 	t.Helper()
 	var ce *connect.Error

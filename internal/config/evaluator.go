@@ -130,6 +130,45 @@ func (e *pklEvaluator) Evaluate(ctx context.Context, configDir string) (*configp
 	return parseConfigJSON(text, configDir)
 }
 
+// EvaluateDashboardFile evaluates a user-owned dashboards/<slug>.pkl file and
+// returns its typed dashboard payload as canonical JSON bytes.
+func EvaluateDashboardFile(ctx context.Context, dashboardPath, driversRoot string) (*configpb.DashboardConfig, error) {
+	ev, err := newPklEvaluator(ctx, driversRoot)
+	if err != nil {
+		return nil, err
+	}
+	return ev.EvaluateDashboard(ctx, dashboardPath)
+}
+
+func (e *pklEvaluator) EvaluateDashboard(ctx context.Context, dashboardPath string) (*configpb.DashboardConfig, error) {
+	sourceURI := pkl.FileSource(dashboardPath).Uri.String()
+	text, err := e.ev.EvaluateOutputText(ctx, pkl.TextSource(fmt.Sprintf(`
+import %q as source
+
+dashboard = source.dashboard
+
+output {
+  renderer = new JsonRenderer {}
+}
+`, sourceURI)))
+	if err != nil {
+		return nil, &EvalError{Message: err.Error()}
+	}
+	var raw struct {
+		Dashboard json.RawMessage `json:"dashboard"`
+	}
+	if err := json.Unmarshal([]byte(text), &raw); err != nil {
+		return nil, fmt.Errorf("dashboard json: %w", err)
+	}
+	var meta struct {
+		Slug string `json:"slug"`
+	}
+	if err := json.Unmarshal(raw.Dashboard, &meta); err != nil {
+		return nil, fmt.Errorf("dashboard meta: %w", err)
+	}
+	return &configpb.DashboardConfig{Slug: meta.Slug, Content: raw.Dashboard}, nil
+}
+
 type mcpConfigJSON struct {
 	EvalResultMaxBytes       uint32 `json:"evalResultMaxBytes"`
 	ReadFileMaxBytes         uint32 `json:"readFileMaxBytes"`

@@ -487,7 +487,7 @@ func (d *Daemon) Run(ctx context.Context) (err error) {
 		Automation: api.NewAutomationService(autoCtl),
 		Script:     api.NewScriptService(scriptRun, &eventAppenderAdapter{store: d.store}, sysBE),
 		Scene:      api.NewSceneService(),
-		Dashboard:  dashboard.NewService(newDashboardBackend(packStore), dashboard.NewCatalog(nil)),
+		Dashboard:  dashboard.NewService(newDashboardBackend(configDir, driversDir, packStore), dashboard.NewCatalog(nil)),
 		WidgetPack: packService,
 		Auth: api.NewAuthService(api.AuthDeps{
 			Identity:   identityStore,

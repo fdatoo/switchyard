@@ -1,0 +1,9 @@
+import "switchyard:dashboards" as d
+import "sample.layout.pkl" as layout
+
+dashboard = new d.Dashboard {
+  slug = "sample"
+  title = "Sample Dashboard"
+  grid = layout.grid
+  widgets = layout.widgets
+}

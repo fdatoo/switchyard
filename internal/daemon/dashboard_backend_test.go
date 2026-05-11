@@ -21,7 +21,7 @@ func TestDashboardBackend_WidgetCatalog_ReflectsStore(t *testing.T) {
 		t.Fatalf("store.Add: %v", err)
 	}
 
-	be := newDashboardBackend(store)
+	be := newDashboardBackend(t.TempDir(), t.TempDir(), store)
 	classes, err := be.WidgetCatalog(context.Background())
 	if err != nil {
 		t.Fatalf("WidgetCatalog: %v", err)
@@ -59,7 +59,7 @@ func TestDashboardBackend_WidgetCatalog_ReflectsStore(t *testing.T) {
 }
 
 func TestDashboardBackend_WidgetCatalog_NilStore(t *testing.T) {
-	be := newDashboardBackend(nil)
+	be := newDashboardBackend(t.TempDir(), t.TempDir(), nil)
 	classes, err := be.WidgetCatalog(context.Background())
 	if err != nil {
 		t.Fatalf("WidgetCatalog: %v", err)

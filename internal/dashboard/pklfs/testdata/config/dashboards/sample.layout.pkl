@@ -1,0 +1,30 @@
+import "switchyard:dashboards" as d
+import "switchyard:widgets" as widgetmod
+
+grid: widgetmod.Grid = new { columns = 12; rowHeight = 60 }
+widgets: Listing<widgetmod.WidgetInstance> = new {
+  new d.LeafWidget {
+    id = "toggle"
+    widgetClass = "EntityToggle"
+    pos = new widgetmod.Position { x = 0; y = 0; width = 3; height = 2 }
+    props {
+      ["entityId"] = "light.kitchen"
+    }
+  }
+  new d.ContainerWidget {
+    id = "group"
+    pos = new widgetmod.Position { x = 3; y = 0; width = 6; height = 4 }
+    childGrid = new widgetmod.Grid { columns = 6; rowHeight = 60 }
+    children {
+      new d.LeafWidget {
+        id = "gauge"
+        widgetClass = "Gauge"
+        pos = new widgetmod.Position { x = 0; y = 0; width = 2; height = 2 }
+        props {
+          ["entityId"] = "sensor.kitchen_temperature"
+          ["unit"] = "F"
+        }
+      }
+    }
+  }
+}

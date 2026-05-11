@@ -4,40 +4,20 @@ import (
 	"context"
 
 	"github.com/fdatoo/switchyard/internal/dashboard"
+	"github.com/fdatoo/switchyard/internal/dashboard/pklfs"
 	"github.com/fdatoo/switchyard/internal/widgetpack"
 )
 
 type dashboardBackend struct {
+	*pklfs.Backend
 	packStore *widgetpack.Store
 }
 
-func newDashboardBackend(packStore *widgetpack.Store) *dashboardBackend {
-	return &dashboardBackend{packStore: packStore}
-}
-
-func (b *dashboardBackend) List(_ context.Context) ([]dashboard.DashboardMeta, error) {
-	return nil, nil
-}
-
-func (b *dashboardBackend) Get(_ context.Context, _ string) (*dashboard.DashboardData, error) {
-	return nil, dashboard.ErrDashboardNotFound
-}
-
-func (b *dashboardBackend) Create(_ context.Context, slug, title string) (*dashboard.DashboardData, error) {
-	return &dashboard.DashboardData{
-		Slug:            slug,
-		Title:           title,
-		Grid:            dashboard.GridData{Columns: 12, RowHeight: 60},
-		WysiwygWritable: true,
-	}, nil
-}
-
-func (b *dashboardBackend) Delete(_ context.Context, _ string, _ bool) error {
-	return dashboard.ErrDashboardNotFound
-}
-
-func (b *dashboardBackend) SaveLayout(_ context.Context, d *dashboard.DashboardData) (*dashboard.DashboardData, string, error) {
-	return d, "noop", nil
+func newDashboardBackend(configDir, driversDir string, packStore *widgetpack.Store) *dashboardBackend {
+	return &dashboardBackend{
+		Backend:   pklfs.New(configDir, driversDir),
+		packStore: packStore,
+	}
 }
 
 func (b *dashboardBackend) WidgetCatalog(_ context.Context) ([]dashboard.WidgetClassInfo, error) {

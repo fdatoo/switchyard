@@ -1,0 +1,117 @@
+.rail {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--sy-color-surface-2);
+  border-right: 1px solid var(--sy-color-line);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.railHeader {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--sy-color-fg-4);
+  padding: var(--sy-space-3) var(--sy-space-3) var(--sy-space-2);
+  border-bottom: 1px solid var(--sy-color-line);
+  flex-shrink: 0;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.item {
+  position: relative;
+}
+
+/* Vertical connecting line via ::before on the parent item */
+.item:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--sy-space-3) + 5px); /* center of dot (dot is 10px wide) */
+  top: 24px;
+  bottom: 0;
+  width: 1px;
+  background: var(--sy-color-line);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--sy-space-2);
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--sy-space-2) var(--sy-space-3);
+  text-align: left;
+  transition: background var(--sy-motion-fast);
+  position: relative;
+  z-index: 1;
+}
+
+.row:hover {
+  background: var(--sy-color-surface-3);
+}
+
+.rowActive {
+  background: var(--sy-color-surface-2) !important;
+}
+
+.rowActive::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--sy-color-accent);
+  border-radius: 0 var(--sy-radius) var(--sy-radius) 0;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--sy-radius-pill);
+  flex-shrink: 0;
+  transition: box-shadow var(--sy-motion-fast);
+}
+
+.dotActive {
+  box-shadow: 0 0 0 3px var(--sy-color-accent-soft);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 1px;
+}
+
+.kind {
+  font-family: var(--sy-font-numeric);
+  font-size: 0.6875rem;
+  color: var(--sy-color-fg-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ts {
+  font-family: var(--sy-font-numeric);
+  font-size: 0.625rem;
+  color: var(--sy-color-fg-4);
+}
+
+.empty {
+  padding: var(--sy-space-4) var(--sy-space-3);
+  color: var(--sy-color-fg-4);
+  font-size: 0.8125rem;
+}

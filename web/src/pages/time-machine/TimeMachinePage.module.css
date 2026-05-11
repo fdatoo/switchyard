@@ -1,0 +1,27 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--sy-color-bg);
+  overflow: hidden;
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.loading,
+.error {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--sy-color-fg-3);
+  font-size: 0.9375rem;
+}
+
+.error {
+  color: var(--sy-color-bad);
+}

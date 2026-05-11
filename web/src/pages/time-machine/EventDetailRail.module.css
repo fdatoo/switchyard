@@ -1,0 +1,149 @@
+.rail {
+  width: 320px;
+  flex-shrink: 0;
+  background: var(--sy-color-surface-2);
+  border-left: 1px solid var(--sy-color-line);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.empty {
+  padding: var(--sy-space-6) var(--sy-space-4);
+  color: var(--sy-color-fg-4);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.section {
+  padding: var(--sy-space-3) var(--sy-space-4);
+  border-bottom: 1px solid var(--sy-color-line);
+}
+
+.sectionHeading {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--sy-color-fg-4);
+  margin: 0 0 var(--sy-space-2) 0;
+}
+
+/* Kind chip */
+.kindRow {
+  display: flex;
+  align-items: center;
+  gap: var(--sy-space-2);
+  margin-bottom: var(--sy-space-2);
+}
+
+.kindChip {
+  font-family: var(--sy-font-numeric);
+  font-size: 0.6875rem;
+  background: var(--sy-color-surface-3);
+  border: 1px solid var(--sy-color-line);
+  border-radius: var(--sy-radius-pill);
+  padding: 2px var(--sy-space-2);
+  color: var(--sy-color-fg-2);
+  white-space: nowrap;
+}
+
+.entityName {
+  font-family: var(--sy-font-numeric);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--sy-color-fg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Definition list */
+.dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 3px var(--sy-space-3);
+  margin: 0;
+}
+
+.dl > dt {
+  font-size: 0.6875rem;
+  color: var(--sy-color-fg-4);
+  font-weight: 500;
+  padding: 2px 0;
+  white-space: nowrap;
+}
+
+.dl > dd {
+  font-size: 0.75rem;
+  color: var(--sy-color-fg-2);
+  padding: 2px 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-all;
+}
+
+.mono {
+  font-family: var(--sy-font-numeric);
+  font-size: 0.75rem;
+}
+
+/* Diff section */
+.diffEntityId {
+  font-family: var(--sy-font-numeric);
+  font-size: 0.75rem;
+  color: var(--sy-color-fg-3);
+  margin-bottom: var(--sy-space-1);
+}
+
+.diffRow {
+  display: contents;
+}
+
+.diffField {
+  font-size: 0.6875rem;
+  color: var(--sy-color-fg-4);
+  padding: 2px 0;
+}
+
+.diffValue {
+  font-size: 0.75rem;
+  padding: 2px 0;
+}
+
+.diffWas {
+  text-decoration: line-through;
+  color: var(--sy-color-fg-4);
+}
+
+.diffNow {
+  color: var(--sy-color-accent);
+}
+
+/* Payload block */
+.payloadBlock {
+  background: var(--sy-color-surface-1);
+  border: 1px solid var(--sy-color-line);
+  border-radius: var(--sy-radius);
+  padding: var(--sy-space-2) var(--sy-space-3);
+  font-family: var(--sy-font-numeric);
+  font-size: 0.6875rem;
+  line-height: 1.6;
+  overflow-x: auto;
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* JSON syntax highlighting classes used by highlightJSON() */
+.payloadBlock :global(.json-key) {
+  color: var(--sy-color-purple);
+}
+
+.payloadBlock :global(.json-str) {
+  color: var(--sy-color-good);
+}
+
+.payloadBlock :global(.json-num) {
+  color: var(--sy-color-info);
+}

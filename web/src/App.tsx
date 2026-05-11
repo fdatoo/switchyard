@@ -5,7 +5,7 @@ import { Login } from "./routes/login";
 import { ReconnectingBanner } from "./shell/ReconnectingBanner";
 import { Automations } from "./routes/_authed/automations/index";
 import { AutomationSlug } from "./routes/_authed/automations/$slug";
-import { TimeMachineRun } from "./routes/_authed/time-machine/$correlationId";
+import { TimeMachineEvent } from "./routes/_authed/time-machine/$eventId";
 
 // Pkl editor routes — lazy-loaded (Monaco is heavy)
 const PklEditorRoute = lazy(() => import("./pkl-editor/route"));
@@ -56,8 +56,8 @@ export default function App() {
   }
   if (path.startsWith("/_authed/time-machine/") || path.startsWith("/time-machine/")) {
     const base = path.startsWith("/_authed/time-machine/") ? "/_authed/time-machine/" : "/time-machine/";
-    const correlationId = decodeURIComponent(path.slice(base.length));
-    return <TimeMachineRun correlationId={correlationId} />;
+    const eventId = decodeURIComponent(path.slice(base.length));
+    return <TimeMachineEvent eventId={eventId} />;
   }
   return (
     <div>

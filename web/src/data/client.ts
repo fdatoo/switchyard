@@ -41,7 +41,14 @@ export async function withAuthRefresh<T>(
   return call();
 }
 
-async function postConnect<TRequest, TResponse>(
+/**
+ * postConnect — issue a Connect-RPC JSON request against the daemon.
+ * Use this for every Connect-protocol call from the web app; it handles
+ * credentials (HttpOnly session cookie), the protocol-version header, and
+ * daemon-reachability bookkeeping. Throws ConnectHTTPError on non-2xx,
+ * including 401 which callers can detect via isUnauthorized().
+ */
+export async function postConnect<TRequest, TResponse>(
   procedure: string,
   body: TRequest,
 ): Promise<TResponse> {

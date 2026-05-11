@@ -40,12 +40,14 @@ export type ParsedPaletteState =
 /**
  * parsePaletteInput is the core tokenizer + matcher.
  *
- * Tokenization rules (from plan decisions §9):
+ * Tokenization rules (from plan decisions S9):
  * 1. Input split on whitespace.
- * 2. Try two-word verb match first, then one-word.
- * 3. Remaining tokens of the form key:value fill the matching arg by name.
- * 4. Remaining tokens that are NOT key:value fill positional args in schema order.
- * 5. cliPreview = verb.cliForm + filled args as --flag=value in schema order.
+ * 2. Try two-word verb match first, then one-word exact.
+ * 3. If only one verb candidate matches the first token AND there are additional
+ *    tokens (positional or key:value), auto-resolve to that verb.
+ * 4. Remaining tokens of the form key:value fill the matching arg by name.
+ * 5. Remaining tokens that are NOT key:value fill positional args in schema order.
+ * 6. cliPreview = verb.cliForm + filled args as --flag=value in schema order.
  */
 export function parsePaletteInput(
   input: string,
@@ -58,56 +60,40 @@ export function parsePaletteInput(
 
   const tokens = trimmed.split(/\s+/);
 
-  // --- Attempt two-word verb match ---
+  // Attempt two-word verb match first.
   if (tokens.length >= 2) {
-    const candidate = `${tokens[0]} ${tokens[1]}`;
+    const candidate = tokens[0] + " " + tokens[1];
     const verb = catalog.find((v) => v.name === candidate);
     if (verb) {
       return buildResolved(verb, tokens.slice(2));
     }
   }
 
-  // --- Attempt one-word verb exact match (e.g. "entity get") ---
+  // Attempt one-word verb exact match (e.g. verb name is a single word).
   const oneWordExact = catalog.find((v) => v.name === tokens[0]);
   if (oneWordExact) {
     return buildResolved(oneWordExact, tokens.slice(1));
   }
 
-  // --- Partial matching: any verb whose name or any word in the name starts with
-  //     or contains the prefix tokens.
-  //
-  //     When all remaining tokens (beyond the first) are key:value pairs, and
-  //     only one verb candidate matches the first token, treat it as resolved
-  //     (e.g. "tail source:z2m kind:err" → resolves to "events tail").
-  // ---
-  const firstTok = tokens[0].toLowerCase();
-  // Key:value tokens: colonIdx > 0 means it's a named arg.
-  const allRestAreKV = tokens.slice(1).every((t) => t.indexOf(":") > 0);
-
+  // Partial matching: find verbs whose name contains the first token as a word fragment.
+  const firstTokLower = tokens[0].toLowerCase();
   const candidates = catalog.filter((v) => {
-    const lc = v.name.toLowerCase();
-    // Match if any word in the verb name starts with any token.
-    return tokens.some((tok) => {
-      const t = tok.toLowerCase();
-      return lc.includes(t);
-    });
+    const words = v.name.toLowerCase().split(" ");
+    return words.some((word) => word.includes(firstTokLower));
   });
 
-  // If exactly one candidate, tokens.length > 1, and all remaining tokens are
-  // key:value pairs, treat as resolved (e.g. "tail source:z2m" → events tail).
-  if (candidates.length === 1 && tokens.length > 1 && allRestAreKV) {
-    const onlyCandidate = candidates[0];
-    // Only resolve if the first token is a substring match of the verb name.
-    if (onlyCandidate.name.toLowerCase().includes(firstTok)) {
-      return buildResolved(onlyCandidate, tokens.slice(1));
-    }
+  // If exactly one candidate and there are additional tokens, auto-resolve.
+  // This handles "tail z2m" -> events tail source=z2m
+  // and "tail source:z2m" -> events tail source=z2m.
+  if (candidates.length === 1 && tokens.length > 1) {
+    return buildResolved(candidates[0], tokens.slice(1));
   }
 
   if (candidates.length > 0) {
     return { kind: "partial", verbCandidates: candidates, rawInput: trimmed };
   }
 
-  // No candidates at all — treat as partial with empty candidates.
+  // No candidates at all.
   return { kind: "partial", verbCandidates: [], rawInput: trimmed };
 }
 
@@ -156,10 +142,10 @@ function buildResolved(
   // Build CLI preview string from cliForm + filled args in schema order.
   const flagParts = verb.args
     .filter((a) => a.name in filledArgs)
-    .map((a) => `${a.cliFlag}=${filledArgs[a.name]}`);
+    .map((a) => a.cliFlag + "=" + filledArgs[a.name]);
   const cliPreview =
     flagParts.length > 0
-      ? `${verb.cliForm} ${flagParts.join(" ")}`
+      ? verb.cliForm + " " + flagParts.join(" ")
       : verb.cliForm;
 
   return {

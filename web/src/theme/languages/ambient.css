@@ -56,4 +56,18 @@
     radial-gradient(120% 90% at 80% -10%, rgba(255, 180, 120, 0.18) 0%, rgba(255, 150, 90, 0.05) 30%, transparent 60%),
     radial-gradient(140% 100% at -10% 90%, rgba(100, 140, 220, 0.16) 0%, transparent 50%),
     linear-gradient(160deg, #0e1326 0%, #1a1530 100%);
+
+  /* Named phase gradients — used by useTodGradient hook to interpolate */
+  --sy-tod-pre-sunrise: radial-gradient(ellipse at 60% 40%, #0d1b2a 0%, #0a0e1a 100%);
+  --sy-tod-sunrise:     radial-gradient(ellipse at 60% 40%, #7c3a2a 0%, #2c1a3a 100%);
+  --sy-tod-midday:      radial-gradient(ellipse at 60% 40%, #1a2a4a 0%, #2a1a3a 100%);
+  --sy-tod-sunset:      radial-gradient(ellipse at 60% 40%, #c25a2a 0%, #3a1a4a 100%);
+  --sy-tod-night:       radial-gradient(ellipse at 60% 40%, #0f0a1a 0%, #0a0a14 100%);
+}
+
+/* Glassmorphic overrides applied when data-language="ambient" is active on a container */
+[data-language="ambient"] {
+  /* Smooth gradient drift — CSS custom property transitions require a polyfill in some
+     browsers; the 90s linear transition is applied via AmbientRoot inline style changes. */
+  transition: background 90s linear;
 }

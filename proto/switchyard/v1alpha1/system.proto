@@ -7,14 +7,19 @@ package switchyard.v1alpha1;
 import "google/protobuf/timestamp.proto";
 
 service SystemService {
-  rpc Version             (VersionRequest)              returns (VersionResponse);
-  rpc Health              (HealthRequest)               returns (HealthResponse);
-  rpc Metrics             (MetricsRequest)              returns (MetricsResponse);
-  rpc Diagnostics         (DiagnosticsRequest)          returns (DiagnosticsResponse);
-  rpc CreateSnapshot      (CreateSnapshotRequest)       returns (CreateSnapshotResponse);
-  rpc GetConfigDir        (GetConfigDirRequest)         returns (GetConfigDirResponse);
-  rpc RecordConfigFileEdit(RecordConfigFileEditRequest)  returns (RecordConfigFileEditResponse);
-  rpc GetMCPConfig        (GetMCPConfigRequest)         returns (GetMCPConfigResponse);
+  rpc Version               (VersionRequest)                returns (VersionResponse);
+  rpc Health                (HealthRequest)                 returns (HealthResponse);
+  rpc Metrics               (MetricsRequest)                returns (MetricsResponse);
+  rpc Diagnostics           (DiagnosticsRequest)            returns (DiagnosticsResponse);
+  rpc CreateSnapshot        (CreateSnapshotRequest)         returns (CreateSnapshotResponse);
+  rpc GetConfigDir          (GetConfigDirRequest)           returns (GetConfigDirResponse);
+  rpc RecordConfigFileEdit  (RecordConfigFileEditRequest)   returns (RecordConfigFileEditResponse);
+  rpc GetMCPConfig          (GetMCPConfigRequest)           returns (GetMCPConfigResponse);
+  // ExportSupportBundle builds a downloadable support bundle (logs, config
+  // hash, event-store stats) for operator diagnostics. Added by UI v2 plan 09.
+  rpc ExportSupportBundle   (ExportSupportBundleRequest)    returns (ExportSupportBundleResponse);
+  // GetEventStoreStats returns event-store size, age, and snapshot count.
+  rpc GetEventStoreStats    (GetEventStoreStatsRequest)     returns (GetEventStoreStatsResponse);
 }
 
 // 1-9: Version
@@ -92,4 +97,23 @@ message GetMCPConfigResponse {
   uint32 trace_subscription_buffer  = 11;
   uint32 tail_default_wait_seconds  = 20;
   uint32 tail_max_wait_seconds      = 21;
+}
+
+// 80-89: ExportSupportBundle
+message ExportSupportBundleRequest {}
+message ExportSupportBundleResponse {
+  // bundle contains the full support bundle as a gzipped tar archive.
+  bytes  bundle      = 1;
+  string filename    = 2;
+  string config_hash = 3;
+  google.protobuf.Timestamp generated_at = 4;
+}
+
+// 90-99: GetEventStoreStats
+message GetEventStoreStatsRequest {}
+message GetEventStoreStatsResponse {
+  uint64 size_bytes      = 1;
+  // oldest_event_age_seconds: seconds since the oldest event in the store.
+  uint64 oldest_event_age_seconds = 2;
+  uint32 snapshot_count  = 3;
 }

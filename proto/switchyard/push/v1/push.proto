@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package switchyard.push.v1;
+
+import "google/protobuf/empty.proto";
+
+option go_package = "github.com/fdatoo/switchyard/internal/push/v1;pushv1";
+
+service PushService {
+  rpc RegisterSubscription(RegisterSubscriptionRequest)
+      returns (RegisterSubscriptionResponse);
+  rpc UnregisterSubscription(UnregisterSubscriptionRequest)
+      returns (google.protobuf.Empty);
+}
+
+message PushSubscription {
+  string endpoint   = 1; // Web Push endpoint URL
+  string p256dh     = 2; // public key, base64url
+  string auth       = 3; // auth secret, base64url
+  string user_agent = 4; // informational; used to display "This device" in settings
+}
+
+message RegisterSubscriptionRequest {
+  PushSubscription subscription = 1;
+}
+
+message RegisterSubscriptionResponse {
+  string subscription_id = 1; // opaque; used to unregister
+}
+
+message UnregisterSubscriptionRequest {
+  string subscription_id = 1;
+}

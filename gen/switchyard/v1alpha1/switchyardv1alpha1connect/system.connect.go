@@ -56,6 +56,12 @@ const (
 	// SystemServiceGetMCPConfigProcedure is the fully-qualified name of the SystemService's
 	// GetMCPConfig RPC.
 	SystemServiceGetMCPConfigProcedure = "/switchyard.v1alpha1.SystemService/GetMCPConfig"
+	// SystemServiceExportSupportBundleProcedure is the fully-qualified name of the SystemService's
+	// ExportSupportBundle RPC.
+	SystemServiceExportSupportBundleProcedure = "/switchyard.v1alpha1.SystemService/ExportSupportBundle"
+	// SystemServiceGetEventStoreStatsProcedure is the fully-qualified name of the SystemService's
+	// GetEventStoreStats RPC.
+	SystemServiceGetEventStoreStatsProcedure = "/switchyard.v1alpha1.SystemService/GetEventStoreStats"
 )
 
 // SystemServiceClient is a client for the switchyard.v1alpha1.SystemService service.
@@ -68,6 +74,11 @@ type SystemServiceClient interface {
 	GetConfigDir(context.Context, *connect.Request[v1alpha1.GetConfigDirRequest]) (*connect.Response[v1alpha1.GetConfigDirResponse], error)
 	RecordConfigFileEdit(context.Context, *connect.Request[v1alpha1.RecordConfigFileEditRequest]) (*connect.Response[v1alpha1.RecordConfigFileEditResponse], error)
 	GetMCPConfig(context.Context, *connect.Request[v1alpha1.GetMCPConfigRequest]) (*connect.Response[v1alpha1.GetMCPConfigResponse], error)
+	// ExportSupportBundle builds a downloadable support bundle (logs, config
+	// hash, event-store stats) for operator diagnostics. Added by UI v2 plan 09.
+	ExportSupportBundle(context.Context, *connect.Request[v1alpha1.ExportSupportBundleRequest]) (*connect.Response[v1alpha1.ExportSupportBundleResponse], error)
+	// GetEventStoreStats returns event-store size, age, and snapshot count.
+	GetEventStoreStats(context.Context, *connect.Request[v1alpha1.GetEventStoreStatsRequest]) (*connect.Response[v1alpha1.GetEventStoreStatsResponse], error)
 }
 
 // NewSystemServiceClient constructs a client for the switchyard.v1alpha1.SystemService service. By
@@ -129,6 +140,18 @@ func NewSystemServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			connect.WithSchema(systemServiceMethods.ByName("GetMCPConfig")),
 			connect.WithClientOptions(opts...),
 		),
+		exportSupportBundle: connect.NewClient[v1alpha1.ExportSupportBundleRequest, v1alpha1.ExportSupportBundleResponse](
+			httpClient,
+			baseURL+SystemServiceExportSupportBundleProcedure,
+			connect.WithSchema(systemServiceMethods.ByName("ExportSupportBundle")),
+			connect.WithClientOptions(opts...),
+		),
+		getEventStoreStats: connect.NewClient[v1alpha1.GetEventStoreStatsRequest, v1alpha1.GetEventStoreStatsResponse](
+			httpClient,
+			baseURL+SystemServiceGetEventStoreStatsProcedure,
+			connect.WithSchema(systemServiceMethods.ByName("GetEventStoreStats")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -142,6 +165,8 @@ type systemServiceClient struct {
 	getConfigDir         *connect.Client[v1alpha1.GetConfigDirRequest, v1alpha1.GetConfigDirResponse]
 	recordConfigFileEdit *connect.Client[v1alpha1.RecordConfigFileEditRequest, v1alpha1.RecordConfigFileEditResponse]
 	getMCPConfig         *connect.Client[v1alpha1.GetMCPConfigRequest, v1alpha1.GetMCPConfigResponse]
+	exportSupportBundle  *connect.Client[v1alpha1.ExportSupportBundleRequest, v1alpha1.ExportSupportBundleResponse]
+	getEventStoreStats   *connect.Client[v1alpha1.GetEventStoreStatsRequest, v1alpha1.GetEventStoreStatsResponse]
 }
 
 // Version calls switchyard.v1alpha1.SystemService.Version.
@@ -184,6 +209,16 @@ func (c *systemServiceClient) GetMCPConfig(ctx context.Context, req *connect.Req
 	return c.getMCPConfig.CallUnary(ctx, req)
 }
 
+// ExportSupportBundle calls switchyard.v1alpha1.SystemService.ExportSupportBundle.
+func (c *systemServiceClient) ExportSupportBundle(ctx context.Context, req *connect.Request[v1alpha1.ExportSupportBundleRequest]) (*connect.Response[v1alpha1.ExportSupportBundleResponse], error) {
+	return c.exportSupportBundle.CallUnary(ctx, req)
+}
+
+// GetEventStoreStats calls switchyard.v1alpha1.SystemService.GetEventStoreStats.
+func (c *systemServiceClient) GetEventStoreStats(ctx context.Context, req *connect.Request[v1alpha1.GetEventStoreStatsRequest]) (*connect.Response[v1alpha1.GetEventStoreStatsResponse], error) {
+	return c.getEventStoreStats.CallUnary(ctx, req)
+}
+
 // SystemServiceHandler is an implementation of the switchyard.v1alpha1.SystemService service.
 type SystemServiceHandler interface {
 	Version(context.Context, *connect.Request[v1alpha1.VersionRequest]) (*connect.Response[v1alpha1.VersionResponse], error)
@@ -194,6 +229,11 @@ type SystemServiceHandler interface {
 	GetConfigDir(context.Context, *connect.Request[v1alpha1.GetConfigDirRequest]) (*connect.Response[v1alpha1.GetConfigDirResponse], error)
 	RecordConfigFileEdit(context.Context, *connect.Request[v1alpha1.RecordConfigFileEditRequest]) (*connect.Response[v1alpha1.RecordConfigFileEditResponse], error)
 	GetMCPConfig(context.Context, *connect.Request[v1alpha1.GetMCPConfigRequest]) (*connect.Response[v1alpha1.GetMCPConfigResponse], error)
+	// ExportSupportBundle builds a downloadable support bundle (logs, config
+	// hash, event-store stats) for operator diagnostics. Added by UI v2 plan 09.
+	ExportSupportBundle(context.Context, *connect.Request[v1alpha1.ExportSupportBundleRequest]) (*connect.Response[v1alpha1.ExportSupportBundleResponse], error)
+	// GetEventStoreStats returns event-store size, age, and snapshot count.
+	GetEventStoreStats(context.Context, *connect.Request[v1alpha1.GetEventStoreStatsRequest]) (*connect.Response[v1alpha1.GetEventStoreStatsResponse], error)
 }
 
 // NewSystemServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -251,6 +291,18 @@ func NewSystemServiceHandler(svc SystemServiceHandler, opts ...connect.HandlerOp
 		connect.WithSchema(systemServiceMethods.ByName("GetMCPConfig")),
 		connect.WithHandlerOptions(opts...),
 	)
+	systemServiceExportSupportBundleHandler := connect.NewUnaryHandler(
+		SystemServiceExportSupportBundleProcedure,
+		svc.ExportSupportBundle,
+		connect.WithSchema(systemServiceMethods.ByName("ExportSupportBundle")),
+		connect.WithHandlerOptions(opts...),
+	)
+	systemServiceGetEventStoreStatsHandler := connect.NewUnaryHandler(
+		SystemServiceGetEventStoreStatsProcedure,
+		svc.GetEventStoreStats,
+		connect.WithSchema(systemServiceMethods.ByName("GetEventStoreStats")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/switchyard.v1alpha1.SystemService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case SystemServiceVersionProcedure:
@@ -269,6 +321,10 @@ func NewSystemServiceHandler(svc SystemServiceHandler, opts ...connect.HandlerOp
 			systemServiceRecordConfigFileEditHandler.ServeHTTP(w, r)
 		case SystemServiceGetMCPConfigProcedure:
 			systemServiceGetMCPConfigHandler.ServeHTTP(w, r)
+		case SystemServiceExportSupportBundleProcedure:
+			systemServiceExportSupportBundleHandler.ServeHTTP(w, r)
+		case SystemServiceGetEventStoreStatsProcedure:
+			systemServiceGetEventStoreStatsHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -308,4 +364,12 @@ func (UnimplementedSystemServiceHandler) RecordConfigFileEdit(context.Context, *
 
 func (UnimplementedSystemServiceHandler) GetMCPConfig(context.Context, *connect.Request[v1alpha1.GetMCPConfigRequest]) (*connect.Response[v1alpha1.GetMCPConfigResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("switchyard.v1alpha1.SystemService.GetMCPConfig is not implemented"))
+}
+
+func (UnimplementedSystemServiceHandler) ExportSupportBundle(context.Context, *connect.Request[v1alpha1.ExportSupportBundleRequest]) (*connect.Response[v1alpha1.ExportSupportBundleResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("switchyard.v1alpha1.SystemService.ExportSupportBundle is not implemented"))
+}
+
+func (UnimplementedSystemServiceHandler) GetEventStoreStats(context.Context, *connect.Request[v1alpha1.GetEventStoreStatsRequest]) (*connect.Response[v1alpha1.GetEventStoreStatsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("switchyard.v1alpha1.SystemService.GetEventStoreStats is not implemented"))
 }

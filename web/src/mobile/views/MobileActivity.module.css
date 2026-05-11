@@ -1,0 +1,26 @@
+.page {
+  padding: var(--sy-space-3);
+  overflow-y: auto;
+}
+
+.loading {
+  color: var(--sy-color-fg-4);
+  text-align: center;
+  padding: var(--sy-space-4);
+}
+
+.card {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: var(--sy-color-surface-1);
+  border: 1px solid var(--sy-color-line-soft);
+  border-radius: var(--sy-radius);
+  padding: var(--sy-space-3);
+  margin-bottom: var(--sy-space-2);
+}
+
+.cardTitle {
+  font-size: 15px;
+  color: var(--sy-color-fg);
+}

@@ -1,0 +1,28 @@
+.input {
+  width: 100%;
+  background: var(--sy-color-surface-2);
+  border: 1px solid var(--sy-color-line);
+  border-radius: var(--sy-radius);
+  padding: var(--sy-space-2) var(--sy-space-3);
+  font-family: var(--sy-font-body);
+  color: var(--sy-color-fg);
+  margin-bottom: var(--sy-space-3);
+}
+
+.section {
+  margin-bottom: var(--sy-space-3);
+}
+
+.heading {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--sy-color-fg-3);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: var(--sy-space-1);
+}
+
+.empty {
+  color: var(--sy-color-fg-4);
+  font-size: 13px;
+}

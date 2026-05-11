@@ -20,6 +20,10 @@
   --sy-color-bad: #e87a5f;
   --sy-color-info: #7ab4d8;
   --sy-color-purple: #b48cff;
+  --sy-color-terminal-bg: #0d1117;
+  --sy-color-terminal-fg: #c9d1d9;
+  --sy-color-overlay: rgba(0, 0, 0, 0.7);
+  --sy-color-accent-subtle: rgba(217, 119, 87, 0.1);
 
   --sy-radius-sm: 8px;
   --sy-radius: 12px;

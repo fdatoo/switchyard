@@ -61,6 +61,14 @@ func (f *fakeSystem) RecordConfigFileEdit(_ context.Context, p auth.Principal, _
 	return f.recordResult, nil
 }
 
+func (f *fakeSystem) ExportSupportBundle(_ context.Context) ([]byte, string, string, time.Time, error) {
+	return f.bundle, "switchyard-support-test.zip", f.configHash, time.Unix(1700000000, 0).UTC(), nil
+}
+
+func (f *fakeSystem) EventStoreStats(_ context.Context) (api.EventStoreStats, error) {
+	return api.EventStoreStats{}, nil
+}
+
 var _ api.SystemBackend = (*fakeSystem)(nil)
 
 type fakeEventAppender struct {

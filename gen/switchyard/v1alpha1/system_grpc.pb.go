@@ -29,6 +29,8 @@ const (
 	SystemService_GetConfigDir_FullMethodName         = "/switchyard.v1alpha1.SystemService/GetConfigDir"
 	SystemService_RecordConfigFileEdit_FullMethodName = "/switchyard.v1alpha1.SystemService/RecordConfigFileEdit"
 	SystemService_GetMCPConfig_FullMethodName         = "/switchyard.v1alpha1.SystemService/GetMCPConfig"
+	SystemService_ExportSupportBundle_FullMethodName  = "/switchyard.v1alpha1.SystemService/ExportSupportBundle"
+	SystemService_GetEventStoreStats_FullMethodName   = "/switchyard.v1alpha1.SystemService/GetEventStoreStats"
 )
 
 // SystemServiceClient is the client API for SystemService service.
@@ -43,6 +45,11 @@ type SystemServiceClient interface {
 	GetConfigDir(ctx context.Context, in *GetConfigDirRequest, opts ...grpc.CallOption) (*GetConfigDirResponse, error)
 	RecordConfigFileEdit(ctx context.Context, in *RecordConfigFileEditRequest, opts ...grpc.CallOption) (*RecordConfigFileEditResponse, error)
 	GetMCPConfig(ctx context.Context, in *GetMCPConfigRequest, opts ...grpc.CallOption) (*GetMCPConfigResponse, error)
+	// ExportSupportBundle builds a downloadable support bundle (logs, config
+	// hash, event-store stats) for operator diagnostics. Added by UI v2 plan 09.
+	ExportSupportBundle(ctx context.Context, in *ExportSupportBundleRequest, opts ...grpc.CallOption) (*ExportSupportBundleResponse, error)
+	// GetEventStoreStats returns event-store size, age, and snapshot count.
+	GetEventStoreStats(ctx context.Context, in *GetEventStoreStatsRequest, opts ...grpc.CallOption) (*GetEventStoreStatsResponse, error)
 }
 
 type systemServiceClient struct {
@@ -133,6 +140,26 @@ func (c *systemServiceClient) GetMCPConfig(ctx context.Context, in *GetMCPConfig
 	return out, nil
 }
 
+func (c *systemServiceClient) ExportSupportBundle(ctx context.Context, in *ExportSupportBundleRequest, opts ...grpc.CallOption) (*ExportSupportBundleResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ExportSupportBundleResponse)
+	err := c.cc.Invoke(ctx, SystemService_ExportSupportBundle_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *systemServiceClient) GetEventStoreStats(ctx context.Context, in *GetEventStoreStatsRequest, opts ...grpc.CallOption) (*GetEventStoreStatsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetEventStoreStatsResponse)
+	err := c.cc.Invoke(ctx, SystemService_GetEventStoreStats_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SystemServiceServer is the server API for SystemService service.
 // All implementations should embed UnimplementedSystemServiceServer
 // for forward compatibility.
@@ -145,6 +172,11 @@ type SystemServiceServer interface {
 	GetConfigDir(context.Context, *GetConfigDirRequest) (*GetConfigDirResponse, error)
 	RecordConfigFileEdit(context.Context, *RecordConfigFileEditRequest) (*RecordConfigFileEditResponse, error)
 	GetMCPConfig(context.Context, *GetMCPConfigRequest) (*GetMCPConfigResponse, error)
+	// ExportSupportBundle builds a downloadable support bundle (logs, config
+	// hash, event-store stats) for operator diagnostics. Added by UI v2 plan 09.
+	ExportSupportBundle(context.Context, *ExportSupportBundleRequest) (*ExportSupportBundleResponse, error)
+	// GetEventStoreStats returns event-store size, age, and snapshot count.
+	GetEventStoreStats(context.Context, *GetEventStoreStatsRequest) (*GetEventStoreStatsResponse, error)
 }
 
 // UnimplementedSystemServiceServer should be embedded to have
@@ -177,6 +209,12 @@ func (UnimplementedSystemServiceServer) RecordConfigFileEdit(context.Context, *R
 }
 func (UnimplementedSystemServiceServer) GetMCPConfig(context.Context, *GetMCPConfigRequest) (*GetMCPConfigResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetMCPConfig not implemented")
+}
+func (UnimplementedSystemServiceServer) ExportSupportBundle(context.Context, *ExportSupportBundleRequest) (*ExportSupportBundleResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ExportSupportBundle not implemented")
+}
+func (UnimplementedSystemServiceServer) GetEventStoreStats(context.Context, *GetEventStoreStatsRequest) (*GetEventStoreStatsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetEventStoreStats not implemented")
 }
 func (UnimplementedSystemServiceServer) testEmbeddedByValue() {}
 
@@ -342,6 +380,42 @@ func _SystemService_GetMCPConfig_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SystemService_ExportSupportBundle_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExportSupportBundleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SystemServiceServer).ExportSupportBundle(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SystemService_ExportSupportBundle_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SystemServiceServer).ExportSupportBundle(ctx, req.(*ExportSupportBundleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SystemService_GetEventStoreStats_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetEventStoreStatsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SystemServiceServer).GetEventStoreStats(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SystemService_GetEventStoreStats_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SystemServiceServer).GetEventStoreStats(ctx, req.(*GetEventStoreStatsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // SystemService_ServiceDesc is the grpc.ServiceDesc for SystemService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -380,6 +454,14 @@ var SystemService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetMCPConfig",
 			Handler:    _SystemService_GetMCPConfig_Handler,
+		},
+		{
+			MethodName: "ExportSupportBundle",
+			Handler:    _SystemService_ExportSupportBundle_Handler,
+		},
+		{
+			MethodName: "GetEventStoreStats",
+			Handler:    _SystemService_GetEventStoreStats_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -107,3 +107,32 @@ func (s *SystemService) RecordConfigFileEdit(ctx context.Context, req *connect.R
 	}
 	return connect.NewResponse(&systemv1.RecordConfigFileEditResponse{EventCursor: cursor}), nil
 }
+
+// ExportSupportBundle builds and returns a downloadable support bundle for
+// operator diagnostics (added by UI v2 plan 09).
+func (s *SystemService) ExportSupportBundle(ctx context.Context, _ *connect.Request[systemv1.ExportSupportBundleRequest]) (*connect.Response[systemv1.ExportSupportBundleResponse], error) {
+	bundle, filename, configHash, generatedAt, err := s.be.ExportSupportBundle(ctx)
+	if err != nil {
+		return nil, ToConnect(ctx, err, "export_support_bundle_failed")
+	}
+	return connect.NewResponse(&systemv1.ExportSupportBundleResponse{
+		Bundle:      bundle,
+		Filename:    filename,
+		ConfigHash:  configHash,
+		GeneratedAt: ProtoTime(generatedAt),
+	}), nil
+}
+
+// GetEventStoreStats returns size, age, and snapshot count for the event store
+// (added by UI v2 plan 09).
+func (s *SystemService) GetEventStoreStats(ctx context.Context, _ *connect.Request[systemv1.GetEventStoreStatsRequest]) (*connect.Response[systemv1.GetEventStoreStatsResponse], error) {
+	stats, err := s.be.EventStoreStats(ctx)
+	if err != nil {
+		return nil, ToConnect(ctx, err, "event_store_stats_failed")
+	}
+	return connect.NewResponse(&systemv1.GetEventStoreStatsResponse{
+		SizeBytes:             stats.SizeBytes,
+		OldestEventAgeSeconds: stats.OldestEventAgeSeconds,
+		SnapshotCount:         stats.SnapshotCount,
+	}), nil
+}

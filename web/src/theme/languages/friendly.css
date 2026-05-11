@@ -21,7 +21,10 @@
   --sy-color-info: #4c87b5;
   --sy-color-purple: #9b7ec8;
   --sy-color-lilac: #d4b6e8;
-
+  --sy-color-terminal-bg: #0d1117;
+  --sy-color-terminal-fg: #c9d1d9;
+  --sy-color-overlay: rgba(0, 0, 0, 0.45);
+  --sy-color-accent-subtle: rgba(217, 119, 87, 0.08);
   --sy-radius-sm: 6px;
   --sy-radius: 10px;
   --sy-radius-lg: 14px;
@@ -74,7 +77,10 @@
   --sy-color-info: #7ab4d8;
   --sy-color-purple: #b48cff;
   --sy-color-lilac: #c8a8e0;
-
+  --sy-color-terminal-bg: #0d1117;
+  --sy-color-terminal-fg: #c9d1d9;
+  --sy-color-overlay: rgba(0, 0, 0, 0.6);
+  --sy-color-accent-subtle: rgba(232, 147, 114, 0.1);
   --sy-radius-sm: 6px;
   --sy-radius: 10px;
   --sy-radius-lg: 14px;

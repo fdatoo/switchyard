@@ -34,11 +34,22 @@ type MCPConfig struct {
 	TailMaxWaitSeconds       uint32
 }
 
+// EventStoreStats holds size and age information for the event store.
+type EventStoreStats struct {
+	SizeBytes             uint64
+	OldestEventAgeSeconds uint64
+	SnapshotCount         uint32
+}
+
 type SystemBackend interface {
 	Version() VersionInfo
 	Health(ctx context.Context) (ok bool, summary string, sub []SubsystemHealth)
 	MetricsText() (string, error)
 	Diagnostics(ctx context.Context) (bundle []byte, configHash string, generatedAt time.Time, err error)
+	// ExportSupportBundle builds and returns a downloadable support bundle.
+	ExportSupportBundle(ctx context.Context) (bundle []byte, filename string, configHash string, generatedAt time.Time, err error)
+	// EventStoreStats returns size, age, and snapshot count for the event store.
+	EventStoreStats(ctx context.Context) (EventStoreStats, error)
 	CreateSnapshot(ctx context.Context, owner, reason string) (cursor uint64, createdAt time.Time, err error)
 	ConfigDir(ctx context.Context) (string, error)
 	MCPConfig(ctx context.Context) (MCPConfig, error)

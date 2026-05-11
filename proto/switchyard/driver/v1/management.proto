@@ -1,0 +1,83 @@
+// See docs/proto-hygiene.md for grouping conventions.
+
+syntax = "proto3";
+
+package switchyard.driver.v1;
+
+// DriverManagementService provides management operations over running and
+// available driver instances. Used by the Settings sub-shell (UI v2 plan 09).
+service DriverManagementService {
+  // List returns running driver summaries and available registry drivers.
+  rpc List    (ListDriversRequest)    returns (ListDriversResponse);
+  // Get returns a single running driver by ID.
+  rpc Get     (GetDriverRequest)      returns (GetDriverResponse);
+  // Restart requests a graceful restart of a running driver.
+  rpc Restart (RestartDriverRequest)  returns (RestartDriverResponse);
+  // Stop requests a graceful stop of a running driver.
+  rpc Stop    (StopDriverRequest)     returns (StopDriverResponse);
+  // Logs returns the last N log lines from a driver.
+  rpc Logs    (DriverLogsRequest)     returns (DriverLogsResponse);
+}
+
+// 1-9: List
+
+message ListDriversRequest {}
+
+message ListDriversResponse {
+  repeated DriverSummary  running   = 1;
+  repeated RegistryDriver available = 2;
+}
+
+// 10-19: Get
+
+message GetDriverRequest  { string id = 1; }
+message GetDriverResponse { DriverSummary driver = 1; }
+
+// 20-29: Restart
+
+message RestartDriverRequest  { string id = 1; string reason = 2; }
+message RestartDriverResponse { bool restarted = 1; }
+
+// 30-39: Stop
+
+message StopDriverRequest  { string id = 1; string reason = 2; }
+message StopDriverResponse { bool stopped = 1; }
+
+// 40-49: Logs
+
+message DriverLogsRequest  { string id = 1; uint32 last_n = 2; }
+message DriverLogsResponse { repeated string lines = 1; }
+
+// 50-99: Shared messages
+
+// DriverSummary carries runtime info for a running driver instance.
+message DriverSummary {
+  string id                 = 1;
+  string pack               = 2;
+  string version            = 3;
+  // status: "healthy" | "reconnecting" | "degraded"
+  string status             = 4;
+  int64  uptime_seconds     = 5;
+  int32  pid                = 6;
+  string socket             = 7;
+  string config_file        = 8;
+  string otel_span          = 9;
+  uint32 entity_count       = 10;
+  // events_per_day: TODO compute from real metrics
+  double events_per_day     = 11;
+  // last_cmd_ack_ms: TODO compute from real metrics
+  double last_cmd_ack_ms    = 12;
+  // reconnects_today: TODO compute from real metrics
+  uint32 reconnects_today   = 13;
+  string reconnecting_since = 14;
+}
+
+// RegistryDriver carries info about a driver available in the registry
+// but not currently installed/running.
+message RegistryDriver {
+  string id      = 1;
+  string pack    = 2;
+  string version = 3;
+  // status: "available" | "update_available"
+  string status  = 4;
+}

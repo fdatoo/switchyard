@@ -886,6 +886,210 @@ func (x *GetMCPConfigResponse) GetTailMaxWaitSeconds() uint32 {
 	return 0
 }
 
+// 80-89: ExportSupportBundle
+type ExportSupportBundleRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ExportSupportBundleRequest) Reset() {
+	*x = ExportSupportBundleRequest{}
+	mi := &file_switchyard_v1alpha1_system_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExportSupportBundleRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExportSupportBundleRequest) ProtoMessage() {}
+
+func (x *ExportSupportBundleRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_switchyard_v1alpha1_system_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExportSupportBundleRequest.ProtoReflect.Descriptor instead.
+func (*ExportSupportBundleRequest) Descriptor() ([]byte, []int) {
+	return file_switchyard_v1alpha1_system_proto_rawDescGZIP(), []int{17}
+}
+
+type ExportSupportBundleResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// bundle contains the full support bundle as a gzipped tar archive.
+	Bundle        []byte                 `protobuf:"bytes,1,opt,name=bundle,proto3" json:"bundle,omitempty"`
+	Filename      string                 `protobuf:"bytes,2,opt,name=filename,proto3" json:"filename,omitempty"`
+	ConfigHash    string                 `protobuf:"bytes,3,opt,name=config_hash,json=configHash,proto3" json:"config_hash,omitempty"`
+	GeneratedAt   *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=generated_at,json=generatedAt,proto3" json:"generated_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ExportSupportBundleResponse) Reset() {
+	*x = ExportSupportBundleResponse{}
+	mi := &file_switchyard_v1alpha1_system_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExportSupportBundleResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExportSupportBundleResponse) ProtoMessage() {}
+
+func (x *ExportSupportBundleResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_switchyard_v1alpha1_system_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExportSupportBundleResponse.ProtoReflect.Descriptor instead.
+func (*ExportSupportBundleResponse) Descriptor() ([]byte, []int) {
+	return file_switchyard_v1alpha1_system_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *ExportSupportBundleResponse) GetBundle() []byte {
+	if x != nil {
+		return x.Bundle
+	}
+	return nil
+}
+
+func (x *ExportSupportBundleResponse) GetFilename() string {
+	if x != nil {
+		return x.Filename
+	}
+	return ""
+}
+
+func (x *ExportSupportBundleResponse) GetConfigHash() string {
+	if x != nil {
+		return x.ConfigHash
+	}
+	return ""
+}
+
+func (x *ExportSupportBundleResponse) GetGeneratedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.GeneratedAt
+	}
+	return nil
+}
+
+// 90-99: GetEventStoreStats
+type GetEventStoreStatsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetEventStoreStatsRequest) Reset() {
+	*x = GetEventStoreStatsRequest{}
+	mi := &file_switchyard_v1alpha1_system_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetEventStoreStatsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetEventStoreStatsRequest) ProtoMessage() {}
+
+func (x *GetEventStoreStatsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_switchyard_v1alpha1_system_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetEventStoreStatsRequest.ProtoReflect.Descriptor instead.
+func (*GetEventStoreStatsRequest) Descriptor() ([]byte, []int) {
+	return file_switchyard_v1alpha1_system_proto_rawDescGZIP(), []int{19}
+}
+
+type GetEventStoreStatsResponse struct {
+	state     protoimpl.MessageState `protogen:"open.v1"`
+	SizeBytes uint64                 `protobuf:"varint,1,opt,name=size_bytes,json=sizeBytes,proto3" json:"size_bytes,omitempty"`
+	// oldest_event_age_seconds: seconds since the oldest event in the store.
+	OldestEventAgeSeconds uint64 `protobuf:"varint,2,opt,name=oldest_event_age_seconds,json=oldestEventAgeSeconds,proto3" json:"oldest_event_age_seconds,omitempty"`
+	SnapshotCount         uint32 `protobuf:"varint,3,opt,name=snapshot_count,json=snapshotCount,proto3" json:"snapshot_count,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
+}
+
+func (x *GetEventStoreStatsResponse) Reset() {
+	*x = GetEventStoreStatsResponse{}
+	mi := &file_switchyard_v1alpha1_system_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetEventStoreStatsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetEventStoreStatsResponse) ProtoMessage() {}
+
+func (x *GetEventStoreStatsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_switchyard_v1alpha1_system_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetEventStoreStatsResponse.ProtoReflect.Descriptor instead.
+func (*GetEventStoreStatsResponse) Descriptor() ([]byte, []int) {
+	return file_switchyard_v1alpha1_system_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *GetEventStoreStatsResponse) GetSizeBytes() uint64 {
+	if x != nil {
+		return x.SizeBytes
+	}
+	return 0
+}
+
+func (x *GetEventStoreStatsResponse) GetOldestEventAgeSeconds() uint64 {
+	if x != nil {
+		return x.OldestEventAgeSeconds
+	}
+	return 0
+}
+
+func (x *GetEventStoreStatsResponse) GetSnapshotCount() uint32 {
+	if x != nil {
+		return x.SnapshotCount
+	}
+	return 0
+}
+
 var File_switchyard_v1alpha1_system_proto protoreflect.FileDescriptor
 
 const file_switchyard_v1alpha1_system_proto_rawDesc = "" +
@@ -950,7 +1154,20 @@ const file_switchyard_v1alpha1_system_proto_rawDesc = "" +
 	" \x01(\rR\x18entitySubscriptionBuffer\x12:\n" +
 	"\x19trace_subscription_buffer\x18\v \x01(\rR\x17traceSubscriptionBuffer\x129\n" +
 	"\x19tail_default_wait_seconds\x18\x14 \x01(\rR\x16tailDefaultWaitSeconds\x121\n" +
-	"\x15tail_max_wait_seconds\x18\x15 \x01(\rR\x12tailMaxWaitSeconds2\xa2\x06\n" +
+	"\x15tail_max_wait_seconds\x18\x15 \x01(\rR\x12tailMaxWaitSeconds\"\x1c\n" +
+	"\x1aExportSupportBundleRequest\"\xb1\x01\n" +
+	"\x1bExportSupportBundleResponse\x12\x16\n" +
+	"\x06bundle\x18\x01 \x01(\fR\x06bundle\x12\x1a\n" +
+	"\bfilename\x18\x02 \x01(\tR\bfilename\x12\x1f\n" +
+	"\vconfig_hash\x18\x03 \x01(\tR\n" +
+	"configHash\x12=\n" +
+	"\fgenerated_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\vgeneratedAt\"\x1b\n" +
+	"\x19GetEventStoreStatsRequest\"\x9b\x01\n" +
+	"\x1aGetEventStoreStatsResponse\x12\x1d\n" +
+	"\n" +
+	"size_bytes\x18\x01 \x01(\x04R\tsizeBytes\x127\n" +
+	"\x18oldest_event_age_seconds\x18\x02 \x01(\x04R\x15oldestEventAgeSeconds\x12%\n" +
+	"\x0esnapshot_count\x18\x03 \x01(\rR\rsnapshotCount2\x93\b\n" +
 	"\rSystemService\x12T\n" +
 	"\aVersion\x12#.switchyard.v1alpha1.VersionRequest\x1a$.switchyard.v1alpha1.VersionResponse\x12Q\n" +
 	"\x06Health\x12\".switchyard.v1alpha1.HealthRequest\x1a#.switchyard.v1alpha1.HealthResponse\x12T\n" +
@@ -959,7 +1176,9 @@ const file_switchyard_v1alpha1_system_proto_rawDesc = "" +
 	"\x0eCreateSnapshot\x12*.switchyard.v1alpha1.CreateSnapshotRequest\x1a+.switchyard.v1alpha1.CreateSnapshotResponse\x12c\n" +
 	"\fGetConfigDir\x12(.switchyard.v1alpha1.GetConfigDirRequest\x1a).switchyard.v1alpha1.GetConfigDirResponse\x12{\n" +
 	"\x14RecordConfigFileEdit\x120.switchyard.v1alpha1.RecordConfigFileEditRequest\x1a1.switchyard.v1alpha1.RecordConfigFileEditResponse\x12c\n" +
-	"\fGetMCPConfig\x12(.switchyard.v1alpha1.GetMCPConfigRequest\x1a).switchyard.v1alpha1.GetMCPConfigResponseB\xdc\x01\n" +
+	"\fGetMCPConfig\x12(.switchyard.v1alpha1.GetMCPConfigRequest\x1a).switchyard.v1alpha1.GetMCPConfigResponse\x12x\n" +
+	"\x13ExportSupportBundle\x12/.switchyard.v1alpha1.ExportSupportBundleRequest\x1a0.switchyard.v1alpha1.ExportSupportBundleResponse\x12u\n" +
+	"\x12GetEventStoreStats\x12..switchyard.v1alpha1.GetEventStoreStatsRequest\x1a/.switchyard.v1alpha1.GetEventStoreStatsResponseB\xdc\x01\n" +
 	"\x17com.switchyard.v1alpha1B\vSystemProtoP\x01ZGgithub.com/fdatoo/switchyard/gen/switchyard/v1alpha1;switchyardv1alpha1\xa2\x02\x03SXX\xaa\x02\x13Switchyard.V1alpha1\xca\x02\x13Switchyard\\V1alpha1\xe2\x02\x1fSwitchyard\\V1alpha1\\GPBMetadata\xea\x02\x14Switchyard::V1alpha1b\x06proto3"
 
 var (
@@ -974,7 +1193,7 @@ func file_switchyard_v1alpha1_system_proto_rawDescGZIP() []byte {
 	return file_switchyard_v1alpha1_system_proto_rawDescData
 }
 
-var file_switchyard_v1alpha1_system_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
+var file_switchyard_v1alpha1_system_proto_msgTypes = make([]protoimpl.MessageInfo, 21)
 var file_switchyard_v1alpha1_system_proto_goTypes = []any{
 	(*VersionRequest)(nil),               // 0: switchyard.v1alpha1.VersionRequest
 	(*VersionResponse)(nil),              // 1: switchyard.v1alpha1.VersionResponse
@@ -993,33 +1212,42 @@ var file_switchyard_v1alpha1_system_proto_goTypes = []any{
 	(*RecordConfigFileEditResponse)(nil), // 14: switchyard.v1alpha1.RecordConfigFileEditResponse
 	(*GetMCPConfigRequest)(nil),          // 15: switchyard.v1alpha1.GetMCPConfigRequest
 	(*GetMCPConfigResponse)(nil),         // 16: switchyard.v1alpha1.GetMCPConfigResponse
-	(*timestamppb.Timestamp)(nil),        // 17: google.protobuf.Timestamp
+	(*ExportSupportBundleRequest)(nil),   // 17: switchyard.v1alpha1.ExportSupportBundleRequest
+	(*ExportSupportBundleResponse)(nil),  // 18: switchyard.v1alpha1.ExportSupportBundleResponse
+	(*GetEventStoreStatsRequest)(nil),    // 19: switchyard.v1alpha1.GetEventStoreStatsRequest
+	(*GetEventStoreStatsResponse)(nil),   // 20: switchyard.v1alpha1.GetEventStoreStatsResponse
+	(*timestamppb.Timestamp)(nil),        // 21: google.protobuf.Timestamp
 }
 var file_switchyard_v1alpha1_system_proto_depIdxs = []int32{
 	4,  // 0: switchyard.v1alpha1.HealthResponse.subsystems:type_name -> switchyard.v1alpha1.SubsystemHealth
-	17, // 1: switchyard.v1alpha1.DiagnosticsResponse.generated_at:type_name -> google.protobuf.Timestamp
-	17, // 2: switchyard.v1alpha1.CreateSnapshotResponse.created_at:type_name -> google.protobuf.Timestamp
-	0,  // 3: switchyard.v1alpha1.SystemService.Version:input_type -> switchyard.v1alpha1.VersionRequest
-	2,  // 4: switchyard.v1alpha1.SystemService.Health:input_type -> switchyard.v1alpha1.HealthRequest
-	5,  // 5: switchyard.v1alpha1.SystemService.Metrics:input_type -> switchyard.v1alpha1.MetricsRequest
-	7,  // 6: switchyard.v1alpha1.SystemService.Diagnostics:input_type -> switchyard.v1alpha1.DiagnosticsRequest
-	9,  // 7: switchyard.v1alpha1.SystemService.CreateSnapshot:input_type -> switchyard.v1alpha1.CreateSnapshotRequest
-	11, // 8: switchyard.v1alpha1.SystemService.GetConfigDir:input_type -> switchyard.v1alpha1.GetConfigDirRequest
-	13, // 9: switchyard.v1alpha1.SystemService.RecordConfigFileEdit:input_type -> switchyard.v1alpha1.RecordConfigFileEditRequest
-	15, // 10: switchyard.v1alpha1.SystemService.GetMCPConfig:input_type -> switchyard.v1alpha1.GetMCPConfigRequest
-	1,  // 11: switchyard.v1alpha1.SystemService.Version:output_type -> switchyard.v1alpha1.VersionResponse
-	3,  // 12: switchyard.v1alpha1.SystemService.Health:output_type -> switchyard.v1alpha1.HealthResponse
-	6,  // 13: switchyard.v1alpha1.SystemService.Metrics:output_type -> switchyard.v1alpha1.MetricsResponse
-	8,  // 14: switchyard.v1alpha1.SystemService.Diagnostics:output_type -> switchyard.v1alpha1.DiagnosticsResponse
-	10, // 15: switchyard.v1alpha1.SystemService.CreateSnapshot:output_type -> switchyard.v1alpha1.CreateSnapshotResponse
-	12, // 16: switchyard.v1alpha1.SystemService.GetConfigDir:output_type -> switchyard.v1alpha1.GetConfigDirResponse
-	14, // 17: switchyard.v1alpha1.SystemService.RecordConfigFileEdit:output_type -> switchyard.v1alpha1.RecordConfigFileEditResponse
-	16, // 18: switchyard.v1alpha1.SystemService.GetMCPConfig:output_type -> switchyard.v1alpha1.GetMCPConfigResponse
-	11, // [11:19] is the sub-list for method output_type
-	3,  // [3:11] is the sub-list for method input_type
-	3,  // [3:3] is the sub-list for extension type_name
-	3,  // [3:3] is the sub-list for extension extendee
-	0,  // [0:3] is the sub-list for field type_name
+	21, // 1: switchyard.v1alpha1.DiagnosticsResponse.generated_at:type_name -> google.protobuf.Timestamp
+	21, // 2: switchyard.v1alpha1.CreateSnapshotResponse.created_at:type_name -> google.protobuf.Timestamp
+	21, // 3: switchyard.v1alpha1.ExportSupportBundleResponse.generated_at:type_name -> google.protobuf.Timestamp
+	0,  // 4: switchyard.v1alpha1.SystemService.Version:input_type -> switchyard.v1alpha1.VersionRequest
+	2,  // 5: switchyard.v1alpha1.SystemService.Health:input_type -> switchyard.v1alpha1.HealthRequest
+	5,  // 6: switchyard.v1alpha1.SystemService.Metrics:input_type -> switchyard.v1alpha1.MetricsRequest
+	7,  // 7: switchyard.v1alpha1.SystemService.Diagnostics:input_type -> switchyard.v1alpha1.DiagnosticsRequest
+	9,  // 8: switchyard.v1alpha1.SystemService.CreateSnapshot:input_type -> switchyard.v1alpha1.CreateSnapshotRequest
+	11, // 9: switchyard.v1alpha1.SystemService.GetConfigDir:input_type -> switchyard.v1alpha1.GetConfigDirRequest
+	13, // 10: switchyard.v1alpha1.SystemService.RecordConfigFileEdit:input_type -> switchyard.v1alpha1.RecordConfigFileEditRequest
+	15, // 11: switchyard.v1alpha1.SystemService.GetMCPConfig:input_type -> switchyard.v1alpha1.GetMCPConfigRequest
+	17, // 12: switchyard.v1alpha1.SystemService.ExportSupportBundle:input_type -> switchyard.v1alpha1.ExportSupportBundleRequest
+	19, // 13: switchyard.v1alpha1.SystemService.GetEventStoreStats:input_type -> switchyard.v1alpha1.GetEventStoreStatsRequest
+	1,  // 14: switchyard.v1alpha1.SystemService.Version:output_type -> switchyard.v1alpha1.VersionResponse
+	3,  // 15: switchyard.v1alpha1.SystemService.Health:output_type -> switchyard.v1alpha1.HealthResponse
+	6,  // 16: switchyard.v1alpha1.SystemService.Metrics:output_type -> switchyard.v1alpha1.MetricsResponse
+	8,  // 17: switchyard.v1alpha1.SystemService.Diagnostics:output_type -> switchyard.v1alpha1.DiagnosticsResponse
+	10, // 18: switchyard.v1alpha1.SystemService.CreateSnapshot:output_type -> switchyard.v1alpha1.CreateSnapshotResponse
+	12, // 19: switchyard.v1alpha1.SystemService.GetConfigDir:output_type -> switchyard.v1alpha1.GetConfigDirResponse
+	14, // 20: switchyard.v1alpha1.SystemService.RecordConfigFileEdit:output_type -> switchyard.v1alpha1.RecordConfigFileEditResponse
+	16, // 21: switchyard.v1alpha1.SystemService.GetMCPConfig:output_type -> switchyard.v1alpha1.GetMCPConfigResponse
+	18, // 22: switchyard.v1alpha1.SystemService.ExportSupportBundle:output_type -> switchyard.v1alpha1.ExportSupportBundleResponse
+	20, // 23: switchyard.v1alpha1.SystemService.GetEventStoreStats:output_type -> switchyard.v1alpha1.GetEventStoreStatsResponse
+	14, // [14:24] is the sub-list for method output_type
+	4,  // [4:14] is the sub-list for method input_type
+	4,  // [4:4] is the sub-list for extension type_name
+	4,  // [4:4] is the sub-list for extension extendee
+	0,  // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_switchyard_v1alpha1_system_proto_init() }
@@ -1033,7 +1261,7 @@ func file_switchyard_v1alpha1_system_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_switchyard_v1alpha1_system_proto_rawDesc), len(file_switchyard_v1alpha1_system_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   17,
+			NumMessages:   21,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

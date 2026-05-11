@@ -1,0 +1,30 @@
+.bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  background: var(--sy-color-surface-1);
+  border-top: 1px solid var(--sy-color-line);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  z-index: 100;
+}
+
+.tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--sy-space-2) 0;
+  color: var(--sy-color-fg-3);
+  text-decoration: none;
+  font-size: 11px;
+}
+
+.tab.active {
+  color: var(--sy-color-accent);
+}
+
+.label {
+  font-family: var(--sy-font-body);
+}

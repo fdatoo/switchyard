@@ -195,6 +195,27 @@ func (a *systemBackendAdapter) MCPConfig(_ context.Context) (api.MCPConfig, erro
 	return cfg, nil
 }
 
+// ExportSupportBundle builds a full diagnostics bundle and returns it as the
+// downloadable support archive. Delegates to Diagnostics for the bundle bytes
+// and adds a structured filename. Added by UI v2 plan 09.
+func (a *systemBackendAdapter) ExportSupportBundle(ctx context.Context) ([]byte, string, string, time.Time, error) {
+	bundle, configHash, generatedAt, err := a.Diagnostics(ctx)
+	if err != nil {
+		return nil, "", "", time.Time{}, err
+	}
+	filename := fmt.Sprintf("switchyard-support-%s.zip", generatedAt.UTC().Format("20060102-150405"))
+	return bundle, filename, configHash, generatedAt, nil
+}
+
+// EventStoreStats returns size, age, and snapshot count for the event store.
+// Added by UI v2 plan 09.
+// TODO: expose store.SizeBytes(), store.OldestEventAge(), and store.SnapshotCount()
+// from eventstore.Store once those methods are added.
+func (a *systemBackendAdapter) EventStoreStats(_ context.Context) (api.EventStoreStats, error) {
+	// Return zero values until the eventstore exposes these metrics.
+	return api.EventStoreStats{}, nil
+}
+
 func (a *systemBackendAdapter) RecordConfigFileEdit(ctx context.Context, p auth.Principal, sessionID, path, sha256Hex string, sizeBytes uint32) (uint64, error) {
 	cfgDir := a.phase.configDir
 	if cfgDir == "" {

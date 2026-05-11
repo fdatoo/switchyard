@@ -25,6 +25,13 @@ export const colors = [
   "--sy-color-bad",
   "--sy-color-info",
   "--sy-color-purple",
+  // Terminal / log block
+  "--sy-color-terminal-bg",
+  "--sy-color-terminal-fg",
+  // Modal overlay scrim
+  "--sy-color-overlay",
+  // Accent-subtle: tinted surface for active nav items
+  "--sy-color-accent-subtle",
 ] as const;
 
 export const radii = [

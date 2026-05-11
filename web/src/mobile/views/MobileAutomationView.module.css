@@ -1,0 +1,47 @@
+.page {
+  padding: var(--sy-space-4);
+}
+
+.banner {
+  background: var(--sy-color-surface-2);
+  border: 1px solid var(--sy-color-line);
+  border-radius: var(--sy-radius);
+  padding: var(--sy-space-2) var(--sy-space-3);
+  font-size: 13px;
+  color: var(--sy-color-fg-3);
+  margin-bottom: var(--sy-space-4);
+}
+
+.name {
+  font-family: var(--sy-font-display);
+  font-size: 22px;
+  color: var(--sy-color-fg);
+  margin-bottom: var(--sy-space-2);
+}
+
+.description {
+  color: var(--sy-color-fg-2);
+  font-size: 15px;
+  margin-bottom: var(--sy-space-1);
+}
+
+.meta {
+  font-size: 12px;
+  color: var(--sy-color-fg-4);
+  margin-bottom: var(--sy-space-4);
+}
+
+.actions {
+  display: flex;
+  gap: var(--sy-space-2);
+}
+
+.btn {
+  flex: 1;
+  padding: var(--sy-space-2);
+  background: var(--sy-color-surface-2);
+  border: 1px solid var(--sy-color-line);
+  border-radius: var(--sy-radius);
+  color: var(--sy-color-fg);
+  font-size: 14px;
+}

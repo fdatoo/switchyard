@@ -24,7 +24,6 @@ export interface VocabHandle {
   label: (routeId: RouteId) => string;
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function useVocab(): VocabHandle {
   const ctx = useContext(LanguageContext);
   // Fall back to friendly when rendered outside a LanguageProvider

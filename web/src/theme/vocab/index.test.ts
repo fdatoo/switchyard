@@ -40,8 +40,9 @@ afterEach(() => {
 });
 
 function wrapper(language: "friendly" | "developer" | "ambient") {
-  return ({ children }: { children: React.ReactNode }) =>
-    React.createElement(LanguageProvider, { initialLanguage: language }, children);
+  return function TestWrapper({ children }: { children: React.ReactNode }) {
+    return React.createElement(LanguageProvider, { initialLanguage: language, children });
+  };
 }
 
 test("friendly vocab: home route returns 'Home'", () => {

@@ -24,6 +24,7 @@ interface LanguageContextValue {
   setMode: (m: ThemeMode) => void;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const LanguageContext = createContext<LanguageContextValue | null>(null);
 
 function readPrefs(): StoredPrefs {

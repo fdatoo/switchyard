@@ -7,15 +7,14 @@ package switchyard.activity.v1;
 import "google/protobuf/timestamp.proto";
 
 // ActivityService exposes the event-activity feed (Stories, All Events,
-// Saved Queries) as a ConnectRPC service. Server-streaming for Stories and
-// Events; unary for everything else.
+// Saved Queries) as a ConnectRPC service. Unary for all methods.
 service ActivityService {
-  // Stories streams Story groups in reverse-chronological order, optionally
+  // Stories returns Story groups in reverse-chronological order, optionally
   // filtered by interesting category and/or free-text.
-  rpc Stories(StoriesRequest) returns (stream StoriesResponse);
+  rpc Stories(StoriesRequest) returns (StoriesResponse);
 
-  // Events streams individual EventRecord items, optionally filtered.
-  rpc Events(EventsRequest) returns (stream EventsResponse);
+  // Events returns individual EventRecord items, optionally filtered.
+  rpc Events(EventsRequest) returns (EventsResponse);
 
   // EventDetail returns a single event with its tags and causation chain.
   rpc EventDetail(EventDetailRequest) returns (EventDetailResponse);
@@ -159,7 +158,8 @@ message StoriesRequest {
 }
 
 message StoriesResponse {
-  Story story = 1;
+  repeated Story stories    = 1;
+  string         next_cursor = 2; // opaque cursor for the next page; empty when no more results
 }
 
 // ---------------------------------------------------------------------------
@@ -175,7 +175,8 @@ message EventsRequest {
 }
 
 message EventsResponse {
-  EventRecord event = 1;
+  repeated EventRecord events     = 1;
+  string               next_cursor = 2; // opaque cursor for the next page; empty when no more results
 }
 
 // ---------------------------------------------------------------------------

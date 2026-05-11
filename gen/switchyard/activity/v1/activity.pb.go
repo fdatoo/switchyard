@@ -709,7 +709,8 @@ func (x *StoriesRequest) GetCursor() string {
 
 type StoriesResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Story         *Story                 `protobuf:"bytes,1,opt,name=story,proto3" json:"story,omitempty"`
+	Stories       []*Story               `protobuf:"bytes,1,rep,name=stories,proto3" json:"stories,omitempty"`
+	NextCursor    string                 `protobuf:"bytes,2,opt,name=next_cursor,json=nextCursor,proto3" json:"next_cursor,omitempty"` // opaque cursor for the next page; empty when no more results
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -744,11 +745,18 @@ func (*StoriesResponse) Descriptor() ([]byte, []int) {
 	return file_switchyard_activity_v1_activity_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *StoriesResponse) GetStory() *Story {
+func (x *StoriesResponse) GetStories() []*Story {
 	if x != nil {
-		return x.Story
+		return x.Stories
 	}
 	return nil
+}
+
+func (x *StoriesResponse) GetNextCursor() string {
+	if x != nil {
+		return x.NextCursor
+	}
+	return ""
 }
 
 type EventsRequest struct {
@@ -807,7 +815,8 @@ func (x *EventsRequest) GetCursor() string {
 
 type EventsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Event         *EventRecord           `protobuf:"bytes,1,opt,name=event,proto3" json:"event,omitempty"`
+	Events        []*EventRecord         `protobuf:"bytes,1,rep,name=events,proto3" json:"events,omitempty"`
+	NextCursor    string                 `protobuf:"bytes,2,opt,name=next_cursor,json=nextCursor,proto3" json:"next_cursor,omitempty"` // opaque cursor for the next page; empty when no more results
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -842,11 +851,18 @@ func (*EventsResponse) Descriptor() ([]byte, []int) {
 	return file_switchyard_activity_v1_activity_proto_rawDescGZIP(), []int{9}
 }
 
-func (x *EventsResponse) GetEvent() *EventRecord {
+func (x *EventsResponse) GetEvents() []*EventRecord {
 	if x != nil {
-		return x.Event
+		return x.Events
 	}
 	return nil
+}
+
+func (x *EventsResponse) GetNextCursor() string {
+	if x != nil {
+		return x.NextCursor
+	}
+	return ""
 }
 
 type EventDetailRequest struct {
@@ -1285,15 +1301,19 @@ const file_switchyard_activity_v1_activity_proto_rawDesc = "" +
 	"\x0eStoriesRequest\x12=\n" +
 	"\x06filter\x18\x01 \x01(\v2%.switchyard.activity.v1.StoriesFilterR\x06filter\x12\x16\n" +
 	"\x06cursor\x18\n" +
-	" \x01(\tR\x06cursor\"F\n" +
-	"\x0fStoriesResponse\x123\n" +
-	"\x05story\x18\x01 \x01(\v2\x1d.switchyard.activity.v1.StoryR\x05story\"e\n" +
+	" \x01(\tR\x06cursor\"k\n" +
+	"\x0fStoriesResponse\x127\n" +
+	"\astories\x18\x01 \x03(\v2\x1d.switchyard.activity.v1.StoryR\astories\x12\x1f\n" +
+	"\vnext_cursor\x18\x02 \x01(\tR\n" +
+	"nextCursor\"e\n" +
 	"\rEventsRequest\x12<\n" +
 	"\x06filter\x18\x01 \x01(\v2$.switchyard.activity.v1.EventsFilterR\x06filter\x12\x16\n" +
 	"\x06cursor\x18\n" +
-	" \x01(\tR\x06cursor\"K\n" +
-	"\x0eEventsResponse\x129\n" +
-	"\x05event\x18\x01 \x01(\v2#.switchyard.activity.v1.EventRecordR\x05event\"/\n" +
+	" \x01(\tR\x06cursor\"n\n" +
+	"\x0eEventsResponse\x12;\n" +
+	"\x06events\x18\x01 \x03(\v2#.switchyard.activity.v1.EventRecordR\x06events\x12\x1f\n" +
+	"\vnext_cursor\x18\x02 \x01(\tR\n" +
+	"nextCursor\"/\n" +
 	"\x12EventDetailRequest\x12\x19\n" +
 	"\bevent_id\x18\x01 \x01(\tR\aeventId\"\x9e\x01\n" +
 	"\x13EventDetailResponse\x129\n" +
@@ -1311,10 +1331,10 @@ const file_switchyard_activity_v1_activity_proto_rawDesc = "" +
 	"\aqueries\x18\x01 \x03(\v2\".switchyard.activity.v1.SavedQueryR\aqueries\")\n" +
 	"\x17DeleteSavedQueryRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"\x1a\n" +
-	"\x18DeleteSavedQueryResponse2\x82\x05\n" +
-	"\x0fActivityService\x12\\\n" +
-	"\aStories\x12&.switchyard.activity.v1.StoriesRequest\x1a'.switchyard.activity.v1.StoriesResponse0\x01\x12Y\n" +
-	"\x06Events\x12%.switchyard.activity.v1.EventsRequest\x1a&.switchyard.activity.v1.EventsResponse0\x01\x12f\n" +
+	"\x18DeleteSavedQueryResponse2\xfe\x04\n" +
+	"\x0fActivityService\x12Z\n" +
+	"\aStories\x12&.switchyard.activity.v1.StoriesRequest\x1a'.switchyard.activity.v1.StoriesResponse\x12W\n" +
+	"\x06Events\x12%.switchyard.activity.v1.EventsRequest\x1a&.switchyard.activity.v1.EventsResponse\x12f\n" +
 	"\vEventDetail\x12*.switchyard.activity.v1.EventDetailRequest\x1a+.switchyard.activity.v1.EventDetailResponse\x12`\n" +
 	"\tSaveQuery\x12(.switchyard.activity.v1.SaveQueryRequest\x1a).switchyard.activity.v1.SaveQueryResponse\x12u\n" +
 	"\x10ListSavedQueries\x12/.switchyard.activity.v1.ListSavedQueriesRequest\x1a0.switchyard.activity.v1.ListSavedQueriesResponse\x12u\n" +
@@ -1368,9 +1388,9 @@ var file_switchyard_activity_v1_activity_proto_depIdxs = []int32{
 	18, // 9: switchyard.activity.v1.EventsFilter.since:type_name -> google.protobuf.Timestamp
 	18, // 10: switchyard.activity.v1.EventsFilter.until:type_name -> google.protobuf.Timestamp
 	4,  // 11: switchyard.activity.v1.StoriesRequest.filter:type_name -> switchyard.activity.v1.StoriesFilter
-	1,  // 12: switchyard.activity.v1.StoriesResponse.story:type_name -> switchyard.activity.v1.Story
+	1,  // 12: switchyard.activity.v1.StoriesResponse.stories:type_name -> switchyard.activity.v1.Story
 	5,  // 13: switchyard.activity.v1.EventsRequest.filter:type_name -> switchyard.activity.v1.EventsFilter
-	2,  // 14: switchyard.activity.v1.EventsResponse.event:type_name -> switchyard.activity.v1.EventRecord
+	2,  // 14: switchyard.activity.v1.EventsResponse.events:type_name -> switchyard.activity.v1.EventRecord
 	2,  // 15: switchyard.activity.v1.EventDetailResponse.event:type_name -> switchyard.activity.v1.EventRecord
 	2,  // 16: switchyard.activity.v1.EventDetailResponse.causation_chain:type_name -> switchyard.activity.v1.EventRecord
 	3,  // 17: switchyard.activity.v1.SaveQueryResponse.query:type_name -> switchyard.activity.v1.SavedQuery

@@ -34,14 +34,13 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
 // ActivityService exposes the event-activity feed (Stories, All Events,
-// Saved Queries) as a ConnectRPC service. Server-streaming for Stories and
-// Events; unary for everything else.
+// Saved Queries) as a ConnectRPC service. Unary for all methods.
 type ActivityServiceClient interface {
-	// Stories streams Story groups in reverse-chronological order, optionally
+	// Stories returns Story groups in reverse-chronological order, optionally
 	// filtered by interesting category and/or free-text.
-	Stories(ctx context.Context, in *StoriesRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[StoriesResponse], error)
-	// Events streams individual EventRecord items, optionally filtered.
-	Events(ctx context.Context, in *EventsRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[EventsResponse], error)
+	Stories(ctx context.Context, in *StoriesRequest, opts ...grpc.CallOption) (*StoriesResponse, error)
+	// Events returns individual EventRecord items, optionally filtered.
+	Events(ctx context.Context, in *EventsRequest, opts ...grpc.CallOption) (*EventsResponse, error)
 	// EventDetail returns a single event with its tags and causation chain.
 	EventDetail(ctx context.Context, in *EventDetailRequest, opts ...grpc.CallOption) (*EventDetailResponse, error)
 	// SaveQuery persists a named query with an optional cron schedule.
@@ -60,43 +59,25 @@ func NewActivityServiceClient(cc grpc.ClientConnInterface) ActivityServiceClient
 	return &activityServiceClient{cc}
 }
 
-func (c *activityServiceClient) Stories(ctx context.Context, in *StoriesRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[StoriesResponse], error) {
+func (c *activityServiceClient) Stories(ctx context.Context, in *StoriesRequest, opts ...grpc.CallOption) (*StoriesResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &ActivityService_ServiceDesc.Streams[0], ActivityService_Stories_FullMethodName, cOpts...)
+	out := new(StoriesResponse)
+	err := c.cc.Invoke(ctx, ActivityService_Stories_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &grpc.GenericClientStream[StoriesRequest, StoriesResponse]{ClientStream: stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
+	return out, nil
 }
 
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type ActivityService_StoriesClient = grpc.ServerStreamingClient[StoriesResponse]
-
-func (c *activityServiceClient) Events(ctx context.Context, in *EventsRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[EventsResponse], error) {
+func (c *activityServiceClient) Events(ctx context.Context, in *EventsRequest, opts ...grpc.CallOption) (*EventsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &ActivityService_ServiceDesc.Streams[1], ActivityService_Events_FullMethodName, cOpts...)
+	out := new(EventsResponse)
+	err := c.cc.Invoke(ctx, ActivityService_Events_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &grpc.GenericClientStream[EventsRequest, EventsResponse]{ClientStream: stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
+	return out, nil
 }
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type ActivityService_EventsClient = grpc.ServerStreamingClient[EventsResponse]
 
 func (c *activityServiceClient) EventDetail(ctx context.Context, in *EventDetailRequest, opts ...grpc.CallOption) (*EventDetailResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
@@ -143,14 +124,13 @@ func (c *activityServiceClient) DeleteSavedQuery(ctx context.Context, in *Delete
 // for forward compatibility.
 //
 // ActivityService exposes the event-activity feed (Stories, All Events,
-// Saved Queries) as a ConnectRPC service. Server-streaming for Stories and
-// Events; unary for everything else.
+// Saved Queries) as a ConnectRPC service. Unary for all methods.
 type ActivityServiceServer interface {
-	// Stories streams Story groups in reverse-chronological order, optionally
+	// Stories returns Story groups in reverse-chronological order, optionally
 	// filtered by interesting category and/or free-text.
-	Stories(*StoriesRequest, grpc.ServerStreamingServer[StoriesResponse]) error
-	// Events streams individual EventRecord items, optionally filtered.
-	Events(*EventsRequest, grpc.ServerStreamingServer[EventsResponse]) error
+	Stories(context.Context, *StoriesRequest) (*StoriesResponse, error)
+	// Events returns individual EventRecord items, optionally filtered.
+	Events(context.Context, *EventsRequest) (*EventsResponse, error)
 	// EventDetail returns a single event with its tags and causation chain.
 	EventDetail(context.Context, *EventDetailRequest) (*EventDetailResponse, error)
 	// SaveQuery persists a named query with an optional cron schedule.
@@ -168,11 +148,11 @@ type ActivityServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedActivityServiceServer struct{}
 
-func (UnimplementedActivityServiceServer) Stories(*StoriesRequest, grpc.ServerStreamingServer[StoriesResponse]) error {
-	return status.Error(codes.Unimplemented, "method Stories not implemented")
+func (UnimplementedActivityServiceServer) Stories(context.Context, *StoriesRequest) (*StoriesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Stories not implemented")
 }
-func (UnimplementedActivityServiceServer) Events(*EventsRequest, grpc.ServerStreamingServer[EventsResponse]) error {
-	return status.Error(codes.Unimplemented, "method Events not implemented")
+func (UnimplementedActivityServiceServer) Events(context.Context, *EventsRequest) (*EventsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Events not implemented")
 }
 func (UnimplementedActivityServiceServer) EventDetail(context.Context, *EventDetailRequest) (*EventDetailResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method EventDetail not implemented")
@@ -206,27 +186,41 @@ func RegisterActivityServiceServer(s grpc.ServiceRegistrar, srv ActivityServiceS
 	s.RegisterService(&ActivityService_ServiceDesc, srv)
 }
 
-func _ActivityService_Stories_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(StoriesRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
+func _ActivityService_Stories_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StoriesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
 	}
-	return srv.(ActivityServiceServer).Stories(m, &grpc.GenericServerStream[StoriesRequest, StoriesResponse]{ServerStream: stream})
+	if interceptor == nil {
+		return srv.(ActivityServiceServer).Stories(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ActivityService_Stories_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ActivityServiceServer).Stories(ctx, req.(*StoriesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type ActivityService_StoriesServer = grpc.ServerStreamingServer[StoriesResponse]
-
-func _ActivityService_Events_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(EventsRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
+func _ActivityService_Events_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EventsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
 	}
-	return srv.(ActivityServiceServer).Events(m, &grpc.GenericServerStream[EventsRequest, EventsResponse]{ServerStream: stream})
+	if interceptor == nil {
+		return srv.(ActivityServiceServer).Events(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ActivityService_Events_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ActivityServiceServer).Events(ctx, req.(*EventsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type ActivityService_EventsServer = grpc.ServerStreamingServer[EventsResponse]
 
 func _ActivityService_EventDetail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(EventDetailRequest)
@@ -308,6 +302,14 @@ var ActivityService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*ActivityServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "Stories",
+			Handler:    _ActivityService_Stories_Handler,
+		},
+		{
+			MethodName: "Events",
+			Handler:    _ActivityService_Events_Handler,
+		},
+		{
 			MethodName: "EventDetail",
 			Handler:    _ActivityService_EventDetail_Handler,
 		},
@@ -324,17 +326,6 @@ var ActivityService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ActivityService_DeleteSavedQuery_Handler,
 		},
 	},
-	Streams: []grpc.StreamDesc{
-		{
-			StreamName:    "Stories",
-			Handler:       _ActivityService_Stories_Handler,
-			ServerStreams: true,
-		},
-		{
-			StreamName:    "Events",
-			Handler:       _ActivityService_Events_Handler,
-			ServerStreams: true,
-		},
-	},
+	Streams:  []grpc.StreamDesc{},
 	Metadata: "switchyard/activity/v1/activity.proto",
 }

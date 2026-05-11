@@ -1,0 +1,229 @@
+// See docs/proto-hygiene.md for grouping conventions.
+
+syntax = "proto3";
+
+package switchyard.activity.v1;
+
+import "google/protobuf/timestamp.proto";
+
+// ActivityService exposes the event-activity feed (Stories, All Events,
+// Saved Queries) as a ConnectRPC service. Server-streaming for Stories and
+// Events; unary for everything else.
+service ActivityService {
+  // Stories streams Story groups in reverse-chronological order, optionally
+  // filtered by interesting category and/or free-text.
+  rpc Stories(StoriesRequest) returns (stream StoriesResponse);
+
+  // Events streams individual EventRecord items, optionally filtered.
+  rpc Events(EventsRequest) returns (stream EventsResponse);
+
+  // EventDetail returns a single event with its tags and causation chain.
+  rpc EventDetail(EventDetailRequest) returns (EventDetailResponse);
+
+  // SaveQuery persists a named query with an optional cron schedule.
+  rpc SaveQuery(SaveQueryRequest) returns (SaveQueryResponse);
+
+  // ListSavedQueries returns all saved queries for the caller.
+  rpc ListSavedQueries(ListSavedQueriesRequest) returns (ListSavedQueriesResponse);
+
+  // DeleteSavedQuery removes a saved query by id.
+  rpc DeleteSavedQuery(DeleteSavedQueryRequest) returns (DeleteSavedQueryResponse);
+}
+
+// ---------------------------------------------------------------------------
+// Shared types
+// ---------------------------------------------------------------------------
+
+// InterestingnessTag represents a single detector finding attached to an event.
+message InterestingnessTag {
+  // 1-9: taxonomy
+  string category    = 1; // failure | performance | causation | anomaly | security | configuration | novelty
+  string name        = 2; // e.g. "slow_ack", "repeated_auth_failed"
+  string explanation = 3; // human-readable rationale
+}
+
+// Story groups a set of correlated events into a single narrative unit.
+message Story {
+  // 1-9: identity
+  string                    id             = 1;
+  string                    title          = 2;
+
+  // 10-19: event references
+  repeated string           inner_event_ids = 10; // ordered by position
+
+  // 20-29: timing
+  google.protobuf.Timestamp occurred_at   = 20;
+
+  // 30-39: interestingness
+  repeated InterestingnessTag tags        = 30;
+
+  // 40-49: provenance
+  string                    source        = 40; // originating driver/principal
+  repeated string           entity_ids    = 41; // entities touched
+}
+
+// EventRecord mirrors the eventstore.Event fields plus an interestingness join.
+message EventRecord {
+  // 1-9: identity
+  string                    event_id       = 1;
+  string                    command_id     = 2;  // correlation_id of initiating command
+  string                    causation_id   = 3;  // cause event id (empty if root)
+  string                    correlation_id = 4;  // UUID grouping correlated events
+
+  // 10-19: classification
+  string                    kind           = 10;
+  string                    entity         = 11;
+  string                    source         = 12;
+  uint64                    sequence       = 13; // store position
+
+  // 20-29: timing
+  google.protobuf.Timestamp occurred_at    = 20;
+
+  // 30-39: payload (raw JSON)
+  string                    payload_json   = 30;
+
+  // 40-49: OTel identity
+  string                    otel_trace_id  = 40;
+  string                    otel_span_id   = 41;
+
+  // 50-59: interestingness
+  repeated InterestingnessTag tags         = 50;
+}
+
+// SavedQuery is a persisted query with an optional cron schedule.
+message SavedQuery {
+  // 1-9: identity
+  string                    id             = 1;
+  string                    name           = 2;
+  string                    filter         = 3; // e.g. "kind:cmd since:1h"
+  string                    cron           = 4; // optional 5-field cron expression
+
+  // 10-19: timing
+  google.protobuf.Timestamp last_run       = 10;
+  google.protobuf.Timestamp next_run       = 11; // nil if no cron
+  google.protobuf.Timestamp created_at     = 12;
+}
+
+// StoriesFilter narrows the Stories stream.
+message StoriesFilter {
+  // 1-9: event filters
+  string   kind        = 1;
+  string   source      = 2;
+  string   entity_id   = 3;
+
+  // 10-19: interestingness filters
+  bool     interesting_only     = 10;
+  string   interesting_category = 11; // empty = any category
+
+  // 20-29: time window
+  google.protobuf.Timestamp since = 20;
+  google.protobuf.Timestamp until = 21;
+
+  // 30-39: free text
+  string   free_text   = 30;
+}
+
+// EventsFilter narrows the Events stream.
+message EventsFilter {
+  // 1-9: event filters
+  string   kind        = 1;
+  string   source      = 2;
+  string   entity_id   = 3;
+  string   issued_by   = 4;
+
+  // 10-19: interestingness filters
+  bool     interesting_only     = 10;
+  string   interesting_category = 11;
+
+  // 20-29: time window
+  google.protobuf.Timestamp since = 20;
+  google.protobuf.Timestamp until = 21;
+
+  // 30-39: free text
+  string   free_text   = 30;
+
+  // 40-49: pagination
+  uint64   cursor      = 40; // resume from this store position
+}
+
+// ---------------------------------------------------------------------------
+// Stories
+// ---------------------------------------------------------------------------
+
+message StoriesRequest {
+  // 1-9: filter
+  StoriesFilter filter = 1;
+
+  // 10-19: pagination
+  string cursor = 10; // opaque cursor returned by previous call
+}
+
+message StoriesResponse {
+  Story story = 1;
+}
+
+// ---------------------------------------------------------------------------
+// Events
+// ---------------------------------------------------------------------------
+
+message EventsRequest {
+  // 1-9: filter
+  EventsFilter filter = 1;
+
+  // 10-19: pagination
+  string cursor = 10; // opaque cursor
+}
+
+message EventsResponse {
+  EventRecord event = 1;
+}
+
+// ---------------------------------------------------------------------------
+// EventDetail
+// ---------------------------------------------------------------------------
+
+message EventDetailRequest {
+  string event_id = 1;
+}
+
+message EventDetailResponse {
+  // 1-9: the event
+  EventRecord event = 1;
+
+  // 10-19: causation chain (ancestor events, oldest first)
+  repeated EventRecord causation_chain = 10;
+}
+
+// ---------------------------------------------------------------------------
+// SaveQuery
+// ---------------------------------------------------------------------------
+
+message SaveQueryRequest {
+  string name   = 1;
+  string filter = 2;
+  string cron   = 3; // optional
+}
+
+message SaveQueryResponse {
+  SavedQuery query = 1;
+}
+
+// ---------------------------------------------------------------------------
+// ListSavedQueries
+// ---------------------------------------------------------------------------
+
+message ListSavedQueriesRequest {}
+
+message ListSavedQueriesResponse {
+  repeated SavedQuery queries = 1;
+}
+
+// ---------------------------------------------------------------------------
+// DeleteSavedQuery
+// ---------------------------------------------------------------------------
+
+message DeleteSavedQueryRequest {
+  string id = 1;
+}
+
+message DeleteSavedQueryResponse {}

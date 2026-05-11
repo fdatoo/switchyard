@@ -1,0 +1,11 @@
+/* pkl-editor.css — styles for Monaco gutter decorations and editor UI */
+
+.form-bound-region {
+  background: color-mix(in srgb, var(--sy-color-purple) 10%, transparent);
+}
+
+.form-bound-glyph {
+  width: 3px !important;
+  background: var(--sy-color-purple);
+  left: 8px;
+}

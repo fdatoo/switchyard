@@ -1,0 +1,62 @@
+// proto/switchyard/starlarkls/v1/starlarkls.proto
+syntax = "proto3";
+package switchyard.starlarkls.v1;
+option go_package = "github.com/fdatoo/switchyard/gen/switchyard/starlarkls/v1;starlarkls";
+
+service StarlarkLsService {
+  rpc Tokenize(TokenizeRequest) returns (TokenizeResponse);
+  rpc Complete(CompleteRequest)  returns (CompleteResponse);
+  rpc Hover(HoverRequest)        returns (HoverResponse);
+  rpc LookupSymbol(LookupSymbolRequest) returns (LookupSymbolResponse);
+}
+
+message TokenizeRequest {
+  string file_path = 1;
+  string source     = 2;
+}
+message TokenSpan {
+  int32  start_line = 1;
+  int32  start_col  = 2;
+  int32  end_line   = 3;
+  int32  end_col    = 4;
+  string token_type = 5; // "keyword" | "identifier" | "string" | "number" | "comment" | "operator"
+}
+message TokenizeResponse {
+  repeated TokenSpan spans = 1;
+}
+
+message CompleteRequest {
+  string file_path = 1;
+  string source     = 2;
+  int32  line       = 3;
+  int32  col        = 4;
+}
+message CompletionItem {
+  string label        = 1;
+  string kind         = 2; // "function" | "variable" | "keyword"
+  string detail       = 3;
+  string insert_text  = 4;
+}
+message CompleteResponse {
+  repeated CompletionItem items = 1;
+}
+
+message HoverRequest {
+  string file_path = 1;
+  string source     = 2;
+  int32  line       = 3;
+  int32  col        = 4;
+}
+message HoverResponse {
+  string markdown = 1; // empty = no hover
+}
+
+message LookupSymbolRequest {
+  string name = 1;
+}
+message LookupSymbolResponse {
+  string file_path = 1;
+  int32  line      = 2;
+  string kind      = 3; // "function" | "global"
+  string doc       = 4;
+}

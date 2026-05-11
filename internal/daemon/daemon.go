@@ -51,6 +51,7 @@ import (
 	"github.com/fdatoo/switchyard/internal/registry"
 	"github.com/fdatoo/switchyard/internal/script"
 	starlark "github.com/fdatoo/switchyard/internal/starlark"
+	"github.com/fdatoo/switchyard/internal/starlarkls"
 	"github.com/fdatoo/switchyard/internal/state"
 	"github.com/fdatoo/switchyard/internal/storage"
 	"github.com/fdatoo/switchyard/internal/web"
@@ -503,6 +504,13 @@ func (d *Daemon) Run(ctx context.Context) (err error) {
 	editFileWatcher.Start(ctx)
 	editSvc := editsession.NewService(editLockMgr, editFileWatcher, nil, d.logger)
 
+	// StarlarkLs subsystem — symbol extractor for scripts directory.
+	starSyms, err := starlarkls.ExtractSymbols(filepath.Join(configDir, "scripts"))
+	if err != nil {
+		d.logger.Warn("starlarkls: symbol extraction failed (scripts dir may not exist yet)", "err", err)
+		starSyms = map[string]starlarkls.SymbolInfo{}
+	}
+	starLsSvc := starlarkls.NewService(starSyms, filepath.Join(configDir, "scripts"))
 	// Activity service (plan 03) — exposes Stories/Events/SavedQueries.
 	// When SY_ACTIVITY_MOCK=1 is set, returns synthetic data.
 	activitySvc := activity.NewActivityService(d.store, activity.ActivityServiceConfig{
@@ -538,6 +546,7 @@ func (d *Daemon) Run(ctx context.Context) (err error) {
 			Metrics:    d.metrics,
 		}),
 		EditSession: editSvc,
+		StarlarkLs:  starLsSvc,
 		Activity:    activitySvc,
 	}
 

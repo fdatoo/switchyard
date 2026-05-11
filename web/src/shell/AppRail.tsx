@@ -2,7 +2,7 @@
  * AppRail — thin always-visible app rail (brand mark + reserved slots).
  *
  * Plan 1: This component ships but is NOT rendered in the default Shell.
- * Plan 12 (Pkl editor) will mount it when needed.
+ * Plan 12 (Pkl editor) mounts it at /_authed/pkl-editor/*.
  */
 export function AppRail() {
   return (
@@ -13,10 +13,11 @@ export function AppRail() {
         flexDirection: "column",
         alignItems: "center",
         gap: "var(--sy-space-2)",
-        width: "48px",
+        width: 56,
         background: "var(--sy-color-sidebar)",
         borderRight: "1px solid var(--sy-color-line)",
         padding: "var(--sy-space-3) 0",
+        flexShrink: 0,
       }}
     >
       {/* Brand mark */}
@@ -31,7 +32,8 @@ export function AppRail() {
           boxShadow: "var(--sy-shadow)",
         }}
       />
-      {/* Reserved slots for Plan 12 */}
+      {/* Reserved navigation slots */}
     </aside>
   );
 }
+

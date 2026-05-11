@@ -40,10 +40,14 @@ export default defineConfig({
       workbox: {
         cleanupOutdatedCaches: true,
         clientsClaim: true,
-        globPatterns: ["**/*.{css,html,js,svg,webmanifest,woff,woff2}"],
+        // Exclude Monaco workers from precache (they are very large).
+        globPatterns: ["**/*.{css,html,svg,webmanifest,woff,woff2}"],
+        globIgnores: ["**/ts.worker-*.js", "**/editor.worker-*.js"],
         navigateFallback: "/index.html",
         runtimeCaching,
         skipWaiting: true,
+        // Raise file size limit to handle large Monaco chunks at runtime.
+        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
       },
     }),
   ],

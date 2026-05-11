@@ -1,0 +1,137 @@
+.scrubber {
+  display: flex;
+  align-items: center;
+  gap: var(--sy-space-4);
+  height: 52px;
+  padding: 0 var(--sy-space-4);
+  background: var(--sy-color-surface-1);
+  border-bottom: 1px solid var(--sy-color-line);
+  flex-shrink: 0;
+}
+
+/* Transport */
+.transport {
+  display: flex;
+  gap: var(--sy-space-1);
+  align-items: center;
+}
+
+.transportBtn {
+  background: none;
+  border: none;
+  color: var(--sy-color-fg-2);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: var(--sy-space-1) var(--sy-space-2);
+  border-radius: var(--sy-radius);
+  transition: color var(--sy-motion-fast), background var(--sy-motion-fast);
+  line-height: 1;
+}
+
+.transportBtn:hover:not(:disabled) {
+  color: var(--sy-color-fg);
+  background: var(--sy-color-surface-2);
+}
+
+.transportBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* Position label */
+.posLabel {
+  font-size: 0.75rem;
+  color: var(--sy-color-fg-3);
+  white-space: nowrap;
+}
+
+.seq,
+.ts {
+  font-family: var(--sy-font-numeric);
+  font-size: 0.75rem;
+  color: var(--sy-color-fg-2);
+}
+
+/* Track */
+.track {
+  flex: 1;
+  position: relative;
+  height: 20px;
+  cursor: pointer;
+}
+
+.track::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--sy-color-line);
+  border-top: 1px dotted var(--sy-color-fg-5);
+  transform: translateY(-50%);
+}
+
+.dot {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  border-radius: var(--sy-radius-pill);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: transform var(--sy-motion-fast), box-shadow var(--sy-motion-fast);
+}
+
+.dot:hover {
+  transform: translate(-50%, -50%) scale(1.4);
+}
+
+.dotActive {
+  width: 10px;
+  height: 10px;
+  box-shadow: 0 0 0 3px var(--sy-color-accent-soft);
+}
+
+.posBar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--sy-color-accent);
+  transform: translateX(-50%);
+  pointer-events: none;
+  border-radius: var(--sy-radius-pill);
+}
+
+/* Speed selector */
+.speedGroup {
+  display: flex;
+  gap: 1px;
+  background: var(--sy-color-line);
+  border-radius: var(--sy-radius);
+  overflow: hidden;
+}
+
+.speedBtn {
+  background: var(--sy-color-surface-2);
+  border: none;
+  color: var(--sy-color-fg-3);
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: var(--sy-space-1) var(--sy-space-2);
+  transition: background var(--sy-motion-fast), color var(--sy-motion-fast);
+  font-family: var(--sy-font-numeric);
+}
+
+.speedBtn:hover {
+  background: var(--sy-color-surface-3);
+  color: var(--sy-color-fg);
+}
+
+.speedBtnActive {
+  background: var(--sy-color-accent-soft) !important;
+  color: var(--sy-color-accent) !important;
+}

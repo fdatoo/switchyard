@@ -1,6 +1,10 @@
 import type { EventRecord } from "../../gen/activity/v1/activity_pb";
 import styles from "./EventDetailPanel.module.css";
 
+function navigateToTimeMachine(eventId: string): void {
+  window.location.href = `/_authed/time-machine/${encodeURIComponent(eventId)}`;
+}
+
 export interface EventDetailPanelProps {
   event: EventRecord | null;
   onClose: () => void;
@@ -96,9 +100,16 @@ export function EventDetailPanel({ event, onClose }: EventDetailPanelProps) {
           <button className={styles.actionBtn} disabled aria-label="Repeat command (coming soon)">
             Repeat command
           </button>
-          <button className={styles.actionBtn} disabled aria-label="Open in Time-machine (coming soon)">
-            Time-machine
-          </button>
+          {event.sequence !== "0" && event.sequence !== undefined && (
+            <button
+              className={styles.actionBtn}
+              onClick={() => navigateToTimeMachine(event.eventId)}
+              aria-label="Replay in Time-machine"
+              data-testid="replay-in-time-machine-btn"
+            >
+              Replay in Time-machine
+            </button>
+          )}
           <button
             className={styles.actionBtn}
             onClick={() => {

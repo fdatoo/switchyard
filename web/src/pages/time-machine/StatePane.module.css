@@ -1,0 +1,169 @@
+.pane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--sy-color-bg);
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* Mode control */
+.modeControl {
+  display: flex;
+  gap: 1px;
+  padding: var(--sy-space-3) var(--sy-space-4);
+  background: var(--sy-color-surface-1);
+  border-bottom: 1px solid var(--sy-color-line);
+  flex-shrink: 0;
+}
+
+.modeBtn {
+  background: var(--sy-color-surface-2);
+  border: 1px solid var(--sy-color-line);
+  border-radius: var(--sy-radius);
+  color: var(--sy-color-fg-3);
+  cursor: pointer;
+  font-size: 0.8125rem;
+  padding: var(--sy-space-1) var(--sy-space-3);
+  transition: background var(--sy-motion-fast), color var(--sy-motion-fast);
+}
+
+.modeBtn:hover {
+  background: var(--sy-color-surface-3);
+  color: var(--sy-color-fg);
+}
+
+.modeBtnActive {
+  background: var(--sy-color-accent-soft) !important;
+  color: var(--sy-color-accent) !important;
+  border-color: var(--sy-color-accent) !important;
+}
+
+/* Entity list */
+.entityList {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--sy-space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sy-space-3);
+}
+
+.emptyState {
+  color: var(--sy-color-fg-4);
+  font-size: 0.875rem;
+  text-align: center;
+  padding: var(--sy-space-6);
+}
+
+/* Entity card */
+.entityCard {
+  background: var(--sy-color-surface-1);
+  border: 1px solid var(--sy-color-line);
+  border-radius: var(--sy-radius-lg);
+  padding: var(--sy-space-3);
+  transition: border-color var(--sy-motion-fast), box-shadow var(--sy-motion-fast);
+}
+
+.entityCardChanged {
+  border: 1px solid color-mix(in srgb, var(--sy-color-accent) 35%, transparent);
+  box-shadow: 0 0 0 3px var(--sy-color-accent-soft);
+}
+
+.entityHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--sy-space-2);
+  margin-bottom: var(--sy-space-2);
+}
+
+.entityIcon {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--sy-radius);
+  flex-shrink: 0;
+}
+
+.entityId {
+  font-family: var(--sy-font-numeric);
+  font-size: 0.8125rem;
+  color: var(--sy-color-fg-2);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.changedLabel {
+  font-size: 0.6875rem;
+  color: var(--sy-color-accent);
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Field grid */
+.fieldGrid {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 2px var(--sy-space-2);
+  margin: 0;
+}
+
+.fieldRow {
+  display: contents;
+}
+
+.fieldKey {
+  font-size: 0.75rem;
+  color: var(--sy-color-fg-4);
+  font-family: var(--sy-font-numeric);
+  padding: 2px 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fieldValue {
+  font-size: 0.75rem;
+  color: var(--sy-color-fg-2);
+  font-family: var(--sy-font-numeric);
+  padding: 2px 0;
+  word-break: break-all;
+}
+
+/* Diff values */
+.diffWas {
+  text-decoration: line-through;
+  color: var(--sy-color-fg-4);
+}
+
+.diffNow {
+  color: var(--sy-color-accent);
+}
+
+/* Why interesting panel */
+.whyPanel {
+  margin: var(--sy-space-4);
+  border: 1px dashed var(--sy-color-line);
+  background: var(--sy-color-surface-1);
+  border-radius: var(--sy-radius-lg);
+  padding: var(--sy-space-3) var(--sy-space-4);
+  flex-shrink: 0;
+}
+
+.whyHeading {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--sy-color-fg-4);
+  margin: 0 0 var(--sy-space-2) 0;
+}
+
+.whyText {
+  font-size: 0.875rem;
+  color: var(--sy-color-fg-2);
+  margin: 0;
+  line-height: 1.5;
+}

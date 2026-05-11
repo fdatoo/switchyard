@@ -49,6 +49,7 @@ import (
 	"github.com/fdatoo/switchyard/internal/pkl"
 	"github.com/fdatoo/switchyard/internal/policy"
 	"github.com/fdatoo/switchyard/internal/registry"
+	"github.com/fdatoo/switchyard/internal/replay"
 	"github.com/fdatoo/switchyard/internal/script"
 	starlark "github.com/fdatoo/switchyard/internal/starlark"
 	"github.com/fdatoo/switchyard/internal/starlarkls"
@@ -517,6 +518,10 @@ func (d *Daemon) Run(ctx context.Context) (err error) {
 		SavedQueriesDir: filepath.Join(dataDir, "saved-queries"),
 	})
 
+	// Replay service (plan 04) — time-machine replay via ReplayService.
+	replayAdapter := replay.NewStoreAdapter(d.store)
+	replaySvc := replay.NewService(replayAdapter, replayAdapter, replayAdapter, replayAdapter)
+
 	services := listener.Services{
 		System:     api.NewSystemService(sysBE),
 		Area:       api.NewAreaService(areaRd),
@@ -548,6 +553,7 @@ func (d *Daemon) Run(ctx context.Context) (err error) {
 		EditSession: editSvc,
 		StarlarkLs:  starLsSvc,
 		Activity:    activitySvc,
+		Replay:      replaySvc,
 	}
 
 	authnChain := auth.Chain(auth.LocalPeerCred{}, bearer, authn.NewSessionCookie(sessStore), auth.RejectAll{})

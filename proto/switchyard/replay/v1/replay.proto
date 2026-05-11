@@ -1,0 +1,149 @@
+// See dev/proto-hygiene.md for grouping conventions.
+
+syntax = "proto3";
+
+package switchyard.replay.v1;
+
+import "google/protobuf/timestamp.proto";
+
+// ReplayService provides time-machine replay capabilities: load entity state
+// at any event-store sequence, walk causation chains, and query event windows.
+service ReplayService {
+  // LoadAtSeq reconstructs full entity state at the given sequence number by
+  // loading the nearest snapshot ≤ seq and replaying events forward.
+  // Returns the entity-state map plus a server-computed StateDiff vs seq-1.
+  rpc LoadAtSeq(LoadAtSeqRequest) returns (LoadAtSeqResponse);
+
+  // CausationChain walks causation_id links starting from the given event and
+  // returns the ordered chain root-first.
+  rpc CausationChain(CausationChainRequest) returns (CausationChainResponse);
+
+  // Window returns event metadata for the given sequence range (no snapshot
+  // reconstruction — use LoadAtSeq on each step for state).
+  rpc Window(WindowRequest) returns (WindowResponse);
+}
+
+// ---------------------------------------------------------------------------
+// Shared value types
+// ---------------------------------------------------------------------------
+
+// FieldValue is a typed field value in entity state.
+message FieldValue {
+  // 1-9: value (oneof)
+  oneof value {
+    string  str_val  = 1;
+    double  num_val  = 2;
+    bool    bool_val = 3;
+  }
+}
+
+// FieldDiff records a single field transition between two sequences.
+message FieldDiff {
+  // 1-9: identity
+  string field = 1;
+
+  // 10-19: values
+  string was = 10; // previous string representation
+  string now = 11; // current string representation
+}
+
+// EntityDiff groups all changed fields for one entity.
+message EntityDiff {
+  // 1-9: identity
+  string entity_id = 1;
+
+  // 10-19: diffs
+  repeated FieldDiff field_diffs = 10;
+}
+
+// StateDiff is the server-computed diff of entity state at seq vs seq-1.
+message StateDiff {
+  // 10-19: diffs
+  repeated EntityDiff entity_diffs = 10;
+}
+
+// EntityState is the full state snapshot of a single entity at a given seq.
+message EntityState {
+  // 1-9: identity
+  string entity_id = 1;
+
+  // 10-19: fields
+  map<string, string> fields = 10; // field name → string representation
+}
+
+// ---------------------------------------------------------------------------
+// LoadAtSeq
+// ---------------------------------------------------------------------------
+
+message LoadAtSeqRequest {
+  // 1-9: query
+  uint64 seq = 1;
+}
+
+message LoadAtSeqResponse {
+  // 1-9: position
+  uint64 seq = 1;
+
+  // 10-19: state
+  repeated EntityState entities = 10;
+
+  // 20-29: diff
+  StateDiff diff = 20;
+
+  // 30-39: event metadata
+  string event_id         = 30;
+  string kind             = 31;
+  string entity_id        = 32;
+  string source           = 33;
+  string causation_id     = 34;
+  string correlation_id   = 35;
+  string emitter          = 36;
+  string span_id          = 37;
+  google.protobuf.Timestamp occurred_at = 38;
+  string payload_json     = 39;
+
+  // 40-49: interestingness annotation
+  string why_interesting  = 40; // empty if not annotated
+}
+
+// ---------------------------------------------------------------------------
+// CausationChain
+// ---------------------------------------------------------------------------
+
+message CausationChainRequest {
+  // 1-9: query
+  string event_id = 1;
+}
+
+// ChainEvent is a lightweight event summary used in causation-chain results.
+message ChainEvent {
+  // 1-9: identity
+  string event_id       = 1;
+  uint64 seq            = 2;
+  string causation_id   = 3;
+
+  // 10-19: metadata
+  string kind           = 10;
+  string entity_id      = 11;
+  google.protobuf.Timestamp occurred_at = 12;
+}
+
+message CausationChainResponse {
+  // 10-19: chain
+  repeated ChainEvent events = 10; // root-first ordering
+}
+
+// ---------------------------------------------------------------------------
+// Window
+// ---------------------------------------------------------------------------
+
+message WindowRequest {
+  // 1-9: range
+  uint64 from_seq = 1;
+  uint64 to_seq   = 2;
+}
+
+message WindowResponse {
+  // 10-19: events
+  repeated ChainEvent events = 10; // ordered by seq ascending
+}

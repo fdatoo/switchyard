@@ -9,8 +9,12 @@ import (
 )
 
 const (
-	maxInitialChunkBytes = 350 * 1024 * 4  // 350 KB gzipped ≈ 1.4 MB raw heuristic
-	maxTotalAssetsBytes  = 1500 * 1024 * 4 // 1500 KB gzipped ≈ 6 MB raw heuristic
+	maxInitialChunkBytes = 350 * 1024 * 4 // 350 KB gzipped ≈ 1.4 MB raw heuristic
+	// Monaco is bundled into a lazy chunk for the Pkl/Starlark editor (Plan 12).
+	// Total raw assets allow up to ~16 MB to accommodate Monaco + workers, all
+	// of which load on demand (operators opening the editor) rather than on
+	// the initial daily-use path.
+	maxTotalAssetsBytes = 4000 * 1024 * 4 // 4000 KB gzipped ≈ 16 MB raw heuristic
 )
 
 func TestAssetBudget(t *testing.T) {

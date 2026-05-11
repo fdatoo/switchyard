@@ -4,7 +4,7 @@ import "switchyard:entities" as ent
 import "switchyard:carport" as cp
 import "switchyard:automations" as auto
 import "switchyard:scripts" as scr
-import "switchyard:dashboards" as dash
+import "switchyard:pages" as pages
 import "switchyard:auth" as authmod
 import "switchyard:policy" as policymod
 import "switchyard:mcp" as mcpmod
@@ -14,7 +14,7 @@ driverInstances: Listing<cp.DriverInstance> = new {}
 entities: Listing<ent.Entity> = new {}
 automations: Listing<auto.Automation> = new {}
 scripts: Listing<scr.Script> = new {}
-dashboards: Listing<dash.Dashboard> = new {}
+pages: Listing<pages.Page> = new {}
 users: Listing<authmod.User> = new {}
 roles: Listing<authmod.Role> = new {}
 policies: Listing<policymod.Policy> = new {}

@@ -7,6 +7,7 @@ import (
 	"connectrpc.com/connect"
 	"github.com/spf13/cobra"
 
+	pagev1 "github.com/fdatoo/switchyard/gen/switchyard/page/v1"
 	v1 "github.com/fdatoo/switchyard/gen/switchyard/v1alpha1"
 	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
 )
@@ -141,13 +142,13 @@ func renderInstalled(p *v1.InstalledPack) {
 	fmt.Printf("  classes: %v\n", p.GetClasses())
 }
 
-func sigBadge(s v1.SignatureStatus) string {
+func sigBadge(s pagev1.SignatureStatus) string {
 	switch s {
-	case v1.SignatureStatus_SIGNATURE_VERIFIED:
+	case pagev1.SignatureStatus_SIGNATURE_VERIFIED:
 		return PackVerified.Render("✓ verified")
-	case v1.SignatureStatus_SIGNATURE_UNSIGNED:
+	case pagev1.SignatureStatus_SIGNATURE_UNSIGNED:
 		return PackUnsigned.Render("⚠ unsigned")
-	case v1.SignatureStatus_SIGNATURE_INVALID:
+	case pagev1.SignatureStatus_SIGNATURE_INVALID:
 		return PackExpired.Render("✗ invalid")
 	default:
 		return Dim.Render("?")

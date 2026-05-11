@@ -1,0 +1,52 @@
+module switchyard.pages
+
+/// Tier of a widget class: section (full-width), tile (square grid cell), or cell (list row).
+typealias Tier = "section" | "tile" | "cell"
+
+/// A section in a page layout — top-level, full content-width, owns its own internal layout.
+open class Section {
+  id: String(!isEmpty)
+  props: Mapping<String, Any> = new {}
+}
+
+open class HeroSection extends Section {}
+open class ChartSection extends Section {}
+open class EntityListSection extends Section {}
+open class ActivityFeedSection extends Section {}
+open class RoomGridSection extends Section {}
+open class MarkdownSection extends Section {}
+open class CameraGridSection extends Section {}
+open class StatGridSection extends Section {}
+open class WebhookButtonSection extends Section {}
+
+/// A tile widget — lives inside tile-hosting Section types (RoomGrid, StatGrid).
+open class Tile {
+  id: String(!isEmpty)
+  props: Mapping<String, Any> = new {}
+}
+
+open class RoomTileTile extends Tile {}
+open class StatTileTile extends Tile {}
+open class EntityToggleTile extends Tile {}
+open class SceneButtonTile extends Tile {}
+
+/// A cell widget — lives inside list-hosting Section types (EntityList, ActivityFeed).
+open class Cell {
+  id: String(!isEmpty)
+  props: Mapping<String, Any> = new {}
+}
+
+open class EntityRowCell extends Cell {}
+open class EventRowCell extends Cell {}
+
+/// A custom page.
+class Page {
+  slug: String(!isEmpty)
+  title: String = ""
+  sections: Listing<Section> = new {}
+}
+
+/// The regenerator-owned layout file (written deterministically by switchyardd regen).
+class LayoutFile {
+  sections: Listing<Section> = new {}
+}

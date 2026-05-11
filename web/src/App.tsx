@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react";
 import { useLanguage } from "./theme/language-provider";
-import { DashboardSlug } from "./routes/_authed/dashboards/$slug";
+import { PageSlug } from "./routes/_authed/pages/$slug";
 import { Login } from "./routes/login";
 import { ReconnectingBanner } from "./shell/ReconnectingBanner";
 import { Automations } from "./routes/_authed/automations/index";
@@ -22,11 +22,18 @@ export default function App() {
       </>
     );
   }
+  // Redirect legacy /dashboards/* URLs to /pages/*
   if (path.startsWith("/dashboards/")) {
+    const slug = decodeURIComponent(path.slice("/dashboards/".length));
+    window.location.replace(`/pages/${slug}`);
+    return null;
+  }
+  if (path.startsWith("/pages/")) {
+    const slug = decodeURIComponent(path.slice("/pages/".length));
     return (
       <>
         <ReconnectingBanner />
-        <DashboardSlug slug={decodeURIComponent(path.slice("/dashboards/".length))} />
+        <PageSlug slug={slug} />
       </>
     );
   }

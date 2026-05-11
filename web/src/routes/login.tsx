@@ -13,7 +13,7 @@ export function Login() {
     setError(null);
     try {
       await login(username, password);
-      window.location.assign("/dashboards/default");
+      window.location.assign("/pages/default");
     } catch {
       setError("Invalid credentials");
     }

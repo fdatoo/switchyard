@@ -503,6 +503,12 @@ func (d *Daemon) Run(ctx context.Context) (err error) {
 	editFileWatcher.Start(ctx)
 	editSvc := editsession.NewService(editLockMgr, editFileWatcher, nil, d.logger)
 
+	// Activity service (plan 03) — exposes Stories/Events/SavedQueries.
+	// When SY_ACTIVITY_MOCK=1 is set, returns synthetic data.
+	activitySvc := activity.NewActivityService(d.store, activity.ActivityServiceConfig{
+		SavedQueriesDir: filepath.Join(dataDir, "saved-queries"),
+	})
+
 	services := listener.Services{
 		System:     api.NewSystemService(sysBE),
 		Area:       api.NewAreaService(areaRd),
@@ -532,6 +538,7 @@ func (d *Daemon) Run(ctx context.Context) (err error) {
 			Metrics:    d.metrics,
 		}),
 		EditSession: editSvc,
+		Activity:    activitySvc,
 	}
 
 	authnChain := auth.Chain(auth.LocalPeerCred{}, bearer, authn.NewSessionCookie(sessStore), auth.RejectAll{})

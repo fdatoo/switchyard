@@ -1,0 +1,47 @@
+/* InterestingnessBadge — category-to-color mapping via --sy-* tokens.
+   All color is set through CSS custom properties; no raw hex values here. */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--sy-space-1) var(--sy-space-2);
+  border-radius: var(--sy-radius-pill);
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--sy-color-bg);
+  background-color: var(--sy-color-fg-4);
+  transition: opacity var(--sy-motion-fast);
+}
+
+/* Category-specific colors via CSS attribute selectors */
+
+.badge[data-interesting-category="failure"] {
+  background-color: var(--sy-color-bad);
+}
+
+.badge[data-interesting-category="performance"] {
+  background-color: var(--sy-color-warn);
+}
+
+.badge[data-interesting-category="causation"] {
+  background-color: var(--sy-color-purple);
+}
+
+.badge[data-interesting-category="configuration"] {
+  background-color: var(--sy-color-purple);
+}
+
+.badge[data-interesting-category="anomaly"] {
+  background-color: var(--sy-color-info);
+}
+
+.badge[data-interesting-category="security"] {
+  background-color: var(--sy-color-lilac);
+}
+
+.badge[data-interesting-category="novelty"] {
+  background-color: var(--sy-color-good);
+}

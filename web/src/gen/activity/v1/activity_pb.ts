@@ -121,7 +121,7 @@ export interface SaveQueryResponse {
   query: SavedQuery;
 }
 
-export interface ListSavedQueriesRequest {}
+export type ListSavedQueriesRequest = Record<string, never>;
 
 export interface ListSavedQueriesResponse {
   queries: SavedQuery[];
@@ -131,4 +131,4 @@ export interface DeleteSavedQueryRequest {
   id: string;
 }
 
-export interface DeleteSavedQueryResponse {}
+export type DeleteSavedQueryResponse = Record<string, never>;

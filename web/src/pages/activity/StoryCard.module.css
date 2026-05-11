@@ -1,0 +1,77 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sy-space-2);
+  padding: var(--sy-space-4);
+  border-radius: var(--sy-radius);
+  background-color: var(--sy-color-surface-1);
+  border: 1px solid var(--sy-color-line);
+  cursor: pointer;
+  transition: background-color var(--sy-motion-fast), box-shadow var(--sy-motion-fast);
+  outline: none;
+}
+
+.card:hover {
+  background-color: var(--sy-color-surface-2);
+  box-shadow: var(--sy-shadow);
+}
+
+.card:focus-visible {
+  box-shadow: 0 0 0 2px var(--sy-color-accent);
+}
+
+.card[data-selected="true"] {
+  border-color: var(--sy-color-accent);
+  background-color: var(--sy-color-accent-soft);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--sy-space-2);
+}
+
+.title {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--sy-color-fg);
+  line-height: 1.4;
+  flex: 1;
+}
+
+.time {
+  font-size: 0.75rem;
+  color: var(--sy-color-fg-4);
+  white-space: nowrap;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sy-space-1);
+}
+
+.sourceChip,
+.entityChip {
+  font-size: 0.72rem;
+  padding: 2px var(--sy-space-2);
+  border-radius: var(--sy-radius-pill);
+  white-space: nowrap;
+}
+
+.sourceChip {
+  background-color: var(--sy-color-accent-soft);
+  color: var(--sy-color-accent);
+}
+
+.entityChip {
+  background-color: var(--sy-color-surface-3);
+  color: var(--sy-color-fg-3);
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sy-space-1);
+}

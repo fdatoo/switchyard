@@ -1,0 +1,136 @@
+.rail {
+  width: 380px;
+  min-width: 380px;
+  height: 100%;
+  overflow-y: auto;
+  border-left: 1px solid var(--sy-color-line);
+  background-color: var(--sy-color-surface-1);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sy-space-4);
+  padding: var(--sy-space-5);
+}
+
+.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  color: var(--sy-color-fg-4);
+  font-size: 0.875rem;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sy-space-1);
+}
+
+.title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--sy-color-fg);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.timestamp {
+  font-size: 0.72rem;
+  color: var(--sy-color-fg-4);
+  font-family: var(--sy-font-numeric);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sy-space-3);
+}
+
+.sectionHeading {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--sy-color-fg-3);
+  margin: 0;
+}
+
+.whyItems {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sy-space-3);
+}
+
+.whyItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sy-space-1);
+  padding: var(--sy-space-3);
+  border-radius: var(--sy-radius);
+  background-color: var(--sy-color-surface-2);
+}
+
+.explanation {
+  font-size: 0.8rem;
+  color: var(--sy-color-fg-3);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sy-space-2);
+}
+
+.timelineRow {
+  display: flex;
+  align-items: center;
+  gap: var(--sy-space-2);
+}
+
+.timelineNum {
+  font-size: 0.7rem;
+  color: var(--sy-color-fg-5);
+  min-width: 1.25rem;
+  text-align: right;
+}
+
+.eventId {
+  font-family: var(--sy-font-numeric);
+  font-size: 0.75rem;
+  color: var(--sy-color-fg-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sy-space-2);
+  margin-top: auto;
+}
+
+.actionBtn {
+  padding: var(--sy-space-2) var(--sy-space-3);
+  border-radius: var(--sy-radius);
+  border: 1px solid var(--sy-color-line);
+  background-color: var(--sy-color-surface-2);
+  color: var(--sy-color-fg);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color var(--sy-motion-fast);
+}
+
+.actionBtn:hover:not(:disabled) {
+  background-color: var(--sy-color-surface-3);
+}
+
+.actionBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

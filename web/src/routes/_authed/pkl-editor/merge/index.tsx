@@ -1,20 +1,4 @@
-// TODO(plan-12): real Monaco merge view
-// This is a placeholder route for the 3-way Pkl merge surface.
+// /_authed/pkl-editor/merge/* — replaced by Plan 12 MergeRoute.
 // Navigation contract: /_authed/pkl-editor/merge/<file_path>?session=<id>
-// Receives ancestorPkl, diskPkl, stagedPkl as route state.
-
-import { PlaceholderPage } from "@/shell/PlaceholderPage";
-
-interface Props {
-  filePath?: string;
-  sessionId?: string;
-}
-
-export function PklEditorMergePage({ filePath = "unknown", sessionId }: Props) {
-  return (
-    <PlaceholderPage
-      title={`3-way Merge: ${filePath}${sessionId ? ` (session: ${sessionId})` : ""}`}
-      plan="Plan 12"
-    />
-  );
-}
+// The App.tsx now routes this URL to merge-route.tsx via lazy import.
+export { default as PklEditorMergePage } from "../../../../pkl-editor/merge-route";

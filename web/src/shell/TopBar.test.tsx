@@ -83,4 +83,35 @@ describe("TopBar", () => {
     );
     expect(screen.getByRole("navigation", { name: /breadcrumb/i })).toHaveTextContent("Overview");
   });
+
+  it("nested path: breadcrumb reads 'Settings › Drivers' at /settings/drivers", () => {
+    render(<TopBar currentPath="/_authed/settings/drivers" />);
+    const breadcrumb = screen.getByRole("navigation", { name: /breadcrumb/i });
+    expect(breadcrumb).toHaveTextContent("Settings");
+    expect(breadcrumb).toHaveTextContent("Drivers");
+  });
+
+  it("room slug: breadcrumb reads 'Rooms › My Room' at /rooms/my-room", () => {
+    render(<TopBar currentPath="/_authed/rooms/my-room" />);
+    const breadcrumb = screen.getByRole("navigation", { name: /breadcrumb/i });
+    expect(breadcrumb).toHaveTextContent("Rooms");
+    expect(breadcrumb).toHaveTextContent("My Room");
+  });
+
+  it("special settings sections: breadcrumb reads 'Settings › Pkl config' at /settings/pkl-config", () => {
+    render(<TopBar currentPath="/_authed/settings/pkl-config" />);
+    const breadcrumb = screen.getByRole("navigation", { name: /breadcrumb/i });
+    expect(breadcrumb).toHaveTextContent("Settings");
+    expect(breadcrumb).toHaveTextContent("Pkl config");
+  });
+
+  it("displays: breadcrumb reads 'Displays' at /displays", () => {
+    render(<TopBar currentPath="/_authed/displays" />);
+    expect(screen.getByRole("navigation", { name: /breadcrumb/i })).toHaveTextContent("Displays");
+  });
+
+  it("ask page: breadcrumb reads 'Ask'", () => {
+    render(<TopBar currentPath="/_authed/ask" />);
+    expect(screen.getByRole("navigation", { name: /breadcrumb/i })).toHaveTextContent("Ask");
+  });
 });

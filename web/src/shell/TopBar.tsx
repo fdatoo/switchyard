@@ -6,15 +6,127 @@ interface TopBarProps {
 }
 
 /**
- * Extract the route segment from a pathname and cast to RouteId.
- * e.g. "/_authed/activity" → "activity"
- * Falls back to "home" for unknown segments.
+ * Title-case a slug by splitting on `-` or `_`, capitalizing the first letter of each word.
  */
-function pathToRouteId(path: string): RouteId {
-  const segments = path.replace(/\/_authed/, "").split("/").filter(Boolean);
-  const segment = segments[segments.length - 1] ?? "home";
-  const knownRoutes: RouteId[] = ["home", "rooms", "activity", "automations", "devices", "settings"];
-  return (knownRoutes.includes(segment as RouteId) ? segment : "home") as RouteId;
+function titleCase(slug: string): string {
+  return slug
+    .split(/[-_]/)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+}
+
+interface BreadcrumbSegment {
+  label: string;
+  isFinal: boolean;
+}
+
+/**
+ * Derive breadcrumb segments from a pathname.
+ * Respects useVocab for top-level segments and applies appropriate casing to nested segments.
+ */
+function pathToBreadcrumbSegments(path: string, vocabLabel: (routeId: RouteId) => string): BreadcrumbSegment[] {
+  // Normalize path: remove /_authed prefix and leading slash
+  const cleanPath = path.replace(/^\/_authed/, "").replace(/^\//, "");
+  const segments = cleanPath.split("/").filter(Boolean);
+
+  // Default to home if empty or explicitly "home"
+  if (!segments.length) {
+    return [{ label: vocabLabel("home"), isFinal: true }];
+  }
+
+  const firstSegment = segments[0];
+
+  // Handle home explicitly
+  if (firstSegment === "home") {
+    return [{ label: vocabLabel("home"), isFinal: true }];
+  }
+
+  // Handle ask (no vocab, special case)
+  if (firstSegment === "ask") {
+    return [{ label: "Ask", isFinal: true }];
+  }
+
+  // Handle pages/slug
+  if (firstSegment === "pages") {
+    const breadcrumbs: BreadcrumbSegment[] = [{ label: "Pages", isFinal: false }];
+    if (segments[1]) {
+      breadcrumbs.push({ label: segments[1], isFinal: true });
+    }
+    return breadcrumbs;
+  }
+
+  // Handle displays[/slug]
+  if (firstSegment === "displays") {
+    const breadcrumbs: BreadcrumbSegment[] = [{ label: "Displays", isFinal: !segments[1] }];
+    if (segments[1]) {
+      breadcrumbs.push({ label: segments[1], isFinal: true });
+    }
+    return breadcrumbs;
+  }
+
+  // Handle pkl-editor (special routing case)
+  if (firstSegment === "pkl-editor") {
+    const breadcrumbs: BreadcrumbSegment[] = [{ label: "Pkl editor", isFinal: false }];
+    const filePath = segments.slice(1);
+    if (!filePath.length) {
+      breadcrumbs.push({ label: "(root)", isFinal: true });
+    } else {
+      const lastSegment = filePath[filePath.length - 1];
+      breadcrumbs.push({
+        label: lastSegment.length > 30 ? lastSegment.substring(0, 27) + "..." : lastSegment,
+        isFinal: true,
+      });
+    }
+    return breadcrumbs;
+  }
+
+  // Handle time-machine (special routing case)
+  if (firstSegment === "time-machine") {
+    const breadcrumbs: BreadcrumbSegment[] = [{ label: "Time-machine", isFinal: false }];
+    if (segments[1]) {
+      breadcrumbs.push({ label: segments[1], isFinal: true });
+    }
+    return breadcrumbs;
+  }
+
+  // Handle known vocab routes: rooms, activity, automations, devices, settings
+  const vocabRoutes: RouteId[] = ["rooms", "activity", "automations", "devices", "settings"];
+
+  if (vocabRoutes.includes(firstSegment as RouteId)) {
+    const routeId = firstSegment as RouteId;
+    const breadcrumbs: BreadcrumbSegment[] = [
+      { label: vocabLabel(routeId), isFinal: segments.length === 1 },
+    ];
+
+    // Handle nested segment
+    if (segments.length > 1) {
+      if (routeId === "settings") {
+        // Special handling for settings sections
+        const section = segments[1];
+        let sectionLabel = "";
+
+        if (section === "pkl-config") {
+          sectionLabel = "Pkl config";
+        } else if (section === "theme-language") {
+          sectionLabel = "Theme & language";
+        } else if (section === "widget-packs") {
+          sectionLabel = "Widget packs";
+        } else {
+          sectionLabel = titleCase(section);
+        }
+
+        breadcrumbs.push({ label: sectionLabel, isFinal: true });
+      } else {
+        // Default nested segment handling: title-case the slug
+        breadcrumbs.push({ label: titleCase(segments[1]), isFinal: true });
+      }
+    }
+
+    return breadcrumbs;
+  }
+
+  // Unknown route: default to home
+  return [{ label: vocabLabel("home"), isFinal: true }];
 }
 
 function isMac(): boolean {
@@ -26,8 +138,7 @@ export function TopBar({
   currentPath = typeof window !== "undefined" ? window.location.pathname : "/",
 }: TopBarProps) {
   const vocab = useVocab();
-  const routeId = pathToRouteId(currentPath);
-  const label = vocab.label(routeId);
+  const breadcrumbs = pathToBreadcrumbSegments(currentPath, vocab.label);
   const { openPalette } = usePalette();
   const shortcutLabel = isMac() ? "⌘K" : "Ctrl+K";
 
@@ -51,14 +162,21 @@ export function TopBar({
             color: "var(--sy-color-fg-3)",
           }}
         >
-          <b
-            style={{
-              color: "var(--sy-color-fg)",
-              fontWeight: 500,
-            }}
-          >
-            {label}
-          </b>
+          {breadcrumbs.map((segment, index) => (
+            <span key={index}>
+              {index > 0 && (
+                <span style={{ color: "var(--sy-color-fg-5)", margin: "0 4px" }}> › </span>
+              )}
+              <b
+                style={{
+                  color: segment.isFinal ? "var(--sy-color-fg)" : "var(--sy-color-fg-3)",
+                  fontWeight: segment.isFinal ? 500 : 400,
+                }}
+              >
+                {segment.label}
+              </b>
+            </span>
+          ))}
         </span>
       </nav>
 

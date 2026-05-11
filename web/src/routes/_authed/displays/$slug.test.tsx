@@ -78,9 +78,6 @@ describe("DisplaySlug config editor", () => {
     await waitFor(() => {
       expect(updateSpy).toHaveBeenCalled();
     });
-    // Verify the update call payload contains ALERT_THRESHOLD_HIGH
-    const callArg = updateSpy.mock.calls[0];
-    // Second argument is the fetch options
     // The update is called via fetch — check fetch was called with Update URL
     expect(updateSpy.mock.calls[0][0]).toContain("Update");
   });

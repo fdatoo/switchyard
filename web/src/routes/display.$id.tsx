@@ -84,7 +84,7 @@ export function DisplayPage({ id }: DisplayPageProps) {
 
   if (state.status === "loading" || state.status === "no_token") {
     return (
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100dvh", background: "#0f0a1a", color: "#ffffff" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100dvh", background: "var(--sy-tod-night)", color: "var(--sy-color-fg)" }}>
         Loading…
       </div>
     );
@@ -92,7 +92,7 @@ export function DisplayPage({ id }: DisplayPageProps) {
 
   if (state.status === "error") {
     return (
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100dvh", background: "#0f0a1a", color: "#e87a5f", padding: "2rem", textAlign: "center" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100dvh", background: "var(--sy-tod-night)", color: "var(--sy-color-bad)", padding: "2rem", textAlign: "center" }}>
         {state.message}
       </div>
     );

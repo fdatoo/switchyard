@@ -94,7 +94,7 @@ function PairingModal({ onClose }: PairingModalProps) {
     <div
       data-testid="pairing-modal"
       style={{
-        position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)",
+        position: "fixed", inset: 0, background: "var(--sy-color-overlay)",
         display: "flex", alignItems: "center", justifyContent: "center", zIndex: 500,
       }}
       onClick={onClose}
@@ -102,8 +102,8 @@ function PairingModal({ onClose }: PairingModalProps) {
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
-          background: "var(--sy-color-surface-1, #1a1530)",
-          border: "1px solid var(--sy-color-line, rgba(255,255,255,0.08))",
+          background: "var(--sy-color-surface-1)",
+          border: "1px solid var(--sy-color-line)",
           borderRadius: "var(--sy-radius-xl, 24px)",
           padding: "2rem",
           maxWidth: "380px",
@@ -191,7 +191,7 @@ export function DisplaysIndex() {
             background: "var(--sy-color-accent)",
             border: "none",
             borderRadius: "var(--sy-radius, 12px)",
-            color: "var(--sy-color-bg, #fff)",
+            color: "var(--sy-color-bg)",
             cursor: "pointer",
             fontSize: "0.875rem",
             fontWeight: 500,
@@ -225,7 +225,7 @@ export function DisplaysIndex() {
           </thead>
           <tbody>
             {displays.map((d) => (
-              <tr key={d.id} style={{ borderBottom: "1px solid var(--sy-color-line-soft, rgba(255,255,255,0.04))" }}>
+              <tr key={d.id} style={{ borderBottom: "1px solid var(--sy-color-line-soft)" }}>
                 <td data-testid={`display-name-${d.id}`} style={{ padding: "0.75rem" }}>{d.deviceName}</td>
                 <td style={{ padding: "0.75rem", color: d.pageSlug ? "inherit" : "var(--sy-color-fg-3)" }}>
                   {d.pageSlug || "—"}

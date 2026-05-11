@@ -209,7 +209,7 @@ export function DisplaySlug({ slug = "unknown" }: DisplaySlugProps) {
               background: "var(--sy-color-accent)",
               border: "none",
               borderRadius: "var(--sy-radius)",
-              color: "var(--sy-color-bg, #fff)",
+              color: "var(--sy-color-bg)",
               cursor: saving ? "not-allowed" : "pointer",
               fontSize: "0.875rem",
               fontWeight: 500,

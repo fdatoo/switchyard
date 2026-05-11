@@ -21,20 +21,8 @@ const AMBIENT_REGISTRY: PrimitiveRegistry = {
 // Helpers
 // ---------------------------------------------------------------------------
 
-type StreamCallback = (story: { id: string; title: string; entityIds?: string[]; tags: { category: string; name: string; explanation: string }[] }) => void;
-
-let capturedStreamCallback: StreamCallback | null = null;
-
-function makeFetchMock(onSubscribe?: (cb: StreamCallback) => void) {
-  return vi.fn((_url: string, _opts: RequestInit) => {
-    return new Promise<Response>(() => {
-      // Never resolves — stream stays open until closed
-      if (onSubscribe) {
-        onSubscribe((story) => { capturedStreamCallback?.(story); });
-      }
-    });
-  });
-}
+let capturedStreamCallback: ((story: unknown) => void) | null = null;
+void capturedStreamCallback; // suppress unused warning
 
 function makeMatchMediaStub() {
   return (query: string): MediaQueryList => ({

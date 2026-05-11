@@ -179,6 +179,7 @@ export function AlertContext({ children, alertThreshold }: AlertContextProps) {
 // useAlertState hook
 // ---------------------------------------------------------------------------
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAlertState(): AlertContextValue {
   return useContext(AlertCtx);
 }

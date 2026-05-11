@@ -90,14 +90,14 @@ export function PairPage({ hint }: PairPageProps) {
       data-testid="pair-page"
       style={{
         minHeight: "100dvh",
-        background: "radial-gradient(ellipse at 60% 40%, #0f0a1a 0%, #0a0a14 100%)",
+        background: "var(--sy-tod-night)",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
         padding: "2rem",
-        fontFamily: "Inter, system-ui, sans-serif",
-        color: "#ffffff",
+        fontFamily: "var(--sy-font-body)",
+        color: "var(--sy-color-fg)",
       }}
     >
       {/* Wordmark */}
@@ -107,7 +107,7 @@ export function PairPage({ hint }: PairPageProps) {
           fontWeight: 700,
           letterSpacing: "-0.03em",
           marginBottom: "3rem",
-          color: "#d97757",
+          color: "var(--sy-color-accent)",
         }}
       >
         switchyard
@@ -127,7 +127,7 @@ export function PairPage({ hint }: PairPageProps) {
           <h1 style={{ fontSize: "1.25rem", fontWeight: 600, margin: "0 0 0.5rem" }}>
             Pair this display
           </h1>
-          <p style={{ color: "rgba(255,255,255,0.6)", margin: 0, fontSize: "0.875rem" }}>
+          <p style={{ color: "var(--sy-color-fg-3)", margin: 0, fontSize: "0.875rem" }}>
             Enter the 6-digit code shown by the operator.
           </p>
         </div>
@@ -142,10 +142,10 @@ export function PairPage({ hint }: PairPageProps) {
           placeholder="000000"
           data-testid="pair-code-input"
           style={{
-            background: "rgba(255,255,255,0.06)",
-            border: "1px solid rgba(255,255,255,0.12)",
-            borderRadius: "16px",
-            color: "#ffffff",
+            background: "var(--sy-color-surface-1)",
+            border: "1px solid var(--sy-color-line)",
+            borderRadius: "var(--sy-radius-xl)",
+            color: "var(--sy-color-fg)",
             fontSize: "2.5rem",
             fontWeight: 700,
             letterSpacing: "0.5em",
@@ -159,7 +159,7 @@ export function PairPage({ hint }: PairPageProps) {
 
         {/* Device name */}
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-          <label style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.5)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+          <label style={{ fontSize: "0.75rem", color: "var(--sy-color-fg-4)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
             Device name
           </label>
           <input
@@ -168,10 +168,10 @@ export function PairPage({ hint }: PairPageProps) {
             onChange={(e) => setDeviceName(e.target.value)}
             data-testid="device-name-input"
             style={{
-              background: "rgba(255,255,255,0.06)",
-              border: "1px solid rgba(255,255,255,0.12)",
-              borderRadius: "12px",
-              color: "#ffffff",
+              background: "var(--sy-color-surface-1)",
+              border: "1px solid var(--sy-color-line)",
+              borderRadius: "var(--sy-radius)",
+              color: "var(--sy-color-fg)",
               fontSize: "0.875rem",
               padding: "0.75rem 1rem",
               outline: "none",
@@ -186,7 +186,7 @@ export function PairPage({ hint }: PairPageProps) {
           <p
             data-testid="pair-error"
             style={{
-              color: "#e87a5f",
+              color: "var(--sy-color-bad)",
               fontSize: "0.875rem",
               textAlign: "center",
               margin: 0,
@@ -202,10 +202,10 @@ export function PairPage({ hint }: PairPageProps) {
           disabled={status === "loading" || code.length !== 6}
           data-testid="pair-submit"
           style={{
-            background: status === "loading" ? "rgba(217,119,87,0.5)" : "#d97757",
+            background: status === "loading" ? "var(--sy-color-accent-soft)" : "var(--sy-color-accent)",
             border: "none",
-            borderRadius: "16px",
-            color: "#ffffff",
+            borderRadius: "var(--sy-radius-xl)",
+            color: "var(--sy-color-bg)",
             cursor: status === "loading" ? "not-allowed" : "pointer",
             fontSize: "1rem",
             fontWeight: 600,

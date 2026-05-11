@@ -58,7 +58,7 @@ function MetricRow({ metric }: { metric: TileMetric }) {
         marginTop: "var(--sy-space-2)",
         fontSize: "0.75rem",
         color: "var(--sy-color-fg-3)",
-        borderTop: "1px solid var(--sy-color-line-soft, rgba(255,255,255,0.04))",
+        borderTop: "1px solid var(--sy-color-line-soft)",
         paddingTop: "var(--sy-space-2)",
       }}
     >
@@ -230,4 +230,3 @@ function RoomTile({ def }: TileProps) {
 registerTile("RoomTile", RoomTile);
 
 export { RoomTile };
-export type { RoomTileFidelity };

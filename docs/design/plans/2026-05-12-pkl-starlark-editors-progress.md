@@ -84,6 +84,13 @@ _None yet._
   unblocking — T1.4 (RegenPreview dispatch) and the rest of the editor
   plan would fail without it. The eventual SceneService spec inherits
   this proto change.
+- **2026-05-12 (T2.12 validation finding):** Discovered during Iter 2
+  Playwright validation: the daemon's `EditSessionService.OpenForEdit`,
+  `CommitEdit`, and `AnalyzeRegenerability` handlers used the client's
+  raw `file_path` against `os.ReadFile`/`os.WriteFile`, but
+  `ListFiles` returns paths **relative to `configDir`**. UI round-trip
+  404'd. Added a `resolvePath` helper that joins relative paths with
+  `configDir`. Daemon fix, no UI change required. Restart applied.
 - **2026-05-12 (T2.7 finding):** The `ScriptService.RunTests` wire
   shape doesn't match what the plan assumed. Real proto:
   `RunTestsRequest { string path = 1; }` and

@@ -1,0 +1,15 @@
+module switchyard.scene
+
+import "switchyard:automations" as auto
+
+/// Single-Scene template. Files that own one scene amend this module.
+/// Amending files must re-import `switchyard:automations` to reference
+/// action subclasses.
+
+id:          String(!isEmpty)
+displayName: String
+actions:     Listing<auto.Action> = new {}
+
+output {
+  renderer = new JsonRenderer {}
+}

@@ -1,0 +1,11 @@
+module switchyard.area
+
+/// Single-Area template. Files that own one area amend this module.
+
+id:          String(!isEmpty)
+displayName: String
+parentId:    String?
+
+output {
+  renderer = new JsonRenderer {}
+}

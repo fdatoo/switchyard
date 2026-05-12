@@ -1,0 +1,28 @@
+module switchyard.automation
+
+import "switchyard:automations" as auto
+
+/// Single-Automation template. Files that own one automation amend this
+/// module. The amending file provides `id`, optionally overrides defaults,
+/// and fills `triggers`/`conditions`/`actions` blocks.
+///
+/// Note: amending modules must re-import `switchyard:automations` to
+/// reference Trigger/Condition/Action subclasses (e.g. `auto.EventTrigger`).
+
+id:         String(!isEmpty)
+enabled:    Boolean             = true
+mode:       String              = "single"
+maxQueued:  UInt                = 10
+triggers:   Listing<auto.Trigger> = new {}
+conditions: Listing<auto.Condition>? = null
+actions:    Listing<auto.Action> = new {}
+areas:      Listing<String>     = new {}
+onFailure:  auto.OnFailureStrategy = new auto.IgnoreStrategy {}
+
+output {
+  renderer = new JsonRenderer {
+    converters {
+      [Duration] = (it) -> "\(it.value).\(it.unit)"
+    }
+  }
+}

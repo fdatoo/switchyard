@@ -1,0 +1,11 @@
+module switchyard.entityAreas
+
+/// Singleton template for the entity → area mapping. Files amending this
+/// module provide an `entityAreas` block that the daemon merges into the
+/// config snapshot's entity-areas map.
+
+entityAreas: Mapping<String, String> = new {}
+
+output {
+  renderer = new JsonRenderer {}
+}

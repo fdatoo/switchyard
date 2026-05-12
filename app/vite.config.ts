@@ -1,7 +1,10 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
+import monacoPlugin from "vite-plugin-monaco-editor";
 import path from "node:path";
 import os from "node:os";
+
+const monacoEditorPlugin = monacoPlugin.default;
 
 /**
  * Build the proxy target for daemon-bound requests.
@@ -38,7 +41,12 @@ function daemonProxyTarget() {
 }
 
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [
+    vue(),
+    monacoEditorPlugin({
+      languageWorkers: ["editorWorkerService"],
+    }),
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),

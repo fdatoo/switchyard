@@ -11,11 +11,24 @@
 -->
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
 import {
   SyText, SySurface, SyButton, SyIcon, SyEmptyState, SyRoomTile, SyBadge,
 } from "@/lib";
 import { listAreas, type Area } from "@/data/areas";
 import { listEntities, type Entity } from "@/data/entities";
+
+const router = useRouter();
+
+/** Intercept tile clicks for SPA navigation. The underlying <a href>
+ *  remains intact for accessibility (right-click → open in new tab). */
+function onTileClick(e: MouseEvent, areaId: string): void {
+  // Let modifier-clicks (cmd/ctrl/shift/middle) fall through to the
+  // browser's native anchor behaviour (open in new tab/window).
+  if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+  e.preventDefault();
+  router.push(`/rooms/${areaId}`);
+}
 
 type LoadState = "loading" | "ok" | "error";
 
@@ -127,7 +140,9 @@ const orphanCount = computed<number>(() => entitiesByArea.value.get("_unassigned
         v-for="a in areas"
         :key="a.id"
         :name="a.displayName"
+        :href="`/rooms/${a.id}`"
         :meta="`${entityCount(a.id)} ${entityCount(a.id) === 1 ? 'entity' : 'entities'}`"
+        @click="(e) => onTileClick(e, a.id)"
       >
         <SyBadge
           v-for="(count, type) in typeCounts(a.id)"

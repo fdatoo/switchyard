@@ -32,13 +32,17 @@ const props = defineProps<{
   href?: string;
 }>();
 
+const emit = defineEmits<{
+  /** Fires on tile click. Parents can call e.preventDefault() and route
+   *  via vue-router for SPA navigation; the underlying <a href> remains
+   *  for accessibility (right-click → open in new tab still works). */
+  (e: "click", event: MouseEvent): void;
+}>();
+
 const isInteractive = computed(() => Boolean(props.href));
 
 function onClick(e: MouseEvent): void {
-  if (!props.href) return;
-  /* Allow the consumer's <a href> to navigate naturally; the surface's
-     own click handling doesn't interfere because SySurface is rendered as
-     an <a> when href is set. */
+  emit("click", e);
 }
 </script>
 
@@ -50,6 +54,7 @@ function onClick(e: MouseEvent): void {
     padding="md"
     :interactive="isInteractive"
     class="sy-room"
+    @click="onClick"
   >
     <header class="sy-room__head">
       <SyAvatar :name="name" size="lg" shape="square" />

@@ -25,6 +25,8 @@ import {
 } from "@/data/driver-management";
 import { presentDriverState } from "@/data/driver-state";
 import type { DriverInfo } from "@/lib/components/driver-panel/SyDriverPanel.vue";
+import { entityStore } from "@/stores/entity-store";
+import type { Entity } from "@/data/entities";
 
 type LoadState = "loading" | "ok" | "error";
 
@@ -109,6 +111,13 @@ const selectedDriverInfo = computed<DriverInfo | null>(() => {
        absent. */
     entityTypes: undefined,
   };
+});
+
+/** Live entities owned by the currently-selected driver. Empty array
+    when nothing's selected or the store hasn't hydrated yet. */
+const selectedEntities = computed<Entity[]>(() => {
+  if (!selectedId.value) return [];
+  return entityStore.byDriver(selectedId.value).value;
 });
 
 function stateDetailFor(d: DriverSummary): string | undefined {
@@ -274,6 +283,8 @@ function onViewLogs(): void {
       <template v-if="selectedDriverInfo">
         <SyDriverPanel
           :driver="selectedDriverInfo"
+          :entities="selectedEntities"
+          :stream-connected="entityStore.connected.value"
           :busy="actionBusy"
           @restart="onRestart"
           @configure="onConfigure"

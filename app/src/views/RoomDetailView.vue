@@ -13,14 +13,16 @@
   globally — there's no per-area scene scoping in the proto today.
 -->
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import {
   SyText, SySurface, SyButton, SyIcon, SyEmptyState,
-  SyEntityRow, SyScene,
+  SyEntityRow, SyScene, SyStoryRow,
 } from "@/lib";
 import { listAreas, type Area } from "@/data/areas";
 import { listScenes, applyScene, type Scene } from "@/data/scenes";
+import { listStories, type Story } from "@/data/activity";
+import { formatEventTimestamp } from "@/data/event-display";
 import { entityStore } from "@/stores/entity-store";
 import { RpcError } from "@/data/rpc";
 import type { Entity } from "@/data/entities";
@@ -105,11 +107,57 @@ async function onApplyScene(s: Scene): Promise<void> {
 const showScenesSection = computed<boolean>(() =>
   !scenesUnimplemented.value && (scenesLoading.value || scenes.value.length > 0 || !!scenesError.value));
 
+/* ---- Recent activity (scoped to this area's entities) -------------- */
+const stories = ref<Story[]>([]);
+const storiesLoading = ref<boolean>(true);
+const storiesError = ref<string>("");
+const tickNow = ref<Date>(new Date());
+let tickHandle: number | null = null;
+
+async function loadStories(): Promise<void> {
+  storiesLoading.value = true;
+  storiesError.value = "";
+  try {
+    const ids = entities.value.map((e) => e.id);
+    if (ids.length === 0) {
+      stories.value = [];
+      return;
+    }
+    const r = await listStories({ filter: { entityIds: ids } });
+    stories.value = r.stories.slice(0, 5);
+  } catch (err) {
+    storiesError.value = err instanceof Error ? err.message : String(err);
+  } finally {
+    storiesLoading.value = false;
+  }
+}
+
+/** Color the story icon by its top tag category — same mapping as
+ *  ActivityView so the two pages read consistently. */
+function storyPresentation(s: Story): {
+  icon: "sparkle" | "alert" | "activity"; intent: "automation" | "warn" | "info";
+} {
+  const cat = s.tags[0]?.category ?? "";
+  if (cat === "failure" || cat === "security") return { icon: "alert",   intent: "warn"       };
+  if (cat === "causation")                     return { icon: "sparkle", intent: "automation" };
+  return { icon: "activity", intent: "info" };
+}
+
 onMounted(() => {
   void loadAreas();
   void loadScenes();
+  void loadStories();
+  // Keep relative timestamps fresh.
+  tickHandle = window.setInterval(() => { tickNow.value = new Date(); }, 60_000);
 });
-onBeforeUnmount(() => { /* nothing async-cancelable here yet */ });
+onBeforeUnmount(() => {
+  if (tickHandle !== null) window.clearInterval(tickHandle);
+});
+
+// Whenever the entity-set for this area materially changes, refresh stories.
+watch(() => entities.value.map((e) => e.id).join(","), (s) => {
+  if (s !== "") void loadStories();
+});
 
 /* ---- Empty / unknown room ----------------------------------------- */
 const isUnknownRoom = computed<boolean>(() =>
@@ -196,7 +244,7 @@ const isUnknownRoom = computed<boolean>(() =>
         </template>
       </section>
 
-      <!-- Activity (Iteration 2) -->
+      <!-- Activity (scoped to this area's entities) -->
       <section class="page__section">
         <div class="page__sectionHead">
           <SyText variant="title" weight="semibold">Recent activity</SyText>
@@ -205,11 +253,42 @@ const isUnknownRoom = computed<boolean>(() =>
             <SyIcon name="chevron-right" :size="12" />
           </SyButton>
         </div>
-        <SySurface padding="none">
+
+        <SySurface v-if="storiesLoading" padding="none">
+          <SyEmptyState loading title="Loading recent activity…" />
+        </SySurface>
+
+        <SySurface v-else-if="storiesError" padding="none">
+          <SyEmptyState
+            intent="bad"
+            title="Couldn't load activity"
+            :description="storiesError"
+          >
+            <template #icon><SyIcon name="close" :size="28" /></template>
+            <template #actions>
+              <SyButton intent="secondary" @click="loadStories">Retry</SyButton>
+            </template>
+          </SyEmptyState>
+        </SySurface>
+
+        <SySurface v-else-if="stories.length === 0" padding="none">
           <SyEmptyState
             size="compact"
-            title="Coming soon"
-            description="Per-room activity scoping ships in iteration 2."
+            title="Quiet over here"
+            description="No recent activity for this room."
+          />
+        </SySurface>
+
+        <SySurface v-else padding="none" class="page__list">
+          <SyStoryRow
+            v-for="s in stories"
+            :key="s.id"
+            :icon="storyPresentation(s).icon"
+            :intent="storyPresentation(s).intent"
+            :title="s.title || 'Story'"
+            :meta="s.entityIds.length ? s.entityIds.slice(0, 3).join(' · ') : s.source"
+            :count="s.innerEventIds.length > 1 ? s.innerEventIds.length : 0"
+            :timestamp="formatEventTimestamp(s.occurredAt, tickNow)"
           />
         </SySurface>
       </section>

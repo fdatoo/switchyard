@@ -51,6 +51,10 @@ export interface EventsFilter {
   kind?: string;
   source?: string;
   entityId?: string;
+  /** Match if the story / event touches ANY of these entities. Forms a
+   *  union with entityId when both are set. Currently honoured by the
+   *  Stories filter; Events ignores it. */
+  entityIds?: string[];
   freeText?: string;
   interestingOnly?: boolean;
   /** ISO 8601 or Date — converted to {seconds, nanos} on the wire. */
@@ -182,6 +186,7 @@ function encodeFilter(f: EventsFilter | undefined): Record<string, unknown> {
     kind: f.kind,
     source: f.source,
     entity_id: f.entityId,
+    entity_ids: f.entityIds && f.entityIds.length > 0 ? f.entityIds : undefined,
     free_text: f.freeText,
     interesting_only: f.interestingOnly,
     since: encodeTimestamp(f.since),

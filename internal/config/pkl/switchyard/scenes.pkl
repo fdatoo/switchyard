@@ -11,6 +11,9 @@ class Scene {
   /// Human-readable name shown in the UI.
   displayName: String
 
+  /// Optional area associated with this scene.
+  areaId:      String? = null
+
   /// Actions executed when the scene is invoked. Reuses the Action type
   /// from switchyard:automations so any automation action is a valid
   /// scene action.

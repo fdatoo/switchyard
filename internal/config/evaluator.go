@@ -297,6 +297,7 @@ type automationJSON struct {
 type sceneJSON struct {
 	ID          string            `json:"id"`
 	DisplayName string            `json:"displayName"`
+	AreaID      *string           `json:"areaId"`
 	Actions     []json.RawMessage `json:"actions"`
 }
 

@@ -442,9 +442,14 @@ func areaFromJSON(a areaJSON) *configpb.AreaConfig {
 }
 
 func sceneFromJSON(s sceneJSON) (*configpb.SceneConfig, error) {
+	areaID := ""
+	if s.AreaID != nil {
+		areaID = *s.AreaID
+	}
 	scfg := &configpb.SceneConfig{
 		Id:          strings.TrimSpace(s.ID),
 		DisplayName: s.DisplayName,
+		AreaId:      areaID,
 	}
 	for _, rawA := range s.Actions {
 		ac, err := decodeAction(rawA)

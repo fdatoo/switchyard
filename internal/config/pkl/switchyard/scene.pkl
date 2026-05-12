@@ -8,6 +8,7 @@ import "switchyard:automations" as auto
 
 id:          String(!isEmpty)
 displayName: String
+areaId:      String? = null
 actions:     Listing<auto.Action> = new {}
 
 output {

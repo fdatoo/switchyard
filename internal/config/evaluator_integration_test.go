@@ -431,3 +431,34 @@ func TestEvaluator_InvalidXref(t *testing.T) {
 		t.Errorf("expected a ValidationError with a non-empty Field, got: %v", errs)
 	}
 }
+
+func TestEvaluate_SceneWithAreaId(t *testing.T) {
+	dir := t.TempDir()
+	writePkl(t, dir, "main.pkl", `
+amends "switchyard:config"
+
+import "switchyard:scenes" as sc
+import "switchyard:automations" as auto
+
+scenes = new {
+  new sc.Scene {
+    id = "kitchen-bright"
+    displayName = "Kitchen bright"
+    areaId = "kitchen"
+    actions = new {
+      new auto.CallServiceAction {
+        entity = "light.kitchen"
+        capability = "turn_on"
+      }
+    }
+  }
+}
+`)
+	snap := mustEvaluate(t, dir)
+	if len(snap.GetScenes()) != 1 {
+		t.Fatalf("want 1 scene, got %d", len(snap.GetScenes()))
+	}
+	if got := snap.GetScenes()[0].GetAreaId(); got != "kitchen" {
+		t.Errorf("area_id = %q, want kitchen", got)
+	}
+}

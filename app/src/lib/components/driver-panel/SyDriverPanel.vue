@@ -26,10 +26,11 @@ import { computed } from "vue";
 import SyText from "@/lib/components/text/SyText.vue";
 import SyBadge from "@/lib/components/badge/SyBadge.vue";
 import SyButton from "@/lib/components/button/SyButton.vue";
-import SyDot from "@/lib/components/dot/SyDot.vue";
 import SyEventRow from "@/lib/components/event-row/SyEventRow.vue";
 import SyEmptyState from "@/lib/components/empty-state/SyEmptyState.vue";
+import SyEntityRow from "@/lib/components/entity-row/SyEntityRow.vue";
 import type { IconName } from "@/lib/components/icon/SyIcon.vue";
+import type { Entity } from "@/data/entities";
 
 export type DriverState = "running" | "reconnecting" | "stopped" | "unknown";
 
@@ -62,6 +63,12 @@ const props = defineProps<{
   driver: DriverInfo;
   /** Recent events for the per-driver feed. Empty array shows an empty state. */
   recentEvents?: DriverEventDef[];
+  /** Live entities the driver currently owns. Each renders as an SyEntityRow
+      with its own controls. */
+  entities?: Entity[];
+  /** False when the entity stream is mid-reconnect. Surfaces a small inline
+      "reconnecting…" pill in the entities section header. */
+  streamConnected?: boolean;
   /** Disable the action buttons while an RPC is in flight. */
   busy?: boolean;
 }>();
@@ -86,6 +93,7 @@ const stateBadge = computed<{
 });
 
 const events = computed(() => props.recentEvents ?? []);
+const entityList = computed<Entity[]>(() => props.entities ?? []);
 </script>
 
 <template>
@@ -122,6 +130,28 @@ const events = computed(() => props.recentEvents ?? []);
           {{ t.count }} {{ t.type }}{{ t.count === 1 ? "" : "s" }}
         </SyBadge>
       </div>
+    </div>
+
+    <div class="sy-driver__section">
+      <div class="sy-driver__sectionHead">
+        <SyText variant="label" tone="subtle">Entities</SyText>
+        <SyText
+          v-if="streamConnected === false"
+          variant="caption"
+          tone="subtle"
+        >
+          reconnecting…
+        </SyText>
+      </div>
+      <div v-if="entityList.length > 0" class="sy-driver__entityList">
+        <SyEntityRow v-for="e in entityList" :key="e.id" :entity="e" />
+      </div>
+      <SyEmptyState
+        v-else
+        size="compact"
+        title="No entities yet"
+        description="This driver hasn't registered any entities."
+      />
     </div>
 
     <div class="sy-driver__section">
@@ -207,6 +237,12 @@ const events = computed(() => props.recentEvents ?? []);
   flex-direction: column;
   gap: var(--sy-space-2);
 }
+.sy-driver__sectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.sy-driver__entityList { display: flex; flex-direction: column; }
 .events {
   /* Reset the inherited padding on .sy-event so they sit edge-to-edge in
      this panel rather than being indented like inside a SySurface card. */

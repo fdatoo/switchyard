@@ -1,0 +1,11 @@
+amends "switchyard:scene"
+import "switchyard:automations" as auto
+
+id = "movie"
+displayName = "Movie Night"
+actions {
+  new auto.CallServiceAction {
+    entity = "light.living_room"
+    capability = "turn_off"
+  }
+}

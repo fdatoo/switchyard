@@ -1,0 +1,14 @@
+amends "switchyard:automation"
+import "switchyard:automations" as auto
+
+id = "morning"
+enabled = true
+triggers {
+  new auto.TimeTrigger { at = "07:00" }
+}
+actions {
+  new auto.CallServiceAction {
+    entity = "light.bedroom"
+    capability = "turn_on"
+  }
+}

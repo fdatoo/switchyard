@@ -1,0 +1,14 @@
+amends "switchyard:automation"
+import "switchyard:automations" as auto
+
+id = "sunset"
+enabled = true
+triggers {
+  new auto.EventTrigger { kind = "sun.sunset" }
+}
+actions {
+  new auto.CallServiceAction {
+    entity = "light.living_room"
+    capability = "turn_on"
+  }
+}

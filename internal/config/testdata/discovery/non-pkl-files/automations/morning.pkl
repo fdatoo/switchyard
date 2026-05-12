@@ -1,0 +1,9 @@
+amends "switchyard:automation"
+import "switchyard:automations" as auto
+
+id = "morning"
+enabled = true
+triggers {
+  new auto.EventTrigger { kind = "sun.sunset" }
+}
+actions {}

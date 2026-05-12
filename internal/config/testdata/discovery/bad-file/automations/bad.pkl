@@ -1,0 +1,3 @@
+amends "switchyard:automation"
+
+id = unterminated_token_oops

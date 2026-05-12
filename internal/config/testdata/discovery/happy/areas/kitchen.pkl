@@ -1,0 +1,4 @@
+amends "switchyard:area"
+
+id = "kitchen"
+displayName = "Kitchen"

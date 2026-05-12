@@ -1,0 +1,6 @@
+amends "switchyard:entity-areas"
+
+entityAreas {
+  ["light.bedroom"] = "bedroom"
+  ["light.living_room"] = "living-room"
+}

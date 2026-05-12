@@ -18,11 +18,11 @@ import {
   SyText, SySurface, SyButton, SyIcon, SyEmptyState, SyStatTile, SyEventRow,
 } from "@/lib";
 import { listDrivers, type DriverSummary } from "@/data/driver-management";
-import { listEntities } from "@/data/entities";
 import { listAutomations, type Automation } from "@/data/automations";
 import { listAreas } from "@/data/areas";
 import { listEvents, type EventRecord } from "@/data/activity";
 import { presentEvent } from "@/data/event-display";
+import { entityStore } from "@/stores/entity-store";
 
 /* ---- Greeting -------------------------------------------------------- */
 const tickNow = ref<Date>(new Date());
@@ -47,8 +47,12 @@ const driversDetail = computed<string>(() => {
 });
 
 /* ---- Stats: entities ------------------------------------------------ */
-const entityCount = ref<number>(0);
-const entitiesLoading = ref<boolean>(true);
+/* Reads from the global entity store. Loading is bound to !hydrated for
+   the first connection only; once we have a count, we don't revert to
+   "loading" on a transient stream disconnect (the dashboard would look
+   broken). */
+const entityCount = computed<number>(() => entityStore.entities.value.size);
+const entitiesLoading = computed<boolean>(() => !entityStore.hydrated.value);
 
 /* ---- Stats: automations --------------------------------------------- */
 const automations = ref<Automation[]>([]);
@@ -87,15 +91,6 @@ async function loadDrivers(): Promise<void> {
   } catch { /* swallow: tile renders dash */ }
   finally { driversLoading.value = false; }
 }
-async function loadEntities(): Promise<void> {
-  const ac = newAbort();
-  entitiesLoading.value = true;
-  try {
-    const r = await listEntities({ signal: ac.signal });
-    entityCount.value = r.entities.length;
-  } catch { /* swallow */ }
-  finally { entitiesLoading.value = false; }
-}
 async function loadAutomations(): Promise<void> {
   const ac = newAbort();
   automationsLoading.value = true;
@@ -132,7 +127,6 @@ async function loadRecent(): Promise<void> {
 
 onMounted(() => {
   void loadDrivers();
-  void loadEntities();
   void loadAutomations();
   void loadAreas();
   void loadRecent();

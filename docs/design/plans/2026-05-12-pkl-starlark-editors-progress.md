@@ -92,12 +92,16 @@ _None yet._
   unblocking — T1.4 (RegenPreview dispatch) and the rest of the editor
   plan would fail without it. The eventual SceneService spec inherits
   this proto change.
-- **2026-05-12 (T3.7 KNOWN GAP — needs follow-up):** The form-driven
+- **2026-05-12 (T3.7 KNOWN GAP — RESOLVED):** The form-driven
   "+ New automation" flow writes `automations/<id>.pkl` correctly,
   but the dev `main.pkl` declares `automations = new { ...inline }`
   with no `import*("automations/*.pkl")` glob. So the daemon
   doesn't see new files — the automation is on disk but not in
   the live snapshot. The plan implicitly assumed auto-discovery.
+  CLOSED by `docs/design/plans/2026-05-12-config-autodiscovery.md`
+  (12 tasks shipped, daemon-side discovery for
+  automations/areas/scenes + entity-areas.pkl). Loop-closure
+  proved by `TestEvaluate_LoopClosure_RegenToSnapshot`.
   Two paths to close the loop (left for the human to choose):
     1. Daemon-side: scan `configDir/automations/*.pkl` after Pkl
        eval, evaluate each, merge into `snap.Automations`.

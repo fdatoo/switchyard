@@ -68,3 +68,7 @@ export { default as SyColorTempSlider } from "./components/entity-controls/SyCol
 export { default as SyColorPicker } from "./components/entity-controls/SyColorPicker.vue";
 export { default as SySensorValue } from "./components/entity-controls/SySensorValue.vue";
 export { default as SyScene } from "./components/scene/SyScene.vue";
+export { default as SyCodeEditor } from "./components/code-editor/SyCodeEditor.vue";
+export { default as SyFileTree } from "./components/file-tree/SyFileTree.vue";
+export { default as SyCodeEditorPanel } from "./components/code-editor-panel/SyCodeEditorPanel.vue";
+export { default as SyTestPanel } from "./components/code-editor-panel/SyTestPanel.vue";

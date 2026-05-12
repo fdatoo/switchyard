@@ -17,6 +17,13 @@ import (
 // the metrics pointer without requiring a non-nil value.
 type metricsIface = *observability.Metrics
 
+// CompileAction compiles a single ActionConfig to an Executor. Used by the
+// scene package to execute a scene's actions without the automation
+// engine's metric instrumentation.
+func CompileAction(ac *configpb.ActionConfig, scriptNames map[string]bool, rt *ghstarlark.Runtime) (action.Executor, error) {
+	return compileActionInstrumented(ac, scriptNames, rt, "scene", nil)
+}
+
 // CompileAutomations walks AutomationConfig entries, producing a name-keyed
 // map of compiled runtime Automations. Errors are aggregated; callers get
 // the full list from one `config validate`.

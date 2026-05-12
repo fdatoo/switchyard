@@ -95,15 +95,25 @@ func (s *Service) OpenForEdit(_ context.Context, req *connect.Request[v1.OpenFor
 	}
 	resolved := s.resolvePath(path)
 
-	data, err := os.ReadFile(resolved)
-	if err != nil {
-		if errors.Is(err, os.ErrNotExist) {
-			return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("file not found: %s", path))
+	// Missing file = new-file edit session. The form-driven "+ New
+	// automation" flow needs to be able to open a path that doesn't
+	// exist yet; the subsequent CommitEdit creates it. We return an
+	// empty ancestor + empty file_hash so the client's commit
+	// hash-check sees a clean "expected: empty, actual: empty" match.
+	var data []byte
+	if d, err := os.ReadFile(resolved); err != nil {
+		if !errors.Is(err, os.ErrNotExist) {
+			return nil, connect.NewError(connect.CodeInternal, err)
 		}
-		return nil, connect.NewError(connect.CodeInternal, err)
+		data = nil
+	} else {
+		data = d
 	}
 
-	fileHash := hashBytes(data)
+	fileHash := ""
+	if data != nil {
+		fileHash = hashBytes(data)
+	}
 	ancestorPkl := string(data)
 
 	// AST JSON: we return an empty object for now.
@@ -209,8 +219,15 @@ func (s *Service) CommitEdit(_ context.Context, req *connect.Request[v1.CommitEd
 		)
 	}
 
-	// Write file
+	// Write file. Create parent directories on the fly — the form
+	// flow may write `automations/<id>.pkl` before any sibling file
+	// has caused `automations/` to exist.
 	newContent := req.Msg.GetRegeneratedPkl()
+	if dir := filepath.Dir(path); dir != "" && dir != "." {
+		if err := os.MkdirAll(dir, 0o755); err != nil {
+			return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("mkdir parent: %w", err))
+		}
+	}
 	if err := os.WriteFile(path, []byte(newContent), 0o644); err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("write file: %w", err))
 	}

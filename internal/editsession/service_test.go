@@ -54,21 +54,26 @@ func TestService_OpenForEdit_HappyPath(t *testing.T) {
 	}
 }
 
-func TestService_OpenForEdit_NotFound(t *testing.T) {
+func TestService_OpenForEdit_MissingFileIsNewSession(t *testing.T) {
+	// Missing files start an empty new-file session — the form-driven
+	// "+ New automation" UX needs to open a path that doesn't exist
+	// yet; the subsequent CommitEdit creates it.
 	svc := newTestService(t)
-	_, err := svc.OpenForEdit(context.Background(), connect.NewRequest(&v1.OpenForEditRequest{
+	resp, err := svc.OpenForEdit(context.Background(), connect.NewRequest(&v1.OpenForEditRequest{
 		FilePath: "/nonexistent/file.pkl",
 	}))
-	if err == nil {
-		t.Fatal("expected error for non-existent file")
+	if err != nil {
+		t.Fatalf("OpenForEdit on missing file: %v", err)
 	}
-	var connErr *connect.Error
-	if ok := false; !ok {
-		// just check it is a connect error
-		connErr, ok = err.(*connect.Error)
-		if !ok || connErr.Code() != connect.CodeNotFound {
-			t.Errorf("expected NotFound, got %v", err)
-		}
+	if resp.Msg.GetAncestorPkl() != "" {
+		t.Errorf("expected empty ancestor for missing file, got %q", resp.Msg.GetAncestorPkl())
+	}
+	if resp.Msg.GetFileHash() != "" {
+		t.Errorf("expected empty file_hash for missing file, got %q", resp.Msg.GetFileHash())
+	}
+	if resp.Msg.GetSessionId() == "" || resp.Msg.GetLockToken() == "" {
+		t.Errorf("expected session_id + lock_token populated, got session=%q lock=%q",
+			resp.Msg.GetSessionId(), resp.Msg.GetLockToken())
 	}
 }
 

@@ -77,3 +77,16 @@ _None yet._
   kept `"automations"` for `.star`. Plan updated in two places to
   match (`SyFileTree.iconFor` and `SyCodeEditorPanel`'s empty-state
   icon binding).
+- **2026-05-12 (T1.2):** The SceneConfig proto message didn't exist yet
+  (it was supposed to ship with the deferred SceneService spec). T1.2's
+  test referenced `configpb.SceneConfig`, so the agent added the proto
+  message + regen'd `gen/switchyard/config/v1/snapshot.pb.go`. Necessary
+  unblocking — T1.4 (RegenPreview dispatch) and the rest of the editor
+  plan would fail without it. The eventual SceneService spec inherits
+  this proto change.
+- **2026-05-12 (post-Wave 1):** `internal/automation/regen/entity_areas.go`
+  and its test were deleted from the working tree (committed cleanly
+  in `6cd738e`, then a later agent's tool run caused the deletion).
+  Restored via `git restore`; tests still pass. Possible cause: T1.2
+  ran `buf generate` or a build hook that touched files outside
+  its scope. No data lost since the commit was already in.

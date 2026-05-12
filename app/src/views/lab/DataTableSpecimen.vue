@@ -47,8 +47,9 @@ const filteredRows = computed(() => {
     const { columnId, direction } = sort.value;
     const dir = direction === "asc" ? 1 : -1;
     r = [...r].sort((a, b) => {
-      const av = (a as Record<string, unknown>)[columnId];
-      const bv = (b as Record<string, unknown>)[columnId];
+      const key = columnId as keyof Driver;
+      const av = a[key];
+      const bv = b[key];
       if (typeof av === "number" && typeof bv === "number") return (av - bv) * dir;
       return String(av).localeCompare(String(bv)) * dir;
     });

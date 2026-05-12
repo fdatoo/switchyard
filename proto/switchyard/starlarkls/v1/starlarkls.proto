@@ -8,6 +8,7 @@ service StarlarkLsService {
   rpc Complete(CompleteRequest)  returns (CompleteResponse);
   rpc Hover(HoverRequest)        returns (HoverResponse);
   rpc LookupSymbol(LookupSymbolRequest) returns (LookupSymbolResponse);
+  rpc Diagnose(DiagnoseRequest) returns (DiagnoseResponse);
 }
 
 message TokenizeRequest {
@@ -59,4 +60,23 @@ message LookupSymbolResponse {
   int32  line      = 2;
   string kind      = 3; // "function" | "global"
   string doc       = 4;
+}
+
+message DiagnoseRequest {
+  string file_path = 1;
+  string source    = 2;
+}
+
+message Diagnostic {
+  int32  start_line = 1;
+  int32  start_col  = 2;
+  int32  end_line   = 3;
+  int32  end_col    = 4;
+  string severity   = 5; // "error" | "warning"
+  string message    = 6;
+  string code       = 7; // "parse_error" | "load_not_found" | "unresolved_name"
+}
+
+message DiagnoseResponse {
+  repeated Diagnostic diagnostics = 1;
 }

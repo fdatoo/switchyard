@@ -10,7 +10,7 @@
   (e.g., SyTestPanel for Starlark).
 -->
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import {
   SyText, SyButton, SyEmptyState, SyIcon, SySurface,
   SyCodeEditor, SyFileTree,
@@ -27,6 +27,7 @@ const props = defineProps<{
 const treeEntries = ref<TreeEntry[]>([]);
 const treeError = ref<string>("");
 const treeLoading = ref<boolean>(true);
+const editorRef = ref<InstanceType<typeof SyCodeEditor> | null>(null);
 
 const selectedPath = ref<string>("");
 const buffer = ref<string>("");
@@ -39,7 +40,7 @@ const saveBusy = ref<boolean>(false);
 const saveError = ref<string>("");
 
 const dirty = computed<boolean>(() => buffer.value !== lastLoaded.value);
-const language = computed<"pkl" | "python">(() => props.kind === "pkl" ? "pkl" : "python");
+const language = computed<"pkl" | "starlark">(() => props.kind === "pkl" ? "pkl" : "starlark");
 const fileExt = computed<"pkl" | "star">(() => props.kind === "pkl" ? "pkl" : "star");
 
 let sessionAbort: AbortController | null = null;
@@ -142,8 +143,25 @@ function discard(): void {
   buffer.value = lastLoaded.value;
 }
 
-onMounted(loadTree);
-onBeforeUnmount(() => { void abandonCurrent(); });
+function onGotoDefinition(e: Event): void {
+  const detail = (e as CustomEvent).detail as { filePath?: string; line?: number } | undefined;
+  if (!detail?.filePath) return;
+  void openFile(detail.filePath).then(async () => {
+    if (!detail.line) return;
+    await nextTick();
+    editorRef.value?.setPosition(detail.line, 1);
+  });
+}
+
+onMounted(() => {
+  void loadTree();
+  window.addEventListener("starlark-goto-definition", onGotoDefinition as EventListener);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("starlark-goto-definition", onGotoDefinition as EventListener);
+  void abandonCurrent();
+});
 
 watch(() => props.kind, () => {
   selectedPath.value = "";
@@ -203,6 +221,7 @@ watch(() => props.kind, () => {
       <main class="sy-panel__editor">
         <SyCodeEditor
           v-if="selectedPath"
+          ref="editorRef"
           v-model="buffer"
           :language="language"
         />

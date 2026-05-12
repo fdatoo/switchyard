@@ -23,6 +23,17 @@ func NewService(symbols map[string]SymbolInfo, scriptsDir string) *Service {
 	return &Service{symbols: symbols, dir: scriptsDir}
 }
 
+// Diagnose reports parse errors, dangling load() paths, and unresolved
+// identifier references in the source.
+func (s *Service) Diagnose(_ context.Context, req *connect.Request[starlarkpb.DiagnoseRequest]) (*connect.Response[starlarkpb.DiagnoseResponse], error) {
+	diags := Diagnose(req.Msg.FilePath, req.Msg.Source, s.symbols, predeclaredNames())
+	out := make([]*starlarkpb.Diagnostic, len(diags))
+	for i, diag := range diags {
+		out[i] = diag.toProto()
+	}
+	return connect.NewResponse(&starlarkpb.DiagnoseResponse{Diagnostics: out}), nil
+}
+
 // Tokenize returns token spans by scanning for known Starlark keywords.
 func (s *Service) Tokenize(_ context.Context, req *connect.Request[starlarkpb.TokenizeRequest]) (*connect.Response[starlarkpb.TokenizeResponse], error) {
 	keywords := []string{

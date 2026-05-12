@@ -17,7 +17,7 @@
 import { computed } from "vue";
 
 type AsTag = "h1" | "h2" | "h3" | "h4" | "p" | "span" | "div" | "label";
-type Variant = "display" | "title" | "subtitle" | "body" | "label" | "caption" | "numeric";
+type Variant = "display" | "title" | "subtitle" | "body" | "label" | "overline" | "caption" | "numeric";
 type Tone = "default" | "muted" | "subtle" | "accent" | "good" | "warn" | "bad";
 type Weight = "normal" | "medium" | "semibold";
 
@@ -85,6 +85,12 @@ const classes = computed(() => [
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-weight: 500;
+}
+.sy-text--overline {
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 600;
 }
 .sy-text--caption {
   font-size: 0.8125rem;

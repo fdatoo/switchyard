@@ -599,6 +599,194 @@ func (x *LookupSymbolResponse) GetDoc() string {
 	return ""
 }
 
+type DiagnoseRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	FilePath      string                 `protobuf:"bytes,1,opt,name=file_path,json=filePath,proto3" json:"file_path,omitempty"`
+	Source        string                 `protobuf:"bytes,2,opt,name=source,proto3" json:"source,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DiagnoseRequest) Reset() {
+	*x = DiagnoseRequest{}
+	mi := &file_switchyard_starlarkls_v1_starlarkls_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DiagnoseRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DiagnoseRequest) ProtoMessage() {}
+
+func (x *DiagnoseRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_switchyard_starlarkls_v1_starlarkls_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DiagnoseRequest.ProtoReflect.Descriptor instead.
+func (*DiagnoseRequest) Descriptor() ([]byte, []int) {
+	return file_switchyard_starlarkls_v1_starlarkls_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *DiagnoseRequest) GetFilePath() string {
+	if x != nil {
+		return x.FilePath
+	}
+	return ""
+}
+
+func (x *DiagnoseRequest) GetSource() string {
+	if x != nil {
+		return x.Source
+	}
+	return ""
+}
+
+type Diagnostic struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	StartLine     int32                  `protobuf:"varint,1,opt,name=start_line,json=startLine,proto3" json:"start_line,omitempty"`
+	StartCol      int32                  `protobuf:"varint,2,opt,name=start_col,json=startCol,proto3" json:"start_col,omitempty"`
+	EndLine       int32                  `protobuf:"varint,3,opt,name=end_line,json=endLine,proto3" json:"end_line,omitempty"`
+	EndCol        int32                  `protobuf:"varint,4,opt,name=end_col,json=endCol,proto3" json:"end_col,omitempty"`
+	Severity      string                 `protobuf:"bytes,5,opt,name=severity,proto3" json:"severity,omitempty"` // "error" | "warning"
+	Message       string                 `protobuf:"bytes,6,opt,name=message,proto3" json:"message,omitempty"`
+	Code          string                 `protobuf:"bytes,7,opt,name=code,proto3" json:"code,omitempty"` // "parse_error" | "load_not_found" | "unresolved_name"
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Diagnostic) Reset() {
+	*x = Diagnostic{}
+	mi := &file_switchyard_starlarkls_v1_starlarkls_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Diagnostic) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Diagnostic) ProtoMessage() {}
+
+func (x *Diagnostic) ProtoReflect() protoreflect.Message {
+	mi := &file_switchyard_starlarkls_v1_starlarkls_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Diagnostic.ProtoReflect.Descriptor instead.
+func (*Diagnostic) Descriptor() ([]byte, []int) {
+	return file_switchyard_starlarkls_v1_starlarkls_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *Diagnostic) GetStartLine() int32 {
+	if x != nil {
+		return x.StartLine
+	}
+	return 0
+}
+
+func (x *Diagnostic) GetStartCol() int32 {
+	if x != nil {
+		return x.StartCol
+	}
+	return 0
+}
+
+func (x *Diagnostic) GetEndLine() int32 {
+	if x != nil {
+		return x.EndLine
+	}
+	return 0
+}
+
+func (x *Diagnostic) GetEndCol() int32 {
+	if x != nil {
+		return x.EndCol
+	}
+	return 0
+}
+
+func (x *Diagnostic) GetSeverity() string {
+	if x != nil {
+		return x.Severity
+	}
+	return ""
+}
+
+func (x *Diagnostic) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *Diagnostic) GetCode() string {
+	if x != nil {
+		return x.Code
+	}
+	return ""
+}
+
+type DiagnoseResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Diagnostics   []*Diagnostic          `protobuf:"bytes,1,rep,name=diagnostics,proto3" json:"diagnostics,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DiagnoseResponse) Reset() {
+	*x = DiagnoseResponse{}
+	mi := &file_switchyard_starlarkls_v1_starlarkls_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DiagnoseResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DiagnoseResponse) ProtoMessage() {}
+
+func (x *DiagnoseResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_switchyard_starlarkls_v1_starlarkls_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DiagnoseResponse.ProtoReflect.Descriptor instead.
+func (*DiagnoseResponse) Descriptor() ([]byte, []int) {
+	return file_switchyard_starlarkls_v1_starlarkls_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *DiagnoseResponse) GetDiagnostics() []*Diagnostic {
+	if x != nil {
+		return x.Diagnostics
+	}
+	return nil
+}
+
 var File_switchyard_starlarkls_v1_starlarkls_proto protoreflect.FileDescriptor
 
 const file_switchyard_starlarkls_v1_starlarkls_proto_rawDesc = "" +
@@ -643,12 +831,28 @@ const file_switchyard_starlarkls_v1_starlarkls_proto_rawDesc = "" +
 	"\tfile_path\x18\x01 \x01(\tR\bfilePath\x12\x12\n" +
 	"\x04line\x18\x02 \x01(\x05R\x04line\x12\x12\n" +
 	"\x04kind\x18\x03 \x01(\tR\x04kind\x12\x10\n" +
-	"\x03doc\x18\x04 \x01(\tR\x03doc2\xa2\x03\n" +
+	"\x03doc\x18\x04 \x01(\tR\x03doc\"F\n" +
+	"\x0fDiagnoseRequest\x12\x1b\n" +
+	"\tfile_path\x18\x01 \x01(\tR\bfilePath\x12\x16\n" +
+	"\x06source\x18\x02 \x01(\tR\x06source\"\xc6\x01\n" +
+	"\n" +
+	"Diagnostic\x12\x1d\n" +
+	"\n" +
+	"start_line\x18\x01 \x01(\x05R\tstartLine\x12\x1b\n" +
+	"\tstart_col\x18\x02 \x01(\x05R\bstartCol\x12\x19\n" +
+	"\bend_line\x18\x03 \x01(\x05R\aendLine\x12\x17\n" +
+	"\aend_col\x18\x04 \x01(\x05R\x06endCol\x12\x1a\n" +
+	"\bseverity\x18\x05 \x01(\tR\bseverity\x12\x18\n" +
+	"\amessage\x18\x06 \x01(\tR\amessage\x12\x12\n" +
+	"\x04code\x18\a \x01(\tR\x04code\"Z\n" +
+	"\x10DiagnoseResponse\x12F\n" +
+	"\vdiagnostics\x18\x01 \x03(\v2$.switchyard.starlarkls.v1.DiagnosticR\vdiagnostics2\x85\x04\n" +
 	"\x11StarlarkLsService\x12a\n" +
 	"\bTokenize\x12).switchyard.starlarkls.v1.TokenizeRequest\x1a*.switchyard.starlarkls.v1.TokenizeResponse\x12a\n" +
 	"\bComplete\x12).switchyard.starlarkls.v1.CompleteRequest\x1a*.switchyard.starlarkls.v1.CompleteResponse\x12X\n" +
 	"\x05Hover\x12&.switchyard.starlarkls.v1.HoverRequest\x1a'.switchyard.starlarkls.v1.HoverResponse\x12m\n" +
-	"\fLookupSymbol\x12-.switchyard.starlarkls.v1.LookupSymbolRequest\x1a..switchyard.starlarkls.v1.LookupSymbolResponseB\xf9\x01\n" +
+	"\fLookupSymbol\x12-.switchyard.starlarkls.v1.LookupSymbolRequest\x1a..switchyard.starlarkls.v1.LookupSymbolResponse\x12a\n" +
+	"\bDiagnose\x12).switchyard.starlarkls.v1.DiagnoseRequest\x1a*.switchyard.starlarkls.v1.DiagnoseResponseB\xf9\x01\n" +
 	"\x1ccom.switchyard.starlarkls.v1B\x0fStarlarklsProtoP\x01ZFgithub.com/fdatoo/switchyard/gen/switchyard/starlarkls/v1;starlarklsv1\xa2\x02\x03SSX\xaa\x02\x18Switchyard.Starlarkls.V1\xca\x02\x18Switchyard\\Starlarkls\\V1\xe2\x02$Switchyard\\Starlarkls\\V1\\GPBMetadata\xea\x02\x1aSwitchyard::Starlarkls::V1b\x06proto3"
 
 var (
@@ -663,7 +867,7 @@ func file_switchyard_starlarkls_v1_starlarkls_proto_rawDescGZIP() []byte {
 	return file_switchyard_starlarkls_v1_starlarkls_proto_rawDescData
 }
 
-var file_switchyard_starlarkls_v1_starlarkls_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_switchyard_starlarkls_v1_starlarkls_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_switchyard_starlarkls_v1_starlarkls_proto_goTypes = []any{
 	(*TokenizeRequest)(nil),      // 0: switchyard.starlarkls.v1.TokenizeRequest
 	(*TokenSpan)(nil),            // 1: switchyard.starlarkls.v1.TokenSpan
@@ -675,23 +879,29 @@ var file_switchyard_starlarkls_v1_starlarkls_proto_goTypes = []any{
 	(*HoverResponse)(nil),        // 7: switchyard.starlarkls.v1.HoverResponse
 	(*LookupSymbolRequest)(nil),  // 8: switchyard.starlarkls.v1.LookupSymbolRequest
 	(*LookupSymbolResponse)(nil), // 9: switchyard.starlarkls.v1.LookupSymbolResponse
+	(*DiagnoseRequest)(nil),      // 10: switchyard.starlarkls.v1.DiagnoseRequest
+	(*Diagnostic)(nil),           // 11: switchyard.starlarkls.v1.Diagnostic
+	(*DiagnoseResponse)(nil),     // 12: switchyard.starlarkls.v1.DiagnoseResponse
 }
 var file_switchyard_starlarkls_v1_starlarkls_proto_depIdxs = []int32{
-	1, // 0: switchyard.starlarkls.v1.TokenizeResponse.spans:type_name -> switchyard.starlarkls.v1.TokenSpan
-	4, // 1: switchyard.starlarkls.v1.CompleteResponse.items:type_name -> switchyard.starlarkls.v1.CompletionItem
-	0, // 2: switchyard.starlarkls.v1.StarlarkLsService.Tokenize:input_type -> switchyard.starlarkls.v1.TokenizeRequest
-	3, // 3: switchyard.starlarkls.v1.StarlarkLsService.Complete:input_type -> switchyard.starlarkls.v1.CompleteRequest
-	6, // 4: switchyard.starlarkls.v1.StarlarkLsService.Hover:input_type -> switchyard.starlarkls.v1.HoverRequest
-	8, // 5: switchyard.starlarkls.v1.StarlarkLsService.LookupSymbol:input_type -> switchyard.starlarkls.v1.LookupSymbolRequest
-	2, // 6: switchyard.starlarkls.v1.StarlarkLsService.Tokenize:output_type -> switchyard.starlarkls.v1.TokenizeResponse
-	5, // 7: switchyard.starlarkls.v1.StarlarkLsService.Complete:output_type -> switchyard.starlarkls.v1.CompleteResponse
-	7, // 8: switchyard.starlarkls.v1.StarlarkLsService.Hover:output_type -> switchyard.starlarkls.v1.HoverResponse
-	9, // 9: switchyard.starlarkls.v1.StarlarkLsService.LookupSymbol:output_type -> switchyard.starlarkls.v1.LookupSymbolResponse
-	6, // [6:10] is the sub-list for method output_type
-	2, // [2:6] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	1,  // 0: switchyard.starlarkls.v1.TokenizeResponse.spans:type_name -> switchyard.starlarkls.v1.TokenSpan
+	4,  // 1: switchyard.starlarkls.v1.CompleteResponse.items:type_name -> switchyard.starlarkls.v1.CompletionItem
+	11, // 2: switchyard.starlarkls.v1.DiagnoseResponse.diagnostics:type_name -> switchyard.starlarkls.v1.Diagnostic
+	0,  // 3: switchyard.starlarkls.v1.StarlarkLsService.Tokenize:input_type -> switchyard.starlarkls.v1.TokenizeRequest
+	3,  // 4: switchyard.starlarkls.v1.StarlarkLsService.Complete:input_type -> switchyard.starlarkls.v1.CompleteRequest
+	6,  // 5: switchyard.starlarkls.v1.StarlarkLsService.Hover:input_type -> switchyard.starlarkls.v1.HoverRequest
+	8,  // 6: switchyard.starlarkls.v1.StarlarkLsService.LookupSymbol:input_type -> switchyard.starlarkls.v1.LookupSymbolRequest
+	10, // 7: switchyard.starlarkls.v1.StarlarkLsService.Diagnose:input_type -> switchyard.starlarkls.v1.DiagnoseRequest
+	2,  // 8: switchyard.starlarkls.v1.StarlarkLsService.Tokenize:output_type -> switchyard.starlarkls.v1.TokenizeResponse
+	5,  // 9: switchyard.starlarkls.v1.StarlarkLsService.Complete:output_type -> switchyard.starlarkls.v1.CompleteResponse
+	7,  // 10: switchyard.starlarkls.v1.StarlarkLsService.Hover:output_type -> switchyard.starlarkls.v1.HoverResponse
+	9,  // 11: switchyard.starlarkls.v1.StarlarkLsService.LookupSymbol:output_type -> switchyard.starlarkls.v1.LookupSymbolResponse
+	12, // 12: switchyard.starlarkls.v1.StarlarkLsService.Diagnose:output_type -> switchyard.starlarkls.v1.DiagnoseResponse
+	8,  // [8:13] is the sub-list for method output_type
+	3,  // [3:8] is the sub-list for method input_type
+	3,  // [3:3] is the sub-list for extension type_name
+	3,  // [3:3] is the sub-list for extension extendee
+	0,  // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_switchyard_starlarkls_v1_starlarkls_proto_init() }
@@ -705,7 +915,7 @@ func file_switchyard_starlarkls_v1_starlarkls_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_switchyard_starlarkls_v1_starlarkls_proto_rawDesc), len(file_switchyard_starlarkls_v1_starlarkls_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   10,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -25,6 +25,7 @@ const (
 	StarlarkLsService_Complete_FullMethodName     = "/switchyard.starlarkls.v1.StarlarkLsService/Complete"
 	StarlarkLsService_Hover_FullMethodName        = "/switchyard.starlarkls.v1.StarlarkLsService/Hover"
 	StarlarkLsService_LookupSymbol_FullMethodName = "/switchyard.starlarkls.v1.StarlarkLsService/LookupSymbol"
+	StarlarkLsService_Diagnose_FullMethodName     = "/switchyard.starlarkls.v1.StarlarkLsService/Diagnose"
 )
 
 // StarlarkLsServiceClient is the client API for StarlarkLsService service.
@@ -35,6 +36,7 @@ type StarlarkLsServiceClient interface {
 	Complete(ctx context.Context, in *CompleteRequest, opts ...grpc.CallOption) (*CompleteResponse, error)
 	Hover(ctx context.Context, in *HoverRequest, opts ...grpc.CallOption) (*HoverResponse, error)
 	LookupSymbol(ctx context.Context, in *LookupSymbolRequest, opts ...grpc.CallOption) (*LookupSymbolResponse, error)
+	Diagnose(ctx context.Context, in *DiagnoseRequest, opts ...grpc.CallOption) (*DiagnoseResponse, error)
 }
 
 type starlarkLsServiceClient struct {
@@ -85,6 +87,16 @@ func (c *starlarkLsServiceClient) LookupSymbol(ctx context.Context, in *LookupSy
 	return out, nil
 }
 
+func (c *starlarkLsServiceClient) Diagnose(ctx context.Context, in *DiagnoseRequest, opts ...grpc.CallOption) (*DiagnoseResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DiagnoseResponse)
+	err := c.cc.Invoke(ctx, StarlarkLsService_Diagnose_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // StarlarkLsServiceServer is the server API for StarlarkLsService service.
 // All implementations should embed UnimplementedStarlarkLsServiceServer
 // for forward compatibility.
@@ -93,6 +105,7 @@ type StarlarkLsServiceServer interface {
 	Complete(context.Context, *CompleteRequest) (*CompleteResponse, error)
 	Hover(context.Context, *HoverRequest) (*HoverResponse, error)
 	LookupSymbol(context.Context, *LookupSymbolRequest) (*LookupSymbolResponse, error)
+	Diagnose(context.Context, *DiagnoseRequest) (*DiagnoseResponse, error)
 }
 
 // UnimplementedStarlarkLsServiceServer should be embedded to have
@@ -113,6 +126,9 @@ func (UnimplementedStarlarkLsServiceServer) Hover(context.Context, *HoverRequest
 }
 func (UnimplementedStarlarkLsServiceServer) LookupSymbol(context.Context, *LookupSymbolRequest) (*LookupSymbolResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method LookupSymbol not implemented")
+}
+func (UnimplementedStarlarkLsServiceServer) Diagnose(context.Context, *DiagnoseRequest) (*DiagnoseResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Diagnose not implemented")
 }
 func (UnimplementedStarlarkLsServiceServer) testEmbeddedByValue() {}
 
@@ -206,6 +222,24 @@ func _StarlarkLsService_LookupSymbol_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _StarlarkLsService_Diagnose_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DiagnoseRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StarlarkLsServiceServer).Diagnose(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StarlarkLsService_Diagnose_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StarlarkLsServiceServer).Diagnose(ctx, req.(*DiagnoseRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // StarlarkLsService_ServiceDesc is the grpc.ServiceDesc for StarlarkLsService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -228,6 +262,10 @@ var StarlarkLsService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "LookupSymbol",
 			Handler:    _StarlarkLsService_LookupSymbol_Handler,
+		},
+		{
+			MethodName: "Diagnose",
+			Handler:    _StarlarkLsService_Diagnose_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

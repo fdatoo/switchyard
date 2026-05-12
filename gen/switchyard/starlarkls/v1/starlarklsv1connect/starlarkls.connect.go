@@ -46,6 +46,9 @@ const (
 	// StarlarkLsServiceLookupSymbolProcedure is the fully-qualified name of the StarlarkLsService's
 	// LookupSymbol RPC.
 	StarlarkLsServiceLookupSymbolProcedure = "/switchyard.starlarkls.v1.StarlarkLsService/LookupSymbol"
+	// StarlarkLsServiceDiagnoseProcedure is the fully-qualified name of the StarlarkLsService's
+	// Diagnose RPC.
+	StarlarkLsServiceDiagnoseProcedure = "/switchyard.starlarkls.v1.StarlarkLsService/Diagnose"
 )
 
 // StarlarkLsServiceClient is a client for the switchyard.starlarkls.v1.StarlarkLsService service.
@@ -54,6 +57,7 @@ type StarlarkLsServiceClient interface {
 	Complete(context.Context, *connect.Request[v1.CompleteRequest]) (*connect.Response[v1.CompleteResponse], error)
 	Hover(context.Context, *connect.Request[v1.HoverRequest]) (*connect.Response[v1.HoverResponse], error)
 	LookupSymbol(context.Context, *connect.Request[v1.LookupSymbolRequest]) (*connect.Response[v1.LookupSymbolResponse], error)
+	Diagnose(context.Context, *connect.Request[v1.DiagnoseRequest]) (*connect.Response[v1.DiagnoseResponse], error)
 }
 
 // NewStarlarkLsServiceClient constructs a client for the switchyard.starlarkls.v1.StarlarkLsService
@@ -91,6 +95,12 @@ func NewStarlarkLsServiceClient(httpClient connect.HTTPClient, baseURL string, o
 			connect.WithSchema(starlarkLsServiceMethods.ByName("LookupSymbol")),
 			connect.WithClientOptions(opts...),
 		),
+		diagnose: connect.NewClient[v1.DiagnoseRequest, v1.DiagnoseResponse](
+			httpClient,
+			baseURL+StarlarkLsServiceDiagnoseProcedure,
+			connect.WithSchema(starlarkLsServiceMethods.ByName("Diagnose")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -100,6 +110,7 @@ type starlarkLsServiceClient struct {
 	complete     *connect.Client[v1.CompleteRequest, v1.CompleteResponse]
 	hover        *connect.Client[v1.HoverRequest, v1.HoverResponse]
 	lookupSymbol *connect.Client[v1.LookupSymbolRequest, v1.LookupSymbolResponse]
+	diagnose     *connect.Client[v1.DiagnoseRequest, v1.DiagnoseResponse]
 }
 
 // Tokenize calls switchyard.starlarkls.v1.StarlarkLsService.Tokenize.
@@ -122,6 +133,11 @@ func (c *starlarkLsServiceClient) LookupSymbol(ctx context.Context, req *connect
 	return c.lookupSymbol.CallUnary(ctx, req)
 }
 
+// Diagnose calls switchyard.starlarkls.v1.StarlarkLsService.Diagnose.
+func (c *starlarkLsServiceClient) Diagnose(ctx context.Context, req *connect.Request[v1.DiagnoseRequest]) (*connect.Response[v1.DiagnoseResponse], error) {
+	return c.diagnose.CallUnary(ctx, req)
+}
+
 // StarlarkLsServiceHandler is an implementation of the switchyard.starlarkls.v1.StarlarkLsService
 // service.
 type StarlarkLsServiceHandler interface {
@@ -129,6 +145,7 @@ type StarlarkLsServiceHandler interface {
 	Complete(context.Context, *connect.Request[v1.CompleteRequest]) (*connect.Response[v1.CompleteResponse], error)
 	Hover(context.Context, *connect.Request[v1.HoverRequest]) (*connect.Response[v1.HoverResponse], error)
 	LookupSymbol(context.Context, *connect.Request[v1.LookupSymbolRequest]) (*connect.Response[v1.LookupSymbolResponse], error)
+	Diagnose(context.Context, *connect.Request[v1.DiagnoseRequest]) (*connect.Response[v1.DiagnoseResponse], error)
 }
 
 // NewStarlarkLsServiceHandler builds an HTTP handler from the service implementation. It returns
@@ -162,6 +179,12 @@ func NewStarlarkLsServiceHandler(svc StarlarkLsServiceHandler, opts ...connect.H
 		connect.WithSchema(starlarkLsServiceMethods.ByName("LookupSymbol")),
 		connect.WithHandlerOptions(opts...),
 	)
+	starlarkLsServiceDiagnoseHandler := connect.NewUnaryHandler(
+		StarlarkLsServiceDiagnoseProcedure,
+		svc.Diagnose,
+		connect.WithSchema(starlarkLsServiceMethods.ByName("Diagnose")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/switchyard.starlarkls.v1.StarlarkLsService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case StarlarkLsServiceTokenizeProcedure:
@@ -172,6 +195,8 @@ func NewStarlarkLsServiceHandler(svc StarlarkLsServiceHandler, opts ...connect.H
 			starlarkLsServiceHoverHandler.ServeHTTP(w, r)
 		case StarlarkLsServiceLookupSymbolProcedure:
 			starlarkLsServiceLookupSymbolHandler.ServeHTTP(w, r)
+		case StarlarkLsServiceDiagnoseProcedure:
+			starlarkLsServiceDiagnoseHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -195,4 +220,8 @@ func (UnimplementedStarlarkLsServiceHandler) Hover(context.Context, *connect.Req
 
 func (UnimplementedStarlarkLsServiceHandler) LookupSymbol(context.Context, *connect.Request[v1.LookupSymbolRequest]) (*connect.Response[v1.LookupSymbolResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("switchyard.starlarkls.v1.StarlarkLsService.LookupSymbol is not implemented"))
+}
+
+func (UnimplementedStarlarkLsServiceHandler) Diagnose(context.Context, *connect.Request[v1.DiagnoseRequest]) (*connect.Response[v1.DiagnoseResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("switchyard.starlarkls.v1.StarlarkLsService.Diagnose is not implemented"))
 }

@@ -32,7 +32,7 @@ import SyEntityRow from "@/lib/components/entity-row/SyEntityRow.vue";
 import type { IconName } from "@/lib/components/icon/SyIcon.vue";
 import type { Entity } from "@/data/entities";
 
-export type DriverState = "running" | "reconnecting" | "stopped" | "unknown";
+export type DriverState = "running" | "reconnecting" | "degraded" | "stopped" | "unknown";
 
 export interface EntityTypeCount {
   type: string;
@@ -87,6 +87,7 @@ const stateBadge = computed<{
   switch (props.driver.state) {
     case "running":      return { intent: "good",    pulse: "slow", label: "Running" };
     case "reconnecting": return { intent: "warn",    pulse: "fast", label: "Reconnecting" };
+    case "degraded":     return { intent: "warn",    pulse: "slow", label: "Degraded" };
     case "stopped":      return { intent: "bad",     pulse: "off",  label: "Stopped" };
     default:             return { intent: "neutral", pulse: "off",  label: "Unknown" };
   }

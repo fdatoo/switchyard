@@ -28,7 +28,7 @@
   filtering can be local (in-memory) or remote (RPC) and the right model
   depends on the consumer.
 -->
-<script setup lang="ts" generic="T extends Record<string, unknown>">
+<script setup lang="ts" generic="T extends object">
 import { computed } from "vue";
 import SyText from "@/lib/components/text/SyText.vue";
 import SyIcon from "@/lib/components/icon/SyIcon.vue";

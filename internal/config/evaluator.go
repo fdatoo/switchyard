@@ -280,6 +280,7 @@ type automationJSON struct {
 	Triggers   []json.RawMessage `json:"triggers"`
 	Conditions []json.RawMessage `json:"conditions"`
 	Actions    []json.RawMessage `json:"actions"`
+	Areas      []string          `json:"areas"`
 }
 
 type scriptJSON struct {
@@ -451,6 +452,7 @@ func parseConfigJSON(text, configDir string) (*configpb.ConfigSnapshot, error) {
 			Enabled:   a.Enabled,
 			Mode:      parseAutomationMode(a.Mode),
 			MaxQueued: a.MaxQueued,
+			Areas:     append([]string(nil), a.Areas...),
 		}
 		for _, rawT := range a.Triggers {
 			tc, err := decodeTrigger(rawT)

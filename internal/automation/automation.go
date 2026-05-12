@@ -38,6 +38,11 @@ type Automation struct {
 	Mode       Mode
 	MaxQueued  int
 	Enabled    bool
+	// Areas — rooms this automation operates on. Declared via Pkl;
+	// surfaced on the wire as Automation.area_ids. The engine doesn't
+	// otherwise consume this; it's purely informational for the UI's
+	// per-room scoping.
+	Areas []string
 
 	// Source is the original proto that compiled into this Automation. It is
 	// used by Reload to detect structural equality so unchanged automations

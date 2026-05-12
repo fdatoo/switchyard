@@ -519,10 +519,13 @@ type AutomationConfig struct {
 	Mode      AutomationConfig_Mode `protobuf:"varint,3,opt,name=mode,proto3,enum=switchyard.config.v1.AutomationConfig_Mode" json:"mode,omitempty"`
 	MaxQueued int32                 `protobuf:"varint,4,opt,name=max_queued,json=maxQueued,proto3" json:"max_queued,omitempty"`
 	// 10-19: nested config
-	Triggers      []*TriggerConfig   `protobuf:"bytes,10,rep,name=triggers,proto3" json:"triggers,omitempty"`
-	Conditions    []*ConditionConfig `protobuf:"bytes,11,rep,name=conditions,proto3" json:"conditions,omitempty"`
-	Actions       []*ActionConfig    `protobuf:"bytes,12,rep,name=actions,proto3" json:"actions,omitempty"`
-	OnFailure     *OnFailureConfig   `protobuf:"bytes,13,opt,name=on_failure,json=onFailure,proto3" json:"on_failure,omitempty"`
+	Triggers   []*TriggerConfig   `protobuf:"bytes,10,rep,name=triggers,proto3" json:"triggers,omitempty"`
+	Conditions []*ConditionConfig `protobuf:"bytes,11,rep,name=conditions,proto3" json:"conditions,omitempty"`
+	Actions    []*ActionConfig    `protobuf:"bytes,12,rep,name=actions,proto3" json:"actions,omitempty"`
+	OnFailure  *OnFailureConfig   `protobuf:"bytes,13,opt,name=on_failure,json=onFailure,proto3" json:"on_failure,omitempty"`
+	// areas — declared rooms this automation operates on. UI uses it for
+	// per-room scoping; the engine doesn't otherwise consume it.
+	Areas         []string `protobuf:"bytes,14,rep,name=areas,proto3" json:"areas,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -609,6 +612,13 @@ func (x *AutomationConfig) GetActions() []*ActionConfig {
 func (x *AutomationConfig) GetOnFailure() *OnFailureConfig {
 	if x != nil {
 		return x.OnFailure
+	}
+	return nil
+}
+
+func (x *AutomationConfig) GetAreas() []string {
+	if x != nil {
+		return x.Areas
 	}
 	return nil
 }
@@ -3452,7 +3462,7 @@ const file_switchyard_config_v1_snapshot_proto_rawDesc = "" +
 	"\rfriendly_name\x18\x02 \x01(\tR\ffriendlyName\x12\x1f\n" +
 	"\ventity_type\x18\x03 \x01(\tR\n" +
 	"entityType\x12\x12\n" +
-	"\x04area\x18\x04 \x01(\tR\x04area\"\xb4\x04\n" +
+	"\x04area\x18\x04 \x01(\tR\x04area\"\xca\x04\n" +
 	"\x10AutomationConfig\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x18\n" +
 	"\aenabled\x18\x02 \x01(\bR\aenabled\x12?\n" +
@@ -3466,7 +3476,8 @@ const file_switchyard_config_v1_snapshot_proto_rawDesc = "" +
 	"conditions\x12<\n" +
 	"\aactions\x18\f \x03(\v2\".switchyard.config.v1.ActionConfigR\aactions\x12D\n" +
 	"\n" +
-	"on_failure\x18\r \x01(\v2%.switchyard.config.v1.OnFailureConfigR\tonFailure\"c\n" +
+	"on_failure\x18\r \x01(\v2%.switchyard.config.v1.OnFailureConfigR\tonFailure\x12\x14\n" +
+	"\x05areas\x18\x0e \x03(\tR\x05areas\"c\n" +
 	"\x04Mode\x12\x14\n" +
 	"\x10MODE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vMODE_SINGLE\x10\x01\x12\x0f\n" +

@@ -63,6 +63,7 @@ func compileOneWithMetrics(ac *configpb.AutomationConfig, scripts map[string]boo
 		Enabled:   ac.GetEnabled(),
 		Mode:      modeFromProto(ac.GetMode()),
 		MaxQueued: int(ac.GetMaxQueued()),
+		Areas:     append([]string(nil), ac.GetAreas()...),
 		Source:    ac,
 	}
 	if a.MaxQueued <= 0 {

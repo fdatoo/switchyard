@@ -242,6 +242,7 @@ type Automation struct {
 	ID, DisplayName, Mode string
 	Enabled               bool
 	InFlight              uint32
+	Areas                 []string
 }
 
 type TraceEvent struct {

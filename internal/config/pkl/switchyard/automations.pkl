@@ -150,5 +150,9 @@ class Automation {
   mode:       String(this == "single" || this == "queued" || this == "restart" || this == "parallel") = "single"
   maxQueued:  Int = 10
   enabled:    Boolean = true
+  // areas declares the rooms this automation operates on. Surfaces
+  // through AutomationConfig.areas → Automation.area_ids on the wire;
+  // the UI uses it to scope the per-room Automations section.
+  areas:      Listing<String> = new {}
   onFailure:  OnFailureStrategy = new IgnoreStrategy {}
 }

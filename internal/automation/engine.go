@@ -209,6 +209,16 @@ func (e *Engine) Trigger(ctx context.Context, id, invokedBy string) error {
 type Summary struct {
 	ID, Mode string
 	Enabled  bool
+	Areas    []string
+}
+
+func summaryFromAuto(id string, a *Automation) Summary {
+	return Summary{
+		ID:      id,
+		Mode:    a.Mode.String(),
+		Enabled: a.Enabled,
+		Areas:   append([]string(nil), a.Areas...),
+	}
 }
 
 func (e *Engine) List() []Summary {
@@ -216,7 +226,7 @@ func (e *Engine) List() []Summary {
 	defer e.mu.Unlock()
 	out := make([]Summary, 0, len(e.runStates))
 	for id, rs := range e.runStates {
-		out = append(out, Summary{ID: id, Mode: rs.auto.Mode.String(), Enabled: rs.auto.Enabled})
+		out = append(out, summaryFromAuto(id, rs.auto))
 	}
 	return out
 }
@@ -228,7 +238,7 @@ func (e *Engine) Get(id string) (Summary, bool) {
 	if !ok {
 		return Summary{}, false
 	}
-	return Summary{ID: id, Mode: rs.auto.Mode.String(), Enabled: rs.auto.Enabled}, true
+	return summaryFromAuto(id, rs.auto), true
 }
 
 func (e *Engine) SetEnabled(id string, enabled bool) error {

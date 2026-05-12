@@ -25,12 +25,15 @@ const (
 )
 
 type Automation struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	DisplayName   string                 `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
-	Mode          string                 `protobuf:"bytes,3,opt,name=mode,proto3" json:"mode,omitempty"`
-	Enabled       bool                   `protobuf:"varint,4,opt,name=enabled,proto3" json:"enabled,omitempty"`
-	InFlight      uint32                 `protobuf:"varint,5,opt,name=in_flight,json=inFlight,proto3" json:"in_flight,omitempty"`
+	state       protoimpl.MessageState `protogen:"open.v1"`
+	Id          string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	DisplayName string                 `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
+	Mode        string                 `protobuf:"bytes,3,opt,name=mode,proto3" json:"mode,omitempty"`
+	Enabled     bool                   `protobuf:"varint,4,opt,name=enabled,proto3" json:"enabled,omitempty"`
+	InFlight    uint32                 `protobuf:"varint,5,opt,name=in_flight,json=inFlight,proto3" json:"in_flight,omitempty"`
+	// area_ids surfaces the Pkl `areas` declaration. UI uses this for
+	// the per-room dashboard's automations section.
+	AreaIds       []string `protobuf:"bytes,6,rep,name=area_ids,json=areaIds,proto3" json:"area_ids,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -100,9 +103,19 @@ func (x *Automation) GetInFlight() uint32 {
 	return 0
 }
 
+func (x *Automation) GetAreaIds() []string {
+	if x != nil {
+		return x.AreaIds
+	}
+	return nil
+}
+
 type ListAutomationsRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Page          *PageRequest           `protobuf:"bytes,1,opt,name=page,proto3" json:"page,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	Page  *PageRequest           `protobuf:"bytes,1,opt,name=page,proto3" json:"page,omitempty"`
+	// area_id filters to automations whose `areas` includes this id.
+	// Empty means no filter (return everything).
+	AreaId        string `protobuf:"bytes,2,opt,name=area_id,json=areaId,proto3" json:"area_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -142,6 +155,13 @@ func (x *ListAutomationsRequest) GetPage() *PageRequest {
 		return x.Page
 	}
 	return nil
+}
+
+func (x *ListAutomationsRequest) GetAreaId() string {
+	if x != nil {
+		return x.AreaId
+	}
+	return ""
 }
 
 type ListAutomationsResponse struct {
@@ -892,16 +912,18 @@ var File_switchyard_v1alpha1_automation_proto protoreflect.FileDescriptor
 
 const file_switchyard_v1alpha1_automation_proto_rawDesc = "" +
 	"\n" +
-	"$switchyard/v1alpha1/automation.proto\x12\x13switchyard.v1alpha1\x1a switchyard/v1alpha1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8a\x01\n" +
+	"$switchyard/v1alpha1/automation.proto\x12\x13switchyard.v1alpha1\x1a switchyard/v1alpha1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa5\x01\n" +
 	"\n" +
 	"Automation\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x12\n" +
 	"\x04mode\x18\x03 \x01(\tR\x04mode\x12\x18\n" +
 	"\aenabled\x18\x04 \x01(\bR\aenabled\x12\x1b\n" +
-	"\tin_flight\x18\x05 \x01(\rR\binFlight\"N\n" +
+	"\tin_flight\x18\x05 \x01(\rR\binFlight\x12\x19\n" +
+	"\barea_ids\x18\x06 \x03(\tR\aareaIds\"g\n" +
 	"\x16ListAutomationsRequest\x124\n" +
-	"\x04page\x18\x01 \x01(\v2 .switchyard.v1alpha1.PageRequestR\x04page\"\x93\x01\n" +
+	"\x04page\x18\x01 \x01(\v2 .switchyard.v1alpha1.PageRequestR\x04page\x12\x17\n" +
+	"\aarea_id\x18\x02 \x01(\tR\x06areaId\"\x93\x01\n" +
 	"\x17ListAutomationsResponse\x12A\n" +
 	"\vautomations\x18\x01 \x03(\v2\x1f.switchyard.v1alpha1.AutomationR\vautomations\x125\n" +
 	"\x04page\x18\x02 \x01(\v2!.switchyard.v1alpha1.PageResponseR\x04page\"&\n" +

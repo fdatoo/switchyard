@@ -798,6 +798,7 @@ func (a *automationControlAdapter) List(_ context.Context, page api.PageReq) ([]
 			ID:      s.ID,
 			Mode:    s.Mode,
 			Enabled: s.Enabled,
+			Areas:   s.Areas,
 		})
 	}
 	return paginateAutomations(out, page)
@@ -815,6 +816,7 @@ func (a *automationControlAdapter) Get(_ context.Context, id string) (api.Automa
 		ID:      s.ID,
 		Mode:    s.Mode,
 		Enabled: s.Enabled,
+		Areas:   s.Areas,
 	}, nil
 }
 
@@ -832,6 +834,7 @@ func (a *automationControlAdapter) SetEnabled(_ context.Context, id string, enab
 	return api.Automation{
 		ID:      s.ID,
 		Mode:    s.Mode,
+		Areas:   s.Areas,
 		Enabled: s.Enabled,
 	}, nil
 }

@@ -23,9 +23,17 @@ message Automation {
   string mode         = 3;
   bool   enabled      = 4;
   uint32 in_flight    = 5;
+  // area_ids surfaces the Pkl `areas` declaration. UI uses this for
+  // the per-room dashboard's automations section.
+  repeated string area_ids = 6;
 }
 
-message ListAutomationsRequest  { PageRequest page = 1; }
+message ListAutomationsRequest  {
+  PageRequest page = 1;
+  // area_id filters to automations whose `areas` includes this id.
+  // Empty means no filter (return everything).
+  string area_id   = 2;
+}
 message ListAutomationsResponse { repeated Automation automations = 1; PageResponse page = 2; }
 
 message GetAutomationRequest  { string id = 1; }

@@ -43,10 +43,23 @@ func (s *AutomationService) List(ctx context.Context, req *connect.Request[v1.Li
 	if tok, _ := EncodeCursor(next); tok != "" {
 		out.Page.NextPageToken = tok
 	}
+	areaFilter := req.Msg.GetAreaId()
 	for _, a := range automations {
+		if areaFilter != "" && !stringInSlice(a.Areas, areaFilter) {
+			continue
+		}
 		out.Automations = append(out.Automations, automationToProto(a))
 	}
 	return connect.NewResponse(out), nil
+}
+
+func stringInSlice(s []string, want string) bool {
+	for _, v := range s {
+		if v == want {
+			return true
+		}
+	}
+	return false
 }
 
 func (s *AutomationService) Get(ctx context.Context, req *connect.Request[v1.GetAutomationRequest]) (*connect.Response[v1.GetAutomationResponse], error) {
@@ -182,5 +195,6 @@ func automationToProto(a Automation) *v1.Automation {
 		Mode:        a.Mode,
 		Enabled:     a.Enabled,
 		InFlight:    a.InFlight,
+		AreaIds:     append([]string(nil), a.Areas...),
 	}
 }

@@ -3,6 +3,7 @@ package api_test
 import (
 	"context"
 	"encoding/json"
+	"strings"
 	"testing"
 
 	"connectrpc.com/connect"
@@ -74,6 +75,49 @@ func TestRegenPreview_PageType_Unimplemented(t *testing.T) {
 	}
 	if connect.CodeOf(err) != connect.CodeUnimplemented {
 		t.Errorf("expected CodeUnimplemented, got %v", connect.CodeOf(err))
+	}
+}
+
+func TestRegenPreview_AreaType_Renders(t *testing.T) {
+	s := api.NewConfigService(&fakeConfig{})
+	resp, err := s.RegenPreview(context.Background(), connect.NewRequest(&v1.RegenPreviewRequest{
+		FileType: "area",
+		AstJson:  `{"id":"bedroom","displayName":"Bedroom"}`,
+	}))
+	if err != nil {
+		t.Fatalf("RegenPreview area: %v", err)
+	}
+	if !strings.Contains(string(resp.Msg.GetPklBytes()), `id = "bedroom"`) {
+		t.Fatalf("area pkl bytes missing id line:\n%s", resp.Msg.GetPklBytes())
+	}
+}
+
+func TestRegenPreview_SceneType_Renders(t *testing.T) {
+	s := api.NewConfigService(&fakeConfig{})
+	resp, err := s.RegenPreview(context.Background(), connect.NewRequest(&v1.RegenPreviewRequest{
+		FileType: "scene",
+		AstJson:  `{"id":"wind-down","displayName":"Wind down","actions":[]}`,
+	}))
+	if err != nil {
+		t.Fatalf("RegenPreview scene: %v", err)
+	}
+	if !strings.Contains(string(resp.Msg.GetPklBytes()), `id = "wind-down"`) {
+		t.Fatalf("scene pkl bytes missing id line:\n%s", resp.Msg.GetPklBytes())
+	}
+}
+
+func TestRegenPreview_EntityAreasType_Renders(t *testing.T) {
+	s := api.NewConfigService(&fakeConfig{})
+	resp, err := s.RegenPreview(context.Background(), connect.NewRequest(&v1.RegenPreviewRequest{
+		FileType: "entity_areas",
+		AstJson:  `{"light.a":"bedroom","light.b":"kitchen"}`,
+	}))
+	if err != nil {
+		t.Fatalf("RegenPreview entity_areas: %v", err)
+	}
+	out := string(resp.Msg.GetPklBytes())
+	if !strings.Contains(out, `["light.a"] = "bedroom"`) {
+		t.Fatalf("entity_areas pkl bytes missing line:\n%s", out)
 	}
 }
 

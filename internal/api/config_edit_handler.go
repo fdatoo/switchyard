@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 
 	"connectrpc.com/connect"
@@ -30,8 +31,40 @@ func (s *ConfigService) RegenPreview(_ context.Context, req *connect.Request[v1.
 		}
 		return connect.NewResponse(&v1.RegenPreviewResponse{PklBytes: out}), nil
 
+	case "area":
+		var a configpb.AreaConfig
+		if err := protojson.Unmarshal([]byte(req.Msg.GetAstJson()), &a); err != nil {
+			return nil, grpcToConnect(codes.InvalidArgument, "malformed ast_json: "+err.Error())
+		}
+		out, err := regen.RenderArea(&a)
+		if err != nil {
+			return nil, grpcToConnect(codes.InvalidArgument, "render failed: "+err.Error())
+		}
+		return connect.NewResponse(&v1.RegenPreviewResponse{PklBytes: out}), nil
+
+	case "scene":
+		var sc configpb.SceneConfig
+		if err := protojson.Unmarshal([]byte(req.Msg.GetAstJson()), &sc); err != nil {
+			return nil, grpcToConnect(codes.InvalidArgument, "malformed ast_json: "+err.Error())
+		}
+		out, err := regen.RenderScene(&sc)
+		if err != nil {
+			return nil, grpcToConnect(codes.InvalidArgument, "render failed: "+err.Error())
+		}
+		return connect.NewResponse(&v1.RegenPreviewResponse{PklBytes: out}), nil
+
+	case "entity_areas":
+		var m map[string]string
+		if err := json.Unmarshal([]byte(req.Msg.GetAstJson()), &m); err != nil {
+			return nil, grpcToConnect(codes.InvalidArgument, "malformed ast_json: "+err.Error())
+		}
+		out, err := regen.RenderEntityAreas(m)
+		if err != nil {
+			return nil, grpcToConnect(codes.InvalidArgument, "render failed: "+err.Error())
+		}
+		return connect.NewResponse(&v1.RegenPreviewResponse{PklBytes: out}), nil
+
 	case "page":
-		// Page regen is owned by Plan 06; stub with Unimplemented.
 		return nil, grpcToConnect(codes.Unimplemented, "page regen not yet implemented")
 
 	default:

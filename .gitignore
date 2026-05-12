@@ -29,6 +29,13 @@ web/vite.config.js
 web/vite.config.d.ts
 internal/web/dist/
 
+# Ad-hoc Playwright audit/capture scripts at web/ root
+web/audit-pages.mjs
+web/capture-mockups.mjs
+web/polish-audit.mjs
+web/screenshot-pages.mjs
+web/sidebar-probe.mjs
+
 # Docs build output
 docs/site/
 
@@ -37,6 +44,10 @@ docs/site/
 .vscode/
 *.swp
 .DS_Store
+
+# Ephemeral UI capture artifacts (Playwright MCP screenshots, ad-hoc PNGs at repo root)
+/*.png
+.playwright-mcp/
 
 # Superpowers scratch
 .superpowers/

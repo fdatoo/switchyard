@@ -4,9 +4,11 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strconv"
 	"time"
 
 	"connectrpc.com/connect"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	activityv1 "github.com/fdatoo/switchyard/gen/switchyard/activity/v1"
@@ -43,6 +45,7 @@ func IsMockEnabled() bool {
 // ActivityService implements the ActivityServiceHandler ConnectRPC interface.
 type ActivityService struct {
 	cfg       ActivityServiceConfig
+	store     storeReader // direct store access for the EventDetail handler
 	coalescer *stories.Coalescer
 	savedQ    *SavedQueryStore
 	detectors []interestingness.Detector
@@ -68,6 +71,7 @@ func NewActivityService(store storeReader, cfg ActivityServiceConfig) *ActivityS
 
 	return &ActivityService{
 		cfg:       cfg,
+		store:     store,
 		coalescer: coalescer,
 		savedQ:    NewSavedQueryStore(savedQDir),
 		detectors: interestingness.DefaultDetectors(),
@@ -230,22 +234,78 @@ func (s *ActivityService) eventsLive(
 	filter := req.Msg.GetFilter()
 	since, until := filterWindow(filter.GetSince(), filter.GetUntil())
 
+	// First pass: window-scoped events plus their kind filter. We do NOT
+	// apply `kind` to a separate tag-query pass below — tags are written
+	// as their own kind, so the same `kind` filter would exclude them.
 	events, err := s.coalescer.QueryEvents(ctx, since, until, filter.GetKind())
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("events query: %w", err))
 	}
 
-	var page []*activityv1.EventRecord
+	// Second pass (only when kind is set, otherwise it's a subset of the
+	// first): pull tag events in the same window so we can attach them
+	// to main events. Without this the list-side interestingness signals
+	// would be invisible until the user opens the detail rail.
+	tagged := events
+	if filter.GetKind() != "" {
+		tagged, err = s.coalescer.QueryEvents(ctx, since, until, "")
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("tag query: %w", err))
+		}
+	}
+	tagsByPos := buildTagIndex(tagged)
+
+	page := make([]*activityv1.EventRecord, 0, maxPageSize)
 	for _, e := range events {
 		if e.Kind == "interestingness.tagged" {
 			continue
 		}
-		page = append(page, eventToProto(e))
+		rec := eventToProtoWithPayload(e)
+		if tags := tagsByPos[e.Position]; len(tags) > 0 {
+			rec.Tags = tagsToProto(tags)
+		}
+		page = append(page, rec)
 		if len(page) >= maxPageSize {
 			break
 		}
 	}
 	return connect.NewResponse(&activityv1.EventsResponse{Events: page}), nil
+}
+
+// buildTagIndex scans events for `interestingness.tagged` carriers and
+// returns a map: source-event position → tags. Mirrors the inline logic
+// the story coalescer uses; lifted out so list+story paths agree on the
+// decode semantics.
+func buildTagIndex(events []eventstore.Event) map[uint64][]interestingness.Tag {
+	out := make(map[uint64][]interestingness.Tag)
+	for _, e := range events {
+		if e.Kind != "interestingness.tagged" || e.Payload == nil {
+			continue
+		}
+		sys := e.Payload.GetSystem()
+		if sys == nil {
+			continue
+		}
+		out[e.CausePosition] = append(out[e.CausePosition], interestingness.Tag{
+			Category:    interestingness.Category(sys.Data["category"]),
+			Name:        sys.Data["name"],
+			Explanation: sys.Data["explanation"],
+		})
+	}
+	return out
+}
+
+// tagsToProto adapts internal tag values for the wire response.
+func tagsToProto(tags []interestingness.Tag) []*activityv1.InterestingnessTag {
+	out := make([]*activityv1.InterestingnessTag, 0, len(tags))
+	for _, t := range tags {
+		out = append(out, &activityv1.InterestingnessTag{
+			Category:    string(t.Category),
+			Name:        t.Name,
+			Explanation: t.Explanation,
+		})
+	}
+	return out
 }
 
 // EventDetail returns a single event with tags and causation chain.
@@ -278,7 +338,89 @@ func (s *ActivityService) EventDetail(
 		}
 		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("event %q not found", req.Msg.EventId))
 	}
-	return nil, connect.NewError(connect.CodeUnimplemented, fmt.Errorf("EventDetail requires event store integration"))
+	return s.eventDetailLive(ctx, req)
+}
+
+// eventDetailLive serves EventDetail from the real event store. The event_id
+// is the event's position (matching what Events/Stories return); we look it
+// up by querying [pos-1, pos] with limit 1, then walk the causation chain
+// upward by following cause_position until we hit 0 or a cycle.
+func (s *ActivityService) eventDetailLive(
+	ctx context.Context,
+	req *connect.Request[activityv1.EventDetailRequest],
+) (*connect.Response[activityv1.EventDetailResponse], error) {
+	if s.store == nil {
+		return nil, connect.NewError(connect.CodeUnavailable, fmt.Errorf("event store not available"))
+	}
+
+	pos, err := strconv.ParseUint(req.Msg.EventId, 10, 64)
+	if err != nil || pos == 0 {
+		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("event_id must be a positive integer"))
+	}
+
+	ev, err := s.fetchEventAtPosition(ctx, pos)
+	if err != nil {
+		return nil, err
+	}
+
+	// Walk ancestors via cause_position. Bound the chain length so a
+	// pathological loop in the data can't tar-pit the handler.
+	const maxChain = 32
+	chain := make([]*activityv1.EventRecord, 0, 4)
+	seen := map[uint64]bool{pos: true}
+	cur := ev.CausePosition
+	for i := 0; cur != 0 && i < maxChain; i++ {
+		if seen[cur] {
+			break
+		}
+		seen[cur] = true
+		ancestor, err := s.fetchEventAtPosition(ctx, cur)
+		if err != nil {
+			break // partial chain is fine — surface what we have
+		}
+		chain = append(chain, eventToProtoWithPayload(*ancestor))
+		cur = ancestor.CausePosition
+	}
+	// chain currently runs newest → oldest; the proto says "oldest first".
+	for i, j := 0, len(chain)-1; i < j; i, j = i+1, j-1 {
+		chain[i], chain[j] = chain[j], chain[i]
+	}
+
+	return connect.NewResponse(&activityv1.EventDetailResponse{
+		Event:          eventToProtoWithPayload(*ev),
+		CausationChain: chain,
+	}), nil
+}
+
+// fetchEventAtPosition retrieves a single event by position. Returns
+// CodeNotFound when no row matches.
+func (s *ActivityService) fetchEventAtPosition(ctx context.Context, pos uint64) (*eventstore.Event, error) {
+	rows, err := s.store.Query(ctx, eventstore.QueryOptions{
+		FromPosition: pos - 1,
+		ToPosition:   pos,
+		Limit:        1,
+	})
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("query: %w", err))
+	}
+	if len(rows) == 0 || rows[0].Position != pos {
+		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("event %d not found", pos))
+	}
+	return &rows[0], nil
+}
+
+// eventToProtoWithPayload is the variant used by EventDetail — same as
+// eventToProto but serializes the payload to JSON so the detail rail can
+// display it. The list endpoint deliberately omits payloads to keep page
+// responses small.
+func eventToProtoWithPayload(e eventstore.Event) *activityv1.EventRecord {
+	rec := eventToProto(e)
+	if e.Payload != nil {
+		if b, err := protojson.Marshal(e.Payload); err == nil {
+			rec.PayloadJson = string(b)
+		}
+	}
+	return rec
 }
 
 // SaveQuery persists a named query.

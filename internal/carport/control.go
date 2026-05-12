@@ -28,9 +28,12 @@ func (h *Host) RestartInstance(ctx context.Context, id string) error {
 
 	h.emitDriverEvent(ctx, m, "restart_manual", "operator")
 
-	// Relaunch supervisor goroutine with a fresh context derived from the
-	// caller. If the caller's ctx is the daemon's shutdown ctx, this goroutine
-	// will exit quickly when ctx is done — that's correct.
-	h.launchLifecycle(ctx, m)
+	// Relaunch supervisor goroutine on the host's long-lived context. We
+	// cannot use the caller's ctx: when this RPC handler returns, connect-go
+	// cancels the request ctx, which would propagate into the just-spawned
+	// lifecycle goroutine and kill the driver almost immediately (the
+	// backoff sleep cancels too, so it never recovers). RegisterInstance has
+	// the same nolint for the same reason.
+	h.launchLifecycle(h.ctx, m) //nolint:contextcheck // lifecycle goroutine must outlive the caller's context
 	return nil
 }

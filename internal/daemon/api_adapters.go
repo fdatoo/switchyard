@@ -1150,23 +1150,67 @@ func (a *driverMgmtRegistryAdapter) ListRunning(ctx context.Context) ([]*driverv
 	if err != nil {
 		return nil, err
 	}
-	var out []*driverv1.DriverSummary
+	out := make([]*driverv1.DriverSummary, 0, len(instances))
 	for _, di := range instances {
-		if a.sup != nil && a.sup.InstanceState(di.ID) != carport.StateRunning {
-			continue
-		}
 		var uptime int64
 		if !di.StartedAt.IsZero() {
 			uptime = int64(time.Since(di.StartedAt).Seconds())
 		}
+		// Prefer the supervisor's live state when available so transient
+		// phases (spawning, awaiting_handshake, backoff, …) surface in the
+		// UI instead of being hidden during a restart. Fall back to the
+		// SQL-registry's persisted status only when the supervisor doesn't
+		// know about this instance — typical at startup before the carport
+		// has finished loading drivers.
+		status := di.Status
+		if a.sup != nil {
+			if live := liveStatusString(a.sup.InstanceState(di.ID)); live != "" {
+				status = live
+			}
+		}
+		// Entity count is a per-driver aggregate; the registry doesn't yet
+		// expose a single-shot count query, so we run one filtered list
+		// per driver. Driver fan-out is tiny (typically <10 instances) so
+		// the cost is negligible and the code stays readable.
+		var entityCount uint32
+		ents, err := a.reg.ListEntities(ctx, registry.EntityFilter{
+			DriverInstanceID: di.ID,
+			IncludeDisabled:  true,
+		})
+		if err == nil {
+			entityCount = uint32(len(ents))
+		}
 		out = append(out, &driverv1.DriverSummary{
 			Id:            di.ID,
 			Pack:          di.DriverName,
-			Status:        di.Status,
+			Status:        status,
 			UptimeSeconds: uptime,
+			EntityCount:   entityCount,
 		})
 	}
 	return out, nil
+}
+
+// liveStatusString maps a carport supervisor state to the wire-level status
+// string consumed by the UI's driver-state mapping. The UI normalizes these
+// into running/reconnecting/degraded/stopped/unknown — anything we return
+// outside that set falls into "unknown", which is the right behaviour.
+func liveStatusString(s carport.State) string {
+	switch s {
+	case carport.StateRunning:
+		return "running"
+	case carport.StateSpawning, carport.StateAwaitingHandshake, carport.StateBackoff:
+		return "reconnecting"
+	case carport.StateFailed:
+		return "degraded"
+	case carport.StateStopping, carport.StateStopped, carport.StateQuarantined:
+		return "stopped"
+	case carport.StateDeclared:
+		// Supervisor knows the instance but hasn't tried to start it yet.
+		// Treat as reconnecting so the UI shows activity rather than "ok".
+		return "reconnecting"
+	}
+	return ""
 }
 
 func (a *driverMgmtRegistryAdapter) ListAvailable(_ context.Context) ([]*driverv1.RegistryDriver, error) {

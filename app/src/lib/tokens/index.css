@@ -1,0 +1,19 @@
+/* Aggregate token imports. Order matters only for cascading defaults; each
+   language selector is independent. */
+@import "./friendly-light.css";
+@import "./friendly-dark.css";
+@import "./developer.css";
+@import "./ambient.css";
+
+/* When a language container sits inside the document, apply its bg/fg to itself
+   so previews and embedded ambient surfaces are visually contained. */
+[data-language] {
+  background: var(--sy-color-bg);
+  color: var(--sy-color-fg);
+}
+
+/* Ambient containers paint the time-of-day gradient over their bg. */
+[data-language="ambient"] {
+  background: var(--sy-gradient-tod), var(--sy-color-bg);
+  background-blend-mode: normal;
+}

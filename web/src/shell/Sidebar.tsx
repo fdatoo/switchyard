@@ -43,6 +43,7 @@ export function Sidebar({ currentPath = typeof window !== "undefined" ? window.l
       style={{
         position: "sticky",
         top: 0,
+        boxSizing: "border-box",
         display: "flex",
         flexDirection: "column",
         width: "200px",

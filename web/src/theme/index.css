@@ -4,10 +4,17 @@
 @import "./languages/developer.css";
 
 /* Global resets that read from tokens */
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
 body {
   background: var(--sy-color-bg);
   color: var(--sy-color-fg);
   font-family: var(--sy-font-body);
+  overflow: hidden;
 }
 
 /* Reconnecting banner — uses token vars */

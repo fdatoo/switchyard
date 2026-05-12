@@ -1,7 +1,6 @@
 /**
  * SceneService client. Lists declared scenes and applies them.
- * Scenes are global (no area scoping in the proto); the room detail
- * view lists all scenes and lets the user pick one.
+ * Scenes can be global (empty areaId) or scoped to a room.
  */
 
 import { rpcCall, type RpcOptions } from "./rpc";
@@ -11,17 +10,20 @@ const SCENE_SVC = "switchyard.v1alpha1.SceneService";
 export interface Scene {
   id: string;
   displayName: string;
+  areaId: string;  // "" = global
 }
 
 interface RawScene {
   id?: string;
   display_name?: string; displayName?: string;
+  area_id?: string;      areaId?: string;
 }
 
 function decode(r: RawScene): Scene {
   return {
     id:          r.id ?? "",
     displayName: r.displayName ?? r.display_name ?? "",
+    areaId:      r.areaId      ?? r.area_id      ?? "",
   };
 }
 

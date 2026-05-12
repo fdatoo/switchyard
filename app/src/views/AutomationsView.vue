@@ -21,6 +21,7 @@ import {
   listAutomations, enableAutomation, disableAutomation, triggerAutomation,
   type Automation,
 } from "@/data/automations";
+import SyAutomationForm from "@/views/automations/SyAutomationForm.vue";
 
 type LoadState = "loading" | "ok" | "error";
 
@@ -83,10 +84,9 @@ async function onMenu(a: Automation, id: string): Promise<void> {
         await triggerAutomation(a.id);
         await refresh();
         break;
-      case "edit":
       case "duplicate":
       case "delete":
-        /* TODO when the corresponding RPCs / Pkl-editor flow ship. */
+        /* TODO when the corresponding RPCs ship. */
         actionError.value = `${id} isn't wired yet`;
         break;
     }
@@ -94,16 +94,43 @@ async function onMenu(a: Automation, id: string): Promise<void> {
     actionError.value = err instanceof Error ? err.message : String(err);
   }
 }
+
+/* ── Form (+ New / Edit) ─────────────────────────────────────────── */
+
+const formOpen = ref<boolean>(false);
+const formInitial = ref<undefined>(undefined);
+
+function openNew(): void {
+  formInitial.value = undefined;
+  formOpen.value = true;
+}
+
+function openEdit(_id: string): void {
+  // v1: prefill is deferred. Open the form blank; user re-enters id
+  // matching the existing automation. The id-based filename means
+  // saving will overwrite the existing automation correctly.
+  formInitial.value = undefined;
+  formOpen.value = true;
+}
+
+async function onSaved(_id: string): Promise<void> {
+  await refresh();
+}
 </script>
 
 <template>
   <div class="page">
     <header class="page__head">
-      <SyText as="h1" variant="display">Automations</SyText>
-      <SyText v-if="state === 'ok'" variant="body" tone="subtle">
-        {{ automations.length }}
-        {{ automations.length === 1 ? "automation" : "automations" }}
-      </SyText>
+      <div class="page__headLeft">
+        <SyText as="h1" variant="display">Automations</SyText>
+        <SyText v-if="state === 'ok'" variant="body" tone="subtle">
+          {{ automations.length }}
+          {{ automations.length === 1 ? "automation" : "automations" }}
+        </SyText>
+      </div>
+      <div class="page__headRight">
+        <SyButton intent="primary" @click="openNew">+ New</SyButton>
+      </div>
     </header>
 
     <SySurface v-if="state === 'loading'" padding="none">
@@ -144,7 +171,7 @@ async function onMenu(a: Automation, id: string): Promise<void> {
         :enabled="a.enabled"
         :running="a.inFlight > 0"
         @toggle-enabled="(v) => onToggle(a, v)"
-        @menu-action="(id) => onMenu(a, id)"
+        @menu-action="(id) => id === 'edit' ? openEdit(a.id) : onMenu(a, id)"
       />
     </SySurface>
 
@@ -156,6 +183,8 @@ async function onMenu(a: Automation, id: string): Promise<void> {
     >
       {{ actionError }}
     </SyText>
+
+    <SyAutomationForm v-model:open="formOpen" :initial="formInitial" @saved="onSaved" />
   </div>
 </template>
 
@@ -168,6 +197,12 @@ async function onMenu(a: Automation, id: string): Promise<void> {
   max-width: 1080px;
 }
 .page__head {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.page__headLeft {
   display: flex;
   flex-direction: column;
   gap: var(--sy-space-1);

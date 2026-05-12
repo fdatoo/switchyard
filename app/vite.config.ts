@@ -4,7 +4,14 @@ import monacoPlugin from "vite-plugin-monaco-editor";
 import path from "node:path";
 import os from "node:os";
 
-const monacoEditorPlugin = monacoPlugin.default;
+/* vite-plugin-monaco-editor is CJS with a default export; under
+   esModuleInterop, `monacoPlugin` is the function — but some CJS
+   builds wrap it as { default: fn }. Fall through to whichever shape
+   actually carries the callable. */
+const monacoEditorPlugin =
+  typeof monacoPlugin === "function"
+    ? monacoPlugin
+    : (monacoPlugin as unknown as { default: typeof monacoPlugin }).default;
 
 /**
  * Build the proxy target for daemon-bound requests.

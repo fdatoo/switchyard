@@ -2,6 +2,7 @@ package web
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"html/template"
 	"io/fs"
@@ -21,7 +22,7 @@ const indexTemplateSource = `<!doctype html>
 {{.AssetTags}}
 </head>
 <body>
-<div id="root"></div>
+<div id="app"></div>
 {{.ScriptTags}}
 </body>
 </html>
@@ -29,7 +30,7 @@ const indexTemplateSource = `<!doctype html>
 
 func renderIndex(version string, dist fs.FS) ([]byte, error) {
 	assetTags, scriptTags, err := scanDist(dist)
-	if err != nil {
+	if err != nil && !errors.Is(err, fs.ErrNotExist) {
 		return nil, fmt.Errorf("web: scan dist: %w", err)
 	}
 	tmpl, err := template.New("index").Parse(indexTemplateSource)

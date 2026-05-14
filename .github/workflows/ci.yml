@@ -16,7 +16,7 @@ jobs:
       fuzz_eventstore: ${{ steps.filter.outputs.fuzz_eventstore }}
       fuzz_registry: ${{ steps.filter.outputs.fuzz_registry }}
       fuzz_carport: ${{ steps.filter.outputs.fuzz_carport }}
-      web: ${{ steps.filter.outputs.web }}
+      app: ${{ steps.filter.outputs.app }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
@@ -30,7 +30,7 @@ jobs:
               - 'internal/**'
               - 'proto/**'
               - 'scripts/**'
-              - 'web/**'
+              - 'app/**'
               - 'testdata/**'
               - 'examples/**'
               - 'go.mod'
@@ -68,9 +68,9 @@ jobs:
               - 'go.work'
               - 'go.work.sum'
               - 'Taskfile.yml'
-            web:
+            app:
               - '.github/workflows/ci.yml'
-              - 'web/**'
+              - 'app/**'
               - 'cmd/switchyardd/**'
               - 'internal/activity/**'
               - 'internal/api/**'
@@ -83,9 +83,9 @@ jobs:
               - 'go.work'
               - 'go.work.sum'
 
-  web-lint:
+  app-typecheck:
     needs: changes
-    if: github.event_name != 'pull_request' || needs.changes.outputs.web == 'true'
+    if: github.event_name != 'pull_request' || needs.changes.outputs.app == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -93,15 +93,15 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: web/package-lock.json
-      - name: Install web dependencies
-        run: npm ci --prefix web
-      - name: Lint web
-        run: npm run lint --prefix web
+          cache-dependency-path: app/package-lock.json
+      - name: Install app dependencies
+        run: npm ci --prefix app
+      - name: Type-check app
+        run: npm run typecheck --prefix app
 
-  web-test:
+  app-test:
     needs: changes
-    if: github.event_name != 'pull_request' || needs.changes.outputs.web == 'true'
+    if: github.event_name != 'pull_request' || needs.changes.outputs.app == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -109,15 +109,15 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: web/package-lock.json
-      - name: Install web dependencies
-        run: npm ci --prefix web
-      - name: Test web
-        run: npm run test --prefix web
+          cache-dependency-path: app/package-lock.json
+      - name: Install app dependencies
+        run: npm ci --prefix app
+      - name: Test app
+        run: npm test --prefix app
 
-  web-build:
+  app-build:
     needs: changes
-    if: github.event_name != 'pull_request' || needs.changes.outputs.web == 'true'
+    if: github.event_name != 'pull_request' || needs.changes.outputs.app == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -125,67 +125,11 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: web/package-lock.json
-      - name: Install web dependencies
-        run: npm ci --prefix web
-      - name: Build web bundle
-        run: npm run build --prefix web
-
-  web-e2e:
-    needs: changes
-    if: github.event_name != 'pull_request' || needs.changes.outputs.web == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version: '1.25'
-          cache: true
-          cache-dependency-path: go.sum
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: web/package-lock.json
-      - name: Install Pkl
-        run: |
-          sudo curl -fsSL -o /usr/local/bin/pkl "https://github.com/apple/pkl/releases/download/0.31.1/pkl-linux-amd64"
-          sudo chmod +x /usr/local/bin/pkl
-          pkl --version
-      - name: Install web dependencies
-        run: npm ci --prefix web
-      - name: Install Playwright browsers
-        run: npx --prefix web playwright install --with-deps chromium
-      - name: Run Playwright e2e tests
-        run: npm run test:e2e --prefix web
-
-  web-playwright:
-    needs: changes
-    if: github.event_name != 'pull_request' || needs.changes.outputs.web == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version: '1.25'
-          cache: true
-          cache-dependency-path: go.sum
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: web/package-lock.json
-      - name: Install Pkl
-        run: |
-          sudo curl -fsSL -o /usr/local/bin/pkl "https://github.com/apple/pkl/releases/download/0.31.1/pkl-linux-amd64"
-          sudo chmod +x /usr/local/bin/pkl
-          pkl --version
-      - name: Install web dependencies
-        run: npm ci --prefix web
-      - name: Install Playwright browsers
-        run: npx --prefix web playwright install --with-deps chromium
-      - name: Run Playwright
-        run: npm run test:e2e --prefix web
+          cache-dependency-path: app/package-lock.json
+      - name: Install app dependencies
+        run: npm ci --prefix app
+      - name: Build app bundle
+        run: npm run build --prefix app
 
   # ── switchyard ──────────────────────────────────────────────────────────────────
 
@@ -203,6 +147,11 @@ jobs:
           go-version: '1.25'
           cache: true
           cache-dependency-path: go.sum
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: app/package-lock.json
 
       - name: Install Task
         uses: arduino/setup-task@v2
@@ -228,13 +177,6 @@ jobs:
           sudo curl -fsSL -o /usr/local/bin/pkl "https://github.com/apple/pkl/releases/download/0.31.1/$asset"
           sudo chmod +x /usr/local/bin/pkl
           pkl --version
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: web/package-lock.json
 
       - name: Regenerate proto (verify committed in sync)
         run: |
@@ -269,9 +211,9 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: web/package-lock.json
-      - name: Build web frontend (required for embed.go)
-        run: npm ci --prefix web && npm run build --prefix web
+          cache-dependency-path: app/package-lock.json
+      - name: Build app bundle (required for embed.go)
+        run: npm ci --prefix app && npm run build --prefix app
       - uses: golangci/golangci-lint-action@v7
         with:
           version: v2.11.4

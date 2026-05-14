@@ -20,8 +20,7 @@ type Handler struct {
 	assetFS http.FileSystem
 }
 
-// NewHandler constructs a Handler. The dist/ directory must be populated
-// (by task web:build) before calling this at startup.
+// NewHandler constructs a Handler from the embedded app bundle.
 func NewHandler(cfg Config) (*Handler, error) {
 	dist, err := fs.Sub(Assets, "dist")
 	if err != nil {

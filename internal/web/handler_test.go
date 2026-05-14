@@ -24,8 +24,8 @@ func TestHandler_ServesIndexAtRoot(t *testing.T) {
 	if ct := rec.Header().Get("Content-Type"); !strings.HasPrefix(ct, "text/html") {
 		t.Errorf("Content-Type = %q, want text/html prefix", ct)
 	}
-	if !strings.Contains(rec.Body.String(), `id="root"`) {
-		t.Errorf("body missing root div: %s", rec.Body.String())
+	if !strings.Contains(rec.Body.String(), `id="app"`) {
+		t.Errorf("body missing app div: %s", rec.Body.String())
 	}
 }
 
@@ -37,7 +37,7 @@ func TestHandler_FallsBackToIndexForUnknownRoute(t *testing.T) {
 	if rec.Code != http.StatusOK {
 		t.Fatalf("status = %d, want 200 (SPA fallback)", rec.Code)
 	}
-	if !strings.Contains(rec.Body.String(), `id="root"`) {
+	if !strings.Contains(rec.Body.String(), `id="app"`) {
 		t.Error("expected SPA index for unknown route")
 	}
 }

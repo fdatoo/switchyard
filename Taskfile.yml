@@ -17,50 +17,43 @@ tasks:
     cmds:
       - PATH="$(go env GOPATH)/bin:$PATH" buf generate --path proto/switchyard/activity/v1/
 
-  web:install:
-    desc: Install web npm dependencies (idempotent)
-    dir: web
+  app:install:
+    desc: Install app npm dependencies (idempotent)
+    dir: app
     cmds:
       - npm install --no-audit --no-fund
 
-  web:build:
-    desc: Build the web bundle into internal/web/dist
-    dir: web
-    deps: [web:install]
+  app:build:
+    desc: Build the Vue app bundle into internal/web/dist
+    dir: app
+    deps: [app:install]
     cmds:
       - npm run build
 
-  web:lint:
-    desc: Lint web sources
-    dir: web
-    deps: [web:install]
+  app:typecheck:
+    desc: Type-check app sources
+    dir: app
+    deps: [app:install]
     cmds:
-      - npm run lint
+      - npm run typecheck
 
-  web:test:
-    desc: Run web unit tests
-    dir: web
-    deps: [web:install]
+  app:test:
+    desc: Run app unit tests
+    dir: app
+    deps: [app:install]
     cmds:
       - npm test
 
-  web:e2e:
-    desc: Run Playwright end-to-end tests (requires a running switchyardd)
-    dir: web
-    deps: [web:install]
-    cmds:
-      - npm run test:e2e
-
   ui:dev:
     desc: Start Vite dev server (proxies to switchyardd)
-    dir: web
-    deps: [web:install]
+    dir: app
+    deps: [app:install]
     cmds:
       - npm run dev
 
   build:
     desc: Build both binaries
-    deps: [web:build]
+    deps: [app:build]
     cmds:
       - go build -o {{.BIN_DIR}}/switchyardd ./cmd/switchyardd
       - go build -o {{.BIN_DIR}}/switchyard ./cmd/switchyard

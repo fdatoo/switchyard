@@ -20,7 +20,10 @@ const (
 func TestAssetBudget(t *testing.T) {
 	dist, err := fs.Sub(web.Assets, "dist/assets")
 	if err != nil {
-		t.Skipf("dist/assets not found (run web:build first): %v", err)
+		t.Skipf("dist/assets not found: %v", err)
+	}
+	if _, err := fs.Stat(dist, "."); err != nil {
+		t.Skipf("dist/assets not found: %v", err)
 	}
 	var total int64
 	var initial int64

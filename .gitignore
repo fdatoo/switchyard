@@ -17,8 +17,10 @@ var/
 /gohomed.lock
 /gohomed.sock
 
-# Embedded web assets
-internal/web/dist/
+# Embedded web asset build outputs; keep the placeholder committed.
+!internal/web/dist/
+internal/web/dist/*
+!internal/web/dist/.gitkeep
 
 # Docs build output
 docs/site/

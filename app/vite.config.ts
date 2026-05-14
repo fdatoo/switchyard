@@ -59,6 +59,19 @@ export default defineConfig({
       "@": path.resolve(__dirname, "src"),
     },
   },
+  build: {
+    outDir: "../internal/web/dist",
+    emptyOutDir: false,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("node_modules/monaco-editor")) {
+            return "monaco";
+          }
+        },
+      },
+    },
+  },
   server: {
     port: 5174,
     strictPort: true,

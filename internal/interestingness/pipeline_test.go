@@ -3,6 +3,7 @@ package interestingness_test
 import (
 	"bytes"
 	"context"
+	"errors"
 	"log/slog"
 	"testing"
 	"time"
@@ -27,6 +28,14 @@ func newTestStore(t *testing.T) *eventstore.Store {
 	require.NoError(t, err)
 	t.Cleanup(func() { _ = s.Close(context.Background()) })
 	return s
+}
+
+func stopPipeline(t *testing.T, cancel context.CancelFunc, done <-chan error) {
+	t.Helper()
+	cancel()
+	if err := <-done; err != nil && !errors.Is(err, context.Canceled) {
+		require.NoError(t, err)
+	}
 }
 
 // failureEvent builds an eventstore.Event of kind "cmd.failed".
@@ -60,6 +69,14 @@ func TestPipeline_AppendsTwoTaggedEventsForTwoFailures(t *testing.T) {
 		t.Fatalf("store.Start: %v", err)
 	}
 
+	// Append 3 events: 2 failures + 1 normal.
+	_, err := store.Append(ctx, failureEvent())
+	require.NoError(t, err)
+	_, err = store.Append(ctx, nonInterestingEvent("light/living"))
+	require.NoError(t, err)
+	_, err = store.Append(ctx, failureEvent())
+	require.NoError(t, err)
+
 	// Only the FailureDetector so we get deterministic tagged-event counts.
 	detectors := []interestingness.Detector{
 		interestingness.NewFailureDetector(),
@@ -75,25 +92,20 @@ func TestPipeline_AppendsTwoTaggedEventsForTwoFailures(t *testing.T) {
 	go func() {
 		pipelineDone <- pipeline.Start(pipelineCtx)
 	}()
+	defer stopPipeline(t, pipelineCancel, pipelineDone)
 
-	// Append 3 events: 2 failures + 1 normal.
-	_, err := store.Append(ctx, failureEvent())
-	require.NoError(t, err)
-	_, err = store.Append(ctx, nonInterestingEvent("light/living"))
-	require.NoError(t, err)
-	_, err = store.Append(ctx, failureEvent())
-	require.NoError(t, err)
-
+	var queryErr error
 	require.Eventually(t, func() bool {
 		events, err := store.Query(ctx, eventstore.QueryOptions{
 			Filter: eventstore.Filter{Kinds: []string{"interestingness.tagged"}},
 		})
-		require.NoError(t, err)
+		if err != nil {
+			queryErr = err
+			return false
+		}
 		return len(events) == 2
 	}, 5*time.Second, 25*time.Millisecond, "expected exactly 2 interestingness.tagged events")
-
-	pipelineCancel()
-	<-pipelineDone
+	require.NoError(t, queryErr)
 }
 
 // TestPipeline_NoTagsForNonInterestingEvents verifies that events not matching
@@ -107,6 +119,12 @@ func TestPipeline_NoTagsForNonInterestingEvents(t *testing.T) {
 		t.Fatalf("store.Start: %v", err)
 	}
 
+	// Only non-interesting events.
+	for i := 0; i < 3; i++ {
+		_, err := store.Append(ctx, nonInterestingEvent("switch/garage"))
+		require.NoError(t, err)
+	}
+
 	detectors := []interestingness.Detector{
 		interestingness.NewFailureDetector(),
 	}
@@ -118,16 +136,9 @@ func TestPipeline_NoTagsForNonInterestingEvents(t *testing.T) {
 	pipelineCtx, pipelineCancel := context.WithCancel(ctx)
 	pipelineDone := make(chan error, 1)
 	go func() { pipelineDone <- pipeline.Start(pipelineCtx) }()
-
-	// Only non-interesting events.
-	for i := 0; i < 3; i++ {
-		_, err := store.Append(ctx, nonInterestingEvent("switch/garage"))
-		require.NoError(t, err)
-	}
+	defer stopPipeline(t, pipelineCancel, pipelineDone)
 
 	time.Sleep(200 * time.Millisecond)
-	pipelineCancel()
-	<-pipelineDone
 
 	events, err := store.Query(ctx, eventstore.QueryOptions{
 		Filter: eventstore.Filter{Kinds: []string{"interestingness.tagged"}},

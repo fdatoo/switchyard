@@ -90,7 +90,7 @@ func startClient(ctx context.Context, cfg Config) (*client, error) {
 		return nil, err
 	}
 
-	procCtx, cancel := context.WithCancel(context.Background())
+	procCtx, cancel := context.WithCancel(context.WithoutCancel(ctx))
 	cmd := exec.CommandContext(procCtx, bin)
 	cmd.Env = os.Environ()
 	if cfg.SwitchyardNamespaceDir != "" {
@@ -127,12 +127,16 @@ func startClient(ctx context.Context, cfg Config) (*client, error) {
 		opened:  map[string]int32{},
 		diags:   map[string]diagnosticState{},
 	}
-	go c.readLoop(stdout)
+	go c.readLoop(procCtx, stdout)
 	go c.stderrLoop(stderr)
 	go c.waitLoop()
 
 	if err := c.initialize(ctx, cfg); err != nil {
-		c.close(context.Background())
+		closeCtx, closeCancel := context.WithTimeout(context.WithoutCancel(ctx), 2*time.Second)
+		defer closeCancel()
+		if closeErr := c.close(closeCtx); closeErr != nil && cfg.Logger != nil {
+			cfg.Logger.Debug("pkl-lsp close after initialize failure", "err", closeErr)
+		}
 		return nil, err
 	}
 	return c, nil
@@ -219,12 +223,16 @@ func (c *client) stderrLoop(r io.Reader) {
 	}
 }
 
-func (c *client) readLoop(r io.Reader) {
+func (c *client) readLoop(ctx context.Context, r io.Reader) {
 	br := bufio.NewReader(r)
 	for {
 		body, err := readFramedMessage(br)
 		if err != nil {
-			_ = c.close(context.Background())
+			closeCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 2*time.Second)
+			if closeErr := c.close(closeCtx); closeErr != nil && c.logger != nil {
+				c.logger.Debug("pkl-lsp close after read failure", "err", closeErr)
+			}
+			cancel()
 			return
 		}
 		c.handleMessage(body)

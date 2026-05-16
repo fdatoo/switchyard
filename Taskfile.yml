@@ -7,17 +7,47 @@ tasks:
   default:
     deps: [build]
 
+  setup:
+    desc: Configure local repository hooks
+    cmds:
+      - git config core.hooksPath .githooks
+
+  fmt:
+    desc: Format Go sources
+    cmds:
+      - find cmd internal drivers switchyard-driverkit -name '*.go' -print | xargs gofmt -w
+
+  fmt-check:
+    desc: Check Go source formatting
+    cmds:
+      - |
+        files="$(find cmd internal drivers switchyard-driverkit -name '*.go' -print)"
+        unformatted="$(gofmt -l $files)"
+        if [ -n "$unformatted" ]; then
+          printf '%s\n' "$unformatted"
+          exit 1
+        fi
+
   proto:
     desc: Regenerate protobuf code via buf
     cmds:
       - buf generate
 
-  gen:activity:
-    desc: Regenerate Go + TS bindings for activity/v1 proto only
+  proto:check:
+    internal: true
+    desc: Check generated protobuf code is in sync
     cmds:
-      - PATH="$(go env GOPATH)/bin:$PATH" buf generate --path proto/switchyard/activity/v1/
+      - |
+        before="$(git diff -- gen)"
+        PATH="$(go env GOPATH)/bin:$PATH" buf generate
+        after="$(git diff -- gen)"
+        if [ "$before" != "$after" ]; then
+          echo "generated protobuf code changed; run task proto and keep gen/ in sync" >&2
+          exit 1
+        fi
 
   app:install:
+    internal: true
     desc: Install app npm dependencies (idempotent)
     dir: app
     cmds:
@@ -97,3 +127,74 @@ tasks:
     desc: go mod tidy
     cmds:
       - go mod tidy
+
+  tidy:check:
+    internal: true
+    desc: Check Go module files are tidy
+    cmds:
+      - |
+        before="$(git diff -- go.mod go.sum)"
+        go mod tidy
+        after="$(git diff -- go.mod go.sum)"
+        if [ "$before" != "$after" ]; then
+          echo "go.mod/go.sum changed after go mod tidy" >&2
+          exit 1
+        fi
+
+  driverkit:build:
+    internal: true
+    desc: Build switchyard-driverkit
+    dir: switchyard-driverkit
+    cmds:
+      - go build ./...
+
+  driverkit:test:
+    internal: true
+    desc: Test switchyard-driverkit
+    dir: switchyard-driverkit
+    cmds:
+      - go test ./...
+
+  driverkit:lint:
+    internal: true
+    desc: Lint switchyard-driverkit
+    dir: switchyard-driverkit
+    cmds:
+      - golangci-lint run ./...
+
+  driverkit:tidy:check:
+    internal: true
+    desc: Check switchyard-driverkit module files are tidy
+    dir: switchyard-driverkit
+    cmds:
+      - |
+        before="$(git diff -- go.mod go.sum)"
+        go mod tidy
+        after="$(git diff -- go.mod go.sum)"
+        if [ "$before" != "$after" ]; then
+          echo "switchyard-driverkit/go.mod or go.sum changed after go mod tidy" >&2
+          exit 1
+        fi
+
+  check:
+    desc: Run the standard local verification suite
+    cmds:
+      - task: fmt-check
+      - task: proto:check
+      - task: tidy:check
+      - task: driverkit:tidy:check
+      - task: app:typecheck
+      - task: app:test
+      - task: build
+      - task: test
+      - task: driverkit:build
+      - task: driverkit:test
+      - task: lint
+      - task: driverkit:lint
+
+  check:full:
+    desc: Run standard checks plus race and integration tests
+    cmds:
+      - task: check
+      - task: test:race
+      - task: test:integration

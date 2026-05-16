@@ -133,7 +133,7 @@ func TestCLIGoldenFixtures(t *testing.T) {
 		{name: "driver-error", args: []string{"driver", "restart", "missing-driver"}},
 		{name: "config-validate", args: []string{"config", "validate"}},
 		{name: "config-validate-offline", args: []string{"config", "validate", "--offline"}},
-		{name: "config-apply-dry-run", args: []string{"config", "apply", "--dry-run", "--message", "cli golden"}},
+		{name: "config-apply-dry-run", args: []string{"config", "apply", "--dry-run", "--message", "config(repo): validate golden config"}},
 		{name: "config-reload", args: []string{"config", "reload"}},
 		{name: "config-error", args: []string{"config", "validate", "--offline", "--config-dir", filepath.Join(fx.dataDir, "missing-config")}},
 		{name: "eval", args: []string{"eval", filepath.Join(fx.dataDir, "config", "eval.star")}},

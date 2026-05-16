@@ -139,8 +139,12 @@ func (m *Manager) Validate(ctx context.Context) (*configpb.ConfigSnapshot, *Conf
 }
 
 // Apply runs Validate, resolves secrets, applies carport side-effects, and appends ConfigApplied.
-// If dryRun is true, stops after diff — no secrets resolved, no events appended.
-func (m *Manager) Apply(ctx context.Context, dryRun bool) error {
+// If dryRun is true, stops after diff with no secrets resolved and no events appended.
+func (m *Manager) Apply(ctx context.Context, dryRun bool, message string) error {
+	message, err := NormalizeApplyMessage(message)
+	if err != nil {
+		return err
+	}
 	snap, diff, err := m.Validate(ctx)
 	if err != nil {
 		return err
@@ -195,6 +199,7 @@ func (m *Manager) Apply(ctx context.Context, dryRun bool) error {
 				DriverInstancesRemoved: int32(len(diff.DriverInstancesRemoved)),
 				DriverInstancesChanged: int32(len(diff.DriverInstancesChanged)),
 				AutomationsChanged:     int32(diff.AutomationsChanged),
+				Message:                message,
 			},
 		}},
 	})

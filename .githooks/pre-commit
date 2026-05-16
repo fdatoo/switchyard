@@ -1,0 +1,37 @@
+#!/bin/sh
+set -eu
+
+cd "$(git rev-parse --show-toplevel)"
+
+staged="$(git diff --cached --name-only --diff-filter=ACMR)"
+
+if printf '%s\n' "$staged" | grep -Eq '\.go$'; then
+  echo "pre-commit: checking Go formatting"
+  task fmt-check
+
+  if command -v golangci-lint >/dev/null 2>&1; then
+    echo "pre-commit: running Go lint"
+    task lint
+  else
+    echo "pre-commit: golangci-lint not found; CI will lint"
+  fi
+fi
+
+if printf '%s\n' "$staged" | grep -Eq '\.proto$'; then
+  if command -v buf >/dev/null 2>&1; then
+    echo "pre-commit: checking generated proto"
+    PATH="$PATH:$(go env GOPATH)/bin" task proto
+    git diff --exit-code gen/
+  else
+    echo "pre-commit: buf not found; CI will verify proto generation"
+  fi
+fi
+
+if printf '%s\n' "$staged" | grep -Eq '\.pkl$'; then
+  if command -v pkl >/dev/null 2>&1; then
+    echo "pre-commit: checking Pkl config evaluation"
+    go test -tags=integration -run TestEvaluator_ValidConfig ./internal/config/
+  else
+    echo "pre-commit: pkl not found; CI will run integration coverage"
+  fi
+fi

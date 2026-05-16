@@ -37,6 +37,7 @@ message ApplyConfigResponse {
   ConfigDiff diff           = 2;
   string     correlation_id = 3;
   string     bundle_hash    = 4;
+  string     message        = 5;
 }
 
 message ReloadConfigRequest  {}

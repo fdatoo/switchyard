@@ -876,12 +876,13 @@ func (x *DriverEvent) GetDetail() string {
 type ConfigApplied struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// 1-9: meta / payload
-	AppliedAtUnixMs        int64 `protobuf:"varint,1,opt,name=applied_at_unix_ms,json=appliedAtUnixMs,proto3" json:"applied_at_unix_ms,omitempty"`
-	DriverInstancesAdded   int32 `protobuf:"varint,2,opt,name=driver_instances_added,json=driverInstancesAdded,proto3" json:"driver_instances_added,omitempty"`
-	DriverInstancesRemoved int32 `protobuf:"varint,3,opt,name=driver_instances_removed,json=driverInstancesRemoved,proto3" json:"driver_instances_removed,omitempty"`
-	DriverInstancesChanged int32 `protobuf:"varint,4,opt,name=driver_instances_changed,json=driverInstancesChanged,proto3" json:"driver_instances_changed,omitempty"`
-	AutomationsChanged     int32 `protobuf:"varint,5,opt,name=automations_changed,json=automationsChanged,proto3" json:"automations_changed,omitempty"`
-	DryRun                 bool  `protobuf:"varint,6,opt,name=dry_run,json=dryRun,proto3" json:"dry_run,omitempty"`
+	AppliedAtUnixMs        int64  `protobuf:"varint,1,opt,name=applied_at_unix_ms,json=appliedAtUnixMs,proto3" json:"applied_at_unix_ms,omitempty"`
+	DriverInstancesAdded   int32  `protobuf:"varint,2,opt,name=driver_instances_added,json=driverInstancesAdded,proto3" json:"driver_instances_added,omitempty"`
+	DriverInstancesRemoved int32  `protobuf:"varint,3,opt,name=driver_instances_removed,json=driverInstancesRemoved,proto3" json:"driver_instances_removed,omitempty"`
+	DriverInstancesChanged int32  `protobuf:"varint,4,opt,name=driver_instances_changed,json=driverInstancesChanged,proto3" json:"driver_instances_changed,omitempty"`
+	AutomationsChanged     int32  `protobuf:"varint,5,opt,name=automations_changed,json=automationsChanged,proto3" json:"automations_changed,omitempty"`
+	DryRun                 bool   `protobuf:"varint,6,opt,name=dry_run,json=dryRun,proto3" json:"dry_run,omitempty"`
+	Message                string `protobuf:"bytes,7,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -956,6 +957,13 @@ func (x *ConfigApplied) GetDryRun() bool {
 		return x.DryRun
 	}
 	return false
+}
+
+func (x *ConfigApplied) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
 }
 
 type AutomationTriggered struct {
@@ -1903,14 +1911,15 @@ const file_switchyard_event_v1_event_proto_rawDesc = "" +
 	"\vDriverEvent\x12,\n" +
 	"\x12driver_instance_id\x18\x01 \x01(\tR\x10driverInstanceId\x12\x12\n" +
 	"\x04kind\x18\x02 \x01(\tR\x04kind\x12\x16\n" +
-	"\x06detail\x18\x03 \x01(\tR\x06detail\"\xb0\x02\n" +
+	"\x06detail\x18\x03 \x01(\tR\x06detail\"\xca\x02\n" +
 	"\rConfigApplied\x12+\n" +
 	"\x12applied_at_unix_ms\x18\x01 \x01(\x03R\x0fappliedAtUnixMs\x124\n" +
 	"\x16driver_instances_added\x18\x02 \x01(\x05R\x14driverInstancesAdded\x128\n" +
 	"\x18driver_instances_removed\x18\x03 \x01(\x05R\x16driverInstancesRemoved\x128\n" +
 	"\x18driver_instances_changed\x18\x04 \x01(\x05R\x16driverInstancesChanged\x12/\n" +
 	"\x13automations_changed\x18\x05 \x01(\x05R\x12automationsChanged\x12\x17\n" +
-	"\adry_run\x18\x06 \x01(\bR\x06dryRun\"\xd9\x01\n" +
+	"\adry_run\x18\x06 \x01(\bR\x06dryRun\x12\x18\n" +
+	"\amessage\x18\a \x01(\tR\amessage\"\xd9\x01\n" +
 	"\x13AutomationTriggered\x12#\n" +
 	"\rautomation_id\x18\x01 \x01(\tR\fautomationId\x12%\n" +
 	"\x0ecorrelation_id\x18\x02 \x01(\tR\rcorrelationId\x124\n" +

@@ -219,6 +219,7 @@ type ApplyConfigResponse struct {
 	Diff          *ConfigDiff            `protobuf:"bytes,2,opt,name=diff,proto3" json:"diff,omitempty"`
 	CorrelationId string                 `protobuf:"bytes,3,opt,name=correlation_id,json=correlationId,proto3" json:"correlation_id,omitempty"`
 	BundleHash    string                 `protobuf:"bytes,4,opt,name=bundle_hash,json=bundleHash,proto3" json:"bundle_hash,omitempty"`
+	Message       string                 `protobuf:"bytes,5,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -277,6 +278,13 @@ func (x *ApplyConfigResponse) GetCorrelationId() string {
 func (x *ApplyConfigResponse) GetBundleHash() string {
 	if x != nil {
 		return x.BundleHash
+	}
+	return ""
+}
+
+func (x *ApplyConfigResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
 	}
 	return ""
 }
@@ -1010,13 +1018,14 @@ const file_switchyard_v1alpha1_config_proto_rawDesc = "" +
 	"\adry_run\x18\n" +
 	" \x01(\bR\x06dryRun\x12\x16\n" +
 	"\x06strict\x18\v \x01(\bR\x06strict\x120\n" +
-	"\x14expected_bundle_hash\x18\f \x01(\tR\x12expectedBundleHash\"\xac\x01\n" +
+	"\x14expected_bundle_hash\x18\f \x01(\tR\x12expectedBundleHash\"\xc6\x01\n" +
 	"\x13ApplyConfigResponse\x12\x18\n" +
 	"\aapplied\x18\x01 \x01(\bR\aapplied\x123\n" +
 	"\x04diff\x18\x02 \x01(\v2\x1f.switchyard.v1alpha1.ConfigDiffR\x04diff\x12%\n" +
 	"\x0ecorrelation_id\x18\x03 \x01(\tR\rcorrelationId\x12\x1f\n" +
 	"\vbundle_hash\x18\x04 \x01(\tR\n" +
-	"bundleHash\"\x15\n" +
+	"bundleHash\x12\x18\n" +
+	"\amessage\x18\x05 \x01(\tR\amessage\"\x15\n" +
 	"\x13ReloadConfigRequest\"\x88\x01\n" +
 	"\x14ReloadConfigResponse\x123\n" +
 	"\x04diff\x18\x01 \x01(\v2\x1f.switchyard.v1alpha1.ConfigDiffR\x04diff\x12%\n" +

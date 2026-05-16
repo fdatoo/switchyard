@@ -1,0 +1,18 @@
+#!/bin/sh
+set -eu
+
+cd "$(git rev-parse --show-toplevel)"
+
+echo "pre-push: unit tests"
+task test
+
+echo "pre-push: race tests"
+task test:race
+
+echo "pre-push: integration tests"
+if command -v pkl >/dev/null 2>&1; then
+  task test:integration
+else
+  echo "pre-push: pkl not found; skipping config integration package"
+  go test -tags=integration $(go list -tags=integration ./... | grep -v 'internal/config')
+fi

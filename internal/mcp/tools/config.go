@@ -20,6 +20,7 @@ type ValidateConfigInput struct {
 
 // ApplyConfigInput is the input schema for switchyard__apply_config.
 // PklBundle is a base64-encoded PKL bundle or a plain string containing PKL source.
+// Message is optional; when present it must look like "config(scene): add scene".
 type ApplyConfigInput struct {
 	PklBundle string `json:"pkl_bundle"`
 	Message   string `json:"message,omitempty"`
@@ -59,7 +60,7 @@ func registerConfig(d Deps) {
 
 	sdk.AddTool(d.Server, &sdk.Tool{
 		Name:        "switchyard__apply_config",
-		Description: "Apply a PKL config bundle to the daemon.",
+		Description: "Apply a PKL config bundle to the daemon with an optional semantic config message.",
 	}, func(ctx context.Context, _ *sdk.CallToolRequest, in ApplyConfigInput) (*sdk.CallToolResult, any, error) {
 		req := connect.NewRequest(&v1.ApplyConfigRequest{
 			PklBundle: []byte(in.PklBundle),
@@ -82,6 +83,7 @@ func registerConfig(d Deps) {
 		}
 		out := map[string]any{
 			"applied": resp.Msg.GetApplied(),
+			"message": resp.Msg.GetMessage(),
 			"diff":    diffRaw,
 		}
 		b, _ := json.Marshal(out)

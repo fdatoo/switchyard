@@ -226,6 +226,7 @@ type ConfigApplyResult struct {
 	Diff          ConfigDiff
 	CorrelationID string
 	BundleHash    string
+	Message       string
 	Errors        []string
 }
 

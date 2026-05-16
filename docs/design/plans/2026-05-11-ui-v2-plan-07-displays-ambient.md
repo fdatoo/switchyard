@@ -300,7 +300,7 @@ Thread `display.alert_threshold` (already fetched in Task 7.7) down to `<AlertPi
 
 ### Task 7.13 — Sample displays (Pkl)
 
-**Files:** `displays/kitchen-wall.pkl`, `displays/bedroom-nightstand.pkl`.
+**Files:** `examples/displays/kitchen-wall.pkl`, `examples/displays/bedroom-nightstand.pkl`.
 
 `kitchen-wall.pkl`:
 ```pkl
@@ -328,7 +328,7 @@ idle_behavior { wake_on_motion = true; dim_after_minutes = 2; off_after_minutes 
 alert_threshold = "high"
 ```
 
-**Acceptance:** `pkl eval displays/kitchen-wall.pkl` and `pkl eval displays/bedroom-nightstand.pkl` succeed (no validation errors).
+**Acceptance:** `pkl eval examples/displays/kitchen-wall.pkl` and `pkl eval examples/displays/bedroom-nightstand.pkl` succeed (no validation errors).
 
 **Commit:** `feat(config): sample display configs (UI v2 plan 07)`
 

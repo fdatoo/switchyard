@@ -100,6 +100,7 @@ message ConfigApplied {
   int32 driver_instances_changed = 4;
   int32 automations_changed      = 5;
   bool  dry_run                  = 6;
+  string message                 = 7;
 }
 
 // Top-level enum so both AutomationFinished and ScriptFinished can reference it.

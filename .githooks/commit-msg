@@ -1,0 +1,24 @@
+#!/bin/sh
+set -eu
+
+msg_file="$1"
+subject="$(sed -n '1p' "$msg_file")"
+
+case "$subject" in
+  Merge\ *|Revert\ *|fixup!\ *|squash!\ *)
+    exit 0
+    ;;
+esac
+
+line_count="$(grep -v '^[[:space:]]*#' "$msg_file" | sed '/^[[:space:]]*$/d' | wc -l | tr -d ' ')"
+if [ "$line_count" -ne 1 ]; then
+  echo "commit-msg: use exactly one non-empty line" >&2
+  exit 1
+fi
+
+pattern='^(feat|fix|chore|refactor|test|docs|perf|build)\((app|api|auth|carport|cli|config|daemon|driverkit|drivers|eventstore|policy|proto|repo|ci|docs|agents)\): [a-z0-9][a-z0-9 ,'\''`._:/()+-]*[^.]$'
+if ! printf '%s\n' "$subject" | grep -Eq "$pattern"; then
+  echo "commit-msg: expected '<prefix>(<scope>): <lowercase imperative subject>'" >&2
+  echo "commit-msg: example: feat(config): add semantic apply messages" >&2
+  exit 1
+fi

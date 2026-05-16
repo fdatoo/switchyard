@@ -148,7 +148,7 @@ func newConfigApplyCmd(gf *globalFlags) *cobra.Command {
 		},
 	}
 	cmd.Flags().BoolVar(&dryRun, "dry-run", false, "print diff without applying")
-	cmd.Flags().StringVar(&message, "message", "", "change message recorded with apply")
+	cmd.Flags().StringVar(&message, "message", "", `semantic change message, for example "config(scene): add evening scene"`)
 	return cmd
 }
 

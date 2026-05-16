@@ -24,11 +24,17 @@ Both modules are linked by a Go workspace (`go.work`), so `go build ./...` and `
 - [Pkl](https://pkl-lang.org) — `brew install pkl` (config schema)
 - Node.js 20+ — for the web UI
 
+## Setup
+
+```bash
+task setup          # activates repo Git hooks
+```
+
 ## Building
 
 ```bash
 task build          # builds switchyardd + switchyard binaries into dist/
-task web:build      # builds the web UI (required before task build)
+task app:build      # builds the web UI
 ```
 
 ## Testing
@@ -37,6 +43,8 @@ task web:build      # builds the web UI (required before task build)
 task test           # unit tests
 task test:race      # race detector
 task test:integration   # integration tests (real disk I/O)
+task check          # standard local verification suite
+task check:full     # standard checks plus race and integration tests
 ```
 
 ## Drivers
@@ -50,7 +58,10 @@ go build ./...
 
 ## Documentation
 
-Full documentation lives in [`docs/`](./docs) and is published via Zensical. Design specs and implementation plans live in [`docs/design/`](./docs/design).
+Full documentation lives in [`docs/`](./docs) and is published via Zensical.
+Agent-authored specs and implementation plans live in
+[`docs/agents/`](./docs/agents). Cross-cutting decisions live in
+[`docs/adrs/`](./docs/adrs).
 
 ## License
 

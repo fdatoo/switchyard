@@ -39,6 +39,7 @@ func (s *ConfigService) Apply(ctx context.Context, req *connect.Request[v1.Apply
 		Diff:          configDiffToProto(result.Diff),
 		CorrelationId: result.CorrelationID,
 		BundleHash:    result.BundleHash,
+		Message:       result.Message,
 	}), nil
 }
 

@@ -97,7 +97,7 @@ driverInstances = new {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := mgr.Apply(ctx, false); err != nil {
+	if err := mgr.Apply(ctx, false, DefaultApplyMessage); err != nil {
 		t.Fatal(err)
 	}
 	if len(cp.registered) != 1 {
@@ -145,7 +145,7 @@ driverInstances = new {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := mgr.Apply(ctx, false); err != nil {
+	if err := mgr.Apply(ctx, false, DefaultApplyMessage); err != nil {
 		t.Fatal(err)
 	}
 	if cp.registered[0].lifecycle.RestartBudgetMax != 99 {
@@ -175,7 +175,7 @@ driverInstances = new {
 
 	cp := &recordingCarport{}
 	mgr, _ := NewManager(ctx, configDir, driversRoot, nopStore{}, cp)
-	if err := mgr.Apply(ctx, false); err != nil {
+	if err := mgr.Apply(ctx, false, DefaultApplyMessage); err != nil {
 		t.Fatal(err)
 	}
 	if len(cp.registered) != 0 {
@@ -204,7 +204,7 @@ driverInstances = new {
 
 	cp := &recordingCarport{}
 	mgr, _ := NewManager(ctx, configDir, driversRoot, nopStore{}, cp)
-	if err := mgr.Apply(ctx, false); err == nil {
+	if err := mgr.Apply(ctx, false, DefaultApplyMessage); err == nil {
 		t.Fatal("expected error, got nil")
 	}
 }

@@ -25,8 +25,9 @@ type fakeConfig struct {
 	validateHash  string
 	validateErr   error
 
-	applyResult api.ConfigApplyResult
-	applyErr    error
+	applyResult  api.ConfigApplyResult
+	applyErr     error
+	applyMessage string
 
 	reloadDiff   api.ConfigDiff
 	reloadCorrID string
@@ -45,7 +46,8 @@ func (f *fakeConfig) Validate(_ context.Context, _ []byte) (bool, []string, api.
 	return f.validateValid, f.validateErrs, f.validateDiff, f.validateHash, f.validateErr
 }
 
-func (f *fakeConfig) Apply(_ context.Context, _ []byte, _, _ string, _, _ bool, _ string) (api.ConfigApplyResult, error) {
+func (f *fakeConfig) Apply(_ context.Context, _ []byte, message, _ string, _, _ bool, _ string) (api.ConfigApplyResult, error) {
+	f.applyMessage = message
 	return f.applyResult, f.applyErr
 }
 
@@ -124,14 +126,18 @@ func TestConfigService_Apply(t *testing.T) {
 			Applied:       true,
 			CorrelationID: "corr-1",
 			BundleHash:    "hash-1",
+			Message:       "config(repo): validate golden config",
 		},
 	}
 	s := api.NewConfigService(fc)
-	resp, err := s.Apply(context.Background(), connect.NewRequest(&v1.ApplyConfigRequest{PklBundle: []byte("pkl"), Message: "test apply"}))
+	resp, err := s.Apply(context.Background(), connect.NewRequest(&v1.ApplyConfigRequest{PklBundle: []byte("pkl"), Message: "config(repo): validate golden config"}))
 	if err != nil {
 		t.Fatalf("err: %v", err)
 	}
-	if !resp.Msg.Applied || resp.Msg.CorrelationId != "corr-1" || resp.Msg.BundleHash != "hash-1" {
+	if fc.applyMessage != "config(repo): validate golden config" {
+		t.Fatalf("applyMessage = %q", fc.applyMessage)
+	}
+	if !resp.Msg.Applied || resp.Msg.CorrelationId != "corr-1" || resp.Msg.BundleHash != "hash-1" || resp.Msg.Message != "config(repo): validate golden config" {
 		t.Errorf("unexpected: %+v", resp.Msg)
 	}
 }

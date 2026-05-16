@@ -1,4 +1,4 @@
-$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json config apply --dry-run --message cli golden
+$ switchyard --data-dir <DATA_DIR> --endpoint unix://<DATA_DIR>/switchyardd.sock --no-color --format json config apply --dry-run --message config(repo): validate golden config
 exit: 0
 stdout:
 Config applied (dry-run)

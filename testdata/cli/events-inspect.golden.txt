@@ -13,7 +13,8 @@ Payload
   "configApplied": {
     "appliedAtUnixMs":"<UNIX_MS>",
     "driverInstancesAdded": 1,
-    "automationsChanged": 1
+    "automationsChanged": 1,
+    "message": "config(repo): load startup configuration"
   }
 }
 stderr:

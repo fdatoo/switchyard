@@ -1,6 +1,7 @@
 # Switchyard Configuration Examples
 
-This directory contains example `main.pkl` configuration files to help you get started with switchyard.
+This directory contains example `main.pkl` configuration files and config
+fragments to help you get started with switchyard.
 
 ## Which file should I use?
 
@@ -57,3 +58,12 @@ cp full-main.pkl main.pkl
 - See the comments in each `.pkl` file for configuration guidance
 - Check the main switchyard documentation for detailed guides
 - Refer to the Pkl language docs if you need syntax help
+
+## Fragments
+
+- `automations/`: standalone automation examples.
+- `pages/`: sample custom-page config. Copy these into
+  `<config-dir>/pages/` to use them with `PageService`.
+- `displays/`: sample display config from the ambient-display design work.
+  The current `DisplayService` stores paired displays in the data directory,
+  so these are reference snippets rather than live repo-root config.

@@ -1,8 +1,8 @@
 # Go build artifacts
 dist/
 bin/
-/gohomed
-/gohome
+/switchyardd
+/switchyard
 *.exe
 *.test
 *.out
@@ -14,8 +14,8 @@ var/
 *.db
 *.db-shm
 *.db-wal
-/gohomed.lock
-/gohomed.sock
+/switchyardd.lock
+/switchyardd.sock
 
 # Embedded web asset build outputs; keep the placeholder committed.
 !internal/web/dist/
@@ -24,6 +24,8 @@ internal/web/dist/*
 
 # Docs build output
 docs/site/
+docs/.cache/
+docs/.venv/
 
 # Editor
 .idea/

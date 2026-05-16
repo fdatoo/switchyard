@@ -761,7 +761,7 @@ func (m *managerReloaderApplier) Apply(ctx context.Context, source string) error
 	// `source` is just telemetry for the debounce log line; Manager
 	// doesn't care about the reason.
 	_ = source
-	return m.mgr.Apply(ctx, false)
+	return m.mgr.Apply(ctx, false, "config(repo): reload configuration")
 }
 
 func (a *configApplierAdapter) Validate(ctx context.Context, _ []byte) (bool, []string, api.ConfigDiff, string, error) {
@@ -781,14 +781,18 @@ func (a *configApplierAdapter) Validate(ctx context.Context, _ []byte) (bool, []
 	return true, nil, d, "", nil
 }
 
-func (a *configApplierAdapter) Apply(ctx context.Context, _ []byte, _, _ string, dryRun, _ bool, _ string) (api.ConfigApplyResult, error) {
+func (a *configApplierAdapter) Apply(ctx context.Context, _ []byte, message, _ string, dryRun, _ bool, _ string) (api.ConfigApplyResult, error) {
 	if a.mgr == nil {
 		return api.ConfigApplyResult{}, fmt.Errorf("config manager not available")
 	}
-	if err := a.mgr.Apply(ctx, dryRun); err != nil {
-		return api.ConfigApplyResult{Errors: []string{err.Error()}}, nil
+	normalized, err := config.NormalizeApplyMessage(message)
+	if err != nil {
+		return api.ConfigApplyResult{}, fmt.Errorf("%w: %v", api.ErrValidationFailed, err)
 	}
-	return api.ConfigApplyResult{Applied: !dryRun}, nil
+	if err := a.mgr.Apply(ctx, dryRun, normalized); err != nil {
+		return api.ConfigApplyResult{}, err
+	}
+	return api.ConfigApplyResult{Applied: !dryRun, Message: normalized}, nil
 }
 
 func (a *configApplierAdapter) Reload(_ context.Context, _ string) (api.ConfigDiff, string, error) {

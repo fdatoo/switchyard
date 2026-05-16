@@ -295,7 +295,7 @@ func (d *Daemon) Run(ctx context.Context) (err error) {
 			return fmt.Errorf("config manager: %w", err)
 		}
 		d.configMgr = cfgMgr
-		if err := d.configMgr.Apply(ctx, false); err != nil {
+		if err := d.configMgr.Apply(ctx, false, "config(repo): load startup configuration"); err != nil {
 			d.logger.Error("initial config load failed", "err", err)
 			return fmt.Errorf("config load: %w", err)
 		}

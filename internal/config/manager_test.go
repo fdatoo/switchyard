@@ -66,7 +66,7 @@ func TestManager_Apply_CallsCarportAndAppends(t *testing.T) {
 		registry:   testRegistryWith("hue"),
 	}
 
-	if err := mgr.Apply(context.Background(), false); err != nil {
+	if err := mgr.Apply(context.Background(), false, "config(driver): add hue driver"); err != nil {
 		t.Fatalf("Apply: %v", err)
 	}
 
@@ -84,6 +84,9 @@ func TestManager_Apply_CallsCarportAndAppends(t *testing.T) {
 	if applied.DriverInstancesAdded != 1 {
 		t.Errorf("expected 1 driver added, got %d", applied.DriverInstancesAdded)
 	}
+	if applied.Message != "config(driver): add hue driver" {
+		t.Errorf("message = %q", applied.Message)
+	}
 }
 
 func TestManager_Apply_DryRun_NoSideEffects(t *testing.T) {
@@ -96,7 +99,7 @@ func TestManager_Apply_DryRun_NoSideEffects(t *testing.T) {
 	fs := &fakeStore{}
 	mgr := &Manager{configDir: "/fake", ev: &fakeEval{snap: snap}, store: fs, carportMgr: fc, registry: testRegistryWith("hue")}
 
-	if err := mgr.Apply(context.Background(), true); err != nil {
+	if err := mgr.Apply(context.Background(), true, DefaultApplyMessage); err != nil {
 		t.Fatalf("dry-run Apply: %v", err)
 	}
 	if len(fc.registered) != 0 {
@@ -129,7 +132,7 @@ func TestManager_Apply_StoresResolvedAndRedactedSnapshots(t *testing.T) {
 		registry:   testRegistryWith("hue"),
 	}
 
-	if err := mgr.Apply(context.Background(), false); err != nil {
+	if err := mgr.Apply(context.Background(), false, DefaultApplyMessage); err != nil {
 		t.Fatalf("Apply: %v", err)
 	}
 	if got := string(mgr.Current().DriverInstances[0].Params); !strings.Contains(got, "secret-value") {

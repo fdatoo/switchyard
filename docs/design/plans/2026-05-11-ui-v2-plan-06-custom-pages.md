@@ -124,8 +124,8 @@ internal/dashboard/pklfs/testdata/ → internal/page/pklfs/testdata/  (moved wit
 ### Sample data
 
 ```
-pages/energy-climate.pkl         ← user-owned; title + section metadata
-pages/energy-climate.layout.pkl  ← regenerator-owned; canonical section tree
+examples/pages/energy-climate.pkl         ← user-owned; title + section metadata
+examples/pages/energy-climate.layout.pkl  ← regenerator-owned; canonical section tree
 ```
 
 ---
@@ -338,7 +338,7 @@ The `PklPreview` sub-component inside `SettingsRail` calls the server-side `Page
 
 ## Task 6.14 — Sample page: `energy-climate`
 
-**Files:** `pages/energy-climate.pkl` (user-owned), `pages/energy-climate.layout.pkl` (regen-owned)
+**Files:** `examples/pages/energy-climate.pkl` (user-owned), `examples/pages/energy-climate.layout.pkl` (regen-owned)
 
 `energy-climate.pkl` imports `energy-climate.layout.pkl` and declares `page = new p.Page { slug = "energy-climate"; title = "Energy & Climate"; sections = layout.sections }`.
 

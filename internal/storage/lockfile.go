@@ -38,6 +38,7 @@ func AcquireLockfile(dataDir string) (*Lockfile, error) {
 	return &Lockfile{path: path}, nil
 }
 
+// Release removes the PID lockfile if this process still owns its path.
 func (l *Lockfile) Release() error {
 	if l == nil {
 		return nil

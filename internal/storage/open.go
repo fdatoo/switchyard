@@ -13,6 +13,7 @@ import (
 	eventMigrations "github.com/fdatoo/switchyard/internal/storage/migrations"
 )
 
+// Config identifies the SQLite database to open.
 type Config struct {
 	Path string // absolute path to .db file; use ":memory:" for tests
 }

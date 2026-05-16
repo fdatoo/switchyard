@@ -17,6 +17,7 @@ type Filter struct {
 	MinTs, MaxTs   time.Time
 }
 
+// Matches reports whether e satisfies every populated filter field.
 func (f Filter) Matches(e Event) bool {
 	if len(f.Kinds) > 0 && !containsString(f.Kinds, e.Kind) {
 		return false

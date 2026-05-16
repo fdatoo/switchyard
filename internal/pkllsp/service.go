@@ -17,6 +17,7 @@ import (
 
 var _ pkllspv1connect.PklLsServiceHandler = (*Service)(nil)
 
+// Config locates the Pkl language server and project roots.
 type Config struct {
 	BinaryPath             string
 	ConfigDir              string
@@ -24,6 +25,7 @@ type Config struct {
 	Logger                 *slog.Logger
 }
 
+// Service adapts Pkl LSP requests into the Switchyard Connect-RPC API.
 type Service struct {
 	cfg Config
 
@@ -31,10 +33,12 @@ type Service struct {
 	client *client
 }
 
+// NewService returns a lazy-starting Pkl language service.
 func NewService(cfg Config) *Service {
 	return &Service{cfg: cfg}
 }
 
+// Close stops the backing Pkl language-server process if it is running.
 func (s *Service) Close(ctx context.Context) error {
 	s.mu.Lock()
 	c := s.client
@@ -46,6 +50,7 @@ func (s *Service) Close(ctx context.Context) error {
 	return c.close(ctx)
 }
 
+// Complete returns completion candidates for the supplied in-memory Pkl document.
 func (s *Service) Complete(ctx context.Context, req *connect.Request[pkllsppb.CompleteRequest]) (*connect.Response[pkllsppb.CompleteResponse], error) {
 	c, err := s.ensureClient(ctx)
 	if err != nil {
@@ -75,6 +80,7 @@ func (s *Service) Complete(ctx context.Context, req *connect.Request[pkllsppb.Co
 	return connect.NewResponse(&pkllsppb.CompleteResponse{Items: out}), nil
 }
 
+// Hover returns markdown documentation for the symbol at the requested position.
 func (s *Service) Hover(ctx context.Context, req *connect.Request[pkllsppb.HoverRequest]) (*connect.Response[pkllsppb.HoverResponse], error) {
 	c, err := s.ensureClient(ctx)
 	if err != nil {
@@ -94,6 +100,7 @@ func (s *Service) Hover(ctx context.Context, req *connect.Request[pkllsppb.Hover
 	return connect.NewResponse(&pkllsppb.HoverResponse{Markdown: markdownFromHover(raw)}), nil
 }
 
+// Definition resolves the source location for the symbol at the requested position.
 func (s *Service) Definition(ctx context.Context, req *connect.Request[pkllsppb.DefinitionRequest]) (*connect.Response[pkllsppb.DefinitionResponse], error) {
 	c, err := s.ensureClient(ctx)
 	if err != nil {
@@ -121,6 +128,7 @@ func (s *Service) Definition(ctx context.Context, req *connect.Request[pkllsppb.
 	}), nil
 }
 
+// Diagnose returns language-server diagnostics after syncing the in-memory document.
 func (s *Service) Diagnose(ctx context.Context, req *connect.Request[pkllsppb.DiagnoseRequest]) (*connect.Response[pkllsppb.DiagnoseResponse], error) {
 	c, err := s.ensureClient(ctx)
 	if err != nil {
@@ -151,6 +159,7 @@ func (s *Service) Diagnose(ctx context.Context, req *connect.Request[pkllsppb.Di
 	return connect.NewResponse(&pkllsppb.DiagnoseResponse{Diagnostics: out}), nil
 }
 
+// SemanticTokens returns LSP semantic-token data for syntax highlighting.
 func (s *Service) SemanticTokens(ctx context.Context, req *connect.Request[pkllsppb.SemanticTokensRequest]) (*connect.Response[pkllsppb.SemanticTokensResponse], error) {
 	c, err := s.ensureClient(ctx)
 	if err != nil {

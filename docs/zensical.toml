@@ -126,6 +126,7 @@ nav = [
   { "Contributing" = [
     { "Overview" = "contributing/index.md" },
     { "Dev setup" = "contributing/dev-setup.md" },
+    { "Repository architecture" = "contributing/repo-architecture.md" },
     { "Architecture internals" = "contributing/architecture-internals.md" },
   ]},
 ]

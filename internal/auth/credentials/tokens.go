@@ -15,14 +15,22 @@ import (
 	"github.com/oklog/ulid/v2"
 )
 
+// ErrTokenInvalid means an API token is malformed, unknown, or has the wrong secret.
 var ErrTokenInvalid = errors.New("credentials: token invalid")
+
+// ErrTokenRevoked means an API token exists but has been explicitly revoked.
 var ErrTokenRevoked = errors.New("credentials: token revoked")
+
+// ErrTokenExpired means an API token exists but is past its expiry.
 var ErrTokenExpired = errors.New("credentials: token expired")
 
+// Tokens issues, verifies, revokes, and lists API tokens.
 type Tokens struct{ db *sql.DB }
 
+// NewTokens returns an API-token store backed by db.
 func NewTokens(db *sql.DB) *Tokens { return &Tokens{db: db} }
 
+// IssueTokenInput is the durable metadata for a newly issued token.
 type IssueTokenInput struct {
 	UserSlug string
 	Label    string
@@ -31,6 +39,7 @@ type IssueTokenInput struct {
 	TTL      time.Duration // 0 = never expires; negative = born-expired (for testing)
 }
 
+// Lookup is the verified identity and scope for a presented token.
 type Lookup struct {
 	TokenID  string
 	UserSlug string
@@ -39,6 +48,7 @@ type Lookup struct {
 	IssuedBy string
 }
 
+// Issue creates a new plaintext API token and stores only its hash.
 func (t *Tokens) Issue(ctx context.Context, in IssueTokenInput) (plaintext, tokenID string, err error) {
 	secret := make([]byte, 24)
 	if _, err = rand.Read(secret); err != nil {
@@ -70,6 +80,7 @@ func (t *Tokens) Issue(ctx context.Context, in IssueTokenInput) (plaintext, toke
 	return plaintext, tokenID, nil
 }
 
+// Verify checks a plaintext API token and returns its stored metadata.
 func (t *Tokens) Verify(ctx context.Context, plaintext string) (Lookup, error) {
 	parts := strings.SplitN(plaintext, "_", 3)
 	if len(parts) != 3 || parts[0] != "switchyard" {
@@ -122,6 +133,7 @@ func (t *Tokens) Verify(ctx context.Context, plaintext string) (Lookup, error) {
 	return lk, nil
 }
 
+// Revoke marks tokenID revoked if it is still active.
 func (t *Tokens) Revoke(ctx context.Context, tokenID, byPrincipal string) error {
 	_, err := t.db.ExecContext(ctx, `
 		UPDATE auth_tokens SET revoked_at = ? WHERE token_id = ? AND revoked_at IS NULL`,
@@ -129,6 +141,7 @@ func (t *Tokens) Revoke(ctx context.Context, tokenID, byPrincipal string) error 
 	return err
 }
 
+// TouchLastUsed records successful token use for audit and admin views.
 func (t *Tokens) TouchLastUsed(ctx context.Context, tokenID string) error {
 	_, err := t.db.ExecContext(ctx, `
 		UPDATE auth_tokens SET last_used_at = ? WHERE token_id = ?`,
@@ -136,6 +149,7 @@ func (t *Tokens) TouchLastUsed(ctx context.Context, tokenID string) error {
 	return err
 }
 
+// ListedToken is an API token row prepared for administrative listing.
 type ListedToken struct {
 	TokenID    string
 	UserSlug   string
@@ -148,6 +162,7 @@ type ListedToken struct {
 	Scope      []byte
 }
 
+// List returns tokens for one user, or all users when userSlug is empty.
 func (t *Tokens) List(ctx context.Context, userSlug string) ([]ListedToken, error) {
 	var (
 		rows *sql.Rows

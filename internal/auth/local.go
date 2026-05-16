@@ -6,8 +6,10 @@ import (
 	"strconv"
 )
 
+// LocalPeerCred authenticates trusted Unix-domain socket clients by peer credentials.
 type LocalPeerCred struct{}
 
+// Authenticate accepts requests classified as local peer-credential traffic.
 func (LocalPeerCred) Authenticate(_ context.Context, req Request) (Principal, error) {
 	if req.Scheme != "uds:peercred" || req.PeerCred == nil {
 		return Principal{}, ErrNotApplicable
@@ -24,12 +26,15 @@ func (LocalPeerCred) Authenticate(_ context.Context, req Request) (Principal, er
 	}, nil
 }
 
+// AllowAll authorizes every action and is used when policy enforcement is disabled.
 type AllowAll struct{}
 
+// Authorize always permits the request.
 func (AllowAll) Authorize(_ context.Context, _ Principal, _ Action, _ Target) error {
 	return nil
 }
 
+// Chain tries authenticators in order until one succeeds or returns a terminal error.
 func Chain(as ...Authenticator) Authenticator {
 	return chain(as)
 }

@@ -10,6 +10,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
+// HTTPHandler returns the Prometheus scrape handler for this metrics registry.
 func (m *Metrics) HTTPHandler() http.Handler {
 	return promhttp.HandlerFor(m.Registry, promhttp.HandlerOpts{})
 }

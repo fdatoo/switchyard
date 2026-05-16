@@ -14,6 +14,7 @@ import (
 	"github.com/fdatoo/switchyard/internal/api"
 )
 
+// Config selects the listener sockets and optional TCP TLS credentials.
 type Config struct {
 	UDSPath string
 	UDSMode os.FileMode
@@ -24,6 +25,7 @@ type Config struct {
 	TLSKeyFile  string
 }
 
+// Deps contains handlers mounted by the listener.
 type Deps struct {
 	HealthProbe    func() error
 	ConnectRoutes  []Route
@@ -33,11 +35,13 @@ type Deps struct {
 	WebHandler     http.Handler // SPA handler — mounted as catch-all
 }
 
+// Route is one Connect-RPC path and handler pair.
 type Route struct {
 	Path    string
 	Handler http.Handler
 }
 
+// Listener owns the daemon's TCP and Unix-domain HTTP servers.
 type Listener struct {
 	cfg  Config
 	deps Deps
@@ -49,6 +53,7 @@ type Listener struct {
 	startedCh chan struct{}
 }
 
+// Build validates dependencies and returns an unstarted listener.
 func Build(cfg Config, deps Deps) (*Listener, error) {
 	if deps.HealthProbe == nil {
 		return nil, errors.New("listener: HealthProbe required")
@@ -56,6 +61,7 @@ func Build(cfg Config, deps Deps) (*Listener, error) {
 	return &Listener{cfg: cfg, deps: deps, startedCh: make(chan struct{})}, nil
 }
 
+// Start binds TCP and Unix-domain sockets, then serves until shutdown.
 func (l *Listener) Start(ctx context.Context) error {
 	l.mu.Lock()
 	defer l.mu.Unlock()
@@ -136,6 +142,7 @@ func (l *Listener) serve(ls net.Listener) {
 	}
 }
 
+// TCPAddr returns the bound TCP address after Start succeeds.
 func (l *Listener) TCPAddr() net.Addr {
 	l.mu.Lock()
 	defer l.mu.Unlock()
@@ -145,6 +152,8 @@ func (l *Listener) TCPAddr() net.Addr {
 	return l.tcpLis.Addr()
 }
 
+// Shutdown gracefully drains active requests and removes the Unix socket.
+//
 //nolint:contextcheck // ctx may be nil (caller passes nil to trigger a default timeout); Background() is intentional
 func (l *Listener) Shutdown(ctx context.Context) error {
 	l.mu.Lock()
@@ -164,6 +173,7 @@ func (l *Listener) Shutdown(ctx context.Context) error {
 	return err
 }
 
+// Close immediately closes listeners and removes the Unix socket.
 func (l *Listener) Close() error {
 	l.mu.Lock()
 	srv := l.srv

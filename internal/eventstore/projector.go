@@ -6,10 +6,14 @@ import (
 	"github.com/fdatoo/switchyard/internal/storage"
 )
 
+// ProjectorMode controls whether a projector runs in the append transaction or asynchronously.
 type ProjectorMode int
 
 const (
+	// ProjectorModeSync runs the projector inside the append transaction.
 	ProjectorModeSync ProjectorMode = iota
+
+	// ProjectorModeAsync runs the projector from the event tailer after commit.
 	ProjectorModeAsync
 )
 
@@ -46,5 +50,8 @@ type Discarder interface {
 // from projection_cursors".
 type NoSnapshot struct{}
 
-func (NoSnapshot) Snapshot(context.Context, storage.Tx) error          { return nil }
+// Snapshot is a no-op for SQL-backed projectors.
+func (NoSnapshot) Snapshot(context.Context, storage.Tx) error { return nil }
+
+// Restore tells the store to resume from the durable projection cursor.
 func (NoSnapshot) Restore(context.Context, storage.Tx) (uint64, error) { return 0, nil }

@@ -12,11 +12,13 @@ import (
 	"github.com/fdatoo/switchyard/internal/policy"
 )
 
+// EntityFilter applies policy behavior for entity subscriptions.
 type EntityFilter struct {
 	rt   *policy.Runtime
 	mode commonpb.PolicyMode
 }
 
+// NewEntityFilter returns a subscription filter with FILTER as the default mode.
 func NewEntityFilter(rt *policy.Runtime, mode commonpb.PolicyMode) *EntityFilter {
 	if mode == commonpb.PolicyMode_POLICY_MODE_UNSPECIFIED {
 		mode = commonpb.PolicyMode_POLICY_MODE_FILTER
@@ -43,6 +45,7 @@ func (f *EntityFilter) Preflight(ctx context.Context, p auth.Principal, candidat
 	return allowed, nil
 }
 
+// AllowsEntity reports whether one subscription update may be sent to p.
 func (f *EntityFilter) AllowsEntity(ctx context.Context, p auth.Principal, t policy.Target) bool {
 	if f.rt == nil {
 		return true

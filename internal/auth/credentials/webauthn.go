@@ -14,18 +14,24 @@ import (
 	"github.com/oklog/ulid/v2"
 )
 
+// ErrPasskeyUnknown means the credential id is not registered.
 var ErrPasskeyUnknown = errors.New("credentials: passkey unknown")
+
+// ErrSignCountRegression means the authenticator reported a cloned credential risk.
 var ErrSignCountRegression = errors.New("credentials: passkey sign-count regression")
 
+// Passkeys stores and verifies WebAuthn passkey credentials.
 type Passkeys struct {
 	db *sql.DB
 	w  *wa.WebAuthn
 }
 
+// NewPasskeys returns a WebAuthn credential store backed by db.
 func NewPasskeys(db *sql.DB, w *wa.WebAuthn) *Passkeys {
 	return &Passkeys{db: db, w: w}
 }
 
+// Passkey is a registered WebAuthn credential.
 type Passkey struct {
 	CredentialID []byte
 	UserSlug     string

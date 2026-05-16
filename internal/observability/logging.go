@@ -9,12 +9,14 @@ import (
 	charmlog "github.com/charmbracelet/log"
 )
 
+// LogConfig selects the daemon logger's format, level, and output stream.
 type LogConfig struct {
 	Level  slog.Level
 	Format string // "auto" | "tty" | "json"
 	Output io.Writer
 }
 
+// Init builds a structured logger for daemon and CLI processes.
 func Init(cfg LogConfig) *slog.Logger {
 	if cfg.Output == nil {
 		cfg.Output = os.Stderr

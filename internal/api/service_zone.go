@@ -9,12 +9,15 @@ import (
 	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
 )
 
+// ZoneService implements read-only zone RPCs.
 type ZoneService struct{ be ZoneReader }
 
+// NewZoneService returns a zone service backed by be.
 func NewZoneService(be ZoneReader) *ZoneService { return &ZoneService{be: be} }
 
 var _ switchyardv1alpha1connect.ZoneServiceHandler = (*ZoneService)(nil)
 
+// List returns configured zones with API pagination.
 func (s *ZoneService) List(ctx context.Context, req *connect.Request[v1.ListZonesRequest]) (*connect.Response[v1.ListZonesResponse], error) {
 	var tok string
 	var sz uint32
@@ -41,6 +44,7 @@ func (s *ZoneService) List(ctx context.Context, req *connect.Request[v1.ListZone
 	return connect.NewResponse(out), nil
 }
 
+// Get returns one configured zone by id.
 func (s *ZoneService) Get(ctx context.Context, req *connect.Request[v1.GetZoneRequest]) (*connect.Response[v1.GetZoneResponse], error) {
 	z, err := s.be.GetZone(ctx, req.Msg.Id)
 	if err != nil {

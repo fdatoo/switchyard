@@ -18,6 +18,7 @@ import (
 // FakeState maps entity ID → EntityState for test injection.
 type FakeState map[string]*ghs.EntityState
 
+// Get returns the fake entity state by id.
 func (f FakeState) Get(id string) (*ghs.EntityState, bool) {
 	v, ok := f[id]
 	return v, ok
@@ -36,6 +37,7 @@ type FakeDispatcher struct {
 	Calls []DispatchCall
 }
 
+// Dispatch records a successful fake service call.
 func (f *FakeDispatcher) Dispatch(_ context.Context, entityID, capability string, args map[string]string) (*ghs.DispatchResult, error) {
 	f.mu.Lock()
 	f.Calls = append(f.Calls, DispatchCall{EntityID: entityID, Capability: capability, Args: args})

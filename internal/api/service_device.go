@@ -10,17 +10,20 @@ import (
 	"github.com/fdatoo/switchyard/internal/auth"
 )
 
+// DeviceService implements device read and metadata mutation RPCs.
 type DeviceService struct {
 	r DeviceReader
 	w DeviceWriter
 }
 
+// NewDeviceService returns a device service backed by read and write dependencies.
 func NewDeviceService(r DeviceReader, w DeviceWriter) *DeviceService {
 	return &DeviceService{r: r, w: w}
 }
 
 var _ switchyardv1alpha1connect.DeviceServiceHandler = (*DeviceService)(nil)
 
+// List returns devices, optionally filtered by area.
 func (s *DeviceService) List(ctx context.Context, req *connect.Request[v1.ListDevicesRequest]) (*connect.Response[v1.ListDevicesResponse], error) {
 	cur, err := DecodeCursor(pageToken(req.Msg.Page))
 	if err != nil {
@@ -40,6 +43,7 @@ func (s *DeviceService) List(ctx context.Context, req *connect.Request[v1.ListDe
 	return connect.NewResponse(out), nil
 }
 
+// Get returns one device by id.
 func (s *DeviceService) Get(ctx context.Context, req *connect.Request[v1.GetDeviceRequest]) (*connect.Response[v1.GetDeviceResponse], error) {
 	d, err := s.r.GetDevice(ctx, req.Msg.Id)
 	if err != nil {
@@ -48,6 +52,7 @@ func (s *DeviceService) Get(ctx context.Context, req *connect.Request[v1.GetDevi
 	return connect.NewResponse(&v1.GetDeviceResponse{Device: deviceToProto(d)}), nil
 }
 
+// Rename changes a device's friendly name and records the acting principal.
 func (s *DeviceService) Rename(ctx context.Context, req *connect.Request[v1.RenameDeviceRequest]) (*connect.Response[v1.RenameDeviceResponse], error) {
 	if req.Msg.NewFriendlyName == "" {
 		return nil, ToConnect(ctx, ErrValidationFailed, "empty_friendly_name")
@@ -59,6 +64,7 @@ func (s *DeviceService) Rename(ctx context.Context, req *connect.Request[v1.Rena
 	return connect.NewResponse(&v1.RenameDeviceResponse{Device: deviceToProto(d)}), nil
 }
 
+// Reassign moves a device to a new area and records the acting principal.
 func (s *DeviceService) Reassign(ctx context.Context, req *connect.Request[v1.ReassignDeviceRequest]) (*connect.Response[v1.ReassignDeviceResponse], error) {
 	d, err := s.w.ReassignDevice(ctx, req.Msg.Id, req.Msg.NewAreaId, principalID(ctx))
 	if err != nil {

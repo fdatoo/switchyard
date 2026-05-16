@@ -10,12 +10,15 @@ import (
 	"github.com/fdatoo/switchyard/internal/compute"
 )
 
+// ConfigService implements validation, apply, reload, and snapshot RPCs.
 type ConfigService struct{ be ConfigApplier }
 
+// NewConfigService returns a config service backed by be.
 func NewConfigService(be ConfigApplier) *ConfigService { return &ConfigService{be: be} }
 
 var _ switchyardv1alpha1connect.ConfigServiceHandler = (*ConfigService)(nil)
 
+// Validate checks a Pkl bundle without changing daemon state.
 func (s *ConfigService) Validate(ctx context.Context, req *connect.Request[v1.ValidateConfigRequest]) (*connect.Response[v1.ValidateConfigResponse], error) {
 	valid, errs, diff, hash, err := s.be.Validate(ctx, req.Msg.PklBundle)
 	if err != nil {
@@ -29,6 +32,7 @@ func (s *ConfigService) Validate(ctx context.Context, req *connect.Request[v1.Va
 	}), nil
 }
 
+// Apply validates and applies a Pkl bundle, or dry-runs when requested.
 func (s *ConfigService) Apply(ctx context.Context, req *connect.Request[v1.ApplyConfigRequest]) (*connect.Response[v1.ApplyConfigResponse], error) {
 	result, err := s.be.Apply(ctx, req.Msg.PklBundle, req.Msg.Message, req.Msg.ExpectedBundleHash, req.Msg.DryRun, req.Msg.Strict, principalID(ctx))
 	if err != nil {
@@ -43,6 +47,7 @@ func (s *ConfigService) Apply(ctx context.Context, req *connect.Request[v1.Apply
 	}), nil
 }
 
+// Reload re-reads config from disk and applies any delta.
 func (s *ConfigService) Reload(ctx context.Context, _ *connect.Request[v1.ReloadConfigRequest]) (*connect.Response[v1.ReloadConfigResponse], error) {
 	diff, correlationID, err := s.be.Reload(ctx, principalID(ctx))
 	if err != nil {
@@ -55,6 +60,7 @@ func (s *ConfigService) Reload(ctx context.Context, _ *connect.Request[v1.Reload
 	}), nil
 }
 
+// Subscribe streams config-applied notifications and idle heartbeats.
 func (s *ConfigService) Subscribe(ctx context.Context, _ *connect.Request[v1.SubscribeConfigRequest], stream *connect.ServerStream[v1.SubscribeConfigEvent]) error {
 	src, cancel := s.be.SubscribeConfig()
 	defer cancel()
@@ -92,6 +98,7 @@ func (s *ConfigService) Subscribe(ctx context.Context, _ *connect.Request[v1.Sub
 	}
 }
 
+// GetArtifact returns the current compiled config snapshot.
 func (s *ConfigService) GetArtifact(ctx context.Context, _ *connect.Request[v1.GetConfigArtifactRequest]) (*connect.Response[v1.GetConfigArtifactResponse], error) {
 	snap, err := s.be.CurrentArtifact(ctx)
 	if err != nil {
@@ -100,6 +107,7 @@ func (s *ConfigService) GetArtifact(ctx context.Context, _ *connect.Request[v1.G
 	return connect.NewResponse(&v1.GetConfigArtifactResponse{Snapshot: snap}), nil
 }
 
+// EvalCompute evaluates a computed dashboard expression.
 func (s *ConfigService) EvalCompute(ctx context.Context, req *connect.Request[v1.EvalComputeRequest]) (*connect.Response[v1.EvalComputeResponse], error) {
 	svc := compute.NewService()
 	result := svc.Eval(ctx, compute.Request{

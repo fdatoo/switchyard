@@ -11,24 +11,36 @@ import (
 	"time"
 )
 
+// IntentRegisterPasskey enrolls a new WebAuthn credential for a user.
 const IntentRegisterPasskey = "register_passkey"
+
+// IntentSetPassword enrolls or replaces a user's password credential.
 const IntentSetPassword = "set_password"
 
+// ErrEnrollmentInvalid means the presented enrollment token cannot be decoded or found.
 var ErrEnrollmentInvalid = errors.New("credentials: enrollment token invalid")
+
+// ErrEnrollmentExpired means the enrollment token existed but passed its expiry.
 var ErrEnrollmentExpired = errors.New("credentials: enrollment token expired")
+
+// ErrEnrollmentConsumed means the token has already been redeemed.
 var ErrEnrollmentConsumed = errors.New("credentials: enrollment token already used")
 
+// Enrollment stores and redeems one-time credential enrollment tokens.
 type Enrollment struct{ db *sql.DB }
 
+// NewEnrollment returns an enrollment-token store backed by db.
 func NewEnrollment(db *sql.DB) *Enrollment {
 	return &Enrollment{db: db}
 }
 
+// EnrollmentLookup is the identity and action unlocked by a redeemed token.
 type EnrollmentLookup struct {
 	UserSlug string
 	Intent   string
 }
 
+// Mint creates a one-time plaintext token and stores only its hash.
 func (e *Enrollment) Mint(ctx context.Context, userSlug, intent string, ttl time.Duration) (string, error) {
 	if intent != IntentRegisterPasskey && intent != IntentSetPassword {
 		return "", errors.New("credentials: invalid intent")
@@ -57,6 +69,7 @@ func (e *Enrollment) Mint(ctx context.Context, userSlug, intent string, ttl time
 	return plaintext, nil
 }
 
+// Redeem validates a plaintext token, marks it consumed, and returns its lookup data.
 func (e *Enrollment) Redeem(ctx context.Context, plaintext string) (EnrollmentLookup, error) {
 	secret, err := base32.StdEncoding.WithPadding(base32.NoPadding).DecodeString(plaintext)
 	if err != nil {
@@ -112,6 +125,7 @@ func (e *Enrollment) Redeem(ctx context.Context, plaintext string) (EnrollmentLo
 	return lk, nil
 }
 
+// Sweep deletes expired or long-consumed enrollment tokens before cutoff.
 func (e *Enrollment) Sweep(ctx context.Context, cutoff time.Time) error {
 	cutoffUnix := cutoff.Unix()
 	_, err := e.db.ExecContext(ctx, `

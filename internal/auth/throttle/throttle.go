@@ -9,19 +9,23 @@ import (
 	"time"
 )
 
+// ErrThrottled means recent failures exceeded the configured bucket threshold.
 var ErrThrottled = errors.New("throttle: too many recent failures")
 
+// Config controls the failed-auth rolling window and block duration.
 type Config struct {
 	Window    time.Duration
 	Threshold uint32
 	Block     time.Duration
 }
 
+// Throttle records and evaluates failed-auth buckets.
 type Throttle struct {
 	db  *sql.DB
 	cfg Config
 }
 
+// New returns a throttle backed by db.
 func New(db *sql.DB, cfg Config) *Throttle { return &Throttle{db: db, cfg: cfg} }
 
 // Check inspects the recent failure count for the bucket; returns

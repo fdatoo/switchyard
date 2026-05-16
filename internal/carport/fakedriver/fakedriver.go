@@ -80,6 +80,7 @@ func (d *Double) Serve(t TB) (socketPath string, stop func()) {
 	return socketPath, stop
 }
 
+// Handshake implements the Carport driver handshake RPC for tests.
 func (d *Double) Handshake(_ context.Context, req *carportpb.HandshakeRequest) (*carportpb.HandshakeResponse, error) {
 	if d.WantHandshakeError != nil {
 		return nil, d.WantHandshakeError
@@ -106,6 +107,7 @@ func (d *Double) Handshake(_ context.Context, req *carportpb.HandshakeRequest) (
 	}, nil
 }
 
+// Run implements the bidirectional Carport command and event stream.
 func (d *Double) Run(srv carportpb.Driver_RunServer) error {
 	// Emit any pre-programmed events immediately.
 	for _, m := range d.EventsToEmit {
@@ -140,10 +142,12 @@ func (d *Double) Run(srv carportpb.Driver_RunServer) error {
 	}
 }
 
+// Health reports the fake driver as healthy.
 func (d *Double) Health(_ context.Context, _ *carportpb.HealthRequest) (*carportpb.HealthResponse, error) {
 	return &carportpb.HealthResponse{Ok: true}, nil
 }
 
+// Shutdown marks the fake driver closed and acknowledges the request.
 func (d *Double) Shutdown(_ context.Context, _ *carportpb.ShutdownRequest) (*carportpb.ShutdownResponse, error) {
 	d.mu.Lock()
 	d.closed = true

@@ -13,6 +13,7 @@ import (
 	"github.com/fdatoo/switchyard/internal/policy"
 )
 
+// EntityService implements entity query, command, and subscription RPCs.
 type EntityService struct {
 	r      EntityReader
 	caller CapabilityCaller
@@ -24,6 +25,7 @@ type EntityService struct {
 	policyRuntime *policy.Runtime // nil until wired; filter passes through if nil
 }
 
+// NewEntityService returns an entity service backed by registry reads and capability dispatch.
 func NewEntityService(r EntityReader, caller CapabilityCaller) *EntityService {
 	return &EntityService{r: r, caller: caller}
 }
@@ -36,6 +38,7 @@ func (s *EntityService) SetPolicyRuntime(rt *policy.Runtime) { s.policyRuntime =
 
 var _ switchyardv1alpha1connect.EntityServiceHandler = (*EntityService)(nil)
 
+// List returns entities matching the request selector.
 func (s *EntityService) List(ctx context.Context, req *connect.Request[v1.ListEntitiesRequest]) (*connect.Response[v1.ListEntitiesResponse], error) {
 	cur, err := DecodeCursor(pageToken(req.Msg.Page))
 	if err != nil {
@@ -56,6 +59,7 @@ func (s *EntityService) List(ctx context.Context, req *connect.Request[v1.ListEn
 	return connect.NewResponse(out), nil
 }
 
+// Get returns one entity by id.
 func (s *EntityService) Get(ctx context.Context, req *connect.Request[v1.GetEntityRequest]) (*connect.Response[v1.GetEntityResponse], error) {
 	e, err := s.r.GetEntity(ctx, req.Msg.Id)
 	if err != nil {
@@ -64,6 +68,7 @@ func (s *EntityService) Get(ctx context.Context, req *connect.Request[v1.GetEnti
 	return connect.NewResponse(&v1.GetEntityResponse{Entity: entityToProto(e)}), nil
 }
 
+// CallCapability dispatches a command to the entity's owning driver.
 func (s *EntityService) CallCapability(ctx context.Context, req *connect.Request[v1.CallCapabilityRequest]) (*connect.Response[v1.CallCapabilityResponse], error) {
 	if req.Msg.EntityId == "" || req.Msg.Capability == "" {
 		return nil, ToConnect(ctx, ErrValidationFailed, "missing_required_field")
@@ -83,6 +88,7 @@ func (s *EntityService) CallCapability(ctx context.Context, req *connect.Request
 	}), nil
 }
 
+// Subscribe streams policy-filtered entity changes and idle heartbeats.
 func (s *EntityService) Subscribe(ctx context.Context, req *connect.Request[v1.SubscribeEntitiesRequest], stream *connect.ServerStream[v1.SubscribeEntitiesResponse]) error {
 	if s.streamSource == nil {
 		return ToConnect(ctx, ErrNotImplemented, "subscribe_unimplemented")

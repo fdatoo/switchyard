@@ -10,6 +10,7 @@ import (
 	"github.com/fdatoo/switchyard/internal/storage"
 )
 
+// ErrNotFound means the requested configured user is not present.
 var ErrNotFound = errors.New("identity: user not found")
 
 // User represents a user from the Pkl config, with roles expanded into a flat list.

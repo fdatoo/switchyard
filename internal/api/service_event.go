@@ -10,12 +10,15 @@ import (
 	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
 )
 
+// EventService implements historical event queries and live tails.
 type EventService struct{ be EventSource }
 
+// NewEventService returns an event service backed by be.
 func NewEventService(be EventSource) *EventService { return &EventService{be: be} }
 
 var _ switchyardv1alpha1connect.EventServiceHandler = (*EventService)(nil)
 
+// Query returns historical events matching the request filter.
 func (s *EventService) Query(ctx context.Context, req *connect.Request[v1.QueryEventsRequest]) (*connect.Response[v1.QueryEventsResponse], error) {
 	cur, err := DecodeCursor(pageToken(req.Msg.Page))
 	if err != nil {
@@ -36,6 +39,7 @@ func (s *EventService) Query(ctx context.Context, req *connect.Request[v1.QueryE
 	return connect.NewResponse(out), nil
 }
 
+// Tail streams live events and idle heartbeats.
 func (s *EventService) Tail(ctx context.Context, req *connect.Request[v1.TailEventsRequest], stream *connect.ServerStream[v1.TailEventsResponse]) error {
 	cfg := currentStreamConfig()
 	filter := eventFilterFromProto(req.Msg.Filter)

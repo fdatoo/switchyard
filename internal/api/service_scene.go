@@ -32,12 +32,14 @@ type RealSceneService struct {
 	logger *slog.Logger
 }
 
+// NewRealSceneService returns a scene service backed by live config snapshots and invocation.
 func NewRealSceneService(snap SceneSnapshotReader, invoke SceneInvoker, logger *slog.Logger) *RealSceneService {
 	return &RealSceneService{snap: snap, invoke: invoke, logger: logger}
 }
 
 var _ switchyardv1alpha1connect.SceneServiceHandler = (*RealSceneService)(nil)
 
+// List returns configured scenes from the current config snapshot.
 func (s *RealSceneService) List(_ context.Context, _ *connect.Request[v1.ListScenesRequest]) (*connect.Response[v1.ListScenesResponse], error) {
 	snap := s.snap.Current()
 	out := make([]*v1.Scene, 0, len(snap.GetScenes()))
@@ -51,6 +53,7 @@ func (s *RealSceneService) List(_ context.Context, _ *connect.Request[v1.ListSce
 	return connect.NewResponse(&v1.ListScenesResponse{Scenes: out}), nil
 }
 
+// Apply invokes a scene and returns the generated correlation id.
 func (s *RealSceneService) Apply(ctx context.Context, req *connect.Request[v1.ApplySceneRequest]) (*connect.Response[v1.ApplySceneResponse], error) {
 	corrID := uuid.NewString()
 	err := s.invoke.Invoke(ctx, req.Msg.GetId(), corrID, "rpc:"+principalID(ctx))
@@ -63,6 +66,7 @@ func (s *RealSceneService) Apply(ctx context.Context, req *connect.Request[v1.Ap
 	return connect.NewResponse(&v1.ApplySceneResponse{CorrelationId: corrID}), nil
 }
 
+// Preview returns human-readable action lines without running the scene.
 func (s *RealSceneService) Preview(_ context.Context, req *connect.Request[v1.PreviewSceneRequest]) (*connect.Response[v1.PreviewSceneResponse], error) {
 	snap := s.snap.Current()
 	var scene *configv1.SceneConfig

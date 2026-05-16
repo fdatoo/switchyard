@@ -15,21 +15,25 @@ import (
 	"golang.org/x/crypto/argon2"
 )
 
+// Argon2idParams are the tunable password-hashing parameters.
 type Argon2idParams struct {
 	Time        uint32
 	MemoryKiB   uint32
 	Parallelism uint8
 }
 
+// DefaultArgon2idParams returns the daemon's target password-hashing cost.
 func DefaultArgon2idParams() Argon2idParams {
 	return Argon2idParams{Time: 3, MemoryKiB: 64 * 1024, Parallelism: 4}
 }
 
+// Password stores and verifies Argon2id password credentials.
 type Password struct {
 	db     *sql.DB
 	params Argon2idParams
 }
 
+// NewPassword returns a password store backed by db.
 func NewPassword(db *sql.DB, p Argon2idParams) *Password {
 	return &Password{db: db, params: p}
 }
@@ -66,6 +70,7 @@ func (p *Password) BootstrapHash(ctx context.Context, userSlug, encoded, setBy s
 	return err
 }
 
+// Delete removes the user's password credential if one exists.
 func (p *Password) Delete(ctx context.Context, userSlug string) error {
 	_, err := p.db.ExecContext(ctx, `DELETE FROM auth_passwords WHERE user_slug = ?`, userSlug)
 	return err

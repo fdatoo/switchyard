@@ -11,12 +11,15 @@ import (
 	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
 )
 
+// DriverService implements driver catalog and instance-control RPCs.
 type DriverService struct{ be DriverControl }
 
+// NewDriverService returns a driver service backed by be.
 func NewDriverService(be DriverControl) *DriverService { return &DriverService{be: be} }
 
 var _ switchyardv1alpha1connect.DriverServiceHandler = (*DriverService)(nil)
 
+// ListDrivers returns available driver implementations.
 func (s *DriverService) ListDrivers(ctx context.Context, req *connect.Request[v1.ListDriversRequest]) (*connect.Response[v1.ListDriversResponse], error) {
 	cur, err := DecodeCursor(pageToken(req.Msg.Page))
 	if err != nil {
@@ -41,6 +44,7 @@ func (s *DriverService) ListDrivers(ctx context.Context, req *connect.Request[v1
 	return connect.NewResponse(out), nil
 }
 
+// ListInstances returns configured driver processes and runtime state.
 func (s *DriverService) ListInstances(ctx context.Context, req *connect.Request[v1.ListInstancesRequest]) (*connect.Response[v1.ListInstancesResponse], error) {
 	cur, err := DecodeCursor(pageToken(req.Msg.Page))
 	if err != nil {
@@ -70,6 +74,7 @@ func (s *DriverService) ListInstances(ctx context.Context, req *connect.Request[
 	return connect.NewResponse(out), nil
 }
 
+// InstanceHealth probes one driver instance.
 func (s *DriverService) InstanceHealth(ctx context.Context, req *connect.Request[v1.InstanceHealthRequest]) (*connect.Response[v1.InstanceHealthResponse], error) {
 	ok, detail, err := s.be.InstanceHealth(ctx, req.Msg.InstanceId)
 	if err != nil {
@@ -78,6 +83,7 @@ func (s *DriverService) InstanceHealth(ctx context.Context, req *connect.Request
 	return connect.NewResponse(&v1.InstanceHealthResponse{Ok: ok, Detail: detail}), nil
 }
 
+// RestartInstance requests a supervised restart for one driver instance.
 func (s *DriverService) RestartInstance(ctx context.Context, req *connect.Request[v1.RestartInstanceRequest]) (*connect.Response[v1.RestartInstanceResponse], error) {
 	if err := s.be.RestartInstance(ctx, req.Msg.InstanceId, req.Msg.Reason, principalID(ctx)); err != nil {
 		return nil, ToConnect(ctx, err, "restart_failed")

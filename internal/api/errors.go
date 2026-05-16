@@ -15,25 +15,43 @@ import (
 )
 
 var (
-	ErrEntityNotFound       = errors.New("entity not found")
-	ErrDeviceNotFound       = errors.New("device not found")
-	ErrAreaNotFound         = errors.New("area not found")
-	ErrZoneNotFound         = errors.New("zone not found")
-	ErrDriverNotFound       = errors.New("driver not found")
-	ErrInstanceNotFound     = errors.New("driver instance not found")
-	ErrAutomationNotFound   = errors.New("automation not found")
-	ErrScriptNotFound       = errors.New("script not found")
-	ErrAutomationDisabled   = errors.New("automation disabled")
-	ErrRunNotFound          = errors.New("run not found")
-	ErrRunAlreadyFinished   = errors.New("run already finished")
-	ErrCapabilityUnknown    = errors.New("capability unknown")
-	ErrDriverUnavailable    = errors.New("driver unavailable")
+	// ErrEntityNotFound maps to Connect NotFound for entity APIs.
+	ErrEntityNotFound = errors.New("entity not found")
+	// ErrDeviceNotFound maps to Connect NotFound for device APIs.
+	ErrDeviceNotFound = errors.New("device not found")
+	// ErrAreaNotFound maps to Connect NotFound for area APIs.
+	ErrAreaNotFound = errors.New("area not found")
+	// ErrZoneNotFound maps to Connect NotFound for zone APIs.
+	ErrZoneNotFound = errors.New("zone not found")
+	// ErrDriverNotFound maps to Connect NotFound for driver APIs.
+	ErrDriverNotFound = errors.New("driver not found")
+	// ErrInstanceNotFound maps to Connect NotFound for driver-instance APIs.
+	ErrInstanceNotFound = errors.New("driver instance not found")
+	// ErrAutomationNotFound maps to Connect NotFound for automation APIs.
+	ErrAutomationNotFound = errors.New("automation not found")
+	// ErrScriptNotFound maps to Connect NotFound for script APIs.
+	ErrScriptNotFound = errors.New("script not found")
+	// ErrAutomationDisabled maps to Connect FailedPrecondition.
+	ErrAutomationDisabled = errors.New("automation disabled")
+	// ErrRunNotFound maps to Connect NotFound for run-scoped APIs.
+	ErrRunNotFound = errors.New("run not found")
+	// ErrRunAlreadyFinished maps to Connect FailedPrecondition for cancellation.
+	ErrRunAlreadyFinished = errors.New("run already finished")
+	// ErrCapabilityUnknown maps to Connect InvalidArgument for unsupported calls.
+	ErrCapabilityUnknown = errors.New("capability unknown")
+	// ErrDriverUnavailable maps to Connect Unavailable while a driver is down.
+	ErrDriverUnavailable = errors.New("driver unavailable")
+	// ErrSubscriptionOverflow maps to Connect ResourceExhausted for slow streams.
 	ErrSubscriptionOverflow = errors.New("subscription overflow")
-	ErrValidationFailed     = errors.New("validation failed")
-	ErrNotImplemented       = errors.New("not implemented")
-	ErrPathEscape           = errors.New("path escapes config dir")
+	// ErrValidationFailed maps to Connect InvalidArgument for user input.
+	ErrValidationFailed = errors.New("validation failed")
+	// ErrNotImplemented maps to Connect Unimplemented for reserved surfaces.
+	ErrNotImplemented = errors.New("not implemented")
+	// ErrPathEscape maps to Connect InvalidArgument for config path traversal.
+	ErrPathEscape = errors.New("path escapes config dir")
 )
 
+// ToConnect converts domain errors to Connect errors with structured details.
 func ToConnect(ctx context.Context, err error, reason string) error {
 	code := classify(err)
 	msg := err.Error()

@@ -21,6 +21,7 @@ func (noopSpan) SetAttr(string, any)     {}
 func (noopSpan) AddEvent(string, ...any) {}
 func (noopSpan) RecordError(error)       {}
 
+// SpanStarter starts a tracing span and returns the context that should carry it.
 type SpanStarter func(ctx context.Context, name string) (context.Context, Span)
 
 type spanContextKey struct{}
@@ -34,6 +35,7 @@ func startNoopSpan(ctx context.Context, _ string) (context.Context, Span) {
 	return ctx, noopSpan{}
 }
 
+// StartSpan starts a span using the configured starter and stores it in context.
 func StartSpan(ctx context.Context, name string) (context.Context, Span) {
 	spanStarterMu.RLock()
 	start := spanStarter
@@ -45,6 +47,7 @@ func StartSpan(ctx context.Context, name string) (context.Context, Span) {
 	return context.WithValue(ctx, spanContextKey{}, span), span
 }
 
+// SpanFromContext returns the span previously attached by StartSpan.
 func SpanFromContext(ctx context.Context) (Span, bool) {
 	span, ok := ctx.Value(spanContextKey{}).(Span)
 	if !ok || span == nil {
@@ -53,6 +56,7 @@ func SpanFromContext(ctx context.Context) (Span, bool) {
 	return span, true
 }
 
+// SetSpanStarterForTest replaces the span starter and returns a restore function.
 func SetSpanStarterForTest(start SpanStarter) func() {
 	if start == nil {
 		start = startNoopSpan

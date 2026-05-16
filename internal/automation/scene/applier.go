@@ -36,6 +36,7 @@ type Applier struct {
 	metrics  *observability.Metrics
 }
 
+// NewApplier wires scene execution to config snapshots, command dispatch, events, and scripts.
 func NewApplier(
 	snap SnapshotReader,
 	dispatch action.CommandDispatcher,

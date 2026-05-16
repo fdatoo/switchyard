@@ -18,6 +18,7 @@ import (
 	"github.com/fdatoo/switchyard/internal/observability"
 )
 
+// Config controls eventstore snapshot cadence and subscriber buffering.
 type Config struct {
 	SnapshotEveryEvents    int
 	SnapshotEveryPeriod    time.Duration
@@ -45,6 +46,7 @@ type projectorReg struct {
 	mode ProjectorMode
 }
 
+// Store is the append-only event log plus projector and subscription coordinator.
 type Store struct {
 	cfg     Config
 	db      *sql.DB
@@ -85,6 +87,7 @@ func Open(ctx context.Context, cfg Config, db *sql.DB, logger *slog.Logger, metr
 	return s, nil
 }
 
+// RegisterProjector adds a projector before the store starts.
 func (s *Store) RegisterProjector(p Projector, mode ProjectorMode) error {
 	if s.started.Load() {
 		return errors.New("RegisterProjector: already started")
@@ -107,6 +110,7 @@ func (s *Store) ProjectorNames() []string {
 	return names
 }
 
+// LatestPosition returns the highest committed event position known to the store.
 func (s *Store) LatestPosition() uint64 {
 	s.mu.RLock()
 	defer s.mu.RUnlock()

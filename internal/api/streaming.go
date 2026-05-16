@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// HeartbeatTicker emits stream heartbeats only after an idle interval.
 type HeartbeatTicker struct {
 	interval time.Duration
 	c        chan time.Time
@@ -14,6 +15,7 @@ type HeartbeatTicker struct {
 	once     sync.Once
 }
 
+// NewHeartbeatTicker starts a heartbeat ticker tied to ctx.
 func NewHeartbeatTicker(ctx context.Context, interval time.Duration) *HeartbeatTicker {
 	t := &HeartbeatTicker{
 		interval: interval,
@@ -53,8 +55,10 @@ func (t *HeartbeatTicker) run(ctx context.Context) {
 	}
 }
 
+// C returns the channel that receives idle heartbeat ticks.
 func (t *HeartbeatTicker) C() <-chan time.Time { return t.c }
 
+// NotePayloadSent resets the idle timer after a real stream payload is sent.
 func (t *HeartbeatTicker) NotePayloadSent() {
 	select {
 	case t.resetCh <- struct{}{}:
@@ -62,6 +66,7 @@ func (t *HeartbeatTicker) NotePayloadSent() {
 	}
 }
 
+// Stop terminates the ticker goroutine.
 func (t *HeartbeatTicker) Stop() {
 	t.once.Do(func() { close(t.done) })
 }

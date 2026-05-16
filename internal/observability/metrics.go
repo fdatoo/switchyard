@@ -4,6 +4,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
+// Metrics groups every Prometheus collector registered by the daemon.
 type Metrics struct {
 	Registry *prometheus.Registry
 
@@ -110,6 +111,7 @@ type Metrics struct {
 	PolicyAuthorizeDurationSeconds prometheus.Histogram
 }
 
+// NewMetrics creates an isolated registry and registers all daemon collectors.
 func NewMetrics() *Metrics {
 	reg := prometheus.NewRegistry()
 	m := &Metrics{Registry: reg}
@@ -445,6 +447,7 @@ func NewMetrics() *Metrics {
 	return m
 }
 
+// SetBuildInfo publishes immutable build metadata as a Prometheus gauge label set.
 func (m *Metrics) SetBuildInfo(version, commit, goVersion string) {
 	m.BuildInfo.WithLabelValues(version, commit, goVersion).Set(1)
 }

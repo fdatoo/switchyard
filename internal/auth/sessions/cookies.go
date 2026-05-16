@@ -12,9 +12,12 @@ import (
 )
 
 var (
+	// ErrSessionInvalid means a session cookie is malformed or fails signature checks.
 	ErrSessionInvalid = errors.New("sessions: invalid")
+	// ErrSessionExpired means a valid session is past its expiration time.
 	ErrSessionExpired = errors.New("sessions: expired")
-	ErrSessionReplay  = errors.New("sessions: refresh replay detected")
+	// ErrSessionReplay means a refresh token was reused after rotation.
+	ErrSessionReplay = errors.New("sessions: refresh replay detected")
 )
 
 // AccessClaim is what the access cookie carries (HMAC-signed).
@@ -60,7 +63,10 @@ func decodeAccessCookie(value string, key []byte) (AccessClaim, error) {
 	return AccessClaim{SessionID: parts[0], UserSlug: parts[1], AuthMethod: parts[2], Exp: exp}, nil
 }
 
-// RefreshCookie carries the refresh secret in plaintext (server-stored hash authoritatively validates).
+// RefreshCookie carries the refresh secret in plaintext.
+//
+// The server-stored hash is authoritative; this type only represents the
+// client cookie value before verification.
 type RefreshCookie struct {
 	SessionID     string
 	RefreshSecret string

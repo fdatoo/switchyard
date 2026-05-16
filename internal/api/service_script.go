@@ -17,18 +17,21 @@ import (
 	"github.com/fdatoo/switchyard/internal/auth"
 )
 
+// ScriptService implements Starlark script listing, execution, eval, and tests.
 type ScriptService struct {
 	be      ScriptRunner
 	events  EventAppender
 	mcpCaps MCPCapsProvider
 }
 
+// NewScriptService returns a script service backed by runner, event audit, and MCP caps.
 func NewScriptService(be ScriptRunner, events EventAppender, caps MCPCapsProvider) *ScriptService {
 	return &ScriptService{be: be, events: events, mcpCaps: caps}
 }
 
 var _ switchyardv1alpha1connect.ScriptServiceHandler = (*ScriptService)(nil)
 
+// List returns invocable scripts with API pagination.
 func (s *ScriptService) List(ctx context.Context, req *connect.Request[v1.ListScriptsRequest]) (*connect.Response[v1.ListScriptsResponse], error) {
 	cur, err := DecodeCursor(pageToken(req.Msg.Page))
 	if err != nil {
@@ -48,6 +51,7 @@ func (s *ScriptService) List(ctx context.Context, req *connect.Request[v1.ListSc
 	return connect.NewResponse(out), nil
 }
 
+// Run invokes a named script with structured arguments.
 func (s *ScriptService) Run(ctx context.Context, req *connect.Request[v1.RunScriptRequest]) (*connect.Response[v1.RunScriptResponse], error) {
 	var args map[string]any
 	if req.Msg.Args != nil {
@@ -63,6 +67,7 @@ func (s *ScriptService) Run(ctx context.Context, req *connect.Request[v1.RunScri
 	}), nil
 }
 
+// Cancel requests cancellation for a running script.
 func (s *ScriptService) Cancel(ctx context.Context, req *connect.Request[v1.CancelScriptRequest]) (*connect.Response[v1.CancelScriptResponse], error) {
 	if err := s.be.Cancel(ctx, req.Msg.RunId); err != nil {
 		return nil, ToConnect(ctx, err, "cancel_failed")
@@ -70,6 +75,7 @@ func (s *ScriptService) Cancel(ctx context.Context, req *connect.Request[v1.Canc
 	return connect.NewResponse(&v1.CancelScriptResponse{}), nil
 }
 
+// Eval executes ad hoc Starlark and audits MCP-originated evaluations.
 func (s *ScriptService) Eval(ctx context.Context, req *connect.Request[v1.EvalScriptRequest]) (*connect.Response[v1.EvalScriptResponse], error) {
 	source, _ := SourceFromContext(ctx)
 	fromMCP := source == "mcp"
@@ -138,6 +144,7 @@ func errString(err error) string {
 	return err.Error()
 }
 
+// RunTests streams Starlark test results and idle heartbeats.
 func (s *ScriptService) RunTests(ctx context.Context, req *connect.Request[v1.RunTestsRequest], stream *connect.ServerStream[v1.RunTestsResponse]) error {
 	if req.Msg.Path == "" {
 		return ToConnect(ctx, ErrValidationFailed, "missing_path")

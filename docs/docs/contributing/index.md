@@ -43,8 +43,9 @@ New or improved configuration examples go in `switchyard/examples/`. The directo
 1. **Fork the relevant repository** — `switchyard`, `switchyard-driverkit`, or `switchyard-docs`, depending on what you are changing.
 2. **Create a feature branch** — branch from `main` with a descriptive name (`feat/zigbee-driver`, `fix/event-replay-ordering`).
 3. **Run tests** — `task test` must pass before opening a PR. See [Dev setup](dev-setup.md) for all available task targets.
-4. **Open a PR with a clear description** — explain what the change does, why it is needed, and how you tested it. Link to the relevant issue.
-5. **Address review feedback** — maintainers may request changes. Push follow-up commits to the same branch; do not force-push after review has started.
+4. **Keep ownership clear** — use the [Repository architecture](repo-architecture.md) map when choosing where code belongs.
+5. **Open a PR with a clear description** — explain what the change does, why it is needed, and how you tested it. Link to the relevant issue.
+6. **Address review feedback** — maintainers may request changes. Push follow-up commits to the same branch; do not force-push after review has started.
 
 PRs will not be merged without a linked issue for non-trivial changes.
 

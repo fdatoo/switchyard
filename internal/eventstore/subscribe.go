@@ -12,6 +12,7 @@ import (
 	"github.com/fdatoo/switchyard/internal/observability"
 )
 
+// SubscribeOptions controls live event delivery and optional durable catchup.
 type SubscribeOptions struct {
 	FromPosition  uint64
 	Filter        Filter
@@ -20,6 +21,7 @@ type SubscribeOptions struct {
 	ChannelBuffer int
 }
 
+// Subscription is a live stream of events from the store.
 type Subscription interface {
 	C() <-chan Event
 	Ack(position uint64) error
@@ -27,6 +29,7 @@ type Subscription interface {
 	Stats() SubscriptionStats
 }
 
+// SubscriptionStats reports delivery counters and current buffer pressure.
 type SubscriptionStats struct {
 	Delivered uint64
 	Dropped   uint64
@@ -131,6 +134,7 @@ func (sub *subscriber) Stats() SubscriptionStats {
 	}
 }
 
+// Subscribe returns a live event subscription, optionally after durable catchup.
 func (s *Store) Subscribe(ctx context.Context, opts SubscribeOptions) (Subscription, error) {
 	if !s.started.Load() {
 		return nil, errors.New("Subscribe: store not started")

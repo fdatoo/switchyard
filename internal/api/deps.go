@@ -12,6 +12,7 @@ import (
 	"github.com/fdatoo/switchyard/internal/auth"
 )
 
+// VersionInfo is immutable build and schema metadata exposed by SystemService.
 type VersionInfo struct {
 	BinaryVersion string
 	GitCommit     string
@@ -19,12 +20,14 @@ type VersionInfo struct {
 	SchemaVersion string
 }
 
+// SubsystemHealth is one component's contribution to daemon health.
 type SubsystemHealth struct {
 	Name   string
 	OK     bool
 	Detail string
 }
 
+// MCPConfig contains runtime limits used by MCP tools and resources.
 type MCPConfig struct {
 	EvalResultMaxBytes       uint32
 	ReadFileMaxBytes         uint32
@@ -41,6 +44,7 @@ type EventStoreStats struct {
 	SnapshotCount         uint32
 }
 
+// SystemBackend is the daemon-facing dependency set for SystemService.
 type SystemBackend interface {
 	Version() VersionInfo
 	Health(ctx context.Context) (ok bool, summary string, sub []SubsystemHealth)
@@ -58,28 +62,33 @@ type SystemBackend interface {
 
 // --- Area & Zone ---
 
+// Area is a configured physical or logical area.
 type Area struct {
 	ID          string
 	DisplayName string
 	ParentID    string
 }
 
+// Zone groups areas for navigation, policy, and automation targeting.
 type Zone struct {
 	ID          string
 	DisplayName string
 	AreaIDs     []string
 }
 
+// PageReq is the internal pagination request shared by API adapters.
 type PageReq struct {
 	Size   uint32
 	Cursor Cursor
 }
 
+// AreaReader reads configured areas for API handlers.
 type AreaReader interface {
 	ListAreas(ctx context.Context, page PageReq) ([]Area, Cursor, error)
 	GetArea(ctx context.Context, id string) (Area, error)
 }
 
+// ZoneReader reads configured zones for API handlers.
 type ZoneReader interface {
 	ListZones(ctx context.Context, page PageReq) ([]Zone, Cursor, error)
 	GetZone(ctx context.Context, id string) (Zone, error)
@@ -87,6 +96,7 @@ type ZoneReader interface {
 
 // --- Device ---
 
+// Device is the registry view of a discovered or configured device.
 type Device struct {
 	ID               string
 	FriendlyName     string
@@ -95,6 +105,7 @@ type Device struct {
 	EntityIDs        []string
 }
 
+// DeviceReader reads registry devices for API handlers.
 type DeviceReader interface {
 	ListDevices(ctx context.Context, areaID string, page PageReq) ([]Device, Cursor, error)
 	GetDevice(ctx context.Context, id string) (Device, error)
@@ -110,12 +121,14 @@ type DeviceWriter interface {
 
 // --- Entity ---
 
+// Entity is the API-layer projection of a controllable or observable entity.
 type Entity struct {
 	ID, Type, DeviceID, AreaID, ZoneID, FriendlyName string
 	State                                            *entityv1.Attributes
 	Capabilities                                     *entityv1.Attributes
 }
 
+// EntitySelector narrows entity reads and subscriptions.
 type EntitySelector struct {
 	EntityIDs []string
 	DeviceIDs []string
@@ -124,6 +137,7 @@ type EntitySelector struct {
 	Classes   []string
 }
 
+// EntityReader reads entities from the live registry and state cache.
 type EntityReader interface {
 	ListEntities(ctx context.Context, sel EntitySelector, page PageReq) ([]Entity, Cursor, error)
 	GetEntity(ctx context.Context, id string) (Entity, error)
@@ -140,6 +154,7 @@ type CapabilityCallResult struct {
 	ErrorMessage  string
 }
 
+// CapabilityCaller dispatches entity capability calls to the owning driver.
 type CapabilityCaller interface {
 	// Call dispatches the capability invocation through the carport supervisor;
 	// blocks until the driver acks or ctx is cancelled. The returned error is
@@ -157,6 +172,7 @@ type EntityStreamSource interface {
 	Subscribe(ctx context.Context, sel EntitySelector, fromCursor uint64) (<-chan EntityChange, func(), error)
 }
 
+// EntityChange is one cursor-addressed update from an entity subscription.
 type EntityChange struct {
 	EntityID string
 	Cursor   uint64
@@ -166,17 +182,20 @@ type EntityChange struct {
 
 // --- Driver ---
 
+// Driver describes an available driver implementation.
 type Driver struct {
 	Name, Version, Description string
 	EntityClasses              []string
 }
 
+// DriverInstance is the runtime status of one configured driver process.
 type DriverInstance struct {
 	ID, DriverName, Status string
 	EntityCount            uint32
 	LastHandshakeUnixMs    int64
 }
 
+// DriverControl reads and mutates driver runtime state.
 type DriverControl interface {
 	ListDrivers(ctx context.Context, page PageReq) ([]Driver, Cursor, error)
 	ListInstances(ctx context.Context, page PageReq) ([]DriverInstance, Cursor, error)
@@ -186,6 +205,7 @@ type DriverControl interface {
 
 // --- Event ---
 
+// Event is the API-layer view of one eventstore row.
 type Event struct {
 	Cursor        uint64
 	At            time.Time
@@ -197,6 +217,7 @@ type Event struct {
 	Payload       *eventv1.Payload
 }
 
+// EventFilter narrows event queries and tail subscriptions.
 type EventFilter struct {
 	Kinds        []string
 	EntityPrefix string
@@ -207,6 +228,7 @@ type EventFilter struct {
 	ToTime       time.Time
 }
 
+// EventSource queries and subscribes to the event log.
 type EventSource interface {
 	Query(ctx context.Context, filter EventFilter, page PageReq) ([]Event, Cursor, error)
 	Subscribe(ctx context.Context, filter EventFilter) (<-chan Event, func(), error)
@@ -214,6 +236,7 @@ type EventSource interface {
 
 // --- Config ---
 
+// ConfigDiff summarizes a config validation or apply delta.
 type ConfigDiff struct {
 	DriverAdded, DriverRemoved, DriverChanged int32
 	EntitiesAdded, EntitiesRemoved            int32
@@ -221,6 +244,7 @@ type ConfigDiff struct {
 	Lines                                     []string
 }
 
+// ConfigApplyResult is the outcome of applying a config bundle.
 type ConfigApplyResult struct {
 	Applied       bool
 	Diff          ConfigDiff
@@ -237,6 +261,7 @@ type ConfigChangedEvent struct {
 	BundleHash string
 }
 
+// ConfigApplier validates, applies, reloads, and streams config snapshots.
 type ConfigApplier interface {
 	Validate(ctx context.Context, pklBundle []byte) (valid bool, errs []string, diff ConfigDiff, hash string, err error)
 	Apply(ctx context.Context, pklBundle []byte, message, expectedHash string, dryRun, strict bool, actor string) (ConfigApplyResult, error)
@@ -250,6 +275,7 @@ type ConfigApplier interface {
 
 // --- Automation ---
 
+// Automation is the API-layer summary of one configured automation.
 type Automation struct {
 	ID, DisplayName, Mode string
 	Enabled               bool
@@ -257,6 +283,7 @@ type Automation struct {
 	Areas                 []string
 }
 
+// TraceEvent is one automation-run trace item.
 type TraceEvent struct {
 	Cursor       uint64
 	At           time.Time
@@ -267,6 +294,7 @@ type TraceEvent struct {
 	Metadata     map[string]string
 }
 
+// AutomationControl reads and mutates automation runtime state.
 type AutomationControl interface {
 	List(ctx context.Context, page PageReq) ([]Automation, Cursor, error)
 	Get(ctx context.Context, id string) (Automation, error)
@@ -298,20 +326,24 @@ func ErrSceneNotFound() error { return errSceneNotFoundSentinel }
 
 // --- Script ---
 
+// Script is the API-layer summary of one invocable Starlark script.
 type Script struct {
 	Name, Description string
 }
 
+// ScriptRunResult is the immediate result of starting or completing a script run.
 type ScriptRunResult struct {
 	RunID  string
 	Result *structpb.Value
 }
 
+// StarlarkTestEvent is one streamed test result from a Starlark test file.
 type StarlarkTestEvent struct {
 	Name, Outcome, Detail string
 	At                    time.Time
 }
 
+// ScriptRunner executes Starlark scripts and test files for API handlers.
 type ScriptRunner interface {
 	List(ctx context.Context, page PageReq) ([]Script, Cursor, error)
 	Run(ctx context.Context, name string, args map[string]any, actor string) (ScriptRunResult, error)

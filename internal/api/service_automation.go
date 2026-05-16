@@ -12,12 +12,14 @@ import (
 	"github.com/fdatoo/switchyard/gen/switchyard/v1alpha1/switchyardv1alpha1connect"
 )
 
+// AutomationService implements automation query, control, detail, and trace RPCs.
 type AutomationService struct {
 	be      AutomationControl
 	configs ConfigApplier
 	sys     SystemBackend
 }
 
+// NewAutomationService returns an automation service without detail support.
 func NewAutomationService(be AutomationControl) *AutomationService {
 	return &AutomationService{be: be}
 }
@@ -30,6 +32,7 @@ func NewAutomationServiceWithDetail(be AutomationControl, configs ConfigApplier,
 
 var _ switchyardv1alpha1connect.AutomationServiceHandler = (*AutomationService)(nil)
 
+// List returns automations, optionally filtered by area.
 func (s *AutomationService) List(ctx context.Context, req *connect.Request[v1.ListAutomationsRequest]) (*connect.Response[v1.ListAutomationsResponse], error) {
 	cur, err := DecodeCursor(pageToken(req.Msg.Page))
 	if err != nil {
@@ -62,6 +65,7 @@ func stringInSlice(s []string, want string) bool {
 	return false
 }
 
+// Get returns one automation summary by id.
 func (s *AutomationService) Get(ctx context.Context, req *connect.Request[v1.GetAutomationRequest]) (*connect.Response[v1.GetAutomationResponse], error) {
 	a, err := s.be.Get(ctx, req.Msg.Id)
 	if err != nil {
@@ -70,6 +74,7 @@ func (s *AutomationService) Get(ctx context.Context, req *connect.Request[v1.Get
 	return connect.NewResponse(&v1.GetAutomationResponse{Automation: automationToProto(a)}), nil
 }
 
+// GetDetail returns an automation summary plus source-adjacent editor data.
 func (s *AutomationService) GetDetail(ctx context.Context, req *connect.Request[v1.GetAutomationDetailRequest]) (*connect.Response[v1.GetAutomationDetailResponse], error) {
 	if s.configs == nil || s.sys == nil {
 		return nil, connect.NewError(connect.CodeUnimplemented, errors.New("GetDetail not configured"))
@@ -111,6 +116,7 @@ func (s *AutomationService) GetDetail(ctx context.Context, req *connect.Request[
 	}), nil
 }
 
+// Enable marks an automation enabled.
 func (s *AutomationService) Enable(ctx context.Context, req *connect.Request[v1.EnableAutomationRequest]) (*connect.Response[v1.EnableAutomationResponse], error) {
 	a, err := s.be.SetEnabled(ctx, req.Msg.Id, true, principalID(ctx))
 	if err != nil {
@@ -119,6 +125,7 @@ func (s *AutomationService) Enable(ctx context.Context, req *connect.Request[v1.
 	return connect.NewResponse(&v1.EnableAutomationResponse{Automation: automationToProto(a)}), nil
 }
 
+// Disable marks an automation disabled.
 func (s *AutomationService) Disable(ctx context.Context, req *connect.Request[v1.DisableAutomationRequest]) (*connect.Response[v1.DisableAutomationResponse], error) {
 	a, err := s.be.SetEnabled(ctx, req.Msg.Id, false, principalID(ctx))
 	if err != nil {
@@ -127,6 +134,7 @@ func (s *AutomationService) Disable(ctx context.Context, req *connect.Request[v1
 	return connect.NewResponse(&v1.DisableAutomationResponse{Automation: automationToProto(a)}), nil
 }
 
+// Trigger starts one automation run immediately.
 func (s *AutomationService) Trigger(ctx context.Context, req *connect.Request[v1.TriggerAutomationRequest]) (*connect.Response[v1.TriggerAutomationResponse], error) {
 	runID, err := s.be.Trigger(ctx, req.Msg.Id, principalID(ctx))
 	if err != nil {
@@ -135,6 +143,7 @@ func (s *AutomationService) Trigger(ctx context.Context, req *connect.Request[v1
 	return connect.NewResponse(&v1.TriggerAutomationResponse{RunId: runID}), nil
 }
 
+// Trace streams automation trace events and idle heartbeats.
 func (s *AutomationService) Trace(ctx context.Context, req *connect.Request[v1.TraceAutomationRequest], stream *connect.ServerStream[v1.TraceAutomationResponse]) error {
 	cfg := currentStreamConfig()
 	src, cancel, err := s.be.Trace(ctx, req.Msg.Id, req.Msg.RunId, req.Msg.FromCursor)

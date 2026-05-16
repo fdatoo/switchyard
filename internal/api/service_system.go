@@ -11,16 +11,19 @@ import (
 	"github.com/fdatoo/switchyard/internal/auth"
 )
 
+// SystemService implements daemon metadata, health, diagnostics, and admin RPCs.
 type SystemService struct {
 	be SystemBackend
 }
 
+// NewSystemService returns a system service backed by be.
 func NewSystemService(be SystemBackend) *SystemService {
 	return &SystemService{be: be}
 }
 
 var _ switchyardv1alpha1connect.SystemServiceHandler = (*SystemService)(nil)
 
+// Version returns build and schema metadata.
 func (s *SystemService) Version(_ context.Context, _ *connect.Request[systemv1.VersionRequest]) (*connect.Response[systemv1.VersionResponse], error) {
 	v := s.be.Version()
 	return connect.NewResponse(&systemv1.VersionResponse{
@@ -31,6 +34,7 @@ func (s *SystemService) Version(_ context.Context, _ *connect.Request[systemv1.V
 	}), nil
 }
 
+// Health returns aggregate daemon health and subsystem details.
 func (s *SystemService) Health(ctx context.Context, _ *connect.Request[systemv1.HealthRequest]) (*connect.Response[systemv1.HealthResponse], error) {
 	ok, summary, subs := s.be.Health(ctx)
 	out := &systemv1.HealthResponse{Ok: ok, Summary: summary}
@@ -42,6 +46,7 @@ func (s *SystemService) Health(ctx context.Context, _ *connect.Request[systemv1.
 	return connect.NewResponse(out), nil
 }
 
+// Metrics returns a Prometheus text exposition snapshot.
 func (s *SystemService) Metrics(ctx context.Context, _ *connect.Request[systemv1.MetricsRequest]) (*connect.Response[systemv1.MetricsResponse], error) {
 	text, err := s.be.MetricsText()
 	if err != nil {
@@ -50,6 +55,7 @@ func (s *SystemService) Metrics(ctx context.Context, _ *connect.Request[systemv1
 	return connect.NewResponse(&systemv1.MetricsResponse{PrometheusText: text}), nil
 }
 
+// Diagnostics returns an operator support bundle.
 func (s *SystemService) Diagnostics(ctx context.Context, _ *connect.Request[systemv1.DiagnosticsRequest]) (*connect.Response[systemv1.DiagnosticsResponse], error) {
 	bundle, hash, t, err := s.be.Diagnostics(ctx)
 	if err != nil {
@@ -62,6 +68,7 @@ func (s *SystemService) Diagnostics(ctx context.Context, _ *connect.Request[syst
 	}), nil
 }
 
+// CreateSnapshot asks the eventstore to write a named projection snapshot.
 func (s *SystemService) CreateSnapshot(ctx context.Context, req *connect.Request[systemv1.CreateSnapshotRequest]) (*connect.Response[systemv1.CreateSnapshotResponse], error) {
 	cursor, t, err := s.be.CreateSnapshot(ctx, req.Msg.Owner, req.Msg.Reason)
 	if err != nil {
@@ -73,6 +80,7 @@ func (s *SystemService) CreateSnapshot(ctx context.Context, req *connect.Request
 	}), nil
 }
 
+// GetConfigDir returns the daemon's active config directory.
 func (s *SystemService) GetConfigDir(ctx context.Context, _ *connect.Request[systemv1.GetConfigDirRequest]) (*connect.Response[systemv1.GetConfigDirResponse], error) {
 	dir, err := s.be.ConfigDir(ctx)
 	if err != nil {
@@ -81,6 +89,7 @@ func (s *SystemService) GetConfigDir(ctx context.Context, _ *connect.Request[sys
 	return connect.NewResponse(&systemv1.GetConfigDirResponse{ConfigDir: dir}), nil
 }
 
+// GetMCPConfig returns MCP runtime caps from daemon configuration.
 func (s *SystemService) GetMCPConfig(ctx context.Context, _ *connect.Request[systemv1.GetMCPConfigRequest]) (*connect.Response[systemv1.GetMCPConfigResponse], error) {
 	cfg, err := s.be.MCPConfig(ctx)
 	if err != nil {
@@ -96,6 +105,7 @@ func (s *SystemService) GetMCPConfig(ctx context.Context, _ *connect.Request[sys
 	}), nil
 }
 
+// RecordConfigFileEdit appends an audit event for a config-file edit session.
 func (s *SystemService) RecordConfigFileEdit(ctx context.Context, req *connect.Request[systemv1.RecordConfigFileEditRequest]) (*connect.Response[systemv1.RecordConfigFileEditResponse], error) {
 	p, ok := auth.PrincipalFromContext(ctx)
 	if !ok {

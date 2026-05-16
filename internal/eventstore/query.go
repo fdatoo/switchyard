@@ -11,6 +11,7 @@ import (
 	eventv1 "github.com/fdatoo/switchyard/gen/switchyard/event/v1"
 )
 
+// QueryOptions bounds and filters a historical event query.
 type QueryOptions struct {
 	FromPosition uint64
 	ToPosition   uint64

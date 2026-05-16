@@ -16,10 +16,19 @@ import (
 type ArgType int
 
 const (
-	ArgTypeString     ArgType = ArgType(catalogv1.ArgType_ARG_TYPE_STRING)
-	ArgTypeInt        ArgType = ArgType(catalogv1.ArgType_ARG_TYPE_INT)
-	ArgTypeBool       ArgType = ArgType(catalogv1.ArgType_ARG_TYPE_BOOL)
-	ArgTypeDuration   ArgType = ArgType(catalogv1.ArgType_ARG_TYPE_DURATION)
+	// ArgTypeString accepts a single string value.
+	ArgTypeString ArgType = ArgType(catalogv1.ArgType_ARG_TYPE_STRING)
+
+	// ArgTypeInt accepts a base-10 integer value.
+	ArgTypeInt ArgType = ArgType(catalogv1.ArgType_ARG_TYPE_INT)
+
+	// ArgTypeBool accepts a boolean value.
+	ArgTypeBool ArgType = ArgType(catalogv1.ArgType_ARG_TYPE_BOOL)
+
+	// ArgTypeDuration accepts a Go-style duration string.
+	ArgTypeDuration ArgType = ArgType(catalogv1.ArgType_ARG_TYPE_DURATION)
+
+	// ArgTypeStringList accepts a repeated string value.
 	ArgTypeStringList ArgType = ArgType(catalogv1.ArgType_ARG_TYPE_STRING_LIST)
 )
 

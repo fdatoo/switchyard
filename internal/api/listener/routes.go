@@ -9,6 +9,7 @@ import (
 	"github.com/fdatoo/switchyard/gen/switchyard/driver/v1/driverv1connect"
 	"github.com/fdatoo/switchyard/gen/switchyard/editsession/v1/editsessionv1connect"
 	pagev1connect "github.com/fdatoo/switchyard/gen/switchyard/page/v1/pagev1connect"
+	"github.com/fdatoo/switchyard/gen/switchyard/pkllsp/v1/pkllspv1connect"
 	"github.com/fdatoo/switchyard/gen/switchyard/replay/v1/replayv1connect"
 	solarv1connect "github.com/fdatoo/switchyard/gen/switchyard/solar/v1/solarv1connect"
 	"github.com/fdatoo/switchyard/gen/switchyard/starlarkls/v1/starlarklsv1connect"
@@ -34,6 +35,7 @@ type Services struct {
 	CommandCatalog   commandcatalogv1connect.CommandCatalogServiceHandler
 	DriverManagement driverv1connect.DriverManagementServiceHandler
 	EditSession      editsessionv1connect.EditSessionServiceHandler
+	PklLs            pkllspv1connect.PklLsServiceHandler
 	StarlarkLs       starlarklsv1connect.StarlarkLsServiceHandler
 	Activity         activityv1connect.ActivityServiceHandler
 	Replay           replayv1connect.ReplayServiceHandler
@@ -101,6 +103,10 @@ func BuildRoutes(svc Services, interceptors ...connect.Interceptor) []Route {
 	p, h = editsessionv1connect.NewEditSessionServiceHandler(svc.EditSession, opts)
 	routes = append(routes, Route{Path: p, Handler: h})
 
+	if svc.PklLs != nil {
+		p, h = pkllspv1connect.NewPklLsServiceHandler(svc.PklLs, opts)
+		routes = append(routes, Route{Path: p, Handler: h})
+	}
 	if svc.StarlarkLs != nil {
 		p, h = starlarklsv1connect.NewStarlarkLsServiceHandler(svc.StarlarkLs, opts)
 		routes = append(routes, Route{Path: p, Handler: h})

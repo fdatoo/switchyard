@@ -57,13 +57,15 @@ const activeId = computed<string>(() => {
   return segs[1] ?? "appearance";
 });
 
+const editorRoute = computed<boolean>(() => activeId.value === "pkl" || activeId.value === "starlark");
+
 function go(path: string): void {
   router.push(path);
 }
 </script>
 
 <template>
-  <div class="settings">
+  <div class="settings" :class="{ 'settings--editor': editorRoute }">
     <aside class="settings__rail" aria-label="Settings sections">
       <div v-for="g in GROUPS" :key="g.heading" class="settings__group">
         <SyText
@@ -131,5 +133,16 @@ function go(path: string): void {
 .settings__content {
   min-width: 0;
   max-width: 720px;
+}
+
+.settings--editor {
+  grid-template-columns: 190px minmax(0, 1fr);
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.settings--editor .settings__content {
+  max-width: none;
+  min-height: 0;
 }
 </style>

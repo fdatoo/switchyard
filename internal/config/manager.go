@@ -26,6 +26,10 @@ type eventStore interface {
 	Append(ctx context.Context, e eventstore.Event) (uint64, error)
 }
 
+type closeableConfigEvaluator interface {
+	Close() error
+}
+
 // Manager is the main entry point for config evaluation, validation, and application.
 // It is safe for concurrent use.
 type Manager struct {
@@ -71,6 +75,18 @@ func NewManager(ctx context.Context, configDir, driversRoot string, store eventS
 		store:       store,
 		carportMgr:  carportMgr,
 	}, nil
+}
+
+// Close releases resources owned by the config evaluator.
+func (m *Manager) Close() error {
+	if m == nil {
+		return nil
+	}
+	ev, ok := m.ev.(closeableConfigEvaluator)
+	if !ok {
+		return nil
+	}
+	return ev.Close()
 }
 
 // registerInstance resolves the binary path and lifecycle for one instance

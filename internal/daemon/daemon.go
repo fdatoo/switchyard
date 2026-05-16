@@ -50,6 +50,7 @@ import (
 	"github.com/fdatoo/switchyard/internal/observability"
 	"github.com/fdatoo/switchyard/internal/page"
 	"github.com/fdatoo/switchyard/internal/pkl"
+	"github.com/fdatoo/switchyard/internal/pkllsp"
 	"github.com/fdatoo/switchyard/internal/policy"
 	"github.com/fdatoo/switchyard/internal/registry"
 	"github.com/fdatoo/switchyard/internal/replay"
@@ -582,6 +583,17 @@ func (d *Daemon) Run(ctx context.Context) (err error) {
 		editSvc.SetOnCommitTrigger(d.configReloader.Trigger)
 	}
 
+	pklNamespaceDir := filepath.Join(dataDir, "pkl-lsp", "switchyard")
+	if err := config.ExportSwitchyardPklModules(pklNamespaceDir); err != nil {
+		d.logger.Warn("pkllsp: failed to export switchyard Pkl namespace", "err", err)
+	}
+	pklLsSvc := pkllsp.NewService(pkllsp.Config{
+		BinaryPath:             d.cfg.PklLspPath,
+		ConfigDir:              configDir,
+		SwitchyardNamespaceDir: pklNamespaceDir,
+		Logger:                 d.logger,
+	})
+
 	// StarlarkLs subsystem — symbol extractor for scripts directory.
 	starSyms, err := starlarkls.ExtractSymbols(filepath.Join(configDir, "scripts"))
 	if err != nil {
@@ -634,6 +646,7 @@ func (d *Daemon) Run(ctx context.Context) (err error) {
 			Metrics:    d.metrics,
 		}),
 		EditSession:      editSvc,
+		PklLs:            pklLsSvc,
 		StarlarkLs:       starLsSvc,
 		Activity:         activitySvc,
 		DriverManagement: drvMgmtSvc,
@@ -704,7 +717,11 @@ func (d *Daemon) Run(ctx context.Context) (err error) {
 	if err := apiListener.Start(ctx); err != nil {
 		return fmt.Errorf("daemon: start api listener: %w", err)
 	}
-	defer func() { _ = apiListener.Shutdown(context.Background()) }() //nolint:contextcheck
+	defer func() {
+		if err := apiListener.Close(); err != nil {
+			d.logger.Warn("api listener close failed", "err", err)
+		}
+	}()
 
 	// Phase 5: all listeners up — health now returns 200.
 	startStartupPhase(5)
@@ -752,6 +769,17 @@ func (d *Daemon) Run(ctx context.Context) (err error) {
 	// shutCtx is derived from Background intentionally — the parent context is already cancelled at this point.
 	shutCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+	if err := apiListener.Close(); err != nil {
+		d.logger.Warn("api listener close failed", "err", err)
+	}
+	if err := pklLsSvc.Close(shutCtx); err != nil { //nolint:contextcheck
+		d.logger.Warn("pkllsp shutdown failed", "err", err)
+	}
+	if d.configMgr != nil {
+		if err := d.configMgr.Close(); err != nil {
+			d.logger.Warn("config evaluator shutdown failed", "err", err)
+		}
+	}
 
 	// Stop event-producing subsystems before snapshotting so the final
 	// snapshot doesn't race their writes. SQLite returns BUSY (517) if a
@@ -769,7 +797,7 @@ func (d *Daemon) Run(ctx context.Context) (err error) {
 	if _, err := store.SnapshotNow(shutCtx, "state_cache"); err != nil { //nolint:contextcheck
 		d.logger.Warn("final snapshot failed", "err", err)
 	}
-	_ = store.Close(ctx)
+	_ = store.Close(shutCtx) //nolint:contextcheck
 	return nil
 }
 

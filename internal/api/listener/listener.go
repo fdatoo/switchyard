@@ -164,6 +164,22 @@ func (l *Listener) Shutdown(ctx context.Context) error {
 	return err
 }
 
+func (l *Listener) Close() error {
+	l.mu.Lock()
+	srv := l.srv
+	udsPath := l.cfg.UDSPath
+	l.mu.Unlock()
+	if srv == nil {
+		return nil
+	}
+	err := srv.Close()
+	_ = os.Remove(udsPath)
+	if errors.Is(err, http.ErrServerClosed) {
+		return nil
+	}
+	return err
+}
+
 func (l *Listener) healthzHandler(w http.ResponseWriter, _ *http.Request) {
 	if err := l.deps.HealthProbe(); err != nil {
 		http.Error(w, err.Error(), http.StatusServiceUnavailable)

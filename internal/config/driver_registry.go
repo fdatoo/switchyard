@@ -52,7 +52,7 @@ func NewDriverRegistry(ctx context.Context, root string) (*DriverRegistry, error
 	if err != nil {
 		return nil, fmt.Errorf("init pkl evaluator for registry scan: %w", err)
 	}
-	defer func() { _ = ev.ev.Close() }()
+	defer func() { _ = ev.Close() }()
 
 	for _, d := range dirs {
 		if !d.IsDir() {

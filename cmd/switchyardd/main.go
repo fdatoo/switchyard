@@ -29,6 +29,7 @@ func run() int {
 		snapshotEveryDur = flag.Duration("snapshot-every-period", time.Hour, "snapshot cadence: wall-clock period")
 		configDir        = flag.String("config-dir", "", "config directory with main.pkl (default <data-dir>/config)")
 		driversDir       = flag.String("drivers-dir", "", "directory containing per-driver subdirectories (default <data-dir>/drivers)")
+		pklLspPath       = flag.String("pkl-lsp-path", "", "path to pkl-lsp binary for the config editor")
 	)
 	flag.Parse()
 
@@ -58,6 +59,7 @@ func run() int {
 		SnapshotEveryPeriod: *snapshotEveryDur,
 		ConfigDir:           *configDir,
 		DriversDir:          *driversDir,
+		PklLspPath:          *pklLspPath,
 	}
 	d := daemon.New(cfg, logger, metrics)
 

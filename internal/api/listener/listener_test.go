@@ -146,3 +146,65 @@ func TestListener_ShutdownRemovesSocket(t *testing.T) {
 		t.Errorf("sock still exists after shutdown, err = %v", err)
 	}
 }
+
+func TestListener_CloseCancelsActiveRequest(t *testing.T) {
+	dir, err := os.MkdirTemp("/tmp", "sy-listener-")
+	if err != nil {
+		t.Fatalf("mktemp: %v", err)
+	}
+	t.Cleanup(func() { _ = os.RemoveAll(dir) })
+	sock := filepath.Join(dir, "sock")
+	started := make(chan struct{})
+	canceled := make(chan struct{})
+	cfg := listener.Config{UDSPath: sock, UDSMode: 0o600, TCPBind: "127.0.0.1:0"}
+	l, err := listener.Build(cfg, listener.Deps{
+		HealthProbe: func() error { return nil },
+		ConnectRoutes: []listener.Route{{
+			Path: "/block",
+			Handler: http.HandlerFunc(func(_ http.ResponseWriter, req *http.Request) {
+				close(started)
+				<-req.Context().Done()
+				close(canceled)
+			}),
+		}},
+	})
+	if err != nil {
+		t.Fatalf("Build: %v", err)
+	}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	if err := l.Start(ctx); err != nil {
+		t.Fatalf("Start: %v", err)
+	}
+
+	clientDone := make(chan struct{})
+	go func() {
+		defer close(clientDone)
+		resp, err := http.Get("http://" + l.TCPAddr().String() + "/block")
+		if err == nil {
+			_ = resp.Body.Close()
+		}
+	}()
+
+	select {
+	case <-started:
+	case <-time.After(2 * time.Second):
+		t.Fatal("request did not start")
+	}
+	if err := l.Close(); err != nil {
+		t.Fatalf("Close: %v", err)
+	}
+	select {
+	case <-canceled:
+	case <-time.After(2 * time.Second):
+		t.Fatal("request context was not canceled")
+	}
+	select {
+	case <-clientDone:
+	case <-time.After(2 * time.Second):
+		t.Fatal("client did not unblock")
+	}
+	if _, err := os.Stat(sock); !os.IsNotExist(err) {
+		t.Errorf("sock still exists after close, err = %v", err)
+	}
+}

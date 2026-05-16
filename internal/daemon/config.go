@@ -18,6 +18,7 @@ type Config struct {
 	CarportSocketDir    string // resolved against DataDir in Run; "@data/carport" is the sentinel
 	ConfigDir           string // resolved against DataDir in Run; "@data/config" is the sentinel
 	DriversDir          string // resolved against DataDir in Run; empty → "<DataDir>/drivers"
+	PklLspPath          string // optional path to the pkl-lsp sidecar binary
 }
 
 func (c *Config) WithDefaults() {

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/url"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/apple/pkl-go/pkl"
@@ -20,7 +21,9 @@ import (
 var pklFS embed.FS
 
 type pklEvaluator struct {
-	ev pkl.Evaluator
+	ev        pkl.Evaluator
+	closeOnce sync.Once
+	closeErr  error
 }
 
 func newPklEvaluator(ctx context.Context, driversRoot string) (*pklEvaluator, error) {
@@ -33,6 +36,16 @@ func newPklEvaluator(ctx context.Context, driversRoot string) (*pklEvaluator, er
 		return nil, fmt.Errorf("pkl evaluator: %w", err)
 	}
 	return &pklEvaluator{ev: ev}, nil
+}
+
+func (e *pklEvaluator) Close() error {
+	if e == nil || e.ev == nil {
+		return nil
+	}
+	e.closeOnce.Do(func() {
+		e.closeErr = e.ev.Close()
+	})
+	return e.closeErr
 }
 
 // SwitchyardSchemeReaderOption returns a Pkl evaluator option that registers
@@ -149,7 +162,7 @@ func EvaluatePageFile(ctx context.Context, pagePath, driversRoot string) ([]byte
 	if err != nil {
 		return nil, err
 	}
-	defer func() { _ = ev.ev.Close() }()
+	defer func() { _ = ev.Close() }()
 	return ev.EvaluatePage(ctx, pagePath)
 }
 
@@ -183,6 +196,7 @@ func EvaluateDashboardFile(ctx context.Context, dashboardPath, driversRoot strin
 	if err != nil {
 		return nil, err
 	}
+	defer func() { _ = ev.Close() }()
 	return ev.EvaluateDashboard(ctx, dashboardPath)
 }
 
@@ -626,7 +640,7 @@ func ValidateOffline(ctx context.Context, configDir, driversRoot string) (*confi
 	if err != nil {
 		return nil, nil, err
 	}
-	defer func() { _ = ev.ev.Close() }()
+	defer func() { _ = ev.Close() }()
 
 	snap, discErrs, err := ev.Evaluate(ctx, configDir)
 	if err != nil {

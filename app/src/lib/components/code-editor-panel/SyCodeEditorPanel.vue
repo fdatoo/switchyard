@@ -264,21 +264,23 @@ function discard(): void {
 }
 
 function onGotoDefinition(e: Event): void {
-  const detail = (e as CustomEvent).detail as { filePath?: string; line?: number } | undefined;
+  const detail = (e as CustomEvent).detail as { filePath?: string; line?: number; col?: number } | undefined;
   if (!detail?.filePath) return;
   void openFile(detail.filePath).then(async () => {
     if (!detail.line) return;
     await nextTick();
-    editorRef.value?.setPosition(detail.line, 1);
+    editorRef.value?.setPosition(detail.line, (detail.col ?? 0) + 1);
   });
 }
 
 onMounted(() => {
   void loadTree();
+  window.addEventListener("pkl-goto-definition", onGotoDefinition as EventListener);
   window.addEventListener("starlark-goto-definition", onGotoDefinition as EventListener);
 });
 
 onBeforeUnmount(() => {
+  window.removeEventListener("pkl-goto-definition", onGotoDefinition as EventListener);
   window.removeEventListener("starlark-goto-definition", onGotoDefinition as EventListener);
   void abandonCurrent();
 });
@@ -387,33 +389,37 @@ watch(() => props.kind, () => {
 <style scoped>
 .sy-panel {
   display: grid;
-  grid-template-rows: auto auto 1fr auto auto;
+  grid-template-rows: auto auto minmax(0, 1fr) auto auto;
   height: 100%;
   min-height: 600px;
   gap: 0;
 }
 .sy-panel__bar {
+  grid-row: 1;
   display: flex; align-items: center; gap: var(--sy-space-3);
   padding: var(--sy-space-2) var(--sy-space-3);
   border-bottom: 1px solid var(--sy-color-line-soft);
 }
 .sy-panel__barRight { margin-left: auto; display: flex; gap: var(--sy-space-2); }
 .sy-panel__banner {
+  grid-row: 2;
   display: flex; align-items: center; gap: var(--sy-space-3);
   padding: var(--sy-space-2) var(--sy-space-3);
   background: color-mix(in srgb, var(--sy-color-warn) 10%, transparent);
   border-bottom: 1px solid var(--sy-color-line-soft);
 }
 .sy-panel__body {
-  display: grid; grid-template-columns: 220px 1fr; min-height: 0;
+  grid-row: 3;
+  display: grid; grid-template-columns: 200px minmax(0, 1fr); min-height: 0;
 }
 .sy-panel__tree {
   border-right: 1px solid var(--sy-color-line-soft);
   overflow-y: auto;
 }
 .sy-panel__editor { overflow: hidden; }
-.sy-panel__saveErr { padding: var(--sy-space-2) var(--sy-space-3); }
+.sy-panel__saveErr { grid-row: 4; padding: var(--sy-space-2) var(--sy-space-3); }
 .sy-panel__bottom {
+  grid-row: 5;
   border-top: 1px solid var(--sy-color-line-soft);
   max-height: 240px; overflow-y: auto;
 }

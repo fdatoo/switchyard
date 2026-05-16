@@ -29,9 +29,10 @@ import SyTestPanel from "@/lib/components/code-editor-panel/SyTestPanel.vue";
 
 <style scoped>
 .page {
-  padding: var(--sy-space-5) var(--sy-space-6);
+  padding: var(--sy-space-2) 0 0;
   display: flex; flex-direction: column; gap: var(--sy-space-4);
   height: 100%;
+  min-height: 0;
 }
 .page__head { display: flex; flex-direction: column; gap: var(--sy-space-1); }
 .page__panel { flex: 1; min-height: 0; border: 1px solid var(--sy-color-line); border-radius: var(--sy-radius-md); overflow: hidden; }

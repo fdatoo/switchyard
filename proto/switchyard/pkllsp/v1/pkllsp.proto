@@ -1,0 +1,81 @@
+syntax = "proto3";
+package switchyard.pkllsp.v1;
+option go_package = "github.com/fdatoo/switchyard/gen/switchyard/pkllsp/v1;pkllsp";
+
+service PklLsService {
+  rpc Complete(CompleteRequest) returns (CompleteResponse);
+  rpc Hover(HoverRequest) returns (HoverResponse);
+  rpc Definition(DefinitionRequest) returns (DefinitionResponse);
+  rpc Diagnose(DiagnoseRequest) returns (DiagnoseResponse);
+  rpc SemanticTokens(SemanticTokensRequest) returns (SemanticTokensResponse);
+}
+
+message CompleteRequest {
+  string file_path = 1;
+  string source = 2;
+  int32 line = 3;
+  int32 col = 4;
+}
+
+message CompletionItem {
+  string label = 1;
+  string kind = 2;
+  string detail = 3;
+  string insert_text = 4;
+}
+
+message CompleteResponse {
+  repeated CompletionItem items = 1;
+}
+
+message HoverRequest {
+  string file_path = 1;
+  string source = 2;
+  int32 line = 3;
+  int32 col = 4;
+}
+
+message HoverResponse {
+  string markdown = 1;
+}
+
+message DefinitionRequest {
+  string file_path = 1;
+  string source = 2;
+  int32 line = 3;
+  int32 col = 4;
+}
+
+message DefinitionResponse {
+  string file_path = 1;
+  int32 line = 2;
+  int32 col = 3;
+}
+
+message DiagnoseRequest {
+  string file_path = 1;
+  string source = 2;
+}
+
+message Diagnostic {
+  int32 start_line = 1;
+  int32 start_col = 2;
+  int32 end_line = 3;
+  int32 end_col = 4;
+  string severity = 5;
+  string message = 6;
+  string code = 7;
+}
+
+message DiagnoseResponse {
+  repeated Diagnostic diagnostics = 1;
+}
+
+message SemanticTokensRequest {
+  string file_path = 1;
+  string source = 2;
+}
+
+message SemanticTokensResponse {
+  repeated uint32 data = 1;
+}

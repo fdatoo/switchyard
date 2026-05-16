@@ -136,10 +136,7 @@ jobs:
   switchyard-build-and-test:
     needs: changes
     if: github.event_name != 'pull_request' || needs.changes.outputs.switchyard == 'true'
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -169,12 +166,7 @@ jobs:
 
       - name: Install Pkl
         run: |
-          case "${{ matrix.os }}" in
-            ubuntu-latest) asset=pkl-linux-amd64 ;;
-            macos-latest)  asset=pkl-macos-aarch64 ;;
-            *) echo "unsupported os ${{ matrix.os }}" >&2; exit 1 ;;
-          esac
-          sudo curl -fsSL -o /usr/local/bin/pkl "https://github.com/apple/pkl/releases/download/0.31.1/$asset"
+          sudo curl -fsSL -o /usr/local/bin/pkl "https://github.com/apple/pkl/releases/download/0.31.1/pkl-linux-amd64"
           sudo chmod +x /usr/local/bin/pkl
           pkl --version
 
@@ -192,11 +184,88 @@ jobs:
       - name: Test
         run: task test
 
+  switchyard-macos-build-and-test:
+    needs: changes
+    if: github.event_name != 'pull_request' || needs.changes.outputs.switchyard == 'true'
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+          cache: true
+          cache-dependency-path: go.sum
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install Task
+        uses: arduino/setup-task@v2
+        with:
+          version: 3.x
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install Pkl
+        run: |
+          sudo curl -fsSL -o /usr/local/bin/pkl "https://github.com/apple/pkl/releases/download/0.31.1/pkl-macos-aarch64"
+          sudo chmod +x /usr/local/bin/pkl
+          pkl --version
+
+      - name: Build
+        run: task build
+
+      - name: Test
+        run: task test
+
       - name: Race
+        if: github.event_name != 'pull_request'
         run: task test:race
 
       - name: Integration
+        if: github.event_name != 'pull_request'
         run: task test:integration
+
+  switchyard-race:
+    needs: changes
+    if: github.event_name != 'pull_request' || needs.changes.outputs.switchyard == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+          cache: true
+          cache-dependency-path: go.sum
+      - name: Install Pkl
+        run: |
+          sudo curl -fsSL -o /usr/local/bin/pkl "https://github.com/apple/pkl/releases/download/0.31.1/pkl-linux-amd64"
+          sudo chmod +x /usr/local/bin/pkl
+          pkl --version
+      - name: Race
+        run: go test -race ./...
+
+  switchyard-integration:
+    needs: changes
+    if: github.event_name != 'pull_request' || needs.changes.outputs.switchyard == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+          cache: true
+          cache-dependency-path: go.sum
+      - name: Install Pkl
+        run: |
+          sudo curl -fsSL -o /usr/local/bin/pkl "https://github.com/apple/pkl/releases/download/0.31.1/pkl-linux-amd64"
+          sudo chmod +x /usr/local/bin/pkl
+          pkl --version
+      - name: Build switchyard CLI for integration tests
+        run: go build -o dist/switchyard ./cmd/switchyard
+      - name: Integration
+        run: go test -tags=integration ./...
 
   switchyard-lint:
     needs: changes
@@ -233,24 +302,28 @@ jobs:
             profile: cover-eventstore.out
             gate: "85"
             target: "85"
+            exception: ""
           - package: state
             path: ./internal/state
             coverpkg: ./internal/state/...
             profile: cover-state.out
             gate: "85"
             target: "85"
+            exception: ""
           - package: registry
             path: ./internal/registry
             coverpkg: ./internal/registry/...
             profile: cover-registry.out
             gate: "85"
             target: "85"
+            exception: ""
           - package: carport
             path: ./internal/carport
             coverpkg: ./internal/carport/...
             profile: cover-carport.out
             gate: "85"
             target: "85"
+            exception: ""
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
